@@ -1,0 +1,51 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Harness V2 渐进式任务路径</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js" integrity="sha384-ZZ1pncU3bQe8y31yfZdMFdSpttDoPmOZg2wguVK9almUodir1PghgT0eY7Mrty8H" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/jspdf@2.5.2/dist/jspdf.umd.min.js" integrity="sha384-en/ztfPSRkGfME4KIm05joYXynqzUgbsG5nMrj/xEFAHXkeZfO3yMK8QQ+mP7p1/" crossorigin="anonymous"></script>
+  <style>
+    *{box-sizing:border-box}body{margin:0;background:#020617;color:#e2e8f0;font-family:"JetBrains Mono",monospace}.container{width:min(1180px,calc(100% - 40px));margin:38px auto;padding:30px;border:1px solid #1e293b;border-radius:18px;background:#07101c;box-shadow:0 20px 70px #0008}.header{display:flex;justify-content:space-between;gap:24px;align-items:flex-start;margin-bottom:24px}.eyebrow{color:#86efac;font-size:12px;letter-spacing:.12em}.title{margin:9px 0 7px;font-size:26px}.subtitle{margin:0;color:#94a3b8;font:14px/1.7 system-ui,sans-serif}.pulse{display:flex;align-items:center;gap:8px;color:#86efac;font-size:12px}.pulse:before{content:"";width:8px;height:8px;border-radius:50%;background:#4ade80;box-shadow:0 0 0 6px #22c55e1c}.toolbar{position:relative}.toolbar>button,.actions button{border:1px solid #334155;background:#0f172a;color:#cbd5e1;border-radius:8px;padding:8px 11px;font:12px inherit;cursor:pointer}.actions{display:none;position:absolute;right:0;top:38px;z-index:4;width:110px;padding:6px;background:#0f172a;border:1px solid #334155;border-radius:10px;box-shadow:0 12px 30px #0008}.actions.open{display:grid;gap:5px}.diagram{overflow:auto;border:1px solid #1e293b;border-radius:14px;background:#050b14;padding:16px}.diagram svg{display:block;width:100%;min-width:900px;height:auto}.summary{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-top:16px}.card{padding:16px;border:1px solid #1e293b;border-radius:12px;background:#0a1320}.card b{display:block;color:#86efac;font-size:13px;margin-bottom:7px}.card p{margin:0;color:#94a3b8;font:13px/1.6 system-ui,sans-serif}.footer{display:flex;justify-content:space-between;gap:16px;margin-top:20px;padding-top:16px;border-top:1px solid #1e293b;color:#94a3b8;font-size:11px}@media(max-width:760px){.container{width:min(100% - 20px,1180px);padding:18px}.header{flex-direction:column}.summary{grid-template-columns:1fr}.footer{flex-direction:column}}
+  </style>
+</head>
+<body>
+  <main class="container" id="report-container">
+    <header class="header">
+      <div><div class="eyebrow">HARNESS V2 · PROGRESSIVE ROUTING</div><h1 class="title">只为当前任务增加必要流程</h1><p class="subtitle">先走最短可验证路径；当记忆、协调或风险真实出现时，再升级工作流。</p></div>
+      <div class="pulse">release · v2</div>
+      <div class="toolbar"><button type="button" onclick="toggleActions()" aria-label="导出菜单">⋯</button><div class="actions" id="actions"><button onclick="copyAsImage(this)">📋 Copy</button><button onclick="exportPNG(this)">PNG</button><button onclick="exportPDF(this)">PDF</button></div></div>
+    </header>
+    <section class="diagram" aria-label="Harness V2 渐进式任务路径图">
+      <svg viewBox="0 0 980 520" role="img" aria-labelledby="path-title path-desc">
+        <title id="path-title">Harness V2 渐进式任务路径</title><desc id="path-desc">任务先由 AGENTS 点明专项 Skill 或 Direct。Direct 在需要协作记忆时升级到 Harness Lite，Lite 在高风险成立时原地升级到 Harness Full；所有路径最终验证后交付。</desc>
+        <defs><marker id="arrow" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0 0L8 4L0 8Z" fill="#71847a"/></marker></defs>
+        <rect width="980" height="520" rx="18" fill="#07101c" stroke="#1e293b"/>
+        <g fill="none" stroke="#71847a" stroke-width="2" marker-end="url(#arrow)"><path d="M160 260H220"/><path d="M400 230H462V80H520"/><path d="M400 260H462V200H520"/><path d="M700 80H742V220H790"/><path d="M700 200H790"/><path d="M700 340H742V280H790"/><path d="M700 440H762V300H790"/></g>
+        <path d="M610 240V300" fill="none" stroke="#60a5fa" stroke-width="2" stroke-dasharray="7 7" marker-end="url(#arrow)"/><path d="M610 380V400" fill="none" stroke="#a78bfa" stroke-width="2" stroke-dasharray="7 7" marker-end="url(#arrow)"/>
+        <g><rect x="30" y="220" width="130" height="80" rx="10" fill="#111a16" stroke="#94a3b8"/><text x="95" y="253" text-anchor="middle" fill="#f8fafc" font-size="14" font-weight="700">任务意图</text><text x="95" y="278" text-anchor="middle" fill="#a8b7af" font-size="10">目标 · 验收 · 授权</text></g>
+        <g><rect x="220" y="210" width="180" height="100" rx="10" fill="#0c2418" stroke="#7ee2ac"/><text x="310" y="251" text-anchor="middle" fill="#f8fafc" font-size="15" font-weight="700">AGENTS.md 分流</text><text x="310" y="279" text-anchor="middle" fill="#a8b7af" font-size="10">专项能力优先</text></g>
+        <g><rect x="520" y="40" width="180" height="80" rx="10" fill="#221b0d" stroke="#fbbf24"/><text x="610" y="73" text-anchor="middle" fill="#f8fafc" font-size="15" font-weight="700">专项 Skill</text><text x="610" y="98" text-anchor="middle" fill="#a8b7af" font-size="10">明确原子操作短路</text></g>
+        <g><rect x="520" y="160" width="180" height="80" rx="10" fill="#0c1b2a" stroke="#60a5fa"/><text x="610" y="193" text-anchor="middle" fill="#f8fafc" font-size="15" font-weight="700">Direct</text><text x="610" y="218" text-anchor="middle" fill="#a8b7af" font-size="10">当前会话闭环</text></g>
+        <g><rect x="520" y="300" width="180" height="80" rx="10" fill="#0b241a" stroke="#34d399"/><text x="610" y="333" text-anchor="middle" fill="#f8fafc" font-size="15" font-weight="700">Harness Lite</text><text x="610" y="358" text-anchor="middle" fill="#a8b7af" font-size="10">保存最少协作记忆</text></g>
+        <g><rect x="520" y="400" width="180" height="80" rx="10" fill="#1c1530" stroke="#a78bfa"/><text x="610" y="433" text-anchor="middle" fill="#f8fafc" font-size="15" font-weight="700">Harness Full</text><text x="610" y="458" text-anchor="middle" fill="#a8b7af" font-size="10">完整风险治理</text></g>
+        <g><rect x="790" y="190" width="160" height="140" rx="10" fill="#0d251b" stroke="#7ee2ac"/><text x="870" y="251" text-anchor="middle" fill="#f8fafc" font-size="15" font-weight="700">验证后交付</text><text x="870" y="278" text-anchor="middle" fill="#a8b7af" font-size="10">证据决定完成</text></g>
+        <text x="458" y="70" text-anchor="middle" fill="#94a3b8" font-size="10">命中专项能力</text><text x="460" y="249" text-anchor="middle" fill="#94a3b8" font-size="10">默认最短路径</text><text x="628" y="273" fill="#93c5fd" font-size="10">需要协作记忆</text><text x="626" y="393" fill="#c4b5fd" font-size="10">风险成立 · 原地升级</text><text x="30" y="504" fill="#94a3b8" font-size="10">● 所有路径共享：必要调查 · 最小实现 · 邻近验证 · 完成证据</text>
+      </svg>
+    </section>
+    <section class="summary"><div class="card"><b>默认：Direct</b><p>高级模型有足够能力时，让它用最短路径完成调查、修改和验证。</p></div><div class="card"><b>按需：Lite</b><p>只有任务需要被记住、交接或协调时，才创建简短持久化工件。</p></div><div class="card"><b>升级：Full</b><p>外部契约、迁移和高风险变更才值得支付完整规划与回滚成本。</p></div></section>
+    <footer class="footer"><span>Harness V2 · Architecture Diagram</span><span>Source of truth: AGENTS.md progressive routing contract</span></footer>
+  </main>
+  <script>
+    function toggleActions(){document.getElementById('actions').classList.toggle('open')}
+    async function capture(){const el=document.getElementById('report-container');return html2canvas(el,{backgroundColor:'#020617',scale:2,useCORS:true,ignoreElements:e=>e.classList&&e.classList.contains('toolbar')})}
+    async function copyAsImage(btn){const old=btn.textContent;try{const c=await capture();const blob=await new Promise(r=>c.toBlob(r,'image/png'));await navigator.clipboard.write([new ClipboardItem({'image/png':blob})]);btn.textContent='Copied'}finally{setTimeout(()=>btn.textContent=old,1200)}}
+    async function exportPNG(){const c=await capture(),a=document.createElement('a');a.download='harness-v2-progressive-path.png';a.href=c.toDataURL('image/png');a.click()}
+    async function exportPDF(){const c=await capture(),img=c.toDataURL('image/png'),pdf=new window.jspdf.jsPDF({orientation:'landscape',unit:'px',format:[c.width/2,c.height/2]});pdf.addImage(img,'PNG',0,0,c.width/2,c.height/2);pdf.save('harness-v2-progressive-path.pdf')}
+  </script>
+</body>
+</html>

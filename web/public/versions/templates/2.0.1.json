@@ -1,0 +1,84 @@
+{
+  "versions": ["2.0.1"],
+  "releasedAt": { "from": "2026-07-21T19:36:11+08:00" },
+  "title": "V2 渐进治理：让任务走最短可靠路径",
+  "archived": false,
+  "groups": [
+    {
+      "type": "breaking",
+      "label": "工作方式升级",
+      "items": [
+        {
+          "name": "渐进式任务分流",
+          "description": "开发请求不再默认进入完整 OpenSpec + Superpowers 链路，而是按专项 Skill、Direct、Lite、Full 分流；小任务可在当前会话闭环，只有需要协作记忆或已确认高风险时才升级流程。"
+        },
+        {
+          "name": "V1 托管链路退役",
+          "description": "`superpowers-lite` 以及默认强制的计划、worktree、subagent、TDD 和逐任务审查能力退出托管模板，更新后改用 `lite`、`full` 与按需专项 Skill。"
+        },
+        {
+          "name": "架构图 Skill 退役",
+          "description": "`architecture-diagram` 不再随托管模板分发；新项目不再安装该 Skill，已有受管目录会在后续 `devkeel init` 或 `devkeel update` 时清理。"
+        }
+      ]
+    },
+    {
+      "type": "feat",
+      "label": "新能力",
+      "items": [
+        {
+          "name": "Lite 原地升级 Full",
+          "description": "发现外部契约或高后果风险并经用户确认后，可在同一 change 内升级到 Full，保留已有 metadata、热上下文、调查结果和已验证进度。"
+        },
+        {
+          "name": "分级收尾与恢复",
+          "description": "Lite 支持 Apply 后快速归档，Full 则通过最终 Review、Verify、Retrospective 和 spec 同步完成闭环，中断后可从已验证状态继续。"
+        },
+        {
+          "name": "连续只读讨论",
+          "description": "统一的 `brainstorming` Skill 会复用当前 OpenSpec 上下文，通过连续对答收敛范围，并在获得具体写入授权前始终保持只读。"
+        },
+        {
+          "name": "显式 Human Review",
+          "description": "调用 `/human-review` 可将 Lite 或 Full change 的已有 artifacts 渲染为 `human-review.html` 并尝试打开，且不会改变 change 状态或增加 Apply、Archive 门禁。"
+        },
+        {
+          "name": "子项目执行契约",
+          "description": "多仓库项目可为子项目生成独立 `AGENTS.md`，明确继承关系、领域边界、验证方式与 OpenSpec 归属，避免主仓库与子项目职责混淆。"
+        },
+        {
+          "name": "多运行时系统化调试",
+          "description": "新的 `systematic-debugging` Skill 以可证伪假设追踪根因，并在常规证据不足且获得授权时为 Node.js、浏览器和 Java 提供可清理的定向 HTTP 插桩。"
+        },
+        {
+          "name": "规划制品修订",
+          "description": "新增 `/opsx:update` 对应能力，可逐项修订现有 change 的 planning artifacts，并保持需求、设计、specs 与 tasks 一致。"
+        }
+      ]
+    },
+    {
+      "type": "refactor",
+      "label": "优化",
+      "items": [
+        {
+          "name": "默认执行开销收缩",
+          "description": "Apply 默认不再创建 worktree、分派实现 subagent、强制 TDD 或逐任务提交与审查，只保留必要调查、最小实现、邻近验证和按风险触发的 Review。"
+        },
+        {
+          "name": "规划内容更易审阅",
+          "description": "Full 与 Lite 的 planning artifacts 统一中文标题、核心用例关联和结果导向结构，减少空章节与重复上下文。"
+        }
+      ]
+    },
+    {
+      "type": "fix",
+      "label": "修复",
+      "items": [
+        {
+          "name": "默认 Schema 与上下文同步",
+          "description": "初始化或更新后的 `openspec/config.yaml` 默认使用 `lite`，并同步托管 context，避免旧 Schema 或过期上下文导致后续入口走错工作流。"
+        }
+      ]
+    }
+  ]
+}

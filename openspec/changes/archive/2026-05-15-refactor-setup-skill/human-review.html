@@ -1,0 +1,679 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Human Review — refactor-setup-skill</title>
+<link rel="stylesheet" href="https://cdn.jsdmirror.com/npm/@highlightjs/cdn-assets@11.11.1/styles/github.min.css">
+<link rel="stylesheet" href="https://cdn.jsdmirror.com/npm/@highlightjs/cdn-assets@11.11.1/styles/github-dark.min.css" media="(prefers-color-scheme: dark)">
+<script src="https://cdn.jsdmirror.com/npm/@highlightjs/cdn-assets@11.11.1/highlight.min.js"></script>
+<script src="https://cdn.jsdmirror.com/npm/mermaid@11/dist/mermaid.min.js"></script>
+<style>
+:root {
+  --bg: #f8fafc; --surface: #ffffff; --text: #0f172a; --text-secondary: #475569;
+  --text-muted: #94a3b8; --accent: #4f46e5; --accent-light: #eef2ff;
+  --accent-border: #c7d2fe; --accent-text: #3730a3; --border: #e2e8f0;
+  --code-bg: #f1f5f9; --success: #059669; --warning: #d97706;
+  --font-sans: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Noto Sans SC', 'PingFang SC', 'Microsoft YaHei', sans-serif;
+  --font-mono: 'SF Mono', 'Cascadia Code', 'JetBrains Mono', Consolas, monospace;
+}
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #0f172a; --surface: #1e293b; --text: #f1f5f9; --text-secondary: #94a3b8;
+    --text-muted: #64748b; --accent: #818cf8; --accent-light: rgba(99,102,241,0.12);
+    --accent-border: rgba(99,102,241,0.25); --accent-text: #c7d2fe; --border: #334155;
+    --code-bg: #0f172a; --success: #34d399; --warning: #fbbf24;
+  }
+}
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: var(--font-sans); font-size: 15px; line-height: 1.8; color: var(--text); background: var(--bg); }
+.container { max-width: 860px; margin: 0 auto; padding: 0 2.5rem; }
+@media (max-width: 768px) { .container { padding: 0 1.25rem; } }
+@media (max-width: 480px) { .container { padding: 0 1rem; } }
+
+/* Header */
+.page-header {
+  background: linear-gradient(135deg, #eef2ff, #f8fafc, #f0f9ff);
+  border-bottom: 1px solid var(--border); padding: 3rem 0 2.5rem;
+}
+@media (prefers-color-scheme: dark) {
+  .page-header { background: linear-gradient(135deg, rgba(99,102,241,0.08), #0f172a, rgba(6,78,59,0.06)); }
+}
+.badge-review {
+  display: inline-flex; align-items: center; gap: 6px;
+  background: rgba(217,119,6,0.12); color: var(--warning); border: 1px solid rgba(217,119,6,0.3);
+  border-radius: 20px; padding: 4px 14px; font-size: 11px; font-weight: 600;
+  text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 1rem;
+}
+.badge-review .pulse { width: 6px; height: 6px; border-radius: 50%; background: var(--warning); animation: pulse 2s infinite; }
+@keyframes pulse { 0%,100% { opacity: 1; } 50% { opacity: 0.4; } }
+.page-header h1 { font-size: 34px; font-weight: 800; letter-spacing: -0.02em; margin-bottom: 0.5rem; }
+.page-header .subtitle { color: var(--text-secondary); font-size: 16px; margin-bottom: 1rem; }
+.page-header .meta { color: var(--text-muted); font-size: 13px; }
+
+/* Progress bar */
+.progress-bar { display: flex; gap: 4px; margin-top: 1.5rem; }
+.progress-bar .seg { flex: 1; height: 4px; border-radius: 2px; background: var(--border); }
+.progress-bar .seg.done { background: var(--success); }
+.progress-bar .seg.current { background: var(--accent); }
+
+/* TOC */
+.toc { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 1.5rem 2rem; margin: 2.5rem 0; }
+.toc h2 { font-size: 13px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; color: var(--text-muted); margin-bottom: 1rem; }
+.toc-list { list-style: none; counter-reset: toc; }
+.toc-list li { counter-increment: toc; }
+.toc-list a {
+  display: flex; align-items: center; gap: 12px; padding: 8px 12px; border-radius: 6px;
+  text-decoration: none; color: var(--text); font-weight: 500; transition: background 0.15s;
+}
+.toc-list a:hover { background: var(--accent-light); }
+.toc-list a::before {
+  content: counter(toc, decimal-leading-zero); font-size: 14px; font-weight: 700;
+  color: var(--accent); min-width: 28px;
+}
+
+/* Sections */
+section { padding: 3.5rem 0; border-top: 1px solid var(--border); }
+.section-head { display: flex; align-items: baseline; gap: 16px; margin-bottom: 2rem; }
+.section-num { font-size: 28px; font-weight: 800; color: var(--accent); line-height: 1; }
+.section-head h2 { font-size: 26px; font-weight: 700; }
+h3 { font-size: 20px; font-weight: 600; border-bottom: 1px solid var(--border); padding-bottom: 0.5rem; margin: 2rem 0 1rem; }
+h4 { font-size: 17px; font-weight: 600; margin: 1.5rem 0 0.75rem; }
+
+/* Summary block */
+.summary-block {
+  background: var(--accent-light); border: 1px solid var(--accent-border); border-radius: 10px;
+  padding: 1.25rem 1.5rem; color: var(--accent-text); margin-bottom: 2rem; font-weight: 500;
+}
+
+/* Requirement card */
+.req-card {
+  background: var(--surface); border: 1px solid var(--border); border-left: 3px solid var(--accent);
+  border-radius: 10px; padding: 1.5rem 2rem; margin-bottom: 1.5rem;
+}
+.req-label {
+  font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em;
+  color: var(--accent); margin-bottom: 0.5rem;
+}
+.req-card h4 { margin: 0 0 0.75rem; border: none; padding: 0; }
+
+/* Scenario block */
+.scenario {
+  background: var(--accent-light); border: 1px solid var(--accent-border); border-radius: 8px;
+  padding: 1rem 1.25rem; margin: 0.75rem 0;
+}
+.scenario-label { font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; color: var(--accent); margin-bottom: 0.5rem; }
+.scenario .kw { font-weight: 700; color: var(--accent); text-transform: uppercase; }
+
+/* Tables */
+table { width: 100%; border-collapse: collapse; margin: 1rem 0; font-size: 14px; }
+thead th {
+  background: var(--code-bg); text-align: left; padding: 0.75rem 1rem;
+  font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em;
+  color: var(--text-muted); border-bottom: 2px solid var(--border);
+}
+td { padding: 0.75rem 1rem; border-bottom: 1px solid var(--border); }
+tr:hover td { background: var(--accent-light); }
+
+/* Code */
+pre { background: var(--code-bg); border: 1px solid var(--border); border-radius: 8px; padding: 1rem 1.25rem; overflow-x: auto; margin: 1rem 0; }
+code { font-family: var(--font-mono); font-size: 13px; }
+:not(pre) > code { background: var(--code-bg); padding: 2px 6px; border-radius: 4px; }
+
+/* Mermaid */
+.mermaid-container { padding: 1.5rem; border-radius: 10px; margin: 1.5rem 0; }
+@media (prefers-color-scheme: dark) { .mermaid-container { background: rgba(15,23,42,0.5); } }
+
+/* Task list */
+.task-group h4 { font-weight: 600; margin: 1.5rem 0 0.75rem; }
+.task-item { display: flex; align-items: flex-start; gap: 10px; padding: 6px 0; }
+.task-check {
+  width: 18px; height: 18px; border: 2px solid var(--border); border-radius: 4px;
+  flex-shrink: 0; margin-top: 3px;
+}
+.task-item.done .task-check { background: var(--success); border-color: var(--success); }
+.task-item.done .task-text { text-decoration: line-through; color: var(--text-muted); }
+.task-steps { margin-left: 28px; color: var(--text-secondary); font-size: 14px; }
+.task-steps li { margin: 2px 0; }
+.task-commit { margin-left: 28px; font-size: 13px; color: var(--text-muted); font-family: var(--font-mono); margin-top: 4px; }
+
+/* Acceptance */
+.acceptance { border-top: 2px solid var(--accent); padding-top: 2.5rem; margin-top: 3.5rem; }
+.acceptance-head { display: flex; align-items: center; gap: 12px; margin-bottom: 1.5rem; }
+.acceptance-head svg { color: var(--accent); }
+.acceptance-head h2 { font-size: 22px; font-weight: 700; }
+.next-cmd {
+  border: 2px dashed var(--accent-border); border-radius: 10px; padding: 1.25rem 1.5rem;
+  margin-top: 1.5rem; cursor: pointer; transition: background 0.15s;
+}
+.next-cmd:hover { background: var(--accent-light); }
+.next-cmd code { font-size: 15px; font-weight: 600; color: var(--accent); }
+
+/* Footer */
+.page-footer { text-align: center; padding: 2rem 0; color: var(--text-muted); font-size: 13px; }
+
+/* Print */
+@media print {
+  body { background: #fff; color: #000; }
+  .page-header { background: #fff; }
+  .badge-review, .progress-bar { display: none; }
+  a::after { content: " (" attr(href) ")"; font-size: 11px; }
+  .toc { page-break-after: always; }
+  .acceptance { page-break-before: always; }
+}
+</style>
+</head>
+<body>
+
+<header class="page-header">
+<div class="container">
+  <div class="badge-review"><span class="pulse"></span> Pending Review</div>
+  <h1>refactor-setup-skill</h1>
+  <p class="subtitle">将 setup skill 从"全工具链安装器"重构为"推荐库自动配置器"</p>
+  <p class="meta">Schema: superpowers-bridge · 生成日期: 2026-05-15</p>
+  <div class="progress-bar">
+    <div class="seg done"></div>
+    <div class="seg done"></div>
+    <div class="seg done"></div>
+    <div class="seg done"></div>
+    <div class="seg done"></div>
+    <div class="seg done"></div>
+    <div class="seg current"></div>
+  </div>
+</div>
+</header>
+
+<main class="container">
+
+<nav class="toc">
+  <h2>目录</h2>
+  <ol class="toc-list">
+    <li><a href="#sec-01">需求背景</a></li>
+    <li><a href="#sec-02">现状调查</a></li>
+    <li><a href="#sec-03">技术设计</a></li>
+    <li><a href="#sec-04">变更提案</a></li>
+    <li><a href="#sec-05">规格清单</a></li>
+    <li><a href="#sec-06">实现任务</a></li>
+  </ol>
+</nav>
+
+<!-- ═══════════════════ 01 需求背景 ═══════════════════ -->
+<section id="sec-01">
+<div class="section-head"><span class="section-num">01</span><h2>需求背景</h2></div>
+
+<div class="summary-block">
+  将 setup skill 从"全工具链安装器"重构为"推荐库自动配置器"，聚焦 openspec、oh-my-claudecode (OMC)、oh-my-codex (OMX) 三个工具的检测、安装与完整配置，运行时自动识别当前 Agent 类型。
+</div>
+
+<h3>当前痛点</h3>
+<ol>
+  <li>现有 setup skill 承担了过多职责 — 从 claude-code CLI 安装到 superpowers 插件再到 harness-cli 自身</li>
+  <li>SuperPowers 已内置到 harness 模板中，不需要额外安装步骤</li>
+  <li>只支持 oh-my-claudecode，不支持 oh-my-codex</li>
+  <li>omc 的安装说明不完整 — 缺少 <code>omc setup</code> 后续配置和 teams 环境变量</li>
+  <li>skill 没有运行时检测能力 — 无法判断当前在 Claude Code 还是 Codex CLI 中执行</li>
+</ol>
+
+<h3>目标用户</h3>
+<table>
+  <thead><tr><th>角色</th><th>描述</th><th>关注点</th></tr></thead>
+  <tbody>
+    <tr><td>Claude Code 用户</td><td>已安装 claude-code CLI</td><td>OMC 安装 + 完整配置（含 teams 启用）</td></tr>
+    <tr><td>Codex CLI 用户</td><td>已安装 codex CLI</td><td>OMX 安装 + 完整配置（含 doctor 验证）</td></tr>
+    <tr><td>双平台用户</td><td>同时使用两者</td><td>两者都安装并配置</td></tr>
+  </tbody>
+</table>
+
+<h3>需求边界</h3>
+<table>
+  <thead><tr><th>In Scope</th><th>Out of Scope</th></tr></thead>
+  <tbody>
+    <tr><td>openspec CLI 安装</td><td>Claude Code CLI 安装</td></tr>
+    <tr><td>OMC 安装 + setup + teams</td><td>Codex CLI 安装</td></tr>
+    <tr><td>OMX 安装 + setup + doctor</td><td>harness-cli 安装</td></tr>
+    <tr><td>Agent 类型运行时检测</td><td>SuperPowers 安装（已内置）</td></tr>
+    <tr><td>tooling-matrix.md 更新</td><td>项目依赖（node/pnpm）</td></tr>
+    <tr><td>SKILL.md metadata 更新</td><td>Platform Linking（由 devkeel init 负责）</td></tr>
+  </tbody>
+</table>
+</section>
+
+<!-- ═══════════════════ 02 现状调查 ═══════════════════ -->
+<section id="sec-02">
+<div class="section-head"><span class="section-num">02</span><h2>现状调查</h2></div>
+
+<h3>模板分发流程</h3>
+<div class="mermaid-container">
+<pre class="mermaid">
+graph LR
+  A["templates/skills/setup/"] -->|copyDirRecursive| B[".harness/skills/setup/"]
+  B -->|symlink| C[".claude/skills/setup/"]
+  B -->|symlink| D[".agents/skills/setup/"]
+</pre>
+</div>
+
+<h3>SKILL.md 当前结构与重构影响</h3>
+<table>
+  <thead><tr><th>段落</th><th>行号</th><th>重构影响</th></tr></thead>
+  <tbody>
+    <tr><td>metadata</td><td>1-8</td><td>需更新 description, version</td></tr>
+    <tr><td>Overview / Hard Rules / Route</td><td>10-50</td><td>保留不变</td></tr>
+    <tr><td>Collect Baseline</td><td>58-66</td><td><strong>重写</strong> — 加入 codex/omx 检测</td></tr>
+    <tr><td>Install: Claude Code</td><td>70-78</td><td><strong>删除</strong></td></tr>
+    <tr><td>Install: openspec</td><td>80-86</td><td>保留，简化</td></tr>
+    <tr><td>Install: OMC</td><td>88-105</td><td><strong>重写</strong> — 补完整配置</td></tr>
+    <tr><td>Install: SuperPowers ×2</td><td>107-125</td><td><strong>删除</strong></td></tr>
+    <tr><td>Verify Project / Platform Linking</td><td>127-145</td><td><strong>删除</strong></td></tr>
+    <tr><td>Summary Format</td><td>147-165</td><td>保留不变</td></tr>
+  </tbody>
+</table>
+
+<h3>风险与约束</h3>
+<table>
+  <thead><tr><th>风险</th><th>影响</th><th>缓解</th></tr></thead>
+  <tbody>
+    <tr><td>OMC/OMX 安装命令变化</td><td>包名或安装方式更新</td><td>引用 <code>@latest</code>，不固定版本</td></tr>
+    <tr><td>Agent 检测误判</td><td>双平台用户</td><td>两者都有时列出选项</td></tr>
+    <tr><td>增量更新需 version bump</td><td>已有项目不收到更新</td><td>version 1.0.0 → 2.0.0</td></tr>
+    <tr><td><code>omc setup</code> 交互式</td><td>终端 vs 会话内行为不同</td><td>skill 明确区分两种场景</td></tr>
+  </tbody>
+</table>
+</section>
+
+<!-- ═══════════════════ 03 技术设计 ═══════════════════ -->
+<section id="sec-03">
+<div class="section-head"><span class="section-num">03</span><h2>技术设计</h2></div>
+
+<div class="summary-block">
+  纯模板内容变更，不涉及分发管道代码修改。选定方案 A（单 skill 条件分支）— 统一入口 + Agent 自动检测。
+</div>
+
+<h3>架构概览</h3>
+<div class="mermaid-container">
+<pre class="mermaid">
+flowchart TD
+    A[用户调用 setup skill] --> B{Route 请求}
+    B -->|Full| C[Collect Baseline]
+    B -->|Partial| D[指定工具流程]
+    B -->|Troubleshoot| E[诊断修复]
+    C --> F{Agent 类型检测}
+    F -->|claude detected| G[openspec + OMC 流程]
+    F -->|codex detected| H[openspec + OMX 流程]
+    F -->|both / unknown| I[询问用户]
+    G --> J[Summary]
+    H --> J
+    I --> G
+    I --> H
+</pre>
+</div>
+
+<h3>ATAM 方案对比</h3>
+<table>
+  <thead><tr><th>质量属性</th><th>方案 A: 条件分支</th><th>方案 B: 独立 skill</th><th>权重</th></tr></thead>
+  <tbody>
+    <tr><td>可维护性</td><td>单文件，分支逻辑在检测段 ⭐</td><td>两个 skill，重复多</td><td>高</td></tr>
+    <tr><td>用户体验</td><td>统一入口，自动路由 ⭐</td><td>用户需知道调用哪个</td><td>高</td></tr>
+    <tr><td>可扩展性</td><td>新 Agent 加分支即可</td><td>新增整个 skill</td><td>中</td></tr>
+    <tr><td>简洁性</td><td>约 120 行 ⭐</td><td>各约 80 行</td><td>中</td></tr>
+  </tbody>
+</table>
+<p><strong>选定方案：方案 A（条件分支）</strong></p>
+
+<h3>关键时序</h3>
+<div class="mermaid-container">
+<pre class="mermaid">
+sequenceDiagram
+    participant U as 用户/Agent
+    participant S as Setup Skill
+    participant SH as Shell
+
+    U->>S: 调用 setup
+    S->>S: Route 识别
+
+    S->>SH: openspec --version
+    SH-->>S: 存在/缺失
+    opt openspec 缺失
+        S->>SH: npm install -g @fission-ai/openspec@latest
+    end
+
+    S->>SH: claude --version / codex --version
+    SH-->>S: Agent 类型判定
+
+    alt Claude Code
+        S->>SH: omc --version
+        opt OMC 缺失
+            S->>SH: npm install -g oh-my-claude-sisyphus@latest
+        end
+        S->>SH: omc setup + teams 环境变量
+        S->>SH: omc --version 验证
+    else Codex CLI
+        S->>SH: omx --version
+        opt OMX 缺失
+            S->>SH: npm install -g oh-my-codex
+        end
+        S->>SH: omx setup + omx doctor
+    end
+
+    S->>U: Summary 输出
+</pre>
+</div>
+
+<h3>决策追溯</h3>
+<table>
+  <thead><tr><th>决策</th><th>追溯需求点</th></tr></thead>
+  <tbody>
+    <tr><td>单 skill 条件分支</td><td>UC-1: Agent 类型自动检测</td></tr>
+    <tr><td>OMC 推荐 npm 而非 marketplace</td><td>待确认项 #1 — 已确认</td></tr>
+    <tr><td>openspec 不做项目初始化</td><td>UC-2 用户修订</td></tr>
+    <tr><td>OMC 配置含 teams 环境变量</td><td>UC-3 — teams 是核心功能</td></tr>
+    <tr><td>OMX 含 doctor + exec 验证</td><td>UC-4 — 官方推荐验证链</td></tr>
+    <tr><td>version bump 1.0.0 → 2.0.0</td><td>explore 发现 — 增量更新依赖</td></tr>
+  </tbody>
+</table>
+</section>
+
+<!-- ═══════════════════ 04 变更提案 ═══════════════════ -->
+<section id="sec-04">
+<div class="section-head"><span class="section-num">04</span><h2>变更提案</h2></div>
+
+<h3>Why</h3>
+<p>现有 setup skill 承担了过多职责，用户到达 skill 时必然已有 Agent CLI 和 harness。harness 定位为平台无关的知识框架，setup skill 应聚焦于"推荐的 AI 工作流增强工具"的自动配置。</p>
+
+<h3>What Changes</h3>
+<table>
+  <thead><tr><th>变更项</th><th>From</th><th>To</th></tr></thead>
+  <tbody>
+    <tr><td>工具覆盖范围</td><td>5 工具 + 2 依赖</td><td>3 工具（openspec, OMC, OMX）</td></tr>
+    <tr><td>OMC 配置</td><td>仅 npm install + MCP</td><td>npm → setup → teams → 验证 → doctor</td></tr>
+    <tr><td>OMX 支持</td><td>无</td><td>npm → setup → doctor → exec</td></tr>
+    <tr><td>Agent 检测</td><td>无</td><td>自动检测 Claude/Codex 并路由</td></tr>
+    <tr><td>tooling-matrix</td><td>7 条目</td><td>3 条目</td></tr>
+    <tr><td>metadata version</td><td>1.0.0</td><td>2.0.0</td></tr>
+  </tbody>
+</table>
+
+<h3>Capabilities</h3>
+<table>
+  <thead><tr><th>类型</th><th>Capability</th><th>描述</th></tr></thead>
+  <tbody>
+    <tr><td>新增</td><td><code>agent-detection</code></td><td>Agent 类型自动检测与路由</td></tr>
+    <tr><td>新增</td><td><code>omx-setup</code></td><td>oh-my-codex 安装与配置</td></tr>
+    <tr><td>修改</td><td><code>omc-setup</code></td><td>OMC 完整配置链扩展</td></tr>
+    <tr><td>修改</td><td><code>openspec-setup</code></td><td>简化为仅安装</td></tr>
+  </tbody>
+</table>
+
+<h3>Impact</h3>
+<table>
+  <thead><tr><th>文件</th><th>变更类型</th></tr></thead>
+  <tbody>
+    <tr><td><code>templates/skills/setup/SKILL.md</code></td><td>重写</td></tr>
+    <tr><td><code>templates/skills/setup/references/tooling-matrix.md</code></td><td>重写</td></tr>
+  </tbody>
+</table>
+<p>不受影响：<code>src/lib/templates.ts</code>、<code>src/commands/init.ts</code>、其他 skill 模板、测试。</p>
+</section>
+
+<!-- ═══════════════════ 05 规格清单 ═══════════════════ -->
+<section id="sec-05">
+<div class="section-head"><span class="section-num">05</span><h2>规格清单</h2></div>
+
+<!-- agent-detection -->
+<h3>agent-detection</h3>
+
+<div class="req-card">
+  <div class="req-label">Requirement</div>
+  <h4>Agent type detection</h4>
+  <p>Setup skill SHALL 在路由到工具安装流程前检测当前 Agent 类型。</p>
+  <div class="scenario">
+    <div class="scenario-label">Scenario: Claude Code detected</div>
+    <p><span class="kw">WHEN</span> <code>claude --version</code> 返回有效版本 → <span class="kw">THEN</span> 路由到 OMC 安装流程</p>
+  </div>
+  <div class="scenario">
+    <div class="scenario-label">Scenario: Codex CLI detected</div>
+    <p><span class="kw">WHEN</span> <code>codex --version</code> 返回有效版本 → <span class="kw">THEN</span> 路由到 OMX 安装流程</p>
+  </div>
+  <div class="scenario">
+    <div class="scenario-label">Scenario: Both agents available</div>
+    <p><span class="kw">WHEN</span> 两者都返回有效版本 → <span class="kw">THEN</span> 询问用户或全部安装</p>
+  </div>
+  <div class="scenario">
+    <div class="scenario-label">Scenario: Neither detected</div>
+    <p><span class="kw">WHEN</span> 两者都不可用 → <span class="kw">THEN</span> 报告无支持 Agent，列出选项</p>
+  </div>
+</div>
+
+<div class="req-card">
+  <div class="req-label">Requirement</div>
+  <h4>Detection MUST precede tool installation</h4>
+  <p>Agent 类型检测 MUST 在任何 oh-my 工具安装步骤之前执行。</p>
+  <div class="scenario">
+    <div class="scenario-label">Scenario: Detection gates installation</div>
+    <p><span class="kw">WHEN</span> 检测结果为 "Claude Code" → <span class="kw">THEN</span> 只展示 OMC 流程</p>
+  </div>
+</div>
+
+<!-- openspec-setup -->
+<h3>openspec-setup</h3>
+
+<div class="req-card">
+  <div class="req-label">Requirement</div>
+  <h4>openspec CLI installation</h4>
+  <p>Setup skill SHALL 检测 openspec 是否安装，缺失时安装。</p>
+  <div class="scenario">
+    <div class="scenario-label">Scenario: Not installed</div>
+    <p><span class="kw">WHEN</span> <code>openspec --version</code> 失败 → <span class="kw">THEN</span> 执行 <code>npm install -g @fission-ai/openspec@latest</code></p>
+  </div>
+  <div class="scenario">
+    <div class="scenario-label">Scenario: Already installed</div>
+    <p><span class="kw">WHEN</span> 已安装 → <span class="kw">THEN</span> 报告版本，跳过安装</p>
+  </div>
+</div>
+
+<div class="req-card">
+  <div class="req-label">Requirement</div>
+  <h4>MUST NOT perform project initialization</h4>
+  <p>Setup skill SHALL NOT 运行 <code>openspec init</code> 或 <code>openspec update</code>。</p>
+  <div class="scenario">
+    <div class="scenario-label">Scenario: Skip init</div>
+    <p><span class="kw">WHEN</span> openspec 已安装 → <span class="kw">THEN</span> 不执行 init/update</p>
+  </div>
+</div>
+
+<!-- omc-setup -->
+<h3>omc-setup</h3>
+
+<div class="req-card">
+  <div class="req-label">Requirement</div>
+  <h4>OMC CLI installation</h4>
+  <p>Setup skill SHALL 在 Agent 为 Claude Code 时安装 OMC。</p>
+  <div class="scenario">
+    <div class="scenario-label">Scenario: Not installed</div>
+    <p><span class="kw">WHEN</span> <code>omc --version</code> 失败且 Agent = Claude Code → <span class="kw">THEN</span> <code>npm install -g oh-my-claude-sisyphus@latest</code></p>
+  </div>
+</div>
+
+<div class="req-card">
+  <div class="req-label">Requirement</div>
+  <h4>OMC setup configuration</h4>
+  <p>Setup skill SHALL 引导用户完成完整 OMC setup，MUST 区分终端和会话内命令。</p>
+  <div class="scenario">
+    <div class="scenario-label">Scenario: Terminal</div>
+    <p><span class="kw">WHEN</span> 终端执行 → <span class="kw">THEN</span> 指引运行 <code>omc setup</code></p>
+  </div>
+  <div class="scenario">
+    <div class="scenario-label">Scenario: In-session</div>
+    <p><span class="kw">WHEN</span> Claude Code 会话内 → <span class="kw">THEN</span> 指引运行 <code>/omc-setup</code></p>
+  </div>
+</div>
+
+<div class="req-card">
+  <div class="req-label">Requirement</div>
+  <h4>OMC teams environment variable</h4>
+  <p>Setup skill SHALL 确保 teams 功能已启用。</p>
+  <div class="scenario">
+    <div class="scenario-label">Scenario: Not configured</div>
+    <p><span class="kw">WHEN</span> <code>~/.claude/settings.json</code> 无 teams 变量 → <span class="kw">THEN</span> 指引添加 <code>CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS: "1"</code></p>
+  </div>
+</div>
+
+<div class="req-card">
+  <div class="req-label">Requirement</div>
+  <h4>OMC verification</h4>
+  <p>Setup skill MUST 验证 OMC 安装和配置完整性。</p>
+  <div class="scenario">
+    <div class="scenario-label">Scenario: Success</div>
+    <p><span class="kw">WHEN</span> <code>omc --version</code> 有效 → <span class="kw">THEN</span> 报告已验证，建议 <code>/omc-doctor</code></p>
+  </div>
+</div>
+
+<!-- omx-setup -->
+<h3>omx-setup</h3>
+
+<div class="req-card">
+  <div class="req-label">Requirement</div>
+  <h4>OMX CLI installation</h4>
+  <p>Setup skill SHALL 在 Agent 为 Codex CLI 时安装 OMX。</p>
+  <div class="scenario">
+    <div class="scenario-label">Scenario: Not installed</div>
+    <p><span class="kw">WHEN</span> OMX 不可用且 Agent = Codex → <span class="kw">THEN</span> <code>npm install -g oh-my-codex</code></p>
+  </div>
+</div>
+
+<div class="req-card">
+  <div class="req-label">Requirement</div>
+  <h4>OMX setup + doctor</h4>
+  <p>Setup skill SHALL 运行 <code>omx setup</code> 并用 <code>omx doctor</code> 验证。</p>
+  <div class="scenario">
+    <div class="scenario-label">Scenario: Doctor passes</div>
+    <p><span class="kw">WHEN</span> <code>omx doctor</code> 无严重错误 → <span class="kw">THEN</span> 报告 OMX 已验证</p>
+  </div>
+</div>
+
+<div class="req-card">
+  <div class="req-label">Requirement</div>
+  <h4>OMX execution verification (optional)</h4>
+  <p>Setup skill SHALL 提供可选的执行验证步骤，失败为非阻塞警告。</p>
+  <div class="scenario">
+    <div class="scenario-label">Scenario: Exec succeeds</div>
+    <p><span class="kw">WHEN</span> <code>omx exec</code> 成功 → <span class="kw">THEN</span> 报告执行能力已验证</p>
+  </div>
+  <div class="scenario">
+    <div class="scenario-label">Scenario: Exec fails</div>
+    <p><span class="kw">WHEN</span> exec 失败 → <span class="kw">THEN</span> 非阻塞警告，建议检查 <code>codex login status</code></p>
+  </div>
+</div>
+</section>
+
+<!-- ═══════════════════ 06 实现任务 ═══════════════════ -->
+<section id="sec-06">
+<div class="section-head"><span class="section-num">06</span><h2>实现任务</h2></div>
+
+<div class="summary-block">
+  8 个任务，7 个 commit。纯模板内容变更，技术栈 = Markdown。
+</div>
+
+<div class="task-group">
+<h4>1. tooling-matrix.md 重写</h4>
+<div class="task-item"><div class="task-check"></div><div class="task-text"><strong>1.1</strong> 重写 tooling-matrix.md，精简为 3 个工具</div></div>
+<div class="task-commit">→ refactor(setup-skill): rewrite tooling-matrix to 3 recommended tools</div>
+</div>
+
+<div class="task-group">
+<h4>2. SKILL.md metadata</h4>
+<div class="task-item"><div class="task-check"></div><div class="task-text"><strong>2.1</strong> 更新 metadata — description + version bump 2.0.0</div></div>
+<div class="task-commit">→ refactor(setup-skill): update metadata and bump version to 2.0.0</div>
+</div>
+
+<div class="task-group">
+<h4>3. Agent 检测</h4>
+<div class="task-item"><div class="task-check"></div><div class="task-text"><strong>3.1</strong> 重写 Collect Baseline — 加入 claude/codex/omc/omx 检测 + Agent 类型判断</div></div>
+<div class="task-commit">→ feat(setup-skill): add agent type detection logic</div>
+</div>
+
+<div class="task-group">
+<h4>4. openspec 安装</h4>
+<div class="task-item"><div class="task-check"></div><div class="task-text"><strong>4.1</strong> 简化 openspec 为 install-only（删除 init 步骤）</div></div>
+<div class="task-commit">→ refactor(setup-skill): simplify openspec to install-only</div>
+</div>
+
+<div class="task-group">
+<h4>5. OMC 完整配置</h4>
+<div class="task-item"><div class="task-check"></div><div class="task-text"><strong>5.1</strong> 重写 OMC — npm + setup + teams 环境变量 + 验证 + doctor</div></div>
+<div class="task-commit">→ feat(setup-skill): complete OMC configuration with teams and setup</div>
+</div>
+
+<div class="task-group">
+<h4>6. OMX 配置</h4>
+<div class="task-item"><div class="task-check"></div><div class="task-text"><strong>6.1</strong> 新增 OMX — npm + setup + doctor + exec 验证</div></div>
+<div class="task-commit">→ feat(setup-skill): add OMX installation and configuration</div>
+</div>
+
+<div class="task-group">
+<h4>7. 清理废弃段落</h4>
+<div class="task-item"><div class="task-check"></div><div class="task-text"><strong>7.1</strong> 删除 Claude Code CLI / SuperPowers ×2 / Verify Project / Platform Linking</div></div>
+<div class="task-commit">→ refactor(setup-skill): remove deprecated tool sections</div>
+</div>
+
+<div class="task-group">
+<h4>8. 最终验证</h4>
+<div class="task-item"><div class="task-check"></div><div class="task-text"><strong>8.1</strong> <code>pnpm test</code> — 确认模板分发不受影响</div></div>
+</div>
+</section>
+
+<!-- ═══════════════════ 验收指引 ═══════════════════ -->
+<div class="acceptance">
+  <div class="acceptance-head">
+    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+    <h2>验收指引</h2>
+  </div>
+  <ol>
+    <li>审阅以上 6 个章节，确认需求、设计、规格和任务符合预期</li>
+    <li>重点确认：Agent 检测策略、OMC/OMX 配置步骤完整性、tooling-matrix 精简范围</li>
+    <li>如有修改意见，直接编辑对应 artifact 文件</li>
+    <li>验收通过后，开启新会话执行实现</li>
+  </ol>
+
+  <div class="next-cmd" onclick="navigator.clipboard.writeText('/opsx:apply refactor-setup-skill')">
+    <p>下一步命令（点击复制）：</p>
+    <code>/opsx:apply refactor-setup-skill</code>
+  </div>
+</div>
+
+</main>
+
+<footer class="page-footer">
+  由 OpenSpec superpowers-bridge 生成 · 2026-05-15
+</footer>
+
+<script>
+hljs.highlightAll();
+const isDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+mermaid.initialize({
+  startOnLoad: true,
+  theme: 'base',
+  themeVariables: isDark ? {
+    background: '#0f172a', primaryColor: 'rgba(99,102,241,0.25)',
+    primaryTextColor: '#f1f5f9', primaryBorderColor: '#818cf8',
+    secondaryColor: 'rgba(6,78,59,0.4)', secondaryTextColor: '#f1f5f9',
+    secondaryBorderColor: '#34d399', tertiaryColor: 'rgba(76,29,149,0.4)',
+    tertiaryTextColor: '#f1f5f9', tertiaryBorderColor: '#a78bfa',
+    lineColor: '#94a3b8', textColor: '#f1f5f9',
+    mainBkg: 'rgba(99,102,241,0.15)', nodeBorder: '#818cf8',
+    clusterBkg: 'rgba(30,41,59,0.6)', clusterBorder: '#475569',
+    edgeLabelBackground: '#1e293b', fontSize: '14px'
+  } : {
+    background: '#ffffff', primaryColor: '#eef2ff',
+    primaryTextColor: '#1e293b', primaryBorderColor: '#4f46e5',
+    secondaryColor: '#f0fdf4', secondaryTextColor: '#1e293b',
+    secondaryBorderColor: '#059669', tertiaryColor: '#faf5ff',
+    tertiaryTextColor: '#1e293b', tertiaryBorderColor: '#7c3aed',
+    lineColor: '#475569', textColor: '#1e293b',
+    mainBkg: '#eef2ff', nodeBorder: '#4f46e5',
+    clusterBkg: '#f8fafc', clusterBorder: '#e2e8f0',
+    edgeLabelBackground: '#ffffff', fontSize: '14px'
+  }
+});
+</script>
+</body>
+</html>

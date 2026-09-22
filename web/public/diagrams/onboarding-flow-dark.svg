@@ -1,0 +1,96 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 440" width="960" height="440" role="img" aria-labelledby="title desc"
+  data-generator="fireworks-tech-graph" data-schema-version="1" data-style-id="5"
+  data-visual-theme="Glassmorphism · Tokyo Night" data-diagram-type="flowchart" data-semantic-profile="generic"
+  data-semantic-valid="true" data-quality-profile="showcase" data-max-bends-per-edge="2"
+  data-max-route-stretch="1.35" data-max-bridged-crossings="0" data-min-node-gap="40"
+  data-min-container-gutter="20" data-min-label-clearance="4" data-min-segment-length="16">
+  <title id="title">DevKeel 项目接入流程</title>
+  <desc id="desc">安装并完成 doctor 自检后，依次运行 domain-init、用户 Review、verify-init 与用户确认，最终让项目具备规则、Skills 和可执行反馈。知识不准确时回到 domain-init 修正。</desc>
+  <style>
+    text { font-family: "Hiragino Sans GB", "PingFang SC", "Heiti SC", "Microsoft YaHei", "Helvetica Neue", Helvetica, Arial, sans-serif; }
+    .title { fill: #c8d1e6; font-size: 17px; font-weight: 700; }
+    .subtitle { fill: #7b89a8; font-size: 12px; }
+    .node-title { fill: #c8d1e6; font-size: 15px; font-weight: 700; }
+    .node-subtitle { fill: #7b89a8; font-size: 11px; }
+    .step { fill: #ffffff; font-size: 10px; font-weight: 700; }
+    .edge-label { fill: #7aa2f7; font-size: 11px; font-weight: 600; }
+    .feedback-label { fill: #f7768e; font-size: 11px; font-weight: 600; }
+    .legend { fill: #7b89a8; font-size: 11px; }
+  </style>
+  <defs>
+    <marker id="arrow-primary" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
+      <polygon points="0 0,10 3.5,0 7" fill="#7aa2f7"/>
+    </marker>
+    <marker id="arrow-feedback" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
+      <polygon points="0 0,10 3.5,0 7" fill="#f7768e"/>
+    </marker>
+  </defs>
+
+  <rect width="960" height="440" rx="18" fill="#0f1119" data-graph-role="background"/>
+  <text class="title" x="50" y="36">安装之后，只需要两次关键确认</text>
+  <text class="subtitle" x="50" y="58">Agent 负责扫描与执行；你只在知识准确性和验证基建写入前做决定。</text>
+
+  <path id="install-to-domain" data-graph-role="edge" data-edge-id="install-to-domain" data-source="install" data-target="domain-init" data-edge-kind="flow" data-flow="primary" data-bends="0" data-route-stretch="1"
+    d="M270 160H370" fill="none" stroke="#7aa2f7" stroke-width="2.25" stroke-linecap="round" marker-end="url(#arrow-primary)"/>
+  <path id="domain-to-review" data-graph-role="edge" data-edge-id="domain-to-review" data-source="domain-init" data-target="knowledge-review" data-edge-kind="flow" data-flow="primary" data-bends="0" data-route-stretch="1"
+    d="M590 160H690" fill="none" stroke="#7aa2f7" stroke-width="2.25" stroke-linecap="round" marker-end="url(#arrow-primary)"/>
+  <path id="review-to-verify" data-graph-role="edge" data-edge-id="review-to-verify" data-source="knowledge-review" data-target="verify-init" data-edge-kind="flow" data-flow="primary" data-bends="0" data-route-stretch="1"
+    d="M800 200V280" fill="none" stroke="#7aa2f7" stroke-width="2.25" stroke-linecap="round" marker-end="url(#arrow-primary)"/>
+  <path id="verify-to-confirm" data-graph-role="edge" data-edge-id="verify-to-confirm" data-source="verify-init" data-target="write-confirmation" data-edge-kind="flow" data-flow="primary" data-bends="0" data-route-stretch="1"
+    d="M690 320H590" fill="none" stroke="#7aa2f7" stroke-width="2.25" stroke-linecap="round" marker-end="url(#arrow-primary)"/>
+  <path id="confirm-to-ready" data-graph-role="edge" data-edge-id="confirm-to-ready" data-source="write-confirmation" data-target="agent-ready" data-edge-kind="flow" data-flow="primary" data-bends="0" data-route-stretch="1"
+    d="M370 320H270" fill="none" stroke="#7aa2f7" stroke-width="2.25" stroke-linecap="round" marker-end="url(#arrow-primary)"/>
+  <path id="review-feedback" data-graph-role="edge" data-edge-id="review-feedback" data-source="knowledge-review" data-target="domain-init" data-edge-kind="feedback" data-flow="feedback" data-bends="2" data-route-stretch="1.2"
+    d="M800 120V88H480V120" fill="none" stroke="#f7768e" stroke-width="1.75" stroke-dasharray="6 5" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#arrow-feedback)"/>
+
+  <text class="edge-label" x="320" y="148" text-anchor="middle" data-graph-role="label" data-owner="install-to-domain">生成入口</text>
+  <text class="edge-label" x="640" y="148" text-anchor="middle" data-graph-role="label" data-owner="domain-to-review">请你确认</text>
+  <text class="edge-label" x="814" y="244" data-graph-role="label" data-owner="review-to-verify">通过</text>
+  <text class="edge-label" x="640" y="308" text-anchor="middle" data-graph-role="label" data-owner="verify-to-confirm">提出方案</text>
+  <text class="edge-label" x="320" y="308" text-anchor="middle" data-graph-role="label" data-owner="confirm-to-ready">授权后写入</text>
+  <text class="feedback-label" x="640" y="80" text-anchor="middle" data-graph-role="label" data-owner="review-feedback">需要修正</text>
+
+  <g>
+    <rect id="install" data-node-id="install" x="50" y="120" width="220" height="80" rx="10" fill="#1b2642" stroke="#7aa2f7" stroke-width="1.5" data-graph-role="node" data-semantic-role="setup" data-graph-bounds="50,120,270,200"/>
+    <circle cx="78" cy="145" r="13" fill="#7aa2f7"/><text class="step" x="78" y="149" text-anchor="middle">01</text>
+    <text class="node-title" x="101" y="149">安装并自检</text>
+    <text class="node-subtitle" x="78" y="177">install.md → init → doctor</text>
+  </g>
+  <g>
+    <rect id="domain-init" data-node-id="domain-init" x="370" y="120" width="220" height="80" rx="10" fill="#172621" stroke="#9ece6a" stroke-width="1.5" data-graph-role="node" data-semantic-role="knowledge-generation" data-graph-bounds="370,120,590,200"/>
+    <circle cx="398" cy="145" r="13" fill="#9ece6a"/><text class="step" x="398" y="149" text-anchor="middle">02</text>
+    <text class="node-title" x="421" y="149">/domain-init</text>
+    <text class="node-subtitle" x="398" y="177">扫描代码，生成项目专属知识</text>
+  </g>
+  <g>
+    <rect id="knowledge-review" data-node-id="knowledge-review" x="690" y="120" width="220" height="80" rx="10" fill="#2a1e25" stroke="#e0af68" stroke-width="1.5" data-graph-role="node" data-semantic-role="user-gate" data-graph-bounds="690,120,910,200"/>
+    <circle cx="718" cy="145" r="13" fill="#e0af68"/><text class="step" x="718" y="149" text-anchor="middle">03</text>
+    <text class="node-title" x="741" y="149">用户 Review</text>
+    <text class="node-subtitle" x="718" y="177">确认规则、Skills 与作用域准确</text>
+  </g>
+  <g>
+    <rect id="verify-init" data-node-id="verify-init" x="690" y="280" width="220" height="80" rx="10" fill="#2a1e29" stroke="#bb9af7" stroke-width="1.5" data-graph-role="node" data-semantic-role="verification-design" data-graph-bounds="690,280,910,360"/>
+    <circle cx="718" cy="305" r="13" fill="#bb9af7"/><text class="step" x="718" y="309" text-anchor="middle">04</text>
+    <text class="node-title" x="741" y="309">/verify-init</text>
+    <text class="node-subtitle" x="718" y="337">识别测试缺口，设计反馈回路</text>
+  </g>
+  <g>
+    <rect id="write-confirmation" data-node-id="write-confirmation" x="370" y="280" width="220" height="80" rx="10" fill="#2a1e25" stroke="#e0af68" stroke-width="1.5" data-graph-role="node" data-semantic-role="authorization-gate" data-graph-bounds="370,280,590,360"/>
+    <circle cx="398" cy="305" r="13" fill="#e0af68"/><text class="step" x="398" y="309" text-anchor="middle">05</text>
+    <text class="node-title" x="421" y="309">用户确认</text>
+    <text class="node-subtitle" x="398" y="337">同意后补配置、脚本与示例</text>
+  </g>
+  <g>
+    <rect id="agent-ready" data-node-id="agent-ready" x="50" y="280" width="220" height="80" rx="10" fill="#172a28" stroke="#9ece6a" stroke-width="2" data-graph-role="node" data-semantic-role="outcome" data-graph-bounds="50,280,270,360"/>
+    <circle cx="78" cy="305" r="13" fill="#9ece6a"/><path d="M72 305L77 310L85 300" fill="none" stroke="#ffffff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
+    <text class="node-title" x="101" y="309">Agent-ready</text>
+    <text class="node-subtitle" x="78" y="337">规则 · Skills · 可执行反馈</text>
+  </g>
+
+  <g data-graph-role="legend" transform="translate(50 406)">
+    <line x1="0" y1="0" x2="30" y2="0" stroke="#7aa2f7" stroke-width="2.25" marker-end="url(#arrow-primary)"/>
+    <text class="legend" x="40" y="4">主流程</text>
+    <line x1="120" y1="0" x2="150" y2="0" stroke="#f7768e" stroke-width="1.75" stroke-dasharray="6 5" marker-end="url(#arrow-feedback)"/>
+    <text class="legend" x="160" y="4">Review 反馈</text>
+  </g>
+</svg>

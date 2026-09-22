@@ -1,0 +1,841 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Human Review — web-best-practices-revamp</title>
+  <!-- BEGIN:css -->
+  <link rel="stylesheet" href="../../../web/human-review.css">
+<!-- END:css -->
+  <link rel="stylesheet" href="https://cdn.jsdmirror.com/npm/@highlightjs/cdn-assets@11.11.1/styles/github.min.css">
+  <link rel="stylesheet" href="https://cdn.jsdmirror.com/npm/@highlightjs/cdn-assets@11.11.1/styles/github-dark.min.css" media="(prefers-color-scheme: dark)">
+  <script src="https://cdn.jsdmirror.com/npm/@highlightjs/cdn-assets@11.11.1/highlight.min.js"></script>
+  <script src="https://cdn.jsdmirror.com/npm/mermaid@11/dist/mermaid.min.js"></script>
+  <script src="https://cdn.jsdmirror.com/npm/marked/marked.min.js"></script>
+</head>
+<body>
+
+<header class="review-header">
+  <h1>web-best-practices-revamp</h1>
+  <p class="summary">重构最佳实践页面：删除冗余的"实践指南"章节，重写"Worktree + Setup"章节为 Paseo 工具推荐内容。</p>
+  <div class="progress-bar">
+    <div class="progress-fill" style="width: 100%"></div>
+  </div>
+  <span class="progress-label">规划完成 — 待验收</span>
+</header>
+
+<div class="dashboard">
+  <div class="architecture-diagram-container">
+    <svg viewBox="0 0 600 200" width="100%" preserveAspectRatio="xMidYMid meet" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+          <stop offset="0%" style="stop-color:#0f172a;stop-opacity:1"/>
+          <stop offset="100%" style="stop-color:#1e293b;stop-opacity:1"/>
+        </linearGradient>
+      </defs>
+      <rect width="600" height="200" fill="url(#bg)" rx="8"/>
+      <!-- File -->
+      <rect x="220" y="60" width="160" height="80" rx="6" fill="rgba(99,102,241,0.15)" stroke="#818cf8" stroke-width="1.5"/>
+      <text x="300" y="90" text-anchor="middle" fill="#f1f5f9" font-size="13" font-family="system-ui">web/best-practices.html</text>
+      <text x="300" y="115" text-anchor="middle" fill="#94a3b8" font-size="11" font-family="system-ui">单文件修改</text>
+      <!-- Delete -->
+      <rect x="30" y="75" width="140" height="50" rx="6" fill="rgba(239,68,68,0.15)" stroke="#f87171" stroke-width="1.5"/>
+      <text x="100" y="105" text-anchor="middle" fill="#fca5a5" font-size="11" font-family="system-ui">删除: 实践指南</text>
+      <!-- Add -->
+      <rect x="430" y="75" width="140" height="50" rx="6" fill="rgba(34,197,94,0.15)" stroke="#4ade80" stroke-width="1.5"/>
+      <text x="500" y="105" text-anchor="middle" fill="#86efac" font-size="11" font-family="system-ui">重写: Paseo 推荐</text>
+      <!-- Arrows -->
+      <line x1="170" y1="100" x2="218" y2="100" stroke="#f87171" stroke-width="1.5" marker-end="url(#arrowRed)"/>
+      <line x1="382" y1="100" x2="428" y2="100" stroke="#4ade80" stroke-width="1.5" marker-end="url(#arrowGreen)"/>
+      <defs>
+        <marker id="arrowRed" markerWidth="8" markerHeight="8" refX="8" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8" fill="#f87171"/></marker>
+        <marker id="arrowGreen" markerWidth="8" markerHeight="8" refX="8" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8" fill="#4ade80"/></marker>
+      </defs>
+    </svg>
+  </div>
+
+  <div class="dashboard-grid">
+    <div class="dashboard-card">
+      <h3>风险评估</h3>
+      <span class="risk-badge risk-low">低</span>
+      <p>纯静态 HTML 内容更新，单文件修改，无新依赖引入，无破坏性变更。</p>
+    </div>
+    <div class="dashboard-card">
+      <h3>任务概览</h3>
+      <p><strong>3 组 / 11 个任务</strong></p>
+      <ul>
+        <li>删除实践指南 section</li>
+        <li>重写 Worktree + Setup section</li>
+        <li>验证</li>
+      </ul>
+    </div>
+    <div class="dashboard-card">
+      <h3>影响范围</h3>
+      <ul>
+        <li><span class="file-modify">修改</span> web/best-practices.html</li>
+      </ul>
+    </div>
+    <div class="dashboard-card">
+      <h3>外部引用</h3>
+      <ul>
+        <li>paseo.sh/logo.svg（图片）</li>
+        <li>paseo.sh/docs（外链）</li>
+        <li>paseo.sh/docs/worktrees（外链）</li>
+      </ul>
+    </div>
+  </div>
+</div>
+
+<div class="section" id="s1">
+  <div class="section-head" onclick="toggleSection(this)">
+    <span class="section-num">01</span>
+    <h2>需求与设计</h2>
+    <svg class="collapse-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+  </div>
+  <div class="section-body">
+    <h3>TL;DR</h3>
+    <p>重构 best-practices.html：删除与 harness-cli 功能重复的"实践指南"，填充"Worktree + Setup"为 Paseo 工具推荐。</p>
+
+    <h3>目标用户</h3>
+    <table>
+      <thead><tr><th>角色</th><th>关注点</th></tr></thead>
+      <tbody>
+        <tr><td>已使用 harness-cli 的开发者</td><td>如何配合 worktree 高效并行工作</td></tr>
+        <tr><td>Agent 工具使用者</td><td>如何用 paseo 管理 worktree + setup 组合</td></tr>
+        <tr><td>移动端操作者</td><td>能否在手机上发起/审查 Agent 任务</td></tr>
+      </tbody>
+    </table>
+
+    <h3>方案选型（ATAM）</h3>
+    <table>
+      <thead><tr><th>质量属性</th><th>方案 A: 纯文字</th><th>方案 B: 图文混排</th><th>权重</th></tr></thead>
+      <tbody>
+        <tr><td>可维护性</td><td>高</td><td>高</td><td>0.3</td></tr>
+        <tr><td>视觉表现</td><td>中</td><td>高</td><td>0.4</td></tr>
+        <tr><td>外部依赖</td><td>无</td><td>引用 paseo.sh 图片</td><td>0.3</td></tr>
+      </tbody>
+    </table>
+    <p><strong>选定方案 B</strong>：图文混排更具说服力，外部图片挂了不影响文字内容。</p>
+
+    <h3>代码设计预览</h3>
+    <pre><code class="language-diff">-<!-- Best Practices -->
+-<section>
+-  <div class="container">
+-    <div class="tag">实践指南</div>
+-    ...4 pillar cards...
+-  </div>
+-</section>
+-
+ <!-- Worktree + Setup -->
+ <section class="section-alt" id="worktree">
+   <div class="container">
+     <div class="tag">Worktree + Setup</div>
+-    <h2 class="stitle">隔离环境工作模式</h2>
+-    <p class="sdesc">即将推出 — ...</p>
++    <h2 class="stitle">隔离环境 × 随时随地</h2>
++    <p class="sdesc">用 Paseo 管理 Agent 的隔离工作空间，从手机到桌面全覆盖。</p>
++    ...完整 Paseo 推荐内容...
+   </div>
+ </section></code></pre>
+  </div>
+</div>
+
+<div class="section" id="s2">
+  <div class="section-head" onclick="toggleSection(this)">
+    <span class="section-num">02</span>
+    <h2>实现任务</h2>
+    <svg class="collapse-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+  </div>
+  <div class="section-body">
+    <h3>1. 删除实践指南 section</h3>
+    <ul class="task-list">
+      <li><input type="checkbox" disabled> 删除 L111-L139（Best Practices section 整体）</li>
+      <li><input type="checkbox" disabled> 修改 Hero 描述："实战指南与场景速查" → "场景速查与工具推荐"</li>
+    </ul>
+
+    <h3>2. 重写 Worktree + Setup section</h3>
+    <ul class="task-list">
+      <li><input type="checkbox" disabled> 替换 L142-L149 占位内容</li>
+      <li><input type="checkbox" disabled> 添加 Paseo 简介段落</li>
+      <li><input type="checkbox" disabled> 添加支持的 Agent 列表（Claude Code、Codex、OpenCode、pi）</li>
+      <li><input type="checkbox" disabled> 添加 paseo.json 配置示例代码块</li>
+      <li><input type="checkbox" disabled> 添加工作流说明</li>
+      <li><input type="checkbox" disabled> 添加移动端能力介绍</li>
+      <li><input type="checkbox" disabled> 添加外链到 paseo.sh/docs</li>
+      <li><input type="checkbox" disabled> 引用 paseo.sh logo 作为视觉元素</li>
+    </ul>
+
+    <h3>3. 验证</h3>
+    <ul class="task-list">
+      <li><input type="checkbox" disabled> 浏览器打开确认渲染正常</li>
+      <li><input type="checkbox" disabled> 确认无 broken link</li>
+      <li><input type="checkbox" disabled> 确认外部图片可加载</li>
+    </ul>
+  </div>
+</div>
+
+<div class="artifact-viewer">
+  <div class="artifact-tabs">
+    <button class="artifact-tab active" data-tab="brainstorm" onclick="switchArtifactTab('brainstorm')">brainstorm</button>
+    <button class="artifact-tab" data-tab="explore" onclick="switchArtifactTab('explore')">explore</button>
+    <button class="artifact-tab" data-tab="design" onclick="switchArtifactTab('design')">design</button>
+    <button class="artifact-tab" data-tab="proposal" onclick="switchArtifactTab('proposal')">proposal</button>
+    <button class="artifact-tab" data-tab="tasks" onclick="switchArtifactTab('tasks')">tasks</button>
+  </div>
+  <div class="artifact-panel active" data-panel="brainstorm"></div>
+  <div class="artifact-panel" data-panel="explore"></div>
+  <div class="artifact-panel" data-panel="design"></div>
+  <div class="artifact-panel" data-panel="proposal"></div>
+  <div class="artifact-panel" data-panel="tasks"></div>
+</div>
+
+<!-- BEGIN:artifacts -->
+<script type="text/markdown" data-artifact="brainstorm">
+## TL;DR
+
+重构 `web/best-practices.html` 最佳实践页面：删除"实践指南"章节（harness-cli 本身已覆盖），充实"Worktree + Setup"章节为推荐 paseo.sh 工具的完整内容。
+
+## 需求背景
+
+当前 best-practices.html 包含三个章节：
+1. **场景速查**（保留） — 能力组合矩阵
+2. **实践指南**（删除） — 四条核心原则，但这些内容本质上是 harness-cli 初始化时自动做的事情，重复展示没有价值
+3. **Worktree + Setup**（重写） — 目前只是占位符（"即将推出"），需要填充 paseo.sh 工具推荐
+
+痛点：Worktree + Setup 是实际开发中非常高频的需求（隔离环境、多任务并行），但当前页面没有给出具体指引。
+
+## 目标用户与角色
+
+| 角色 | 关注点 |
+|------|--------|
+| 已使用 harness-cli 的开发者 | 想知道如何配合 worktree 高效并行工作 |
+| Agent 工具使用者（Claude Code/Codex/OpenCode/Pi） | 想了解如何用 paseo 管理 worktree + setup 组合 |
+| 移动端操作者 | 想知道能否在手机上发起/审查 Agent 任务 |
+
+## 核心功能用例
+
+### 1. 删除"实践指南"章节
+
+- 整个 `<section>` 包含四条原则的 pillar cards 全部移除
+- 理由：这些原则（先沉淀再执行、用 openspec 管理产出、领域包逐步沉淀、路由表保持简洁）是 harness-cli 本身的设计哲学，用户执行 `devkeel init` 后就自然遵循了，无需单独列为"最佳实践"
+
+### 2. 重写"Worktree + Setup"章节
+
+替换占位符为完整推荐内容，核心展示：
+
+- **paseo 是什么** — worktree-first 的 Agent 开发环境管理工具
+- **多 Agent 支持** — Claude Code、Codex、OpenCode、Pi
+- **worktree + setup 组合** — 一键创建隔离分支 + 自动初始化环境，链接到 https://paseo.sh/docs/worktrees
+- **移动端操作** — 专用 App，移动端可以发起任务、看 diff、审批
+- **更多功能** — 链接到 https://paseo.sh/docs 了解全貌
+
+### 3. 保留"场景速查"章节
+
+场景矩阵表格保持不变。
+
+## 需求边界
+
+**In Scope:**
+- 删除 "实践指南" section
+- 重写 "Worktree + Setup" section 为 paseo.sh 推荐内容
+- 保持与现有页面一致的设计风格（CSS、布局、card 组件）
+- 外链到 paseo.sh/docs 和 paseo.sh/docs/worktrees
+
+**Out of Scope:**
+- 不改动场景速查表格
+- 不改动 nav/footer
+- 不新增页面或子页面
+- 不修改 CSS 文件（复用现有样式）
+
+## 探索过的替代方向
+
+| 方向 | 取舍 |
+|------|------|
+| 保留"实践指南"但精简为 2 条 | 否决 — 这些内容属于 harness-cli 本身的 onboarding，放在 best-practices 页面是重复 |
+| 把 paseo 推荐做成独立页面 | 否决 — 目前内容量不大，放在 best-practices 的一个 section 即可 |
+| 在场景速查表中加 paseo 相关行 | 可选但不是本次重点 — 场景速查聚焦于 skill/命令层面 |
+
+## 待确认项
+
+- [ ] Worktree + Setup 章节的展示形式：用 pillar cards（类似被删除的实践指南）还是用图文介绍？
+- [ ] 是否需要展示 paseo CLI 的具体命令示例？
+- [ ] 移动端 App 是否有截图/mockup 可用于页面展示？
+
+---
+
+## 下一步
+
+在新会话中粘贴以下命令：
+
+/opsx:continue web-best-practices-revamp
+</script>
+
+<script type="text/markdown" data-artifact="explore">
+## TL;DR
+
+现状分析：`web/best-practices.html` 包含三个 section，其中"实践指南"待删除，"Worktree + Setup"为占位符待重写。Paseo 官网文档已提供完整的 worktree + setup 技术细节可供引用。
+
+## 现有文件结构
+
+### web/best-practices.html 当前结构
+
+```
+Nav
+Hero（标题 "最佳实践"，描述 "实战指南与场景速查"）
+Section 1: 场景速查（table，9 行场景矩阵）         ← 保留
+Section 2: 实践指南（4 个 pillar cards，2×2 grid）  ← 删除
+Section 3: Worktree + Setup（占位符 "即将推出"）    ← 重写
+Footer
+```
+
+### 页面使用的 CSS class 和布局模式
+
+- `.section-alt` — 交替背景色 section
+- `.container` — 内容容器
+- `.tag` — 章节标签（小字）
+- `.stitle` / `.sdesc` — 章节标题/描述
+- `.pillars` + `.pillar` — 卡片网格布局（当前用 `grid-template-columns:1fr 1fr`）
+- `<table>` — 场景矩阵表格
+- 外部样式在 `./assets/styles.css`
+
+### Hero 描述调整
+
+删除"实践指南"后，Hero 描述 "实战指南与场景速查" 可能需要调整为更贴合剩余内容的文案。
+
+## Paseo 官网调研结果
+
+### 核心定位
+
+Paseo 是 coding agent 的运行时管理平台，让你从任何设备（桌面、移动、Web、CLI）驱动本机上的 coding agent。
+
+### 支持的 Provider（Native）
+
+| Provider | 描述 |
+|----------|------|
+| Claude Code | Anthropic 的 coding agent，支持 MCP、streaming、deep reasoning |
+| Codex CLI | OpenAI 的 workspace agent，sandbox 控制 |
+| OpenCode | 开源 coding assistant，多 provider 支持 |
+| pi | 极简终端 coding agent，多 LLM provider |
+
+### ACP Catalog（扩展）
+
+fast-agent、Gemini CLI、GitHub Copilot、VT Code 等通过 ACP 协议接入。
+
+### Worktree + Setup 机制
+
+**核心概念**：每个 agent 运行在独立的 git worktree 中（独立目录、独立分支），并行 agent 互不干扰。
+
+**paseo.json 配置示例**：
+
+```json
+{
+  "worktree": {
+    "setup": "npm ci",
+    "teardown": "rm -rf .cache"
+  },
+  "scripts": {
+    "test": { "command": "npm test" },
+    "web": { "command": "npm run dev", "type": "service", "port": 3000 }
+  }
+}
+```
+
+**工作流**：
+1. 创建 worktree → 自动运行 setup hook
+2. 启动 agent → 创建/分配分支
+3. 审查 diff（支持移动端）
+4. 合并或归档（归档时运行 teardown）
+
+**Setup hook** 支持：
+- 安装依赖 (`npm ci`)
+- 复制环境配置 (`cp "$PASEO_SOURCE_CHECKOUT_PATH/.env" .env`)
+- 数据库迁移 (`npm run db:migrate`)
+
+**Services**：
+- 可声明长运行服务（dev server 等）
+- 自动分配端口 + 反向代理
+- 服务间通过环境变量互相发现
+
+**CLI 命令**：
+```bash
+paseo run --worktree feature-auth --base main "implement auth"
+paseo worktree ls
+paseo worktree archive feature-auth
+```
+
+### 移动端能力
+
+- 桌面 App 启动后扫描 QR code 连接手机
+- CLI 模式也支持打印 QR code 让移动端连接
+- 移动端可以：发起任务、审查 diff、操作 agent
+
+### 可用图片资源
+
+- 官网 OG image: `https://paseo.sh/og-image.png`
+- Logo SVG: `https://paseo.sh/logo.svg`
+- 需要从官网截取移动端界面截图（或使用产品 demo 图）
+
+## 对页面改动的影响分析
+
+| 改动 | 影响范围 | 风险 |
+|------|----------|------|
+| 删除实践指南 section | 仅删除 HTML 节点，无外部引用 | 低 |
+| 重写 Worktree + Setup section | 替换占位符内容 | 低 |
+| 引用外部图片（paseo.sh） | 依赖外部服务可用性 | 中低 — 图片无法加载时不影响文字内容 |
+| 不改动 CSS | 复用现有 class 即可 | 无 |
+
+## 技术约束
+
+- 页面为纯静态 HTML，无构建步骤
+- 样式复用 `./assets/styles.css`，不新增 CSS
+- 所有外链使用 `target="_blank" rel="noopener"`
+- 保持与其他页面一致的 nav/footer 结构
+
+---
+
+## 下一步
+
+在新会话中粘贴以下命令：
+
+/opsx:continue web-best-practices-revamp
+</script>
+
+<script type="text/markdown" data-artifact="design">
+## TL;DR
+
+纯前端静态 HTML 页面内容更新：删除一个 section，重写另一个 section。无架构变更、无后端、无数据模型。
+
+## 需求引用
+
+- 删除"实践指南"section（brainstorm.md 核心用例 #1）
+- 重写"Worktree + Setup"section 为 paseo.sh 推荐内容（核心用例 #2）
+
+## 方案设计
+
+### 架构概览
+
+无架构变更。操作对象为单个静态 HTML 文件 `web/best-practices.html`，复用现有 CSS。
+
+### ATAM 方案对比
+
+| 质量属性 | 方案 A: 纯文字+代码块 | 方案 B: 图文混排+cards | 权重 |
+|----------|----------------------|----------------------|------|
+| 可维护性 | 高（纯 HTML） | 高（纯 HTML） | 0.3 |
+| 视觉表现 | 中（信息密度高但单调） | 高（层次分明） | 0.4 |
+| 外部依赖 | 无 | 引用 paseo.sh 图片 | 0.3 |
+
+**选定方案：B（图文混排+cards）**
+
+理由：Worktree + Setup 是推荐工具的营销向内容，图文混排更具说服力。外部图片依赖风险可接受（图片挂了不影响文字）。
+
+### 关键时序
+
+不适用（纯静态页面，无运行时交互）。
+
+### 模块设计
+
+单文件修改，变更区域：
+
+1. **删除** L111-L139（实践指南 section）
+2. **重写** L142-L149（Worktree + Setup section）为完整内容
+
+新 section 内部结构：
+- 简介 + 支持的 Agent 列表（badge/tag 形式）
+- `paseo.json` 配置示例（代码块）
+- 移动端能力介绍 + 外链
+
+### 代码设计预览
+
+#### 变更前后对比
+
+```diff
+-<!-- Best Practices -->
+-<section>
+-  <div class="container">
+-    <div class="tag">实践指南</div>
+-    <h2 class="stitle">最佳实践</h2>
+-    ...4 pillar cards...
+-  </div>
+-</section>
+-
+ <!-- Worktree + Setup -->
+ <section class="section-alt" id="worktree">
+   <div class="container">
+     <div class="tag">Worktree + Setup</div>
+-    <h2 class="stitle">隔离环境工作模式</h2>
+-    <p class="sdesc">即将推出 — ...</p>
++    <h2 class="stitle">隔离环境 × 随时随地</h2>
++    <p class="sdesc">用 Paseo 管理 Agent 的隔离工作空间，从手机到桌面全覆盖。</p>
++    ...完整内容...
+   </div>
+ </section>
+```
+
+### 数据设计
+
+不适用。
+
+## 质量设计
+
+### SLO 指标
+
+本次不涉及 — 纯静态页面，无运行时指标。
+
+### 安全（STRIDE 简表）
+
+| 威胁类型 | 场景 | 缓解措施 |
+|----------|------|----------|
+| Tampering | 外部图片被替换 | 仅引用 paseo.sh 官方域名 |
+| Info Disclosure | 本次不涉及 | — |
+| 其他 | 本次不涉及 | — |
+
+### 旁路隔离
+
+本次不涉及 — 无旁路/观测组件。
+
+## 决策追溯
+
+| 决策 | 追溯需求点 |
+|------|-----------|
+| 删除实践指南 | brainstorm: harness-cli 本身已覆盖这些内容 |
+| 选择图文混排 | 用户确认：用 pillar cards + 图文，可从官网摘取图片 |
+| 展示 paseo.json 示例 | 用户确认：不需要 CLI 命令，展示 worktree+setup 配置 |
+
+## 风险与未决
+
+| 风险 | 缓解 |
+|------|------|
+| paseo.sh 图片 CDN 不可用 | 图片仅作视觉增强，alt text 保证可读性 |
+| 移动端截图素材来源 | 从官网 OG image 或产品页获取 |
+</script>
+
+<script type="text/markdown" data-artifact="proposal">
+## Why
+
+当前 `web/best-practices.html` 中"实践指南"章节与 harness-cli 本身功能重复，"Worktree + Setup"章节只是占位符。需要精简冗余内容并填充实际有价值的工具推荐。
+
+## What Changes
+
+1. 删除"实践指南"section（4 个 pillar cards）
+2. 重写"Worktree + Setup"section 为 Paseo 工具推荐
+3. 调整 Hero 描述文案
+
+## Capabilities
+
+### remove-practice-guide
+
+删除实践指南 section（L111-L139），调整 Hero 描述。
+
+### paseo-worktree-section
+
+重写 Worktree + Setup section，包含：
+- Paseo 简介与支持的 Agent 列表
+- paseo.json 配置示例（worktree + setup）
+- 移动端能力介绍
+- 外链到 paseo.sh/docs
+
+## Impact
+
+- 用户可见变更：页面内容更新
+- 无 API/数据变更
+- 无破坏性变更
+- 不影响其他页面
+</script>
+
+<script type="text/markdown" data-artifact="specs">
+# paseo-worktree-section
+
+## Summary
+
+重写 `web/best-practices.html` 的 "Worktree + Setup" section，从占位符变为 Paseo 工具推荐的完整内容。
+
+## Requirements
+
+1. **Paseo 简介** — 一句话说明是什么（coding agent 运行时管理平台）
+2. **支持的 Agent 列表** — Claude Code、Codex、OpenCode、pi，使用 badge/tag 形式展示
+3. **paseo.json 配置示例** — 展示 worktree + setup 组合用法：
+   ```json
+   {
+     "worktree": {
+       "setup": "npm ci\ncp \"$PASEO_SOURCE_CHECKOUT_PATH/.env\" .env",
+       "teardown": "rm -rf .cache"
+     },
+     "scripts": {
+       "test": { "command": "npm test" },
+       "web": { "command": "npm run dev", "type": "service", "port": 3000 }
+     }
+   }
+   ```
+4. **工作流说明** — 创建 worktree → setup 自动执行 → agent 开始工作 → 审查 diff → 合并/归档
+5. **移动端能力** — 从任何设备驱动 agent，移动端可看 diff、发起任务
+6. **外链** — 链接到 https://paseo.sh/docs 和 https://paseo.sh/docs/worktrees
+7. **视觉** — 可引用 paseo.sh 官网图片（logo、OG image），使用图文混排布局
+
+## Acceptance Criteria
+
+- Section 包含完整的 Paseo 介绍内容（非占位符）
+- 包含至少一个 paseo.json 代码示例
+- 列出 4 个支持的 agent（Claude Code、Codex、OpenCode、pi）
+- 包含指向 paseo.sh/docs 的外链
+- 复用现有 CSS class，不新增样式
+- HTML 结构有效，浏览器无渲染错误
+
+---
+
+# remove-practice-guide
+
+## Summary
+
+删除 `web/best-practices.html` 中的"实践指南"section 及相关内容。
+
+## Requirements
+
+1. 删除 L111-L139 的整个 `<section>` 节点（包含 tag "实践指南"、标题、描述、4 个 pillar cards）
+2. 调整 Hero section 描述从 "实战指南与场景速查" 改为更贴合剩余内容的文案（如 "场景速查与工具推荐"）
+
+## Acceptance Criteria
+
+- 页面不再包含"实践指南"文字
+- 页面不再包含"先沉淀，再执行"等 4 条原则内容
+- Hero 描述与页面实际内容匹配
+- HTML 结构有效，浏览器无渲染错误
+</script>
+
+<script type="text/markdown" data-artifact="tasks">
+## Tasks
+
+### 1. 删除实践指南 section
+
+- [ ] 删除 `web/best-practices.html` 中 L111-L139（`<!-- Best Practices -->` section 整体）
+- [ ] 修改 Hero section 描述：`"实战指南与场景速查"` → `"场景速查与工具推荐"`
+
+### 2. 重写 Worktree + Setup section
+
+- [ ] 替换 L142-L149 占位内容为完整 Paseo 推荐内容
+- [ ] 添加 Paseo 简介段落
+- [ ] 添加支持的 Agent 列表（Claude Code、Codex、OpenCode、pi）
+- [ ] 添加 `paseo.json` 配置示例代码块
+- [ ] 添加工作流说明（创建 → setup → agent → 审查 → 合并）
+- [ ] 添加移动端能力介绍
+- [ ] 添加外链到 https://paseo.sh/docs 和 https://paseo.sh/docs/worktrees
+- [ ] 引用 paseo.sh logo 或 OG image 作为视觉元素
+
+### 3. 验证
+
+- [ ] 浏览器打开页面确认渲染正常
+- [ ] 确认无 broken link
+- [ ] 确认外部图片可加载
+</script>
+<!-- END:artifacts -->
+
+<div class="acceptance">
+  <h2>验收指引</h2>
+  <ol>
+    <li>确认 Dashboard 是否清晰展示变更全貌</li>
+    <li>确认任务拆分粒度是否合理</li>
+    <li>确认 Paseo 推荐内容是否覆盖所有需求点</li>
+    <li>如有修改意见，编辑 change 目录下对应文件</li>
+  </ol>
+  <a class="next-cmd" onclick="navigator.clipboard.writeText('/opsx:apply web-best-practices-revamp')">
+    /opsx:apply web-best-practices-revamp
+  </a>
+</div>
+
+<footer class="review-footer">
+  <p>Generated by OpenSpec · superpowers-bridge schema · 2026-05-18</p>
+</footer>
+
+<!-- BEGIN:js -->
+<script>
+// human-review.js — 评审页面交互逻辑
+// 由 devkeel inject-review 注入
+
+// 折叠/展开
+function toggleSection(head) {
+  const section = head.parentElement;
+  section.classList.toggle('collapsed');
+  localStorage.setItem(section.id, section.classList.contains('collapsed'));
+}
+document.querySelectorAll('.section').forEach(function(s) {
+  if (localStorage.getItem(s.id) === 'true') s.classList.add('collapsed');
+});
+
+function buildArtifactViewer() {
+  var viewer = document.querySelector('.artifact-viewer');
+  if (!viewer) return;
+
+  var tabs = viewer.querySelector('.artifact-tabs');
+  if (!tabs) return;
+
+  var knownTabs = {};
+  viewer.querySelectorAll('.artifact-tab').forEach(function(tab) {
+    knownTabs[tab.dataset.tab] = true;
+  });
+
+  var knownPanels = {};
+  viewer.querySelectorAll('.artifact-panel').forEach(function(panel) {
+    knownPanels[panel.dataset.panel] = true;
+  });
+
+  document.querySelectorAll('script[data-artifact]').forEach(function(script) {
+    var name = script.dataset.artifact;
+    if (!name) return;
+
+    if (!knownTabs[name]) {
+      var tab = document.createElement('button');
+      tab.className = 'artifact-tab';
+      tab.dataset.tab = name;
+      tab.textContent = name;
+      tab.onclick = function() { switchArtifactTab(name); };
+      tabs.appendChild(tab);
+      knownTabs[name] = true;
+    }
+
+    if (!knownPanels[name]) {
+      var panel = document.createElement('div');
+      panel.className = 'artifact-panel';
+      panel.dataset.panel = name;
+      viewer.appendChild(panel);
+      knownPanels[name] = true;
+    }
+  });
+}
+
+// Artifact 标签页切换
+function switchArtifactTab(name) {
+  document.querySelectorAll('.artifact-tab').forEach(function(t) { t.classList.remove('active'); });
+  document.querySelectorAll('.artifact-panel').forEach(function(p) { p.classList.remove('active'); });
+  var tab = document.querySelector('[data-tab="' + name + '"]');
+  if (tab) tab.classList.add('active');
+  var panel = document.querySelector('[data-panel="' + name + '"]');
+  if (!panel) return;
+  panel.classList.add('active');
+  if (!panel.dataset.rendered) {
+    var script = document.querySelector('script[data-artifact="' + name + '"]');
+    if (script) {
+      var md = script.textContent;
+      panel.innerHTML = typeof marked !== 'undefined' ? marked.parse(md) : '<pre>' + md + '</pre>';
+      panel.dataset.rendered = 'true';
+      panel.querySelectorAll('pre code').forEach(function(b) { hljs.highlightElement(b); });
+    }
+  }
+}
+
+window.addEventListener('DOMContentLoaded', function() {
+  buildArtifactViewer();
+});
+
+// 代码高亮
+hljs.highlightAll();
+
+// Mermaid 初始化
+var isDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+mermaid.initialize({
+  startOnLoad: true,
+  theme: 'base',
+  themeVariables: isDark ? {
+    background: '#0f172a',
+    primaryColor: 'rgba(99,102,241,0.25)',
+    primaryTextColor: '#f1f5f9',
+    primaryBorderColor: '#818cf8',
+    secondaryColor: 'rgba(6,78,59,0.4)',
+    secondaryTextColor: '#f1f5f9',
+    secondaryBorderColor: '#34d399',
+    tertiaryColor: 'rgba(76,29,149,0.4)',
+    tertiaryTextColor: '#f1f5f9',
+    tertiaryBorderColor: '#a78bfa',
+    lineColor: '#94a3b8',
+    textColor: '#f1f5f9',
+    mainBkg: 'rgba(99,102,241,0.15)',
+    nodeBorder: '#818cf8',
+    clusterBkg: 'rgba(30,41,59,0.6)',
+    clusterBorder: '#475569',
+    edgeLabelBackground: '#1e293b',
+    fontSize: '14px'
+  } : {
+    background: '#ffffff',
+    primaryColor: '#eef2ff',
+    primaryTextColor: '#1e293b',
+    primaryBorderColor: '#4f46e5',
+    secondaryColor: '#f0fdf4',
+    secondaryTextColor: '#1e293b',
+    secondaryBorderColor: '#059669',
+    tertiaryColor: '#faf5ff',
+    tertiaryTextColor: '#1e293b',
+    tertiaryBorderColor: '#7c3aed',
+    lineColor: '#475569',
+    textColor: '#1e293b',
+    mainBkg: '#eef2ff',
+    nodeBorder: '#4f46e5',
+    clusterBkg: '#f8fafc',
+    clusterBorder: '#e2e8f0',
+    edgeLabelBackground: '#ffffff',
+    fontSize: '14px'
+  }
+});
+
+</script>
+<!-- END:js -->
+
+<script>
+hljs.highlightAll();
+const isDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+mermaid.initialize({
+  startOnLoad: true,
+  theme: 'base',
+  themeVariables: isDark ? {
+    background: '#0f172a',
+    primaryColor: 'rgba(99,102,241,0.25)',
+    primaryTextColor: '#f1f5f9',
+    primaryBorderColor: '#818cf8',
+    lineColor: '#94a3b8',
+    textColor: '#f1f5f9',
+    mainBkg: 'rgba(99,102,241,0.15)',
+    nodeBorder: '#818cf8',
+    clusterBkg: 'rgba(30,41,59,0.6)',
+    clusterBorder: '#475569',
+    fontSize: '14px'
+  } : {
+    background: '#ffffff',
+    primaryColor: '#eef2ff',
+    primaryTextColor: '#1e293b',
+    primaryBorderColor: '#4f46e5',
+    lineColor: '#475569',
+    textColor: '#1e293b',
+    mainBkg: '#eef2ff',
+    nodeBorder: '#4f46e5',
+    clusterBkg: '#f8fafc',
+    clusterBorder: '#e2e8f0',
+    fontSize: '14px'
+  }
+});
+
+function switchArtifactTab(name) {
+  document.querySelectorAll('.artifact-tab').forEach(t => t.classList.remove('active'));
+  document.querySelectorAll('.artifact-panel').forEach(p => p.classList.remove('active'));
+  document.querySelector(`[data-tab="${name}"]`).classList.add('active');
+  const panel = document.querySelector(`[data-panel="${name}"]`);
+  panel.classList.add('active');
+  if (!panel.dataset.rendered) {
+    const script = document.querySelector(`script[data-artifact="${name}"]`);
+    if (script) {
+      const md = script.textContent;
+      panel.innerHTML = typeof marked !== 'undefined' ? marked.parse(md) : '<pre>' + md + '</pre>';
+      panel.dataset.rendered = 'true';
+      panel.querySelectorAll('pre code').forEach(b => hljs.highlightElement(b));
+    }
+  }
+}
+
+function toggleSection(head) {
+  const section = head.parentElement;
+  section.classList.toggle('collapsed');
+  localStorage.setItem(section.id, section.classList.contains('collapsed'));
+}
+document.querySelectorAll('.section').forEach(s => {
+  if (localStorage.getItem(s.id) === 'true') s.classList.add('collapsed');
+});
+</script>
+
+</body>
+</html>

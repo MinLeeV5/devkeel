@@ -1,0 +1,65 @@
+{
+  "name": "devkeel",
+  "version": "0.12.0",
+  "description": "项目知识框架 CLI — 初始化 .harness/ 配置、AGENTS.md 执行契约与 openspec/ 知识结构",
+  "type": "module",
+  "bin": {
+    "devkeel": "./bin/devkeel.js"
+  },
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "files": [
+    "bin",
+    "dist",
+    "web/human-review.css",
+    "web/human-review.js"
+  ],
+  "scripts": {
+    "build": "tsup",
+    "dev": "tsup --watch",
+    "lint": "tsc --noEmit",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "prepublishOnly": "npm run build",
+    "release": "npm publish",
+    "release:beta": "npm version prerelease --no-git-tag-version --no-commit-hooks --preid beta && npm publish --tag beta",
+    "release:templates": "cd templates && npm run release",
+    "release:templates:beta": "cd templates && npm version prerelease --no-git-tag-version --no-commit-hooks --preid beta && npm run release:beta"
+  },
+  "dependencies": {
+    "@clack/prompts": "^0.9.1",
+    "@fission-ai/openspec": "1.12.0",
+    "commander": "^13.1.0",
+    "tar": "^7.5.16",
+    "yaml": "^2.7.1"
+  },
+  "devDependencies": {
+    "@types/node": "^22.15.0",
+    "tsup": "^8.4.0",
+    "typescript": "^5.8.0",
+    "vitest": "^3.1.0"
+  },
+  "engines": {
+    "node": ">=20.19.0"
+  },
+  "keywords": [
+    "harness",
+    "ai-agent",
+    "cli",
+    "orchestrator",
+    "skills"
+  ],
+  "publishConfig": {
+    "registry": "https://registry.npmjs.org/",
+    "access": "public"
+  },
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/MinLeeV5/devkeel.git"
+  },
+  "homepage": "https://github.com/MinLeeV5/devkeel#readme",
+  "bugs": {
+    "url": "https://github.com/MinLeeV5/devkeel/issues"
+  }
+}

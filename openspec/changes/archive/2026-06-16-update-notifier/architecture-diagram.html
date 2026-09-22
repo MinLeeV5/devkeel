@@ -1,0 +1,309 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>update-notifier 系统架构</title>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      background: #020617;
+      color: #e2e8f0;
+      font-family: 'JetBrains Mono', monospace;
+      padding: 40px 20px;
+      min-height: 100vh;
+    }
+    .container {
+      max-width: 1100px;
+      margin: 0 auto;
+    }
+    .header {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 32px;
+    }
+    .pulse-dot {
+      width: 10px;
+      height: 10px;
+      background: #22d3ee;
+      border-radius: 50%;
+      animation: pulse 2s infinite;
+    }
+    @keyframes pulse {
+      0%, 100% { opacity: 1; box-shadow: 0 0 0 0 rgba(34, 211, 238, 0.7); }
+      50% { opacity: 0.8; box-shadow: 0 0 0 6px rgba(34, 211, 238, 0); }
+    }
+    .header h1 {
+      font-size: 22px;
+      font-weight: 600;
+      color: #f1f5f9;
+    }
+    .header p {
+      font-size: 12px;
+      color: #94a3b8;
+      margin-left: auto;
+    }
+    .diagram-card {
+      background: #0f172a;
+      border: 1px solid #1e293b;
+      border-radius: 12px;
+      padding: 24px;
+      margin-bottom: 24px;
+    }
+    .cards-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 16px;
+    }
+    .card {
+      background: #0f172a;
+      border: 1px solid #1e293b;
+      border-radius: 8px;
+      padding: 20px;
+    }
+    .card-header {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 12px;
+    }
+    .card-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+    }
+    .card-header h3 {
+      font-size: 13px;
+      font-weight: 600;
+      color: #f1f5f9;
+    }
+    .card ul {
+      list-style: none;
+    }
+    .card li {
+      font-size: 11px;
+      color: #94a3b8;
+      padding: 4px 0;
+      line-height: 1.5;
+    }
+    .footer {
+      text-align: center;
+      font-size: 10px;
+      color: #64748b;
+      margin-top: 24px;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <div class="pulse-dot"></div>
+      <h1>update-notifier 系统架构</h1>
+      <p>devkeel · Container 级视图</p>
+    </div>
+
+    <div class="diagram-card">
+      <svg viewBox="0 0 1000 680" xmlns="http://www.w3.org/2000/svg">
+        <defs>
+          <pattern id="grid" width="40" height="40" patternUnits="userSpaceOnUse">
+            <path d="M 40 0 L 0 0 0 40" fill="none" stroke="#1e293b" stroke-width="0.5"/>
+          </pattern>
+          <marker id="arrow" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
+            <polygon points="0 0, 10 3.5, 0 7" fill="#64748b"/>
+          </marker>
+          <marker id="arrow-dash" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
+            <polygon points="0 0, 10 3.5, 0 7" fill="#fb923c"/>
+          </marker>
+        </defs>
+
+        <!-- Background grid -->
+        <rect width="1000" height="680" fill="url(#grid)" opacity="0.3"/>
+
+        <!-- Layer labels -->
+        <text x="15" y="60" fill="#475569" font-size="9" font-family="JetBrains Mono, monospace" font-weight="500">用户层</text>
+        <text x="15" y="185" fill="#475569" font-size="9" font-family="JetBrains Mono, monospace" font-weight="500">命令层</text>
+        <text x="15" y="320" fill="#475569" font-size="9" font-family="JetBrains Mono, monospace" font-weight="500">逻辑层</text>
+        <text x="15" y="500" fill="#475569" font-size="9" font-family="JetBrains Mono, monospace" font-weight="500">数据层</text>
+
+        <!-- Layer separators -->
+        <line x1="15" y1="130" x2="985" y2="130" stroke="#1e293b" stroke-width="1" stroke-dasharray="4,4" opacity="0.5"/>
+        <line x1="15" y1="260" x2="985" y2="260" stroke="#1e293b" stroke-width="1" stroke-dasharray="4,4" opacity="0.5"/>
+        <line x1="15" y1="445" x2="985" y2="445" stroke="#1e293b" stroke-width="1" stroke-dasharray="4,4" opacity="0.5"/>
+
+        <!-- ============ ARROWS (drawn first, behind components) ============ -->
+
+        <!-- A1: User → inject-review -->
+        <line x1="460" y1="110" x2="220" y2="180" stroke="#64748b" stroke-width="1.5" marker-end="url(#arrow)"/>
+
+        <!-- A2: User → doctor -->
+        <line x1="540" y1="110" x2="480" y2="180" stroke="#64748b" stroke-width="1.5" marker-end="url(#arrow)"/>
+
+        <!-- A3: inject-review → update-notifier -->
+        <line x1="220" y1="240" x2="170" y2="320" stroke="#64748b" stroke-width="1.5" marker-end="url(#arrow)"/>
+
+        <!-- A4: doctor → update-notifier -->
+        <line x1="480" y1="240" x2="250" y2="320" stroke="#64748b" stroke-width="1.5" marker-end="url(#arrow)"/>
+
+        <!-- A5: update-notifier → templates-cache -->
+        <line x1="340" y1="355" x2="420" y2="355" stroke="#64748b" stroke-width="1.5" marker-end="url(#arrow)"/>
+
+        <!-- A6: update-notifier → config.ts -->
+        <line x1="340" y1="395" x2="420" y2="395" stroke="#64748b" stroke-width="1.5" marker-end="url(#arrow)"/>
+
+        <!-- A7: templates-cache → npm registry (dashed = async) -->
+        <line x1="595" y1="395" x2="765" y2="505" stroke="#fb923c" stroke-width="1.5" stroke-dasharray="6,4" marker-end="url(#arrow-dash)"/>
+        <text x="690" y="445" fill="#fb923c" font-size="8" font-family="JetBrains Mono, monospace" text-anchor="middle">异步拉取</text>
+
+        <!-- A8: config.ts → versions.yml -->
+        <line x1="510" y1="425" x2="370" y2="505" stroke="#64748b" stroke-width="1.5" marker-end="url(#arrow)"/>
+
+        <!-- A9: update-notifier → cache.json -->
+        <line x1="205" y1="425" x2="165" y2="505" stroke="#64748b" stroke-width="1.5" marker-end="url(#arrow)"/>
+
+        <!-- A10: update-notifier → Browser (dashed) -->
+        <line x1="340" y1="360" x2="780" y2="195" stroke="#fb7185" stroke-width="1.5" stroke-dasharray="6,4"/>
+        <text x="570" y="270" fill="#fb7185" font-size="8" font-family="JetBrains Mono, monospace" text-anchor="middle">首次发现更新时打开</text>
+
+        <!-- ============ COMPONENTS ============ -->
+
+        <!-- C1: User box -->
+        <rect x="400" y="50" width="200" height="60" rx="6" fill="#0f172a"/>
+        <rect x="400" y="50" width="200" height="60" rx="6" fill="rgba(8, 51, 68, 0.4)" stroke="#22d3ee" stroke-width="1.5"/>
+        <text x="500" y="78" fill="white" font-size="12" font-weight="600" font-family="JetBrains Mono, monospace" text-anchor="middle">用户执行命令</text>
+        <text x="500" y="96" fill="#94a3b8" font-size="9" font-family="JetBrains Mono, monospace" text-anchor="middle">devkeel inject-review / doctor</text>
+
+        <!-- C2: inject-review.ts -->
+        <rect x="120" y="180" width="200" height="60" rx="6" fill="#0f172a"/>
+        <rect x="120" y="180" width="200" height="60" rx="6" fill="rgba(8, 51, 68, 0.4)" stroke="#22d3ee" stroke-width="1.5"/>
+        <text x="220" y="208" fill="white" font-size="11" font-weight="600" font-family="JetBrains Mono, monospace" text-anchor="middle">inject-review.ts</text>
+        <text x="220" y="226" fill="#94a3b8" font-size="9" font-family="JetBrains Mono, monospace" text-anchor="middle">HTML 注入命令</text>
+
+        <!-- C3: doctor.ts -->
+        <rect x="380" y="180" width="200" height="60" rx="6" fill="#0f172a"/>
+        <rect x="380" y="180" width="200" height="60" rx="6" fill="rgba(8, 51, 68, 0.4)" stroke="#22d3ee" stroke-width="1.5"/>
+        <text x="480" y="208" fill="white" font-size="11" font-weight="600" font-family="JetBrains Mono, monospace" text-anchor="middle">doctor.ts</text>
+        <text x="480" y="226" fill="#94a3b8" font-size="9" font-family="JetBrains Mono, monospace" text-anchor="middle">健康检查命令</text>
+
+        <!-- C4: update-notifier.ts -->
+        <rect x="70" y="320" width="270" height="105" rx="6" fill="#0f172a"/>
+        <rect x="70" y="320" width="270" height="105" rx="6" fill="rgba(6, 78, 59, 0.4)" stroke="#34d399" stroke-width="1.5"/>
+        <text x="205" y="348" fill="white" font-size="11" font-weight="600" font-family="JetBrains Mono, monospace" text-anchor="middle">update-notifier.ts</text>
+        <text x="205" y="368" fill="#94a3b8" font-size="9" font-family="JetBrains Mono, monospace" text-anchor="middle">更新检查与通知</text>
+        <text x="205" y="390" fill="#64748b" font-size="8" font-family="JetBrains Mono, monospace" text-anchor="middle">checkAndNotify() · 缓存管理</text>
+        <text x="205" y="406" fill="#64748b" font-size="8" font-family="JetBrains Mono, monospace" text-anchor="middle">浏览器打开 · 频率控制</text>
+
+        <!-- C5: templates-cache.ts -->
+        <rect x="420" y="320" width="240" height="70" rx="6" fill="#0f172a"/>
+        <rect x="420" y="320" width="240" height="70" rx="6" fill="rgba(6, 78, 59, 0.4)" stroke="#34d399" stroke-width="1.5"/>
+        <text x="540" y="348" fill="white" font-size="11" font-weight="600" font-family="JetBrains Mono, monospace" text-anchor="middle">templates-cache.ts</text>
+        <text x="540" y="368" fill="#94a3b8" font-size="9" font-family="JetBrains Mono, monospace" text-anchor="middle">模板缓存管理</text>
+
+        <!-- C6: config.ts -->
+        <rect x="420" y="370" width="240" height="55" rx="6" fill="#0f172a"/>
+        <rect x="420" y="370" width="240" height="55" rx="6" fill="rgba(6, 78, 59, 0.4)" stroke="#34d399" stroke-width="1.5"/>
+        <text x="540" y="393" fill="white" font-size="11" font-weight="600" font-family="JetBrains Mono, monospace" text-anchor="middle">config.ts</text>
+        <text x="540" y="411" fill="#94a3b8" font-size="9" font-family="JetBrains Mono, monospace" text-anchor="middle">版本读取与比对</text>
+
+        <!-- C7: update-check.json (cache) -->
+        <rect x="65" y="505" width="200" height="75" rx="6" fill="#0f172a"/>
+        <rect x="65" y="505" width="200" height="75" rx="6" fill="rgba(76, 29, 149, 0.4)" stroke="#a78bfa" stroke-width="1.5"/>
+        <text x="165" y="533" fill="white" font-size="10" font-weight="600" font-family="JetBrains Mono, monospace" text-anchor="middle">update-check.json</text>
+        <text x="165" y="553" fill="#94a3b8" font-size="8" font-family="JetBrains Mono, monospace" text-anchor="middle">~/.harness/cache/</text>
+        <text x="165" y="569" fill="#64748b" font-size="7" font-family="JetBrains Mono, monospace" text-anchor="middle">lastCheck · latestVersion</text>
+
+        <!-- C8: versions.yml -->
+        <rect x="300" y="505" width="200" height="75" rx="6" fill="#0f172a"/>
+        <rect x="300" y="505" width="200" height="75" rx="6" fill="rgba(76, 29, 149, 0.4)" stroke="#a78bfa" stroke-width="1.5"/>
+        <text x="400" y="533" fill="white" font-size="10" font-weight="600" font-family="JetBrains Mono, monospace" text-anchor="middle">versions.yml</text>
+        <text x="400" y="553" fill="#94a3b8" font-size="8" font-family="JetBrains Mono, monospace" text-anchor="middle">.harness/versions.yml</text>
+        <text x="400" y="569" fill="#64748b" font-size="7" font-family="JetBrains Mono, monospace" text-anchor="middle">当前项目版本记录</text>
+
+        <!-- C9: npm registry -->
+        <rect x="695" y="505" width="200" height="75" rx="6" fill="#0f172a"/>
+        <rect x="695" y="505" width="200" height="75" rx="6" fill="rgba(120, 53, 15, 0.3)" stroke="#fbbf24" stroke-width="1.5"/>
+        <text x="795" y="533" fill="white" font-size="10" font-weight="600" font-family="JetBrains Mono, monospace" text-anchor="middle">npm registry</text>
+        <text x="795" y="553" fill="#94a3b8" font-size="8" font-family="JetBrains Mono, monospace" text-anchor="middle">registry.npmjs.org</text>
+        <text x="795" y="569" fill="#64748b" font-size="7" font-family="JetBrains Mono, monospace" text-anchor="middle">devkeel-templates</text>
+
+        <!-- C10: Browser -->
+        <rect x="780" y="150" width="190" height="75" rx="6" fill="#0f172a"/>
+        <rect x="780" y="150" width="190" height="75" rx="6" fill="rgba(30, 41, 59, 0.5)" stroke="#94a3b8" stroke-width="1.5"/>
+        <text x="875" y="178" fill="white" font-size="10" font-weight="600" font-family="JetBrains Mono, monospace" text-anchor="middle">浏览器</text>
+        <text x="875" y="198" fill="#94a3b8" font-size="8" font-family="JetBrains Mono, monospace" text-anchor="middle">changelog.html</text>
+        <text x="875" y="214" fill="#64748b" font-size="7" font-family="JetBrains Mono, monospace" text-anchor="middle">?from=1.0.0</text>
+
+        <!-- ============ LEGEND ============ -->
+        <line x1="60" y1="625" x2="100" y2="625" stroke="#64748b" stroke-width="1.5" marker-end="url(#arrow)"/>
+        <text x="110" y="629" fill="#94a3b8" font-size="8" font-family="JetBrains Mono, monospace">同步调用</text>
+
+        <line x1="230" y1="625" x2="270" y2="625" stroke="#fb923c" stroke-width="1.5" stroke-dasharray="6,4" marker-end="url(#arrow-dash)"/>
+        <text x="280" y="629" fill="#94a3b8" font-size="8" font-family="JetBrains Mono, monospace">异步请求</text>
+
+        <line x1="400" y1="625" x2="440" y2="625" stroke="#fb7185" stroke-width="1.5" stroke-dasharray="6,4"/>
+        <text x="450" y="629" fill="#94a3b8" font-size="8" font-family="JetBrains Mono, monospace">浏览器打开</text>
+
+        <rect x="580" y="617" width="16" height="16" rx="3" fill="rgba(8, 51, 68, 0.4)" stroke="#22d3ee" stroke-width="1"/>
+        <text x="604" y="629" fill="#94a3b8" font-size="8" font-family="JetBrains Mono, monospace">命令层</text>
+
+        <rect x="670" y="617" width="16" height="16" rx="3" fill="rgba(6, 78, 59, 0.4)" stroke="#34d399" stroke-width="1"/>
+        <text x="694" y="629" fill="#94a3b8" font-size="8" font-family="JetBrains Mono, monospace">逻辑层</text>
+
+        <rect x="760" y="617" width="16" height="16" rx="3" fill="rgba(76, 29, 149, 0.4)" stroke="#a78bfa" stroke-width="1"/>
+        <text x="784" y="629" fill="#94a3b8" font-size="8" font-family="JetBrains Mono, monospace">数据层</text>
+
+        <rect x="850" y="617" width="16" height="16" rx="3" fill="rgba(120, 53, 15, 0.3)" stroke="#fbbf24" stroke-width="1"/>
+        <text x="874" y="629" fill="#94a3b8" font-size="8" font-family="JetBrains Mono, monospace">外部</text>
+
+        <!-- Version label -->
+        <text x="500" y="665" fill="#334155" font-size="7" font-family="JetBrains Mono, monospace" text-anchor="middle">C4 Container · update-notifier v1.0 · devkeel</text>
+      </svg>
+    </div>
+
+    <div class="cards-grid">
+      <div class="card">
+        <div class="card-header">
+          <div class="card-dot" style="background:#34d399"></div>
+          <h3>核心模块</h3>
+        </div>
+        <ul>
+          <li>• update-notifier.ts — 主入口 checkAndNotify()</li>
+          <li>• 缓存管理 — 24h TTL，JSON 持久化</li>
+          <li>• 版本比对 — 复用 config.ts 现有逻辑</li>
+          <li>• 浏览器打开 — 跨平台（open/xdg-open/start）</li>
+          <li>• 频率控制 — 每天最多打开一次</li>
+        </ul>
+      </div>
+      <div class="card">
+        <div class="card-header">
+          <div class="card-dot" style="background:#a78bfa"></div>
+          <h3>数据流</h3>
+        </div>
+        <ul>
+          <li>• 本地缓存优先（毫秒级比对）</li>
+          <li>• 过期时异步拉取 npm view（不阻塞）</li>
+          <li>• 首次发现更新 → CLI 提示 + 浏览器</li>
+          <li>• 后续提醒 → 仅 CLI 提示</li>
+          <li>• 异常静默降级，不影响主命令</li>
+        </ul>
+      </div>
+      <div class="card">
+        <div class="card-header">
+          <div class="card-dot" style="background:#fb7185"></div>
+          <h3>旁路隔离</h3>
+        </div>
+        <ul>
+          <li>• 整体 try/catch 包裹，异常静默吞掉</li>
+          <li>• 网络请求超时 3s，失败跳过</li>
+          <li>• 异步执行，不阻塞命令主流程</li>
+          <li>• 缓存读写失败 → 视为不存在</li>
+          <li>• 浏览器打开失败 → 仅 CLI 提示</li>
+        </ul>
+      </div>
+    </div>
+
+    <p class="footer">devkeel · update-notifier 架构设计 · C4 Container 级视图</p>
+  </div>
+</body>
+</html>

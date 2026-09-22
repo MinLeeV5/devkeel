@@ -1,0 +1,32 @@
+{
+  "versions": ["1.0.3"],
+  "releasedAt": { "from": "2026-06-17T01:22:00+08:00" },
+  "title": "apply 阶段 task 级测试隔离，命令引用统一",
+  "archived": false,
+  "groups": [
+    {
+      "type": "feat",
+      "label": "新能力",
+      "items": [
+        {
+          "name": "task 级 scoped testing",
+          "description": "apply 阶段每个 subagent 只执行当前 task 指定的测试命令，不再跑全量测试，全量测试延迟到代码审查阶段统一执行"
+        }
+      ]
+    },
+    {
+      "type": "refactor",
+      "label": "重构",
+      "items": [
+        {
+          "name": "命令引用统一",
+          "description": "所有 skill 和 schema 中的 openspec 命令改为 `npx devkeel@latest openspec`，配合 CLI v0.8.0 的代理机制"
+        },
+        {
+          "name": "/setup 精简",
+          "description": "移除 openspec 安装步骤，openspec 已作为 harness 依赖内置"
+        }
+      ]
+    }
+  ]
+}

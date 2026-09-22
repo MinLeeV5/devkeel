@@ -1,0 +1,2084 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>integrate-test-design-into-schema — Human Review</title>
+<!-- BEGIN:css -->
+<style>
+/* human-review.css — OpenAI-inspired review page */
+
+:root {
+  --bg: #ffffff;
+  --surface: #fafafa;
+  --surface-raised: #f5f5f5;
+  --text: #0d0d0d;
+  --text-secondary: #3c3c3c;
+  --text-muted: #6e6e6e;
+  --text-tertiary: #9b9b9b;
+  --accent: #10a37f;
+  --accent-hover: #0a7a5e;
+  --accent-light: #e8f5f0;
+  --accent-border: rgba(16, 163, 127, .15);
+  --accent-text: #0a7a5e;
+  --border: #e5e5e5;
+  --border-subtle: #f5f5f5;
+  --code-bg: #f9fafb;
+  --success: #10a37f;
+  --success-light: #e8f5f0;
+  --warning: #d97706;
+  --warning-light: #fffbeb;
+  --danger: #ef4146;
+  --danger-light: #fef2f2;
+  --shadow-xs: none;
+  --shadow-sm: none;
+  --shadow-md: 0 4px 16px rgba(13, 13, 13, .06);
+  --shadow-lg: 0 8px 24px rgba(13, 13, 13, .08);
+  --radius: 12px;
+  --radius-sm: 8px;
+  --radius-xs: 6px;
+  --font-sans: -apple-system, BlinkMacSystemFont, 'Inter', 'Segoe UI', 'Noto Sans SC', 'PingFang SC', sans-serif;
+  --font-mono: 'SF Mono', 'JetBrains Mono', ui-monospace, Menlo, Consolas, monospace;
+  --transition: 150ms cubic-bezier(.4, 0, .2, 1);
+}
+
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
+  --bg: #0d0d0d;
+  --surface: #1a1a1a;
+  --surface-raised: #262626;
+  --text: #f5f5f5;
+  --text-secondary: #c4c4c4;
+  --text-muted: #9b9b9b;
+  --text-tertiary: #6e6e6e;
+  --accent: #34d399;
+  --accent-hover: #10a37f;
+  --accent-light: rgba(16, 163, 127, .08);
+  --accent-border: rgba(52, 211, 153, .2);
+  --accent-text: #34d399;
+  --border: #2a2a2a;
+  --border-subtle: #1f1f1f;
+  --code-bg: #1a1a1a;
+  --success: #34d399;
+  --success-light: rgba(16, 163, 127, .1);
+  --warning: #fbbf24;
+  --warning-light: rgba(217, 119, 6, .08);
+  --danger: #f87171;
+  --danger-light: rgba(239, 65, 70, .08);
+  --shadow-xs: none;
+  --shadow-sm: none;
+  --shadow-md: none;
+  --shadow-lg: none;
+}}
+
+:root[data-theme="dark"] {
+  --bg: #0d0d0d;
+  --surface: #1a1a1a;
+  --surface-raised: #262626;
+  --text: #f5f5f5;
+  --text-secondary: #c4c4c4;
+  --text-muted: #9b9b9b;
+  --text-tertiary: #6e6e6e;
+  --accent: #34d399;
+  --accent-hover: #10a37f;
+  --accent-light: rgba(16, 163, 127, .08);
+  --accent-border: rgba(52, 211, 153, .2);
+  --accent-text: #34d399;
+  --border: #2a2a2a;
+  --border-subtle: #1f1f1f;
+  --code-bg: #1a1a1a;
+  --success: #34d399;
+  --success-light: rgba(16, 163, 127, .1);
+  --warning: #fbbf24;
+  --warning-light: rgba(217, 119, 6, .08);
+  --danger: #f87171;
+  --danger-light: rgba(239, 65, 70, .08);
+  --shadow-xs: none;
+  --shadow-sm: none;
+  --shadow-md: none;
+  --shadow-lg: none;
+}
+
+*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box }
+html { scroll-behavior: smooth }
+body {
+  font-family: var(--font-sans);
+  background: var(--bg);
+  color: var(--text);
+  line-height: 1.65;
+  font-size: 15px;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  max-width: 780px;
+  margin: 0 auto;
+  padding: 0 24px;
+}
+::selection { background: rgba(16, 163, 127, .12) }
+
+.wrapper { max-width: 780px; margin: 0 auto; padding: 0 24px }
+a { color: var(--accent); text-decoration: none; transition: color var(--transition) }
+a:hover { color: var(--accent-hover); text-decoration: underline; text-underline-offset: 2px }
+
+/* Scrollbar */
+::-webkit-scrollbar { width: 4px; height: 4px }
+::-webkit-scrollbar-track { background: transparent }
+::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px }
+::-webkit-scrollbar-thumb:hover { background: var(--text-muted) }
+
+/* ==================== Header ==================== */
+.page-header,
+.review-header {
+  padding: 64px 0 40px;
+  border-bottom: 1px solid var(--border);
+}
+
+.badge-review {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: .04em;
+  text-transform: uppercase;
+  padding: 4px 10px;
+  border-radius: 9999px;
+  background: var(--warning-light);
+  color: var(--warning);
+  border: 1px solid rgba(217, 119, 6, .12);
+  margin-bottom: 16px;
+}
+.badge-dot {
+  width: 6px; height: 6px;
+  border-radius: 50%;
+  background: var(--warning);
+  animation: pulse 2s ease-in-out infinite;
+}
+@keyframes pulse { 0%, 100% { opacity: 1 } 50% { opacity: .3 } }
+
+.page-header h1,
+.review-header h1 {
+  font-size: 28px;
+  font-weight: 600;
+  letter-spacing: -.02em;
+  line-height: 1.2;
+  margin-bottom: 10px;
+  color: var(--text);
+}
+
+.page-header .summary,
+.review-header .summary {
+  font-size: 15px;
+  color: var(--text-muted);
+  line-height: 1.65;
+  max-width: 560px;
+}
+.page-header .meta,
+.review-header .meta {
+  font-size: 13px;
+  color: var(--text-tertiary);
+  margin-top: 10px;
+}
+
+/* Progress bar */
+.progress-bar {
+  margin-top: 24px;
+  height: 3px;
+  border-radius: 2px;
+  overflow: hidden;
+  background: var(--border-subtle);
+}
+.progress-seg { flex: 1; border-radius: 2px; background: var(--border) }
+.progress-fill { height: 100%; background: var(--accent); border-radius: 2px; transition: width .4s ease }
+.progress-done { background: var(--success) }
+.progress-current { background: var(--accent) }
+.progress-label {
+  display: inline-block;
+  margin-top: 10px;
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--accent);
+  letter-spacing: .01em;
+}
+
+/* ==================== Dashboard ==================== */
+.dashboard {
+  margin: 32px 0;
+}
+.dashboard-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+.dash-card,
+.dashboard-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  padding: 20px;
+}
+.dash-card h3,
+.dashboard-card h3,
+.dash-card h4,
+.dashboard-card h4 {
+  font-size: 11px;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: .06em;
+  color: var(--text-tertiary);
+  margin-bottom: 10px;
+  border: none;
+  padding: 0;
+}
+.dashboard-card p {
+  font-size: 14px;
+  color: var(--text-secondary);
+  line-height: 1.6;
+}
+.dashboard-card ul {
+  list-style: none;
+  margin: 6px 0 0;
+  padding: 0;
+}
+.dashboard-card ul li {
+  font-size: 13px;
+  color: var(--text-secondary);
+  padding: 3px 0;
+  line-height: 1.5;
+}
+
+/* Risk badges */
+.risk-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 3px 10px;
+  border-radius: 9999px;
+  font-size: 12px;
+  font-weight: 500;
+}
+.risk-low { background: var(--success-light); color: var(--success) }
+.risk-mid { background: var(--warning-light); color: var(--warning) }
+.risk-high { background: var(--danger-light); color: var(--danger) }
+
+/* Tags */
+.tag {
+  display: inline-block;
+  padding: 3px 9px;
+  border-radius: 9999px;
+  font-size: 11px;
+  font-weight: 500;
+  background: var(--accent-light);
+  color: var(--accent);
+}
+.file-modify {
+  display: inline-block;
+  padding: 2px 8px;
+  border-radius: 4px;
+  font-size: 11px;
+  font-weight: 500;
+  font-family: var(--font-mono);
+  background: var(--warning-light);
+  color: var(--warning);
+}
+
+/* ==================== Sections ==================== */
+.section {
+  padding: 40px 0;
+  border-top: 1px solid var(--border);
+}
+.section-head {
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+  user-select: none;
+  margin-bottom: 24px;
+  padding: 4px 0;
+  transition: opacity var(--transition);
+}
+.section-head:hover { opacity: .6 }
+.section-num {
+  font-size: 13px;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+  color: var(--text-tertiary);
+  background: var(--surface);
+  border: 1px solid var(--border);
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: var(--radius-xs);
+  margin-right: 12px;
+  flex-shrink: 0;
+}
+.section-head h2 {
+  font-size: 20px;
+  font-weight: 600;
+  flex: 1;
+  letter-spacing: -.01em;
+  color: var(--text);
+}
+.collapse-icon {
+  width: 18px; height: 18px;
+  color: var(--text-tertiary);
+  transition: transform .2s ease;
+}
+.section.collapsed .section-body { display: none }
+.section.collapsed .collapse-icon { transform: rotate(-90deg) }
+
+h3 {
+  font-size: 15px;
+  font-weight: 600;
+  margin: 28px 0 10px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid var(--border-subtle);
+  color: var(--text);
+}
+h4 {
+  font-size: 14px;
+  font-weight: 600;
+  margin: 20px 0 6px;
+  color: var(--text);
+}
+
+/* ==================== Summary block ==================== */
+.summary-block {
+  background: var(--accent-light);
+  border: 1px solid var(--accent-border);
+  border-radius: var(--radius-sm);
+  padding: 16px 20px;
+  margin-bottom: 20px;
+  color: var(--accent-text);
+  font-size: 14px;
+  line-height: 1.7;
+}
+
+/* ==================== Tables ==================== */
+table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 12px 0 20px;
+  font-size: 13px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  overflow: hidden;
+}
+th {
+  text-align: left;
+  padding: 10px 14px;
+  font-size: 11px;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: .04em;
+  color: var(--text-tertiary);
+  background: var(--surface);
+  border-bottom: 1px solid var(--border);
+}
+td {
+  padding: 10px 14px;
+  border-bottom: 1px solid var(--border-subtle);
+  color: var(--text-secondary);
+  line-height: 1.5;
+}
+tr:last-child td { border-bottom: none }
+td strong { color: var(--text); font-weight: 600 }
+
+/* ==================== Code ==================== */
+code {
+  font-family: var(--font-mono);
+  font-size: .84em;
+  background: var(--surface);
+  padding: 2px 6px;
+  border-radius: 4px;
+  border: 1px solid var(--border);
+}
+pre {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  padding: 16px 20px;
+  overflow-x: auto;
+  margin: 12px 0;
+}
+pre code {
+  background: none;
+  padding: 0;
+  border: none;
+  font-size: 13px;
+  line-height: 1.7;
+}
+.diff-add { background: rgba(16, 163, 127, .06); border-left: 2px solid var(--success); padding-left: 8px }
+.diff-remove { background: rgba(239, 65, 70, .04); border-left: 2px solid var(--danger); padding-left: 8px }
+
+/* ==================== Task list ==================== */
+.task-group { margin: 20px 0 }
+.task-group h4 { font-weight: 600; border: none; padding: 0 }
+.task-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 6px 0;
+  font-size: 14px;
+  color: var(--text-secondary);
+}
+.task-list {
+  list-style: none;
+  margin: 10px 0;
+  padding: 0;
+}
+.task-list li {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 8px 12px;
+  margin: 2px 0;
+  font-size: 14px;
+  color: var(--text-secondary);
+  border-radius: var(--radius-xs);
+  transition: background var(--transition);
+  line-height: 1.5;
+}
+.task-list li:hover { background: var(--surface) }
+.task-list li input[type="checkbox"] {
+  width: 15px;
+  height: 15px;
+  margin-top: 3px;
+  flex-shrink: 0;
+  accent-color: var(--accent);
+  border-radius: 3px;
+}
+.task-cb {
+  width: 16px; height: 16px;
+  border: 1.5px solid var(--border);
+  border-radius: 4px;
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+.task-cb.done { background: var(--success); border-color: var(--success) }
+.task-commit { font-size: 12px; color: var(--accent); margin-top: 4px; font-family: var(--font-mono) }
+
+/* ==================== Mermaid & Architecture ==================== */
+.mermaid-container {
+  padding: 20px;
+  border-radius: var(--radius);
+  margin: 16px 0;
+  overflow-x: auto;
+  border: 1px solid var(--border);
+  background: var(--surface);
+}
+
+.architecture-diagram-container {
+  background: #0d0d0d;
+  border-radius: var(--radius);
+  padding: 20px;
+  border: 1px solid var(--border);
+  overflow-x: auto;
+  margin-bottom: 20px;
+}
+
+/* ==================== Artifact Viewer ==================== */
+.artifact-viewer {
+  margin: 40px 0;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  overflow: hidden;
+  background: var(--bg);
+}
+.artifact-tabs {
+  display: flex;
+  overflow-x: auto;
+  background: var(--surface);
+  border-bottom: 1px solid var(--border);
+  padding: 0;
+  gap: 0;
+}
+.artifact-tab {
+  padding: 12px 20px;
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--text-muted);
+  cursor: pointer;
+  border: none;
+  background: none;
+  white-space: nowrap;
+  border-bottom: 2px solid transparent;
+  margin-bottom: -1px;
+  transition: color var(--transition), border-color var(--transition);
+}
+.artifact-tab:hover { color: var(--text-secondary) }
+.artifact-tab.active {
+  color: var(--accent);
+  border-bottom-color: var(--accent);
+  font-weight: 600;
+}
+.artifact-panel {
+  display: none;
+  padding: 28px 32px;
+  max-height: 520px;
+  overflow-y: auto;
+  font-size: 14px;
+  line-height: 1.8;
+}
+.artifact-panel.active { display: block }
+.artifact-panel h1, .artifact-panel h2, .artifact-panel h3 { margin-top: 24px; margin-bottom: 8px }
+.artifact-panel h2 { font-size: 16px; font-weight: 600; border-bottom: 1px solid var(--border-subtle); padding-bottom: 8px }
+.artifact-panel h2:first-child { margin-top: 0 }
+.artifact-panel h3 { font-size: 14px; font-weight: 600; border: none; padding: 0 }
+.artifact-panel ul, .artifact-panel ol { margin: 6px 0 12px 20px }
+.artifact-panel li { font-size: 14px; margin: 4px 0 }
+.artifact-panel table { font-size: 13px }
+.artifact-panel p { margin: 6px 0 }
+.artifact-panel::-webkit-scrollbar { width: 4px }
+.artifact-panel::-webkit-scrollbar-track { background: transparent }
+.artifact-panel::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px }
+
+/* ==================== Acceptance ==================== */
+.acceptance {
+  border-top: 1px solid var(--border);
+  padding-top: 40px;
+  margin-top: 40px;
+}
+.acceptance h2 {
+  font-size: 18px;
+  font-weight: 600;
+  letter-spacing: -.01em;
+  margin-bottom: 16px;
+}
+.acceptance ol {
+  margin: 12px 0 24px 20px;
+  color: var(--text-secondary);
+  font-size: 14px;
+}
+.acceptance ol li { margin: 6px 0 }
+.next-cmd {
+  display: block;
+  padding: 12px 20px;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--border);
+  font-family: var(--font-mono);
+  font-size: 14px;
+  color: var(--accent);
+  cursor: pointer;
+  transition: all var(--transition);
+  margin: 16px 0;
+  text-align: center;
+  background: var(--surface);
+}
+.next-cmd:hover {
+  background: var(--accent-light);
+  border-color: var(--accent);
+  text-decoration: none;
+}
+
+/* ==================== Footer ==================== */
+.page-footer,
+.review-footer {
+  text-align: center;
+  padding: 40px 0 24px;
+  font-size: 13px;
+  color: var(--text-tertiary);
+  border-top: 1px solid var(--border);
+  margin-top: 32px;
+}
+
+/* ==================== Lists ==================== */
+ul, ol { margin: 6px 0 12px 20px; color: var(--text-secondary) }
+li { margin: 4px 0; font-size: 14px; line-height: 1.65 }
+li strong { color: var(--text) }
+
+/* ==================== Responsive ==================== */
+
+/* Tablet landscape / small laptop (≤1024px) */
+@media (max-width: 1024px) {
+  .wrapper { max-width: 680px }
+}
+
+/* Tablet portrait (≤768px) */
+@media (max-width: 768px) {
+  .wrapper { padding: 0 20px }
+  .page-header, .review-header { padding: 48px 0 32px }
+  .page-header h1, .review-header h1 { font-size: 24px }
+  .section { padding: 32px 0 }
+  .section-head h2 { font-size: 18px }
+  .section-head { margin-bottom: 20px }
+  .dashboard-grid { grid-template-columns: 1fr }
+  .artifact-viewer { margin: 28px 0 }
+  .artifact-panel { padding: 20px; max-height: 400px }
+  .artifact-tab { padding: 10px 16px; font-size: 12px }
+  .acceptance { padding-top: 32px; margin-top: 32px }
+  .acceptance h2 { font-size: 16px }
+  h3 { font-size: 14px; margin: 20px 0 8px }
+  table { font-size: 12px }
+  th, td { padding: 8px 10px }
+  pre { padding: 12px 14px }
+  pre code { font-size: 12px }
+  .summary-block { padding: 12px 16px; font-size: 13px }
+  .mermaid-container { padding: 14px }
+  .architecture-diagram-container { padding: 14px }
+}
+
+/* Mobile standard (≤480px) */
+@media (max-width: 480px) {
+  body { font-size: 14px }
+  .wrapper { padding: 0 16px }
+  .page-header, .review-header { padding: 32px 0 24px }
+  .page-header h1, .review-header h1 { font-size: 20px; letter-spacing: -.01em }
+  .page-header .summary, .review-header .summary { font-size: 14px }
+  .section { padding: 24px 0 }
+  .section-head h2 { font-size: 16px }
+  .section-num { width: 28px; height: 28px; font-size: 12px; margin-right: 10px }
+  .dashboard { margin: 24px 0 }
+  .dash-card, .dashboard-card { padding: 16px }
+  .dashboard-card h3, .dashboard-card h4, .dash-card h3, .dash-card h4 { font-size: 10px }
+  .artifact-viewer { border-radius: var(--radius-sm) }
+  .artifact-tabs { gap: 0 }
+  .artifact-tab { padding: 10px 12px; font-size: 11px }
+  .artifact-panel { padding: 16px; max-height: 360px; font-size: 13px }
+  .artifact-panel h2 { font-size: 15px }
+  .artifact-panel h3 { font-size: 13px }
+  .task-list li { padding: 6px 8px; font-size: 13px }
+  .task-item { font-size: 13px }
+  .next-cmd { font-size: 13px; padding: 10px 16px }
+  .acceptance ol { font-size: 13px }
+  .page-footer, .review-footer { padding: 28px 0 20px; font-size: 12px }
+  .progress-label { font-size: 11px }
+  .badge-review { font-size: 10px; padding: 3px 8px }
+
+  /* Table horizontal scroll on narrow screens */
+  table { display: block; overflow-x: auto; white-space: nowrap }
+  thead { display: table; width: 100% }
+  tbody { display: table; width: 100% }
+
+  /* Code blocks */
+  pre { margin: 8px -16px; border-radius: 0; padding: 12px 16px; border-left: none; border-right: none }
+}
+
+/* Mobile compact (≤360px) */
+@media (max-width: 360px) {
+  .wrapper { padding: 0 12px }
+  .page-header, .review-header { padding: 24px 0 20px }
+  .page-header h1, .review-header h1 { font-size: 18px }
+  .section-head h2 { font-size: 15px }
+  .artifact-tab { padding: 8px 10px; font-size: 10px }
+  .artifact-panel { padding: 12px; max-height: 320px }
+  pre { margin: 8px -12px; padding: 10px 12px }
+}
+
+/* ==================== Print ==================== */
+@media print {
+  body { background: #fff; color: #000 }
+  .page-header, .review-header { border: none }
+  .badge-review { display: none }
+  .artifact-viewer { display: none }
+  .architecture-diagram-container { background: #fff !important }
+}
+
+/* ==================== Theme toggle ==================== */
+.theme-toggle {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  z-index: 100;
+  width: 36px;
+  height: 36px;
+  border: 1px solid var(--border);
+  border-radius: 50%;
+  background: var(--surface);
+  color: var(--text-muted);
+  font-size: 16px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background var(--transition), border-color var(--transition);
+  line-height: 1;
+}
+.theme-toggle:hover {
+  background: var(--surface-raised);
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
+/* ==================== Verification tags ==================== */
+.verify-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 2px 8px;
+  border-radius: 9999px;
+  font-size: 11px;
+  font-weight: 500;
+}
+.verify-tag-human { background: var(--warning-light); color: var(--warning) }
+.verify-tag-auto { background: var(--success-light); color: var(--success) }
+
+/* ==================== Pending items ==================== */
+.pending-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 10px 14px;
+  margin: 4px 0;
+  border-radius: var(--radius-xs);
+  border-left: 3px solid var(--warning);
+  background: var(--warning-light);
+  font-size: 14px;
+  color: var(--text-secondary);
+}
+.pending-item input[type="checkbox"] {
+  width: 15px;
+  height: 15px;
+  margin-top: 2px;
+  flex-shrink: 0;
+  accent-color: var(--accent);
+}
+
+/* ==================== Upgrade banner ==================== */
+.upgrade-banner {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 16px;
+  margin-bottom: 16px;
+  border-radius: var(--radius-sm);
+  font-size: 13px;
+  background: var(--warning-light);
+  color: var(--warning);
+  border: 1px solid rgba(217, 119, 6, .12);
+}
+.upgrade-banner code {
+  background: rgba(217, 119, 6, .06);
+  padding: 2px 8px;
+  border-radius: 4px;
+  font-size: 12px;
+  font-family: var(--font-mono);
+  border: none;
+}
+
+</style>
+<!-- END:css -->
+</head>
+<body>
+<div class="page-header">
+<div class="wrapper">
+<h1>集成测试设计到 Schema 流程</h1>
+<p class="summary">在 superpowers-bridge schema 中集成测试用例设计能力：design 并行产出测试点，apply 落地测试用例，verify 输出测试报告。合并两个 skill 为统一的 test-case-designer 2.0.0。</p>
+<div class="progress-bar"><div class="progress-fill" style="width:100%"></div></div>
+<p class="progress-text">规划完成 — 7 个实现任务待执行</p>
+</div>
+</div>
+
+<div class="wrapper">
+
+<!-- Dashboard -->
+<div class="dashboard">
+<div class="architecture-diagram-container">
+<pre class="mermaid">
+flowchart LR
+    subgraph design["design 阶段"]
+        TD["technical-design\n(主会话)"]
+        SA["test-case-designer\n(subagent, fast)"]
+        TP["test-points.md"]
+    end
+    subgraph hr["human-review"]
+        HTML["human-review.html"]
+        CARD["覆盖率卡片"]
+    end
+    subgraph apply["apply 阶段"]
+        R["ralph"]
+        TC["test-cases.md"]
+        TDD["TDD 代码测试"]
+    end
+    subgraph verify["verify 阶段"]
+        V8["§8 测试报告"]
+    end
+
+    TD -.->|并行| SA
+    SA --> TP
+    TP --> HTML
+    HTML --> CARD
+    TP --> R
+    R --> TC
+    R --> TDD
+    TC --> V8
+    TDD --> V8
+
+    style SA fill:#dcfce7,stroke:#059669
+    style TP fill:#dcfce7,stroke:#059669
+    style CARD fill:#dcfce7,stroke:#059669
+    style TC fill:#dcfce7,stroke:#059669
+    style V8 fill:#dcfce7,stroke:#059669
+</pre>
+</div>
+
+<div class="dashboard-grid">
+<div class="card">
+<h3>风险评估</h3>
+<p><strong>低风险</strong> — 所有变更为非破坏性追加（schema instruction 追加段落、模板新增章节、JS 新增函数）。唯一破坏性变更是 skill 版本升级（1.0→2.0），但保持产出格式兼容。</p>
+</div>
+<div class="card">
+<h3>任务概览</h3>
+<ul>
+<li>7 个任务，7 个 commit</li>
+<li>核心：Task 1（skill 重写）最重</li>
+<li>其余为模板/配置追加</li>
+</ul>
+</div>
+<div class="card">
+<h3>影响范围</h3>
+<ul>
+<li><strong>新增</strong>: test-points.md、test-cases.md 产出流程</li>
+<li><strong>修改</strong>: schema.yaml、verify.md、human-review.md/js</li>
+<li><strong>删除</strong>: generate-test-cases skill</li>
+</ul>
+</div>
+<div class="card">
+<h3>新增依赖</h3>
+<p>无新增外部依赖。所有变更均为 markdown 模板和少量 vanilla JS。</p>
+</div>
+</div>
+</div>
+
+<!-- 01 需求与设计 -->
+<div class="section" id="s1">
+<div class="section-head" onclick="toggleSection(this)">
+<span class="section-num">01</span>
+<h2>需求与设计</h2>
+<svg class="collapse-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+</div>
+<div class="section-body">
+<h3>需求摘要</h3>
+<ul>
+<li><strong>UC1</strong>: design 阶段 subagent 并行产出 test-points.md</li>
+<li><strong>UC2</strong>: human-review 渲染测试覆盖卡片</li>
+<li><strong>UC3</strong>: apply 阶段 tasks.md 两阶段编排（Phase 1 测试用例 → Phase 2 TDD 引用 TC）</li>
+<li><strong>UC4</strong>: verify 新增 §8 测试报告</li>
+<li><strong>UC5</strong>: 合并 skill 为 test-case-designer 2.0.0（dual-mode + platform）</li>
+<li><strong>UC6</strong>: TDD RED 步骤从 test-cases.md 提取断言</li>
+</ul>
+
+<h3>设计方案</h3>
+<p>五个模块化改造点（M1-M5），每个独立可验证：</p>
+<table>
+<tr><th>模块</th><th>变更</th><th>验证</th></tr>
+<tr><td>M1: design instruction</td><td>追加 subagent 调用段落</td><td>跑一次 design 观察 test-points.md 产出</td></tr>
+<tr><td>M2: skill 重写</td><td>test-case-designer 2.0.0</td><td>调用 fast/full 模式验证产出格式</td></tr>
+<tr><td>M2.5: tasks instruction</td><td>两阶段编排约束</td><td>检查生成的 tasks.md 结构</td></tr>
+<tr><td>M3: verify §8</td><td>新增测试报告章节</td><td>模板结构审查</td></tr>
+<tr><td>M4: human-review 模板</td><td>新增测试覆盖区域</td><td>浏览器打开 HTML 检查卡片</td></tr>
+<tr><td>M5: human-review.js</td><td>buildTestCoverageCard()</td><td>含 test-points.md 的页面检查渲染</td></tr>
+</table>
+
+<h3>代码设计预览</h3>
+<pre><code class="language-javascript">// web/human-review.js — 新增函数
+function buildTestCoverageCard() {
+  var el = document.querySelector('[data-artifact="test-points"]');
+  if (!el) return;
+  var md = el.textContent;
+  var tpCount = (md.match(/^####\s+TP-/gm) || []).length;
+  var covered = (md.match(/已覆盖/g) || []).length;
+  var uncovered = (md.match(/未覆盖/g) || []).length;
+  var pending = (md.match(/待确认/g) || []).length;
+  var card = document.querySelector('[data-card="test-coverage"]');
+  if (!card) return;
+  card.innerHTML = '...'; // 渲染 TP 统计
+}</code></pre>
+</div>
+</div>
+
+<!-- 02 实现任务 -->
+<div class="section" id="s2">
+<div class="section-head" onclick="toggleSection(this)">
+<span class="section-num">02</span>
+<h2>实现任务</h2>
+<svg class="collapse-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+</div>
+<div class="section-body">
+<ol>
+<li><strong>Task 1</strong>: 重写 test-case-designer skill → 2.0.0（合并双模式 + platform + Agent 接口）</li>
+<li><strong>Task 2</strong>: schema design instruction 追加 subagent 调用</li>
+<li><strong>Task 3</strong>: schema tasks instruction 两阶段编排约束</li>
+<li><strong>Task 4</strong>: verify.md 模板新增 §8 测试报告</li>
+<li><strong>Task 5</strong>: human-review 模板新增测试覆盖区域</li>
+<li><strong>Task 6</strong>: human-review.js 新增 buildTestCoverageCard()</li>
+<li><strong>Task 7</strong>: 版本号与同步</li>
+</ol>
+</div>
+</div>
+
+<!-- 03 待确认项 -->
+<div class="section" id="s3">
+<div class="section-head" onclick="toggleSection(this)">
+<span class="section-num">03</span>
+<h2>待确认项</h2>
+<svg class="collapse-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+</div>
+<div class="section-body">
+<p>无待确认项 — 所有设计决策已在头脑风暴中确认。</p>
+</div>
+</div>
+
+<!-- 04 Artifact 原文 -->
+<div class="section collapsed" id="s-artifacts">
+<div class="section-head" onclick="toggleSection(this)">
+<span class="section-num">04</span>
+<h2>Artifact 原文</h2>
+<svg class="collapse-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+</div>
+<div class="section-body">
+<div class="artifact-viewer">
+<div class="artifact-tabs">
+</div>
+</div>
+</div>
+</div>
+
+<!-- 验收指引 -->
+<div class="acceptance">
+<h2>验收指引</h2>
+
+<h3>🧑 人工验证</h3>
+<ol>
+<li><span class="verify-tag verify-tag-human">🧑 人工</span> 调用 test-case-designer fast 模式，确认产出包含 platform 标签和 TP 追溯</li>
+<li><span class="verify-tag verify-tag-human">🧑 人工</span> 调用 test-case-designer full 模式，确认三阶段门禁生效</li>
+<li><span class="verify-tag verify-tag-human">🧑 人工</span> 打开含 test-points.md 的 human-review.html，确认覆盖率卡片渲染正确</li>
+</ol>
+
+<h3>🤖 自动验证（verify 阶段处理）</h3>
+<ol>
+<li><span class="verify-tag verify-tag-auto">🤖 自动</span> <code>openspec validate --all</code> 全部通过</li>
+<li><span class="verify-tag verify-tag-auto">🤖 自动</span> <code>pnpm lint</code> 通过</li>
+<li><span class="verify-tag verify-tag-auto">🤖 自动</span> <code>pnpm test</code> 通过</li>
+<li><span class="verify-tag verify-tag-auto">🤖 自动</span> generate-test-cases 目录已删除</li>
+</ol>
+
+<a class="next-cmd" onclick="var el=this;var t=el.dataset.cmd||(el.dataset.cmd=el.textContent.trim());navigator.clipboard.writeText(t).then(function(){el.textContent='✓ 已复制';setTimeout(function(){el.textContent=t},1500)})">
+/opsx:apply integrate-test-design-into-schema
+</a>
+</div>
+
+</div>
+<!-- BEGIN:artifacts -->
+<script type="text/markdown" data-artifact="brainstorm">
+## TL;DR
+
+将测试用例设计能力集成到 superpowers-bridge schema 流程中：design 阶段并行产出测试点，apply 阶段落地完整测试用例，verify 阶段输出测试报告。同时合并 `test-case-designer` 和 `generate-test-cases` 两个 skill 为一个统一 skill。
+
+## 需求背景
+
+当前 superpowers-bridge schema 的 design 阶段只有技术方案设计（technical-design），缺乏测试设计维度。apply 阶段虽然强制 TDD，但 TDD 产出的是代码级自动化测试，缺少业务级测试用例的系统设计。verify 阶段只验证实现一致性，不输出测试覆盖报告。
+
+同时项目中存在两个测试用例设计相关的 skill：
+- `test-case-designer`：三阶段门禁、黑盒+白盒联合分析、TP 追溯体系
+- `generate-test-cases`：一次性产出、platform 参数、OpenSpec spec 直接映射
+
+两者定位重叠但各有优势，需要合并为统一 skill 并集成到 schema 流程。
+
+## 目标用户与角色
+
+| 角色 | 关注点 |
+|------|--------|
+| 方案评审人 | 在 human-review 中快速判断测试覆盖是否完整 |
+| 开发者 | apply 阶段通过 TDD 引用测试点作为需求输入 |
+| QA 工程师 | 独立调用 skill 进行完整测试设计（三阶段门禁） |
+| schema 维护者 | 理解测试设计如何嵌入各环节 |
+
+## 核心功能用例
+
+### UC1: design 阶段并行产出测试点
+
+- 触发：brainstorm.md 完成后
+- 行为：起 subagent 并行执行 test-case-designer（快速模式），产出 `test-points.md`
+- 与 technical-design 并行，不阻塞 design 主流程
+- explore.md 的发现后续补充到测试点中
+
+### UC2: human-review 呈现测试覆盖
+
+- 触发：human-review artifact 生成时
+- 行为：inject-review 自动注入 `test-points.md` 为标签页；JS 解析渲染覆盖率卡片
+- 评审人在同一页面审阅方案和测试点
+
+### UC3: apply 阶段落地完整测试用例
+
+- 触发：tasks.md 中包含"落地测试用例"任务
+- 行为：ralph 调度执行，基于 test-points.md + specs 产出 `test-cases.md`
+- 不额外开 subagent，作为 tasks.md 的普通任务由 ralph 调度
+
+### UC4: verify 阶段输出测试报告
+
+- 触发：verify artifact 生成时
+- 行为：新增 §8 测试报告章节（TP 覆盖率、自动化测试通过率、覆盖缺口）
+
+### UC5: 合并两个 skill 为统一 test-case-designer
+
+- 双模式：`full`（三阶段门禁）/ `fast`（一次性产出）
+- platform 参数：`frontend` / `backend` / `all`
+- 统一追溯体系：TP 编号 + TC 编号 + `[spec]` 溯源
+- 支持 Agent 模式（subagent 调用）和人工模式（交互式门禁）
+
+### UC6: TDD 与测试点的映射
+
+- 测试点中 `自动化候选=是` 的项，在 apply 阶段作为 TDD test case 的需求输入
+- verify 阶段报告 TP 到自动化测试的覆盖映射
+
+## 需求边界
+
+**In Scope:**
+
+- schema design artifact 的 instruction 修改（增加 subagent 调用测试设计）
+- schema verify artifact 的模板修改（增加 §8 测试报告）
+- human-review 模板修改（增加测试覆盖卡片）
+- `web/human-review.js` 增加 test-points.md 解析逻辑
+- `test-case-designer` skill 重写（合并两者能力）
+- `generate-test-cases` skill 废弃（能力合并入 test-case-designer）
+- 产出路径：`openspec/changes/<name>/test-points.md` 和 `test-cases.md`
+- 归档策略：随 change 归档到 `openspec/archive/<name>/`
+
+**Out of Scope:**
+
+- human-review.css 视觉改动（复用现有卡片样式）
+- openspec CLI 代码修改（利用现有 inject-review 机制）
+- 测试平台集成（导入 Jira/TestRail 等）
+- test-points.md 同步到 specs 目录（归档即可）
+
+## 探索过的替代方向
+
+| 方向 | 取舍 |
+|------|------|
+| design 阶段走完整三阶段门禁 | 弃 — 会严重阻塞流程，human-review 已吸收评审职责 |
+| 将 skill 改写为独立 agent | 弃 — skill 天然共享主会话上下文，agent 需要重复传递材料 |
+| apply 阶段额外开 subagent 并行产出测试用例 | 弃 — ralph 本身就是编排器，作为普通任务即可 |
+| 测试点输出到 docs/test/ | 弃 — AGENTS.md 规定知识产出到 openspec/，且需随 change 归档 |
+| 保留两个独立 skill | 弃 — 定位重叠，维护成本高，用户选择困难 |
+
+## 待确认项
+
+无 — 所有设计决策已在头脑风暴中确认。
+</script>
+
+<script type="text/markdown" data-artifact="explore">
+## 调查范围
+
+基于 brainstorm.md 确认的需求，聚焦以下区域：
+
+1. `templates/openspec/schemas/superpowers-bridge/` — schema 定义和 artifact 模板
+2. `templates/skills/test-case-designer/` — 待重写的 skill
+3. `templates/skills/generate-test-cases/` — 待合并废弃的 skill
+4. `web/human-review.js` — 需增加测试覆盖卡片解析
+5. `templates/openspec/schemas/superpowers-bridge/templates/verify.md` — 需增加 §8
+
+## 现有架构
+
+### schema artifact 流水线
+
+```
+brainstorm → explore → design → proposal → specs → tasks → human-review → verify → retrospective
+                                                              ↑
+                                                        apply (parallel)
+```
+
+- `design` artifact 的 instruction 调用 `technical-design` skill，输出到 `design.md`
+- `human-review` artifact 生成 HTML，然后调用 `inject-review` 注入 CSS/JS/artifacts
+- `verify` artifact 模板有 7 个检查章节（§1-§7），§7 是延迟验证覆盖缺口
+
+### inject-review 机制
+
+`inject-review` 自动扫描 change 目录下所有 `.md` 文件，注入为 `<\script type="text/markdown" data-artifact="name">`。这意味着：
+- 只要 `test-points.md` 存在于 change 目录，它会自动出现在 Artifact 查看器标签页
+- 无需修改 inject-review 代码
+
+### human-review.js 现有能力
+
+- `buildArtifactViewer()` — 自动发现并渲染注入的 markdown artifacts
+- `toggleSection()` — 折叠/展开
+- `switchArtifactTab()` — 标签页切换，lazy render markdown via `marked.parse()`
+- 无任何"解析 markdown 内容提取统计数据"的逻辑
+
+### test-case-designer skill 结构
+
+```
+templates/skills/test-case-designer/
+└── SKILL.md          # 主 skill 定义（三阶段门禁、TP 追溯体系）
+
+.harness/skills/test-case-designer/
+├── SKILL.md          # 已部署版本（内容同上）
+├── agents/
+│   └── openai.yaml   # Agent 接口定义
+└── references/
+    ├── output-contract.md   # 产出格式契约
+    └── source-analysis.md   # 输入源分析规则
+```
+
+### generate-test-cases skill 结构
+
+```
+templates/skills/generate-test-cases/
+└── SKILL.md          # 单文件 skill（无 references）
+```
+
+## 关键代码路径
+
+### schema design instruction 调用链
+
+`schema.yaml` artifacts[3] (design) → instruction 字段：
+1. 前置检查 `technical-design` skill 可用性
+2. 调用 Skill 工具 `technical-design`
+3. 输出写入 `design.md`
+
+**插入点**：在 design instruction 中增加 subagent 调用 test-case-designer 的逻辑。需要在 `technical-design` 调用之后（或并行）追加测试点产出步骤。
+
+### human-review 模板 → HTML 生成
+
+`human-review.md` 模板定义了输出结构：
+- Dashboard（SVG + 卡片网格）
+- §01 需求与设计
+- §02 实现任务
+- §03 待确认项
+- §04 Artifact 原文（默认折叠）
+
+**插入点**：在 §02 和 §03 之间新增 `§02.5 测试覆盖` 区域（或调整编号）。
+
+### verify 模板检查流程
+
+`verify.md` 模板包含 §1-§7 + Overall Decision。
+
+**插入点**：在 §7（延迟验证覆盖缺口）之后、Overall Decision 之前新增 §8。
+
+### inject-review 注入流程
+
+```
+npx devkeel@latest inject-review <html-path>
+  → 扫描同目录 *.md → 注入为 <\script data-artifact>
+  → 注入 web/human-review.css → 替换 CSS 占位符
+  → 注入 web/human-review.js → 替换 JS 占位符
+```
+
+`test-points.md` 和 `test-cases.md`（若 apply 后存在）会自动被注入，无需额外代码。
+
+## 测试覆盖
+
+### 现有测试
+
+```
+tests/
+├── config.test.ts
+├── detect.test.ts
+├── gitignore.test.ts
+├── migrate.test.ts
+├── submodule.test.ts
+└── templates.test.ts
+```
+
+- 无 schema 相关测试（schema 是纯 YAML 配置 + markdown 模板，非代码）
+- 无 web/ 目录的测试（JS 直接在浏览器运行）
+- skill 是 markdown 文档，无自动化测试
+
+### 本次变更需要验证的路径
+
+| 变更 | 验证方式 |
+|------|---------|
+| schema.yaml version 改为整数 | `openspec validate --all` |
+| design instruction 增加测试设计 | 手动跑一次 `/opsx:continue` 观察行为 |
+| verify.md 新增 §8 | 模板结构审查 |
+| human-review.md 新增测试覆盖区域 | 生成 HTML 后浏览器打开检查 |
+| human-review.js 新增解析逻辑 | 浏览器打开含 test-points.md 的 review 页面 |
+| test-case-designer skill 重写 | 调用 skill 验证产出格式 |
+
+## 风险与约束
+
+| 风险 | 严重程度 | 缓解 |
+|------|---------|------|
+| design instruction 过长导致 LLM 遗漏步骤 | 中 | 将测试设计作为独立段落，明确"并行/可选"语义 |
+| subagent 产出的 test-points.md 质量不稳定 | 中 | human-review 门禁 + 模板约束 |
+| human-review.js 解析 test-points.md 的正则不鲁棒 | 低 | 只解析 TP 编号计数和覆盖状态表格，不做复杂解析 |
+| generate-test-cases 废弃后已有用户受影响 | 低 | 在 SKILL.md 头部声明 deprecated + 指向新 skill |
+| versions-yml.yml 版本同步 | 低 | 按 skill-versioning 规范同步 |
+
+---
+
+## 下一步
+
+/opsx:continue integrate-test-design-into-schema
+</script>
+
+<script type="text/markdown" data-artifact="design">
+## TL;DR
+
+在 superpowers-bridge schema 中集成测试设计能力：design 阶段 subagent 并行产出 test-points.md，human-review 渲染覆盖率卡片，apply 阶段落地完整测试用例，verify 新增 §8 测试报告。同时将 test-case-designer 和 generate-test-cases 合并为一个双模式 skill。
+
+首版交付清单：
+1. schema.yaml design instruction 增加 subagent 调用
+2. verify.md 模板增加 §8
+3. human-review.md 模板增加测试覆盖区域
+4. human-review.js 增加 test-points 解析
+5. test-case-designer SKILL.md 重写（合并双模式）
+6. generate-test-cases 标记 deprecated
+
+## 方案设计
+
+### 架构概览
+
+```mermaid
+flowchart LR
+    subgraph "design 阶段"
+        TD[technical-design<br/>主会话] -->|并行| TCD[test-case-designer<br/>subagent]
+        TCD --> TP[test-points.md]
+    end
+    
+    subgraph "human-review 阶段"
+        TP --> IR[inject-review]
+        IR --> HTML[human-review.html]
+        JS[human-review.js] -->|解析 TP| CARD[覆盖率卡片]
+    end
+    
+    subgraph "apply 阶段"
+        TP --> RALPH[ralph 任务]
+        RALPH --> TC[test-cases.md]
+        RALPH --> TDD[TDD 代码测试]
+    end
+    
+    subgraph "verify 阶段"
+        TC --> V8[§8 测试报告]
+        TDD --> V8
+    end
+```
+
+### 模块设计
+
+#### M1: schema design instruction 改造
+
+在现有 design instruction 末尾追加一段 subagent 调用逻辑：
+
+```markdown
+## 测试设计（并行）
+
+在 technical-design 完成或启动后，起 subagent 并行产出测试点：
+
+1. 确认 `test-case-designer` skill 可用
+2. 以快速模式（--mode fast）调用，输入：brainstorm.md + explore.md
+3. 产出写入本 change 的 `test-points.md`
+4. 若 explore.md 后续有更新，追加补充到 test-points.md
+
+subagent 不阻塞 design 主流程。若 skill 不可用，跳过并在
+human-review 中标注"测试点未产出"。
+```
+
+#### M2: test-case-designer skill 重写
+
+```yaml
+---
+name: test-case-designer
+description: 测试用例设计师 — 支持完整模式（三阶段门禁）和快速模式（一次性产出）
+metadata:
+  author: "devkeel"
+  version: "2.0.0"
+triggers: ["测试设计", "测试用例", "test case", "test design"]
+---
+```
+
+核心结构：
+
+| 章节 | 内容 |
+|------|------|
+| 参数 | `mode`（full/fast）、`platform`（frontend/backend/all） |
+| 共享层 | 输入源分析、覆盖模型、追溯体系 |
+| Mode A: full | 三阶段门禁（原 test-case-designer 流程） |
+| Mode B: fast | 一次性产出（原 generate-test-cases 流程） |
+| Agent 接口 | subagent 调用时默认 fast 模式 |
+| references/ | output-contract.md、source-analysis.md（保留并扩展） |
+
+**合并策略**：
+
+| 能力来源 | 归入位置 |
+|---------|---------|
+| test-case-designer 三阶段门禁 | Mode A |
+| test-case-designer 黑盒+白盒联合 | 共享层 Hard Rules |
+| test-case-designer TP 追溯体系 | 共享层 |
+| test-case-designer 四视角检查 | 共享层覆盖模型 |
+| generate-test-cases platform 参数 | 共享层参数 |
+| generate-test-cases OpenSpec spec 映射 | 共享层输入源 |
+| generate-test-cases 操作步骤/预期结果规范 | 共享层（Mode B 默认，Mode A 的 03 阶段也采用） |
+| generate-test-cases 隐性场景识别 | 共享层覆盖模型 |
+| generate-test-cases 自检 checklist | Mode B 自动执行 |
+
+**产出路径**：
+
+| 调用场景 | 产出路径 |
+|---------|---------|
+| schema 流程内 | `openspec/changes/<name>/test-points.md`、`test-cases.md` |
+| 独立调用（full 模式） | `docs/test/<module>/` （保持向后兼容） |
+
+#### M2.5: tasks 阶段的两阶段编排约束
+
+apply 阶段的 tasks.md 必须按 Phase 分组，确保 test-cases.md 先于功能实现产出：
+
+```markdown
+## Phase 1: 测试用例落地
+
+- [ ] 基于 test-points.md 和 specs 产出 test-cases.md
+  - 读取所有 TP 编号
+  - 按 platform 参数展开完整测试用例
+  - 标记每条 TC 的 `自动化候选` 字段
+
+## Phase 2: 功能实现（依赖 Phase 1）
+
+- [ ] 实现 feature-X
+  - RED: 从 test-cases.md 中 TC-001~TC-003（自动化候选=是）提取断言
+  - GREEN: 最小实现
+  - REFACTOR: 清理
+```
+
+编排规则（写入 schema tasks instruction）：
+1. Phase 1 必须在 Phase 2 之前全部完成
+2. Phase 2 每个任务的 RED 步骤必须引用具体 TC 编号
+3. ralph 不得并行执行跨 Phase 的任务
+
+这样 TDD 的断言来源从"开发者凭理解写"变为"从 test-cases.md 的 TC 中提取"，形成 TP → TC → 自动化测试 → verify §8 的完整闭环。
+
+#### M3: verify.md §8 测试报告
+
+```markdown
+## 8. 测试报告
+
+- [ ] test-points.md 中所有 TP 均有对应实现验证（自动化测试或手动确认）
+
+**TP 覆盖映射**：
+
+| TP 编号 | 自动化测试 | 覆盖状态 |
+|---------|-----------|---------|
+| TP-xxx  | test-file:test-name | ✅ 通过 / ❌ 失败 / ⏭ 手动 |
+
+**测试执行摘要**：
+
+| 指标 | 值 |
+|------|---|
+| 自动化测试通过率 | X/Y (Z%) |
+| TP 覆盖率 | A/B (C%) |
+| 覆盖缺口 | 列出未覆盖 TP |
+
+**缺口分析**（若有）：
+未覆盖的 TP 是否阻塞归档？是否有等价的手动验证？
+```
+
+#### M4: human-review.md 模板改造
+
+在输出结构表中，§01 和 §02 之间插入测试覆盖区域：
+
+| 区域 | 编号 | 来源 | 内容 |
+|------|------|------|------|
+| 需求与设计 | 01 | brainstorm.md + design.md | 需求摘要 + 设计方案 |
+| **测试覆盖** | **02** | **test-points.md** | **覆盖率卡片 + 测试点摘要** |
+| 实现任务 | 03 | tasks.md | 任务 checkbox |
+| 待确认项 | 04 | brainstorm.md + design.md | TBD 汇总 |
+| Artifact 原文 | 05 | — | 标签页查看器 |
+
+#### M5: human-review.js 增加解析逻辑
+
+新增函数 `buildTestCoverageCard()`：
+
+```javascript
+function buildTestCoverageCard() {
+  var script = document.querySelector('script[data-artifact="test-points"]');
+  if (!script) return;
+  var md = script.textContent;
+  
+  // 统计 TP 编号数量
+  var tpCount = (md.match(/^####\s+TP-/gm) || []).length;
+  
+  // 统计覆盖状态
+  var covered = (md.match(/已覆盖/g) || []).length;
+  var uncovered = (md.match(/未覆盖/g) || []).length;
+  var pending = (md.match(/待确认/g) || []).length;
+  
+  // 渲染到 Dashboard 卡片
+  var card = document.querySelector('[data-card="test-coverage"]');
+  if (!card) return;
+  card.innerHTML = '<h3>测试覆盖</h3>'
+    + '<p><strong>' + tpCount + '</strong> 测试点</p>'
+    + '<p>已覆盖: ' + covered + ' | 未覆盖: ' + uncovered + ' | 待确认: ' + pending + '</p>';
+}
+```
+
+在 `DOMContentLoaded` 回调中调用。
+
+### 关键时序
+
+```mermaid
+sequenceDiagram
+    participant U as 用户
+    participant M as 主会话
+    participant TD as technical-design
+    participant SA as subagent(test-case-designer)
+    
+    U->>M: /opsx:continue (design)
+    M->>TD: 调用 technical-design skill
+    M->>SA: 并行：起 subagent (fast mode)
+    SA-->>M: 产出 test-points.md
+    TD-->>M: 产出 design.md
+    M->>M: design artifact 完成
+    M-->>U: 展示结果，提示下一步
+```
+
+## 风险与未决
+
+| 风险 | 缓解 |
+|------|------|
+| subagent 可能在 technical-design 完成前未结束 | design instruction 注明"不阻塞"，test-points.md 可后续补充 |
+| 快速模式产出质量不如完整模式 | human-review 门禁兜底；快速模式仍执行自检 checklist |
+| human-review.js 正则解析 TP 格式变化 | 只匹配 `#### TP-` 前缀，格式稳定 |
+
+---
+
+## 下一步
+
+/opsx:continue integrate-test-design-into-schema
+</script>
+
+<script type="text/markdown" data-artifact="proposal">
+## Why
+
+superpowers-bridge schema 当前缺乏系统化的测试设计能力。design 阶段只有技术方案（technical-design），没有测试策略；apply 阶段的 TDD 是代码级测试先行，但缺少业务级测试用例作为断言来源；verify 阶段只验证实现一致性，不报告测试覆盖状况。同时项目存在两个功能重叠的测试 skill（test-case-designer、generate-test-cases），用户选择困难且维护成本高。现在整合可以形成 TP → TC → 自动化测试 → 测试报告的完整闭环。
+
+## What Changes
+
+**schema design instruction**
+- From: 仅调用 technical-design skill
+- To: 并行起 subagent 调用 test-case-designer（fast 模式）产出 test-points.md
+- Reason: 测试设计应与技术方案同步产出，不阻塞流程
+- Impact: 非破坏性，design.md 不受影响，新增 test-points.md 为可选产物
+
+**schema tasks instruction**
+- From: 无编排约束
+- To: 强制两阶段编排（Phase 1 测试用例落地 → Phase 2 功能实现引用 TC）
+- Reason: 确保 TDD 的 RED 步骤有具体的 TC 编号作为断言来源
+- Impact: 非破坏性，向后兼容（无 test-points.md 时退化为原有行为）
+
+**verify.md 模板**
+- From: §1-§7 + Overall Decision
+- To: §1-§8 + Overall Decision（新增 §8 测试报告）
+- Reason: 验证环节需要输出测试覆盖映射和通过率
+- Impact: 非破坏性，新增章节
+
+**human-review 模板 + JS**
+- From: Dashboard 无测试覆盖信息
+- To: Dashboard 新增测试覆盖卡片（解析 test-points.md 统计 TP 数量和状态）
+- Reason: 评审人需要在 human-review 中判断覆盖完整性
+- Impact: 非破坏性，无 test-points.md 时卡片不渲染
+
+**test-case-designer skill**
+- From: 单模式（三阶段门禁），无 platform 参数，无 OpenSpec 集成
+- To: 双模式（full + fast），platform 参数，OpenSpec spec 直接映射，Agent 接口
+- Reason: 合并两个 skill 的优势，支持 schema 内 subagent 调用和独立人工调用
+- Impact: 破坏性版本升级（1.0.0 → 2.0.0），产出格式保持兼容
+
+## Capabilities
+
+### 新增能力
+
+- `schema-test-integration`: schema 各环节的测试设计集成（design instruction、tasks instruction、verify 模板、human-review 模板+JS）
+- `unified-test-designer`: 统一的 test-case-designer skill（双模式 + platform + Agent 接口）
+
+### 修改能力
+
+（无已有 spec 需要修改）
+
+## Impact
+
+| 受影响区域 | 文件 | 变更类型 |
+|-----------|------|---------|
+| schema 定义 | `templates/openspec/schemas/superpowers-bridge/schema.yaml` | 修改 design/tasks instruction |
+| verify 模板 | `templates/openspec/schemas/superpowers-bridge/templates/verify.md` | 新增 §8 |
+| human-review 模板 | `templates/openspec/schemas/superpowers-bridge/templates/human-review.md` | 新增测试覆盖区域 |
+| 前端 JS | `web/human-review.js` | 新增 `buildTestCoverageCard()` |
+| skill 定义 | `templates/skills/test-case-designer/SKILL.md` | 重写 2.0.0 |
+| skill 引用 | `templates/skills/test-case-designer/references/*.md` | 扩展 |
+| 删除 skill | `templates/skills/generate-test-cases/` | 整个目录删除 |
+| 版本记录 | `templates/versions-yml.yml` | 更新 test-case-designer 版本 |
+| 已部署 schema | `openspec/schemas/superpowers-bridge/schema.yaml` | 同步模板变更 |
+
+---
+
+## 下一步
+
+/opsx:continue integrate-test-design-into-schema
+</script>
+
+<script type="text/markdown" data-artifact="specs">
+# schema-test-integration
+
+### Requirement: design-instruction-subagent
+
+schema design artifact 的 instruction SHALL 在调用 technical-design 之后（或并行）起 subagent 调用 test-case-designer skill 产出 test-points.md。
+
+- subagent 使用 fast 模式
+- 输入为 brainstorm.md + explore.md
+- 产出写入 `openspec/changes/<name>/test-points.md`
+- subagent 不阻塞 design 主流程
+- 若 test-case-designer skill 不可用，跳过并在 human-review 中标注
+
+#### Scenario: design 阶段并行产出测试点
+
+WHEN design artifact 开始执行
+AND test-case-designer skill 可用
+THEN 起 subagent 并行调用 test-case-designer（mode=fast）
+AND 产出 test-points.md 到 change 目录
+AND design.md 产出不受 subagent 完成与否的影响
+
+#### Scenario: skill 不可用时优雅降级
+
+WHEN design artifact 开始执行
+AND test-case-designer skill 不可用
+THEN 跳过测试点产出
+AND 在 human-review HTML 中标注"测试点未产出"
+
+---
+
+### Requirement: tasks-instruction-phased-ordering
+
+schema tasks artifact 的 instruction SHALL 强制 tasks.md 按两阶段编排。
+
+- Phase 1: 测试用例落地（产出 test-cases.md）
+- Phase 2: 功能实现（每个任务的 RED 步骤引用 TC 编号）
+- Phase 2 不得在 Phase 1 完成前开始执行
+
+#### Scenario: tasks.md 包含两阶段结构
+
+WHEN tasks artifact 生成时
+AND test-points.md 存在
+THEN tasks.md MUST 包含 Phase 1（测试用例落地）和 Phase 2（功能实现）
+AND Phase 2 每个任务的 RED 步骤 MUST 引用至少一个 TC 编号
+
+#### Scenario: 无 test-points.md 时退化
+
+WHEN tasks artifact 生成时
+AND test-points.md 不存在
+THEN tasks.md 按原有单阶段方式编排（向后兼容）
+
+---
+
+### Requirement: verify-template-section-8
+
+verify.md 模板 SHALL 在 §7 之后、Overall Decision 之前新增 §8 测试报告。
+
+#### Scenario: verify 产出测试报告
+
+WHEN verify artifact 执行时
+AND test-cases.md 存在于 change 目录
+THEN verify.md §8 MUST 包含 TP 覆盖映射表（TP → 自动化测试 → 覆盖状态）
+AND MUST 包含测试执行摘要（通过率、覆盖率、缺口列表）
+
+#### Scenario: 无 test-cases.md 时 §8 标记 N/A
+
+WHEN verify artifact 执行时
+AND test-cases.md 不存在
+THEN verify.md §8 标注"N/A — 本次变更未产出测试用例"
+
+---
+
+### Requirement: human-review-test-coverage
+
+human-review 模板 SHALL 新增测试覆盖区域，human-review.js SHALL 解析 test-points.md 渲染覆盖率卡片。
+
+#### Scenario: Dashboard 展示测试覆盖卡片
+
+WHEN human-review.html 在浏览器中打开
+AND test-points.md 已被 inject-review 注入
+THEN Dashboard 区域 MUST 展示测试覆盖卡片
+AND 卡片包含：TP 总数、已覆盖数、未覆盖数、待确认数
+
+#### Scenario: 无 test-points.md 时卡片不渲染
+
+WHEN human-review.html 在浏览器中打开
+AND 无 test-points.md 注入
+THEN Dashboard 不展示测试覆盖卡片（静默跳过）
+
+---
+
+# unified-test-designer
+
+### Requirement: dual-mode-skill
+
+test-case-designer skill SHALL 支持两种模式：full（三阶段门禁）和 fast（一次性产出）。
+
+#### Scenario: fast 模式一次性产出
+
+WHEN test-case-designer 以 mode=fast 调用
+THEN 一次性产出测试点（或完整测试用例，视输入充分度）
+AND 不触发人工门禁
+AND 执行自检 checklist 后输出
+
+#### Scenario: full 模式三阶段门禁
+
+WHEN test-case-designer 以 mode=full 调用
+THEN 按 01-context → 02-test-points → 03-test-cases 三阶段产出
+AND 每阶段需人工确认后才进入下一阶段
+
+---
+
+### Requirement: platform-parameter
+
+test-case-designer skill SHALL 支持 platform 参数控制测试用例的平台侧重。
+
+#### Scenario: frontend 模式
+
+WHEN platform=frontend
+THEN 测试用例侧重 UI 交互、组件渲染、状态切换、响应式
+AND 操作步骤使用 UI 操作动词
+AND 排除接口实现、数据库操作
+
+#### Scenario: backend 模式
+
+WHEN platform=backend
+THEN 测试用例侧重接口契约、入参校验、业务逻辑、异常降级
+AND 操作步骤使用接口调用描述
+AND 排除 UI 表现
+
+#### Scenario: all 模式（默认）
+
+WHEN platform=all 或未指定
+THEN 综合前端和后端维度
+AND 用例标题标注 `[FE]` 或 `[BE]`
+
+---
+
+### Requirement: openspec-spec-mapping
+
+test-case-designer skill SHALL 自动扫描 OpenSpec spec 文件并映射为测试用例。
+
+#### Scenario: spec 场景全覆盖
+
+WHEN 存在 OpenSpec spec 文件
+THEN 每个 `#### Scenario` MUST 映射为至少一条测试用例
+AND 该用例标注 `[spec]` 溯源标记
+AND Scenario 的 WHEN 映射为前置条件+操作步骤，THEN 映射为预期结果
+
+#### Scenario: 无 spec 文件时退化
+
+WHEN 不存在 OpenSpec spec 文件
+THEN 仅基于需求文档/对话上下文生成（退化为原有行为）
+
+---
+
+### Requirement: agent-interface
+
+test-case-designer skill SHALL 支持作为 subagent 被调用。
+
+#### Scenario: subagent 调用默认行为
+
+WHEN test-case-designer 作为 subagent 调用
+AND 未显式指定 mode
+THEN 默认使用 fast 模式
+AND 输入通过参数传递（brainstorm.md、explore.md 路径）
+AND 产出写入调用方指定的路径
+
+---
+
+### Requirement: unified-coverage-model
+
+test-case-designer skill SHALL 合并两个 skill 的覆盖模型为统一体系。
+
+#### Scenario: 覆盖模型包含四视角
+
+WHEN 产出测试点时
+THEN 每个能力子块 MUST 经过状态、交互、异常、边界四视角检查
+
+#### Scenario: 覆盖模型包含平台维度扫描
+
+WHEN platform 为 frontend 或 all
+THEN 额外扫描：组件渲染、交互反馈、状态切换、响应式适配、路由导航
+WHEN platform 为 backend 或 all
+THEN 额外扫描：接口契约、入参校验、业务逻辑、数据持久化、权限鉴权、异常降级
+
+---
+
+### Requirement: traceability-system
+
+test-case-designer skill SHALL 使用统一的双层追溯体系。
+
+#### Scenario: TP 到 TC 的追溯
+
+WHEN 产出完整测试用例（03-test-cases.md 或 fast 模式表格）
+THEN 每条测试用例 MUST 回链至少一个 TP 编号
+AND TP 编号格式为 `TP-<BIG>-<SMALL>-<TYPE>-NNN`
+
+#### Scenario: TC 到 spec 的追溯
+
+WHEN 测试用例来源于 spec 场景
+THEN 用例标题末尾 MUST 标注 `[spec]`
+
+---
+
+### Requirement: delete-generate-test-cases
+
+`templates/skills/generate-test-cases/` 目录 SHALL 被完整删除，其能力已合并入 test-case-designer 2.0.0。
+
+#### Scenario: 目录删除
+
+WHEN 实现完成时
+THEN `templates/skills/generate-test-cases/` 不存在
+AND versions-yml.yml 中无 generate-test-cases 条目
+</script>
+
+<script type="text/markdown" data-artifact="tasks">
+# 实现任务
+
+## Task 1: 重写 test-case-designer skill
+
+- [ ] 重写 `templates/skills/test-case-designer/SKILL.md` 为 2.0.0
+  - 合并 generate-test-cases 的 platform 参数、OpenSpec spec 映射、操作步骤规范、隐性场景识别、自检 checklist
+  - 保留 test-case-designer 的三阶段门禁（Mode A: full）、黑盒+白盒联合、TP 追溯体系、四视角检查
+  - 新增 Mode B: fast（一次性产出，自检后输出）
+  - 新增 Agent 接口（subagent 调用默认 fast）
+  - 新增共享层：参数定义、输入源分析、覆盖模型
+  - 更新 metadata.version 为 "2.0.0"
+
+- [ ] 扩展 `templates/skills/test-case-designer/references/source-analysis.md`
+  - 新增 OpenSpec spec 文件使用规则（spec 场景全覆盖、WHEN/THEN 映射、`[spec]` 溯源标注）
+  - 新增 spec 查找流程
+
+- [ ] 扩展 `templates/skills/test-case-designer/references/output-contract.md`
+  - 新增 fast 模式的输出格式（Markdown 表格，含平台标签）
+  - 新增 platform 参数对产出路径的影响
+  - 新增 schema 流程内产出路径（`openspec/changes/<name>/`）
+
+- [ ] 删除 `templates/skills/generate-test-cases/` 目录
+
+- [ ] 更新 `templates/versions-yml.yml`
+  - test-case-designer 版本更新为 "2.0.0"
+  - 移除 generate-test-cases 条目（若存在）
+
+commit: `feat(skills): test-case-designer 2.0.0 — 合并双模式 + platform + Agent 接口`
+
+## Task 2: schema design instruction 改造
+
+- [ ] 修改 `templates/openspec/schemas/superpowers-bridge/schema.yaml` 的 design artifact instruction
+  - 在 technical-design 调用段落之后追加"测试设计（并行）"段落
+  - 内容：确认 skill 可用 → subagent fast 模式 → 产出 test-points.md → 不阻塞主流程 → 不可用时跳过
+
+- [ ] 同步修改 `openspec/schemas/superpowers-bridge/schema.yaml`（已部署版本）
+
+commit: `feat(schema): design 阶段并行产出 test-points.md`
+
+## Task 3: schema tasks instruction 改造
+
+- [ ] 修改 `templates/openspec/schemas/superpowers-bridge/schema.yaml` 的 tasks artifact instruction
+  - 新增编排约束：当 test-points.md 存在时，tasks.md 必须分 Phase 1（测试用例落地）和 Phase 2（功能实现引用 TC）
+  - 新增退化规则：无 test-points.md 时按原有方式编排
+
+- [ ] 同步修改 `openspec/schemas/superpowers-bridge/schema.yaml`（已部署版本）
+
+commit: `feat(schema): tasks 两阶段编排约束`
+
+## Task 4: verify.md 模板新增 §8
+
+- [ ] 修改 `templates/openspec/schemas/superpowers-bridge/templates/verify.md`
+  - 在 §7 和 Overall Decision 之间插入 §8 测试报告
+  - 包含：TP 覆盖映射表、测试执行摘要、缺口分析
+  - 无 test-cases.md 时标注 N/A
+
+- [ ] 同步修改 `openspec/schemas/superpowers-bridge/templates/verify.md`（已部署版本）
+
+commit: `feat(schema): verify 模板新增 §8 测试报告`
+
+## Task 5: human-review 模板新增测试覆盖区域
+
+- [ ] 修改 `templates/openspec/schemas/superpowers-bridge/templates/human-review.md`
+  - 在输出结构表中新增测试覆盖区域（§01 和实现任务之间）
+  - 调整后续编号
+  - 新增 Dashboard 卡片规格（`data-card="test-coverage"`）
+
+- [ ] 同步修改 `openspec/schemas/superpowers-bridge/templates/human-review.md`（已部署版本）
+
+commit: `feat(schema): human-review 模板新增测试覆盖区域`
+
+## Task 6: human-review.js 新增解析逻辑
+
+- [ ] 在 `web/human-review.js` 中新增 `buildTestCoverageCard()` 函数
+  - 查找 `script[data-artifact="test-points"]`
+  - 正则统计 `#### TP-` 数量（总 TP 数）
+  - 正则统计覆盖状态（已覆盖/未覆盖/待确认）
+  - 渲染到 `[data-card="test-coverage"]` 元素
+  - 无 test-points 注入时静默跳过
+
+- [ ] 在 `DOMContentLoaded` 回调中调用 `buildTestCoverageCard()`
+
+commit: `feat(web): human-review.js 解析 test-points 渲染覆盖率卡片`
+
+## Task 7: 版本号与同步
+
+- [ ] 更新 `package.json` version（patch bump，因为是功能新增但不破坏已有行为）
+- [ ] 同步 `.harness/skills/test-case-designer/` 为新版本内容
+
+commit: `chore: 版本同步`
+
+---
+
+## 下一步
+
+/opsx:continue integrate-test-design-into-schema
+</script>
+<!-- END:artifacts -->
+<!-- BEGIN:js -->
+<script>
+// human-review.js — 评审页面交互逻辑
+// 由 devkeel inject-review 注入
+
+(function() {
+var CDN = 'https://cdn.jsdmirror.com/npm';
+var DEPS = {
+  css: [
+    { href: CDN + '/@highlightjs/cdn-assets@11.11.1/styles/github.min.css' },
+    { href: CDN + '/@highlightjs/cdn-assets@11.11.1/styles/github-dark.min.css', media: '(prefers-color-scheme: dark)' }
+  ],
+  js: [
+    CDN + '/@highlightjs/cdn-assets@11.11.1/highlight.min.js',
+    CDN + '/mermaid@11/dist/mermaid.min.js',
+    CDN + '/marked/marked.min.js'
+  ]
+};
+
+function loadCSS(spec) {
+  var link = document.createElement('link');
+  link.rel = 'stylesheet';
+  link.href = spec.href;
+  if (spec.media) link.media = spec.media;
+  document.head.appendChild(link);
+}
+
+function loadScript(src) {
+  return new Promise(function(resolve, reject) {
+    var s = document.createElement('script');
+    s.src = src;
+    s.onload = resolve;
+    s.onerror = function() { console.warn('Failed to load: ' + src); resolve(); };
+    document.head.appendChild(s);
+  });
+}
+
+function loadAllDeps() {
+  DEPS.css.forEach(loadCSS);
+  return DEPS.js.reduce(function(chain, src) {
+    return chain.then(function() { return loadScript(src); });
+  }, Promise.resolve());
+}
+
+// 折叠/展开
+window.toggleSection = function(head) {
+  var section = head.parentElement;
+  section.classList.toggle('collapsed');
+  localStorage.setItem(section.id, section.classList.contains('collapsed'));
+};
+
+// Artifact 标签页切换
+window.switchArtifactTab = function(name) {
+  document.querySelectorAll('.artifact-tab').forEach(function(t) { t.classList.remove('active'); });
+  document.querySelectorAll('.artifact-panel').forEach(function(p) { p.classList.remove('active'); });
+  var tab = document.querySelector('[data-tab="' + name + '"]');
+  if (tab) tab.classList.add('active');
+  var panel = document.querySelector('[data-panel="' + name + '"]');
+  if (!panel) return;
+  panel.classList.add('active');
+  if (!panel.dataset.rendered) {
+    var script = document.querySelector('script[data-artifact="' + name + '"]');
+    if (script) {
+      var md = script.textContent;
+      panel.innerHTML = typeof marked !== 'undefined' ? marked.parse(md) : '<pre>' + md + '</pre>';
+      panel.dataset.rendered = 'true';
+      if (typeof hljs !== 'undefined') {
+        panel.querySelectorAll('pre code').forEach(function(b) { hljs.highlightElement(b); });
+      }
+    }
+  }
+};
+
+function buildArtifactViewer() {
+  var viewer = document.querySelector('.artifact-viewer');
+  if (!viewer) return;
+
+  var tabs = viewer.querySelector('.artifact-tabs');
+  if (!tabs) return;
+
+  var knownTabs = {};
+  viewer.querySelectorAll('.artifact-tab').forEach(function(tab) {
+    knownTabs[tab.dataset.tab] = true;
+  });
+
+  var knownPanels = {};
+  viewer.querySelectorAll('.artifact-panel').forEach(function(panel) {
+    knownPanels[panel.dataset.panel] = true;
+  });
+
+  document.querySelectorAll('script[data-artifact]').forEach(function(script) {
+    var name = script.dataset.artifact;
+    if (!name) return;
+
+    if (!knownTabs[name]) {
+      var tab = document.createElement('button');
+      tab.className = 'artifact-tab';
+      tab.dataset.tab = name;
+      tab.textContent = name;
+      tab.onclick = function() { switchArtifactTab(name); };
+      tabs.appendChild(tab);
+      knownTabs[name] = true;
+    }
+
+    if (!knownPanels[name]) {
+      var panel = document.createElement('div');
+      panel.className = 'artifact-panel';
+      panel.dataset.panel = name;
+      viewer.appendChild(panel);
+      knownPanels[name] = true;
+    }
+  });
+
+  var firstTab = tabs.querySelector('.artifact-tab');
+  if (firstTab && !viewer.querySelector('.artifact-tab.active')) {
+    switchArtifactTab(firstTab.dataset.tab);
+  }
+}
+
+function getEffectiveTheme() {
+  var stored = localStorage.getItem('harness-theme');
+  if (stored === 'dark' || stored === 'light') return stored;
+  return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+}
+
+function applyTheme(theme) {
+  document.documentElement.setAttribute('data-theme', theme);
+  var btn = document.querySelector('.theme-toggle');
+  if (btn) btn.textContent = theme === 'dark' ? '☀️' : '🌙';
+}
+
+function initThemeToggle() {
+  applyTheme(getEffectiveTheme());
+  var btn = document.createElement('button');
+  btn.className = 'theme-toggle';
+  btn.setAttribute('aria-label', '切换主题');
+  btn.onclick = function() {
+    var next = getEffectiveTheme() === 'dark' ? 'light' : 'dark';
+    localStorage.setItem('harness-theme', next);
+    applyTheme(next);
+  };
+  document.body.appendChild(btn);
+  applyTheme(getEffectiveTheme());
+}
+
+function checkHarnessUpgrade() {
+  var meta = document.querySelector('meta[name="harness-version"]');
+  if (!meta) return;
+  var currentVersion = meta.getAttribute('content');
+  if (!currentVersion) return;
+
+  var registryUrl = 'https://registry.npmjs.org/devkeel/latest';
+  fetch(registryUrl, { signal: AbortSignal.timeout(5000) })
+    .then(function(res) { return res.json(); })
+    .then(function(data) {
+      var latest = data.latest;
+      if (!latest) return;
+      if (latest === currentVersion) return;
+      if (!isNewer(latest, currentVersion)) return;
+      showUpgradeBanner(currentVersion, latest);
+    })
+    .catch(function() {});
+}
+
+function isNewer(latest, current) {
+  var l = latest.replace(/[^\d.]/g, '').split('.').map(Number);
+  var c = current.replace(/[^\d.]/g, '').split('.').map(Number);
+  for (var i = 0; i < Math.max(l.length, c.length); i++) {
+    var lv = l[i] || 0;
+    var cv = c[i] || 0;
+    if (lv > cv) return true;
+    if (lv < cv) return false;
+  }
+  return false;
+}
+
+function showUpgradeBanner(current, latest) {
+  var banner = document.createElement('div');
+  banner.className = 'upgrade-banner';
+  banner.innerHTML = '<span class="upgrade-icon">⬆</span> harness 有新版本可用：<strong>' + current + '</strong> → <strong>' + latest + '</strong>　<code>pnpm add -g devkeel@latest</code>';
+  var header = document.querySelector('.page-header .wrapper') || document.querySelector('.page-header') || document.body.firstElementChild;
+  if (header) {
+    header.insertBefore(banner, header.firstChild);
+  } else {
+    document.body.insertBefore(banner, document.body.firstChild);
+  }
+}
+
+function initMermaid() {
+  if (typeof mermaid === 'undefined') return;
+  mermaid.initialize({
+    startOnLoad: true,
+    theme: 'base',
+    themeVariables: getEffectiveTheme() === 'dark' ? {
+      background: '#0f172a',
+      primaryColor: 'rgba(99,102,241,0.25)',
+      primaryTextColor: '#f1f5f9',
+      primaryBorderColor: '#818cf8',
+      secondaryColor: 'rgba(6,78,59,0.4)',
+      secondaryTextColor: '#f1f5f9',
+      secondaryBorderColor: '#34d399',
+      tertiaryColor: 'rgba(76,29,149,0.4)',
+      tertiaryTextColor: '#f1f5f9',
+      tertiaryBorderColor: '#a78bfa',
+      lineColor: '#94a3b8',
+      textColor: '#f1f5f9',
+      mainBkg: 'rgba(99,102,241,0.15)',
+      nodeBorder: '#818cf8',
+      clusterBkg: 'rgba(30,41,59,0.6)',
+      clusterBorder: '#475569',
+      edgeLabelBackground: '#1e293b',
+      fontSize: '14px'
+    } : {
+      background: '#ffffff',
+      primaryColor: '#eef2ff',
+      primaryTextColor: '#1e293b',
+      primaryBorderColor: '#4f46e5',
+      secondaryColor: '#f0fdf4',
+      secondaryTextColor: '#1e293b',
+      secondaryBorderColor: '#059669',
+      tertiaryColor: '#faf5ff',
+      tertiaryTextColor: '#1e293b',
+      tertiaryBorderColor: '#7c3aed',
+      lineColor: '#475569',
+      textColor: '#1e293b',
+      mainBkg: '#eef2ff',
+      nodeBorder: '#4f46e5',
+      clusterBkg: '#f8fafc',
+      clusterBorder: '#e2e8f0',
+      edgeLabelBackground: '#ffffff',
+      fontSize: '14px'
+    }
+  });
+}
+
+function init() {
+  document.querySelectorAll('.section').forEach(function(s) {
+    var stored = localStorage.getItem(s.id);
+    if (stored !== null) {
+      if (stored === 'true') s.classList.add('collapsed');
+      else s.classList.remove('collapsed');
+    }
+  });
+
+  loadAllDeps().then(function() {
+    initMermaid();
+    if (typeof hljs !== 'undefined') hljs.highlightAll();
+    buildArtifactViewer();
+    checkHarnessUpgrade();
+    initThemeToggle();
+  });
+}
+
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', init);
+} else {
+  init();
+}
+})();
+
+</script>
+<!-- END:js -->
+</body>
+</html>

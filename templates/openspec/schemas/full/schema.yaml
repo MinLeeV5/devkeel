@@ -1,0 +1,154 @@
+name: full
+version: 24
+description: >
+  面向高风险或显式治理需求的封闭投影工作流：Living brainstorm → design → specs → tasks →
+  apply → verify → retrospective → archive。
+
+artifacts:
+  - id: brainstorm
+    generates: brainstorm.md
+    description: 由单题访谈维护并经用户确认的 Living Artifact
+    template: brainstorm.md
+    instruction: |
+      遵循 lite 的 Living Artifact 契约；共同设计只发生在 Brainstorming，Full 选择及其
+      触发风险也必须记录为 D-*。不得通过模板或设计 skill 补充新语义。DRAFT/CONFIRMED、
+      D/A/O 计数和下游状态由共享 planning-state 检查器验证。
+    requires: []
+
+  - id: design
+    generates: design.md
+    description: 将 Confirmed 决定投影为技术视图
+    template: design.md
+    instruction: |
+      重新从磁盘读取 brainstorm.md，且仅在其为 CONFIRMED 时生成。design 是封闭投影视图，
+      只展开 D-*、A-* 和仓库事实已经确定的 HOW，并用 `[D-03](brainstorm.md#d-03)` 标出来源。
+      不得调用 technical-design/requirement-analysis 或补全“最佳实践”。任何会改变结构、行为
+      或维护方式的缺口都停止生成，回到 Brainstorming 一次只问一项。
+
+      只保留有来源的相关章节。图能明显降低组件关系、交互顺序、状态生命周期、领域结构或数据
+      关系的理解成本时，使用 1～3 张 Mermaid UML/结构图，每张只回答一个问题；简单设计删除
+      整个图区。优先使用 sequenceDiagram、stateDiagram-v2、classDiagram、erDiagram，组件依赖
+      使用结构化 flowchart。图中语义必须链接 D/A；图表只是可读表达，不能成为新设计来源。
+    requires:
+      - brainstorm
+
+  - id: specs
+    generates: "specs/**/*.md"
+    description: 将已确认行为投影为持久、可验证的 delta contract
+    template: spec.md
+    instruction: |
+      重新从磁盘读取 brainstorm.md、design.md 和受影响的 openspec/specs 主规格。每个受影响
+      capability 创建一个 delta spec，只记录应跨实现长期保留的可观察行为或风险不变量。
+      不复制背景、设计方案、任务步骤或覆盖矩阵。每项 requirement 必须能链接到对应 D-*；
+      design 不能作为独立语义来源。没有已确认行为时不得生成占位 spec。
+
+      - 新行为使用 ADDED Requirements。
+      - 改变现有行为使用 MODIFIED，并复制修改后完整 requirement block。
+      - 删除使用 REMOVED，包含 Reason 与 Migration。
+      - 仅改名使用 RENAMED；改名且改内容时同时写 RENAMED 和 MODIFIED。
+      - Requirement 使用 SHALL/MUST，每项至少一个四级标题 Scenario 和 WHEN/THEN。
+
+      只做格式和契约映射；不得推演新行为。需要新选择时停止并回到 Brainstorming。
+    requires:
+      - design
+
+  - id: tasks
+    generates: tasks.md
+    description: 将已确认设计与规格机械拆分成可验证的交付结果
+    template: tasks.md
+    instruction: |
+      重新从磁盘读取 brainstorm.md、design.md 和全部 delta specs，按模板生成 tasks.md。
+
+      一个 checkbox 对应一个可独立验证的交付结果；同一结果的代码、测试、配置和文档
+      合并处理。每项只保留来源、结果、范围、约束和本地验证。顺序表达依赖，只有依赖
+      不明显时补一句说明。每项必须链接 D-* 或具体 delta requirement；不得创造新的设计决定。
+
+      末尾 Final Verification 汇总最终代码需要重新执行的
+      required/optional 检查；不要无依据追加全量测试。保留模板中的
+      `<!-- harness:full-tasks-reconciled -->`，表示 tasks 已基于当前 Full design/specs 生成或重审。
+      若任何必要内容没有已确认来源，停止并回到 Brainstorming。
+    requires:
+      - specs
+
+  - id: verify
+    generates: verify.md
+    description: 基于最终代码与 Final Verification 生成测试报告
+    template: verify.md
+    instruction: |
+      本 artifact 只能在实现任务全部完成后生成。原生 ready 仅表示拓扑依赖满足，
+      不代表允许在 apply 前验证。
+
+      前置检查：
+      - tasks.md 中所有实现 checkbox 均为 [x]；
+      - 由 openspec-verify-change 使用其自带的
+        `implementation-fingerprint.mjs` 计算实现指纹；不得自行定义摘要算法；
+      - Apply 已完成最终 Review，或用户显式要求对当前最终代码运行 /opsx:verify。
+
+      在报告中记录 Final Review 门禁：只有同一实现指纹已经完成 P0/P1 最终 Review 时写
+      `P0/P1 CLEAR`；显式独立 Verify 未做 Review 时写 `NOT_RUN`。测试结论仍可为 PASS，
+      但 `NOT_RUN` 的报告不能作为普通 Full Archive 门禁，只能回到 Apply 完成 Review 或 force。
+
+      读取 tasks.md 的 Final Verification，在最终代码上去重后按顺序执行。某项失败后继续
+      无依赖检查，依赖项可标记未执行。只保留关键摘要和可定位证据，不粘贴完整日志。
+
+      结论仅允许：
+      - PASS：全部 required 检查执行并通过；
+      - FAIL：required 检查执行后失败；
+      - BLOCKED：required 检查因环境、权限或外部条件无法执行。
+      optional 缺口只记录剩余风险，不改变结论。
+      不生成证据映射、requirement-to-code matrix、completeness/correctness/coherence 评分、
+      风格审查或推测性实现结论。
+    requires:
+      - tasks
+
+  - id: retrospective
+    generates: retrospective.md
+    description: 在归档时记录结果、偏差、根因与后续行动
+    template: retrospective.md
+    instruction: |
+      只在 /opsx:archive 的 Full 门禁中生成。默认要求 verify.md 对当前实现指纹保持新鲜、
+      结论为 PASS 且 Final Review 为 `P0/P1 CLEAR`；force archive 时仍生成，并以非注释行
+      明确记录用户强制选择、每个绕过门禁、观察证据、剩余风险和恢复动作。
+
+      基于 brainstorm、tasks、最终 diff/review 与 verify，简洁记录：
+      - 结果与目标；
+      - 计划和实现偏差；
+      - Review/Verify 发现、根因与修复；
+      - 有 owner 或明确落点的后续行动。
+
+      不强制篇幅或章节扩写。
+    requires:
+      - verify
+
+apply:
+  requires: [tasks]
+  tracks: tasks.md
+  instruction: |
+    当前 Agent 在现有工作区从首个未完成任务开始顺序实施；不使用执行模式。OpenSpec 的 done
+    只证明文件存在；brainstorm 还必须为有效 CONFIRMED、O 为 0、下游状态为 CURRENT。
+
+    brainstorm 的 `<!-- harness:lite-to-full-promotion -->` 或 tasks 的
+    `<!-- harness:full-tasks-reconciled -->` 任一存在，都表示当前 Full 契约并强制 design/specs；
+    promotion 还必须有 tasks reconciled 标记。缺任一要求都停止 Apply 并回到 planning。
+    只有两枚标记都无且能确认旧契约才 no-backfill；无法判断时停止并询问。
+
+    1. 刷新 apply 状态和当前任务。上下文仍热且无压缩或外部编辑时直接复用；恢复、
+       压缩或不确定时读取 tasks、全局约束及当前任务引用的 design/specs 小节。
+    2. 检查 branch、HEAD、git status，记录既有脏路径并保护用户改动。目标文件已有无法
+       区分的用户修改时停止；审查范围只包含本次触及的路径。
+    3. 对每项任务完成必要调查和最小修改。有稳定、快速测试接缝的行为或缺陷采用聚焦
+       RED→GREEN；文档、配置、生成物、视觉或不稳定外部集成不强制 TDD，但必须验证。
+    4. 本地验证通过后才将任务标为 [x]。失败先做范围内修复；仍失败则保持 [ ]，记录
+       失败证据和恢复方式并停止整个 Apply。
+    5. 同范围发现可先补 task 后继续。改变 design/specs、外部行为、迁移、范围或验收时，
+       停止执行，更新上游 artifact 并取得用户确认。
+
+    默认不创建 worktree、不分派实现 Agent、不运行全量基线、不安装无关依赖、不提交、
+    推送或创建 PR。用户显式请求 worktree 时使用平台或 Git 原生能力，不调用旧 skill。
+
+    全部任务完成后只执行一次 review-orchestrator mode=auto：reviewer 只读当前 diff 和
+    artifact 上下文，不运行测试、不修复、不提交。仅 P0/P1 阻断；当前 Agent 重新打开
+    受影响任务、修复并本地验证，再做定向复审，没有固定轮数。
+
+    Review 通过后读取 verify artifact 指令，执行同一 /opsx:verify 路径并生成 verify.md。
+    到此停止，不生成 Apply Summary，不自动 retrospective、archive、commit、push 或 PR。

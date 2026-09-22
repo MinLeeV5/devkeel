@@ -1,0 +1,404 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Human Review — add-telemetry</title>
+<link rel="stylesheet" href="https://cdn.jsdmirror.com/npm/@highlightjs/cdn-assets@11.11.1/styles/github.min.css">
+<link rel="stylesheet" href="https://cdn.jsdmirror.com/npm/@highlightjs/cdn-assets@11.11.1/styles/github-dark.min.css" media="(prefers-color-scheme: dark)">
+<script src="https://cdn.jsdmirror.com/npm/@highlightjs/cdn-assets@11.11.1/highlight.min.js"></script>
+<script src="https://cdn.jsdmirror.com/npm/mermaid@11/dist/mermaid.min.js"></script>
+<style>
+:root {
+  --bg: #f8fafc; --surface: #ffffff; --text: #0f172a; --text-secondary: #475569;
+  --text-muted: #94a3b8; --accent: #4f46e5; --accent-light: #eef2ff;
+  --accent-border: #c7d2fe; --accent-text: #3730a3; --border: #e2e8f0;
+  --code-bg: #f1f5f9; --success: #059669; --warning: #d97706;
+  --font-sans: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Noto Sans SC', 'PingFang SC', 'Microsoft YaHei', sans-serif;
+  --font-mono: 'SF Mono', 'Cascadia Code', 'JetBrains Mono', Consolas, monospace;
+}
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #0f172a; --surface: #1e293b; --text: #f1f5f9; --text-secondary: #94a3b8;
+    --text-muted: #64748b; --accent: #818cf8; --accent-light: rgba(99,102,241,0.12);
+    --accent-border: rgba(99,102,241,0.25); --accent-text: #c7d2fe; --border: #334155;
+    --code-bg: #0f172a; --success: #34d399; --warning: #fbbf24;
+  }
+}
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { font-family: var(--font-sans); background: var(--bg); color: var(--text); font-size: 15px; line-height: 1.8; }
+.container { max-width: 860px; margin: 0 auto; padding: 0 2.5rem; }
+header { background: linear-gradient(135deg, #eef2ff, #f8fafc, #f0f9ff); border-bottom: 1px solid var(--border); padding: 3rem 0 2rem; }
+@media (prefers-color-scheme: dark) { header { background: linear-gradient(135deg, rgba(99,102,241,0.08), #0f172a, rgba(6,78,59,0.05)); } }
+.badge { display: inline-flex; align-items: center; gap: 6px; background: rgba(217,119,6,0.12); color: var(--warning); font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; padding: 4px 12px; border-radius: 999px; margin-bottom: 1rem; }
+.badge .dot { width: 6px; height: 6px; background: var(--warning); border-radius: 50%; animation: pulse 2s infinite; }
+@keyframes pulse { 0%,100% { opacity: 1; } 50% { opacity: 0.4; } }
+h1 { font-size: 34px; font-weight: 800; letter-spacing: -0.02em; margin-bottom: 0.5rem; }
+.subtitle { color: var(--text-secondary); font-size: 15px; margin-bottom: 1rem; }
+.progress { display: flex; gap: 4px; margin-top: 1rem; }
+.progress span { height: 4px; flex: 1; border-radius: 2px; }
+.progress .done { background: var(--success); }
+.progress .current { background: var(--accent); }
+.toc { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 1.5rem 2rem; margin: 2rem 0; counter-reset: toc; }
+.toc a { display: flex; align-items: center; gap: 12px; padding: 8px 12px; text-decoration: none; color: var(--text); border-radius: 6px; transition: background 0.15s; }
+.toc a:hover { background: var(--accent-light); }
+.toc a::before { counter-increment: toc; content: counter(toc, decimal-leading-zero); color: var(--accent); font-weight: 700; font-size: 13px; min-width: 24px; }
+section { padding: 3.5rem 0; border-top: 1px solid var(--border); }
+h2 { font-size: 26px; font-weight: 700; display: flex; align-items: center; gap: 12px; margin-bottom: 1.5rem; }
+h2 .num { color: var(--accent); font-size: 28px; font-weight: 800; }
+h3 { font-size: 20px; font-weight: 600; border-bottom: 1px solid var(--border); padding-bottom: 0.5rem; margin: 1.5rem 0 1rem; }
+h4 { font-size: 17px; font-weight: 600; margin: 1rem 0 0.5rem; }
+.summary { background: var(--accent-light); border: 1px solid var(--accent-border); border-radius: 10px; padding: 1rem 1.5rem; color: var(--accent-text); margin-bottom: 1.5rem; font-size: 15px; }
+.req-card { background: var(--surface); border: 1px solid var(--border); border-left: 3px solid var(--accent); border-radius: 10px; padding: 1.5rem 2rem; margin: 1rem 0; }
+.req-card .label { font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; color: var(--accent); margin-bottom: 0.5rem; }
+.scenario { background: var(--accent-light); border: 1px solid var(--accent-border); border-radius: 8px; padding: 1rem 1.25rem; margin: 0.75rem 0; }
+.scenario .label { font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; color: var(--accent); margin-bottom: 0.5rem; }
+.kw { font-weight: 700; color: var(--accent); text-transform: uppercase; }
+table { width: 100%; border-collapse: collapse; margin: 1rem 0; font-size: 14px; }
+th { background: var(--code-bg); font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; text-align: left; padding: 0.75rem 1rem; border-bottom: 2px solid var(--border); }
+td { padding: 0.75rem 1rem; border-bottom: 1px solid var(--border); }
+tr:hover td { background: var(--accent-light); }
+pre { background: var(--code-bg); border: 1px solid var(--border); border-radius: 8px; padding: 1rem; overflow-x: auto; margin: 1rem 0; }
+code { font-family: var(--font-mono); font-size: 13px; }
+:not(pre) > code { background: var(--code-bg); padding: 2px 6px; border-radius: 4px; }
+.task-group h4 { font-weight: 600; }
+.task { display: flex; align-items: flex-start; gap: 10px; padding: 6px 0; }
+.task .box { width: 18px; height: 18px; border: 2px solid var(--border); border-radius: 4px; flex-shrink: 0; margin-top: 3px; }
+.task.done .box { background: var(--success); border-color: var(--success); }
+.task.done span { text-decoration: line-through; color: var(--text-muted); }
+.mermaid-wrap { padding: 1.5rem; border-radius: 10px; margin: 1.5rem 0; }
+@media (prefers-color-scheme: dark) { .mermaid-wrap { background: rgba(15,23,42,0.5); } }
+.acceptance { border-top: 2px solid var(--accent); padding-top: 2rem; margin-top: 3.5rem; }
+.acceptance h2 { gap: 8px; }
+.next-cmd { border: 2px dashed var(--accent-border); border-radius: 8px; padding: 1rem 1.5rem; margin: 1rem 0; font-family: var(--font-mono); font-size: 14px; cursor: pointer; transition: background 0.15s; }
+.next-cmd:hover { background: var(--accent-light); }
+footer { text-align: center; color: var(--text-muted); font-size: 13px; padding: 2rem 0; }
+@media (max-width: 768px) { .container { padding: 0 1.25rem; } h1 { font-size: 26px; } h2 { font-size: 22px; } }
+@media (max-width: 480px) { .container { padding: 0 1rem; } }
+@media print { body { background: #fff; color: #000; } header { background: none; } .badge, .progress { display: none; } .toc { page-break-after: always; } .acceptance { page-break-before: always; } a::after { content: " (" attr(href) ")"; font-size: 11px; } }
+</style>
+</head>
+<body>
+
+<header>
+<div class="container">
+  <div class="badge"><span class="dot"></span>Pending Review</div>
+  <h1>CLI 遥测机制</h1>
+  <p class="subtitle">为 harness CLI 增加匿名使用统计，记录命令和 skill 调用数据</p>
+  <p style="color:var(--text-muted);font-size:13px;">add-telemetry · 2026-05-18</p>
+  <div class="progress">
+    <span class="done"></span><span class="done"></span><span class="done"></span>
+    <span class="done"></span><span class="done"></span><span class="done"></span>
+    <span class="current"></span>
+  </div>
+</div>
+</header>
+
+<div class="container">
+
+<nav class="toc">
+  <a href="#s1">需求背景</a>
+  <a href="#s2">现状调查</a>
+  <a href="#s3">技术设计</a>
+  <a href="#s4">变更提案</a>
+  <a href="#s5">规格清单</a>
+  <a href="#s6">实现任务</a>
+</nav>
+
+<!-- 01 需求背景 -->
+<section id="s1">
+<h2><span class="num">01</span>需求背景</h2>
+<div class="summary">为 harness CLI 增加远程遥测，记录哪些项目在用、调用了什么命令和 skill，用于了解产品使用情况。</div>
+
+<h3>目标用户</h3>
+<table>
+  <tr><th>角色</th><th>关注点</th></tr>
+  <tr><td>harness 维护者</td><td>使用量、命令分布、skill 热度，指导迭代</td></tr>
+  <tr><td>CLI 用户</td><td>无感知或可 opt-out</td></tr>
+</table>
+
+<h3>核心用例</h3>
+<table>
+  <tr><th>用例</th><th>描述</th></tr>
+  <tr><td>命令调用上报</td><td>异步上报命令名、成功/失败、耗时</td></tr>
+  <tr><td>Skill 使用上报</td><td>记录 skill 名称</td></tr>
+  <tr><td>匿名项目标识</td><td>UUID v4 写入 config.yml</td></tr>
+  <tr><td>Opt-out</td><td><code>HARNESS_NO_TELEMETRY=1</code> 或 <code>CI=true</code></td></tr>
+</table>
+
+<h3>边界</h3>
+<table>
+  <tr><th>In Scope</th><th>Out of Scope</th></tr>
+  <tr><td>全部 6 个命令的调用统计</td><td>用户身份信息</td></tr>
+  <tr><td>Skill 名称级统计</td><td>命令参数/输入内容</td></tr>
+  <tr><td>异步非阻塞上报</td><td>可视化仪表盘</td></tr>
+  <tr><td>Opt-out 机制</td><td>离线缓存与重试</td></tr>
+</table>
+</section>
+
+<!-- 02 现状调查 -->
+<section id="s2">
+<h2><span class="num">02</span>现状调查</h2>
+
+<h3>受影响架构</h3>
+<table>
+  <tr><th>模块</th><th>职责</th><th>影响</th></tr>
+  <tr><td><code>src/index.ts</code></td><td>Commander 注册</td><td>不变</td></tr>
+  <tr><td><code>src/commands/*.ts</code></td><td>命令入口</td><td>末尾添加 track 调用</td></tr>
+  <tr><td><code>src/lib/config.ts</code></td><td>配置读写</td><td>接口扩展 telemetry 字段</td></tr>
+  <tr><td><code>src/lib/telemetry.ts</code></td><td>（新增）</td><td>遥测核心模块</td></tr>
+</table>
+
+<h3>关键约束</h3>
+<ul>
+  <li>lib 层不可引入 <code>@clack/prompts</code></li>
+  <li>零新 runtime 依赖 — 使用 Node.js 20 原生 <code>fetch</code></li>
+  <li>函数返回 <code>null</code> 表示失败，不 throw</li>
+  <li>无现有 hook/middleware 机制</li>
+</ul>
+
+<h3>测试覆盖</h3>
+<p>现有测试覆盖 config / templates / detect 模块。遥测模块需新增 <code>tests/telemetry.test.ts</code>。</p>
+</section>
+
+<!-- 03 技术设计 -->
+<section id="s3">
+<h2><span class="num">03</span>技术设计</h2>
+
+<div class="summary">方案 A — fire-and-forget fetch：单文件 ~80 行，零新依赖，网络失败静默丢弃。</div>
+
+<h3>架构概览</h3>
+<div class="mermaid-wrap">
+<pre class="mermaid">
+graph LR
+  CMD["commands/*.ts"] -->|调用| T["lib/telemetry.ts"]
+  T -->|读取| CFG["config.yml<br/>telemetry.id"]
+  T -->|fetch POST| EP["远程端点"]
+  T -->|检查| ENV["HARNESS_NO_TELEMETRY"]
+</pre>
+</div>
+
+<h3>关键时序</h3>
+<div class="mermaid-wrap">
+<pre class="mermaid">
+sequenceDiagram
+  participant U as 用户
+  participant CLI as harness CLI
+  participant T as telemetry.ts
+  participant EP as 远程端点
+
+  U->>CLI: devkeel init
+  CLI->>CLI: 执行 init 逻辑
+  CLI->>T: track("init", {success, duration})
+  T->>T: 检查 opt-out → 否
+  T->>T: 读取 telemetry.id
+  T-->>EP: fetch POST (不 await)
+  CLI->>U: p.outro("完成")
+</pre>
+</div>
+
+<h3>模块接口</h3>
+<pre><code class="language-typescript">export interface TelemetryEvent {
+  projectId: string
+  command: string
+  success: boolean
+  durationMs: number
+  skill?: string
+  cliVersion: string
+  timestamp: string
+}
+
+export function track(command: string, meta: {
+  success: boolean; durationMs: number; skill?: string
+}): void
+
+export function getOrCreateProjectId(projectRoot: string): string
+export function isTelemetryEnabled(): boolean</code></pre>
+
+<h3>方案对比</h3>
+<table>
+  <tr><th>质量属性</th><th>A: fire-and-forget fetch</th><th>B: 本地文件 + daemon</th></tr>
+  <tr><td>可维护性</td><td>★★★ 单文件</td><td>★☆ daemon 复杂</td></tr>
+  <tr><td>可靠性</td><td>★★ 丢弃可接受</td><td>★★★ 本地缓存</td></tr>
+  <tr><td>安全性</td><td>★★★ 无落盘</td><td>★★ 需保护文件</td></tr>
+</table>
+<p><strong>选定方案 A</strong>：首版不需要重试，极大简化实现。</p>
+
+<h3>安全 STRIDE</h3>
+<table>
+  <tr><th>威胁</th><th>场景</th><th>缓解</th></tr>
+  <tr><td>Info Disclosure</td><td>payload 含敏感路径</td><td>仅 UUID，不含路径</td></tr>
+  <tr><td>DoS</td><td>端点不可用</td><td>fire-and-forget</td></tr>
+  <tr><td>Tampering</td><td>伪造事件</td><td>后续可加 HMAC</td></tr>
+</table>
+</section>
+
+<!-- 04 变更提案 -->
+<section id="s4">
+<h2><span class="num">04</span>变更提案</h2>
+
+<h3>Why</h3>
+<p>当前无使用数据，无法判断迭代优先级。CLI 功能趋于稳定，需要数据驱动下一阶段方向。</p>
+
+<h3>What Changes</h3>
+<table>
+  <tr><th>变更</th><th>From</th><th>To</th><th>Impact</th></tr>
+  <tr><td>CLI 遥测能力</td><td>无数据收集</td><td>异步上报匿名事件</td><td>非破坏性</td></tr>
+  <tr><td>config.yml schema</td><td>无 telemetry 字段</td><td>可选 <code>telemetry.id</code></td><td>向后兼容</td></tr>
+</table>
+
+<h3>Capabilities</h3>
+<p>新增：<code>cli-telemetry</code> — 匿名遥测上报</p>
+
+<h3>Impact</h3>
+<ul>
+  <li><code>src/lib/telemetry.ts</code> — 新增</li>
+  <li><code>src/lib/config.ts</code> — 接口扩展</li>
+  <li><code>src/commands/*.ts</code> — 添加 track 调用</li>
+  <li>零新 runtime 依赖</li>
+</ul>
+</section>
+
+<!-- 05 规格清单 -->
+<section id="s5">
+<h2><span class="num">05</span>规格清单</h2>
+<p style="color:var(--text-muted);font-size:13px;margin-bottom:1.5rem;">Capability: cli-telemetry</p>
+
+<div class="req-card">
+  <div class="label">Requirement</div>
+  <h4>Track command execution</h4>
+  <p>CLI SHALL 在每个命令执行完成后异步上报遥测事件，包含 projectId、命令名、成功状态、耗时、CLI 版本和时间戳。</p>
+  <div class="scenario">
+    <div class="label">Scenario: Successful command execution</div>
+    <p><span class="kw">WHEN</span> 用户执行 <code>devkeel init</code> 且命令成功完成</p>
+    <p><span class="kw">THEN</span> 发送事件 <code>command: "init", success: true</code> 及耗时</p>
+  </div>
+  <div class="scenario">
+    <div class="label">Scenario: Network failure</div>
+    <p><span class="kw">WHEN</span> 遥测端点不可达</p>
+    <p><span class="kw">THEN</span> 事件静默丢弃，CLI 正常退出</p>
+  </div>
+</div>
+
+<div class="req-card">
+  <div class="label">Requirement</div>
+  <h4>Track skill usage</h4>
+  <p>CLI SHALL 在 skill 被调用时上报事件，包含 skill 名称。</p>
+  <div class="scenario">
+    <div class="label">Scenario: Skill invocation</div>
+    <p><span class="kw">WHEN</span> 用户触发 domain-init skill</p>
+    <p><span class="kw">THEN</span> 发送事件 <code>skill: "domain-init"</code></p>
+  </div>
+</div>
+
+<div class="req-card">
+  <div class="label">Requirement</div>
+  <h4>Anonymous project identification</h4>
+  <p>CLI SHALL 在首次遥测事件时生成 UUID v4 作为项目 ID，持久化到 config.yml。</p>
+  <div class="scenario">
+    <div class="label">Scenario: First run</div>
+    <p><span class="kw">WHEN</span> <code>telemetry.id</code> 不存在</p>
+    <p><span class="kw">THEN</span> 生成新 UUID 并写入 config.yml</p>
+  </div>
+  <div class="scenario">
+    <div class="label">Scenario: Subsequent run</div>
+    <p><span class="kw">WHEN</span> <code>telemetry.id</code> 已存在</p>
+    <p><span class="kw">THEN</span> 使用已有 ID</p>
+  </div>
+</div>
+
+<div class="req-card">
+  <div class="label">Requirement</div>
+  <h4>Opt-out mechanism</h4>
+  <p>CLI MUST NOT 在用户 opt-out 时发送任何遥测。</p>
+  <div class="scenario">
+    <div class="label">Scenario: Environment variable</div>
+    <p><span class="kw">WHEN</span> <code>HARNESS_NO_TELEMETRY=1</code></p>
+    <p><span class="kw">THEN</span> 不发送 HTTP 请求</p>
+  </div>
+  <div class="scenario">
+    <div class="label">Scenario: CI environment</div>
+    <p><span class="kw">WHEN</span> <code>CI=true</code></p>
+    <p><span class="kw">THEN</span> 不发送 HTTP 请求</p>
+  </div>
+</div>
+
+<div class="req-card">
+  <div class="label">Requirement</div>
+  <h4>Non-blocking execution</h4>
+  <p>遥测 MUST NOT 阻塞 CLI 主流程。fetch 调用为 fire-and-forget。</p>
+  <div class="scenario">
+    <div class="label">Scenario: Slow endpoint</div>
+    <p><span class="kw">WHEN</span> 端点响应 >5s</p>
+    <p><span class="kw">THEN</span> CLI 正常退出，不等待响应</p>
+  </div>
+</div>
+</section>
+
+<!-- 06 实现任务 -->
+<section id="s6">
+<h2><span class="num">06</span>实现任务</h2>
+
+<div class="task-group">
+<h4>1. Telemetry 核心模块</h4>
+<div class="task"><span class="box"></span><span><strong>1.1</strong> 创建 telemetry 模块骨架与 opt-out 逻辑</span></div>
+<div class="task"><span class="box"></span><span><strong>1.2</strong> 实现项目 ID 生成与持久化</span></div>
+<div class="task"><span class="box"></span><span><strong>1.3</strong> 实现 track() 函数</span></div>
+</div>
+
+<div class="task-group" style="margin-top:1rem;">
+<h4>2. 命令层集成</h4>
+<div class="task"><span class="box"></span><span><strong>2.1</strong> init 命令埋点</span></div>
+<div class="task"><span class="box"></span><span><strong>2.2</strong> 其余命令埋点</span></div>
+</div>
+
+<div class="task-group" style="margin-top:1rem;">
+<h4>3. 质量验证</h4>
+<div class="task"><span class="box"></span><span><strong>3.1</strong> 完整测试 + lint 通过</span></div>
+</div>
+</section>
+
+<!-- 验收指引 -->
+<div class="acceptance">
+<h2>
+  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>
+  验收指引
+</h2>
+<ol style="margin:1rem 0 1.5rem 1.5rem;">
+  <li>通读以上 6 个章节，确认需求、设计和任务拆解合理</li>
+  <li>确认待确认项已有决策或可延后</li>
+  <li>在浏览器中 review 完毕后，开启新会话执行实现</li>
+</ol>
+<h4>下一步</h4>
+<div class="next-cmd" onclick="navigator.clipboard.writeText('/opsx:apply add-telemetry')">
+  /opsx:apply add-telemetry
+  <span style="float:right;color:var(--text-muted);font-size:12px;">点击复制</span>
+</div>
+</div>
+
+</div>
+
+<footer>由 OpenSpec superpowers-bridge 生成 · 2026-05-18</footer>
+
+<script>
+hljs.highlightAll();
+const isDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+mermaid.initialize({
+  startOnLoad: true, theme: 'base',
+  themeVariables: isDark ? {
+    background:'#0f172a',primaryColor:'rgba(99,102,241,0.25)',primaryTextColor:'#f1f5f9',
+    primaryBorderColor:'#818cf8',secondaryColor:'rgba(6,78,59,0.4)',secondaryTextColor:'#f1f5f9',
+    secondaryBorderColor:'#34d399',lineColor:'#94a3b8',textColor:'#f1f5f9',
+    mainBkg:'rgba(99,102,241,0.15)',nodeBorder:'#818cf8',clusterBkg:'rgba(30,41,59,0.6)',
+    clusterBorder:'#475569',edgeLabelBackground:'#1e293b',fontSize:'14px'
+  } : {
+    background:'#ffffff',primaryColor:'#eef2ff',primaryTextColor:'#1e293b',
+    primaryBorderColor:'#4f46e5',secondaryColor:'#f0fdf4',secondaryTextColor:'#1e293b',
+    secondaryBorderColor:'#059669',lineColor:'#475569',textColor:'#1e293b',
+    mainBkg:'#eef2ff',nodeBorder:'#4f46e5',clusterBkg:'#f8fafc',
+    clusterBorder:'#e2e8f0',edgeLabelBackground:'#ffffff',fontSize:'14px'
+  }
+});
+</script>
+</body>
+</html>

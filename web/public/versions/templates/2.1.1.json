@@ -1,0 +1,48 @@
+{
+  "versions": ["2.1.1"],
+  "releasedAt": {
+    "from": "2026-09-09T09:50:42+08:00"
+  },
+  "title": "解决讨论难收敛、文档反复改、执行频繁停",
+  "archived": false,
+  "groups": [
+    {
+      "type": "refactor",
+      "label": "重构解决的问题",
+      "items": [
+        {
+          "name": "讨论了很多，还是不知道能不能开始",
+          "description": "`/brainstorming` 一次聚焦一个关键问题，给出推荐，并明确还缺什么、何时可以推进。"
+        },
+        {
+          "name": "想法还没定，文档已经写了又改",
+          "description": "`/brainstorming` 先在对话中收敛方案，再按需保存；OpenSpec 模板统一依据已确认的设计生成文档。"
+        },
+        {
+          "name": "小任务流程太重，确认过的事还要反复问",
+          "description": "重构 `agents-md.md`，让流程按任务需要启用，已有授权直接复用，验证与汇报聚焦必要结果。"
+        }
+      ]
+    },
+    {
+      "type": "feat",
+      "label": "缺陷排查改进",
+      "items": [
+        {
+          "name": "排查证据零散，修复过程频繁停顿",
+          "description": "Jira 排查联合日志、配置、数据与代码取证，证据和授权充分时继续推进，关键决定才交给用户。"
+        }
+      ]
+    },
+    {
+      "type": "breaking",
+      "label": "升级须知",
+      "items": [
+        {
+          "name": "旧规划需要迁移",
+          "description": "旧 change 需迁移并确认设计；`/opsx:propose` 退役，改用 `/opsx:new`、`/opsx:continue` 或 `/opsx:ff`。"
+        }
+      ]
+    }
+  ]
+}

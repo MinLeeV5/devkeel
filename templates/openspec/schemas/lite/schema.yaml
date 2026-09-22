@@ -1,0 +1,60 @@
+name: lite
+version: 7
+description: >
+  日常持久化协调工作流：Living brainstorm → tasks → apply → 快速归档。
+
+artifacts:
+  - id: brainstorm
+    generates: brainstorm.md
+    description: 由单题访谈维护并经用户确认的 Living Artifact
+    template: brainstorm.md
+    instruction: |
+      本 artifact 是共同设计的唯一语义来源，不是一次性生成的 change brief。
+
+      topic-only 转入 change 时，原样迁入当前有效 D-*、A-* 和 O-*；不得重新分析、换一种
+      说法扩散需求，或调用 requirement-analysis/technical-design 生成正文。用户明确输入且
+      无歧义时可记录为 D-*；有歧义时先回到 Brainstorming 单题访谈。
+
+      使用最小模板：30 秒概要与一图读懂都只是阅读视图；当前有效决定按真实主题分组；仓库
+      事实直接链接；被替代内容只进入决策变更记录。存在多阶段、分支、异步、状态流转或 3 个
+      以上协作组件时，一图读懂 MUST 使用一张最合适的 Mermaid 流程图、时序图或状态图；简单
+      变更删除整个图区。图中语义必须追溯到 D/A，且不得成为新的设计来源。
+
+      DRAFT 准备度按 5% 更新，95% 且无 O-* 时展示全部 D/A 快照；只有用户明确确认快照后才
+      改为 CONFIRMED。状态行和 D/A/O 计数必须通过共享 planning-state 检查器。
+    requires: []
+
+  - id: tasks
+    generates: tasks.md
+    description: 将 Confirmed brainstorm 机械拆分成可验证的实施结果
+    template: tasks.md
+    instruction: |
+      先重新从磁盘读取 brainstorm.md。只有 Living 状态为 CONFIRMED 才能生成；DRAFT、
+      LEGACY、INVALID 或存在 O-* 时停止并回到 Brainstorming。
+
+      这是封闭投影：只允许继承 D-*、A-*、可定位仓库事实，以及把已确认结果机械拆成任务。
+      不得调用 requirement-analysis/technical-design，不得增加新的结构、行为或维护选择。模板
+      需要但上游没有回答的内容必须停止，提出一项最高价值问题。
+
+      每个 checkbox 对应一个可独立验证的结果，只描述结果、范围和验证；用
+      `[D-03](brainstorm.md#d-03)` 等链接标出语义来源。同一结果的代码、测试、配置和文档
+      合并处理；不添加执行模式、提交信息、逐文件步骤或无依据的测试。
+    requires:
+      - brainstorm
+
+apply:
+  requires: [tasks]
+  tracks: tasks.md
+  instruction: |
+    从磁盘读取 brainstorm.md 和 tasks.md。OpenSpec 的 done 只证明文件存在；只有 brainstorm
+    为 CONFIRMED、D/A/O 计数有效、O 为 0、下游状态为 CURRENT，才允许实施。否则停止并
+    回到 Brainstorming 或 Continue。
+
+    由当前 Agent 从首个未完成任务开始顺序实施。检查 branch、HEAD、git status 并保护用户
+    改动；每项完成必要调查、最小修改和最邻近验证，验证通过后才勾选。同范围可补机械任务；
+    一旦需要新的结构、可观察行为或维护决定，停止实现，把 brainstorm 重置为 DRAFT、下游
+    标为 STALE，并进入单题访谈。
+
+    默认不创建 worktree、不分派实现 Agent、不安装无关依赖、不提交或推送。全部完成后做
+    低成本 diff 自审；仅在 AGENTS.md 规定的风险条件下调用 review-orchestrator。成功后使用
+    普通 OpenSpec archive；交付动作必须另行授权。

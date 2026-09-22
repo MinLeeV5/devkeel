@@ -1,0 +1,26 @@
+{
+  "versions": ["0.4.0"],
+  "releasedAt": { "from": "2026-05-19T15:39:00+08:00" },
+  "title": "Schema v6 — 评审页面增强与验证流程优化",
+  "archived": true,
+  "groups": [
+    {
+      "type": "feat",
+      "label": "模板更新",
+      "items": [
+        {
+          "name": "Schema 升级至 v6",
+          "description": "human-review 评审页面新增「代码设计预览」和「待确认项」汇总章节"
+        },
+        {
+          "name": "验证流程强化",
+          "description": "verify 阶段要求执行项目标准测试命令并记录输出摘要"
+        },
+        {
+          "name": "延迟验证精简",
+          "description": "覆盖缺口检查描述精简，去除冗余概念解释"
+        }
+      ]
+    }
+  ]
+}

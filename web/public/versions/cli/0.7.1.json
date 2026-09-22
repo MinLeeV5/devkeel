@@ -1,0 +1,26 @@
+{
+  "versions": ["0.7.1"],
+  "releasedAt": { "from": "2026-06-16T16:43:00+08:00" },
+  "title": "更新通知：自动检测新版本并提示升级",
+  "archived": false,
+  "groups": [
+    {
+      "type": "feat",
+      "label": "新能力",
+      "items": [
+        {
+          "name": "更新通知",
+          "description": "执行 `inject-review` 或 `doctor` 时自动检测模板新版本，显示版本对比提示并引导升级"
+        },
+        {
+          "name": "浏览器自动打开更新页",
+          "description": "首次发现新版本时自动打开 changelog 页面展示变更详情，后续仅显示 CLI 提示"
+        },
+        {
+          "name": "更新页版本提示",
+          "description": "从 CLI 通知打开 changelog 时，页面顶部醒目显示版本升级引导"
+        }
+      ]
+    }
+  ]
+}

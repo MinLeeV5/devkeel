@@ -1,0 +1,28 @@
+{
+  "versions": ["1.3.0"],
+  "releasedAt": { "from": "2026-07-14T13:06:00+08:00" },
+  "title": "验证支持 worktree 证据并减少 token 消耗",
+  "archived": false,
+  "groups": [
+    {
+      "type": "feat",
+      "label": "新能力",
+      "items": [
+        {
+          "name": "Worktree 实现证据",
+          "description": "`verify` 可识别当前 worktree 和可访问 submodule 中已提交或未提交的实现证据，不再因主 checkout 无提交而误判"
+        }
+      ]
+    },
+    {
+      "type": "refactor",
+      "label": "优化",
+      "items": [
+        {
+          "name": "精简验证报告",
+          "description": "`verify.md` 合并重复章节，只保留检查摘要、实现与交付证据、警告缺口和最终结论，降低生成报告时的 token 消耗"
+        }
+      ]
+    }
+  ]
+}

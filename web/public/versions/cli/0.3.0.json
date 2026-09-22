@@ -1,0 +1,50 @@
+{
+  "versions": ["0.3.0"],
+  "releasedAt": { "from": "2026-05-18T10:14:00+08:00" },
+  "title": "AGENTS.md 分区更新 + 领域初始化能力",
+  "archived": true,
+  "groups": [
+    {
+      "type": "feat",
+      "label": "AGENTS.md 智能分区更新",
+      "items": [
+        {
+          "name": "框架内容自动升级",
+          "description": "`devkeel update` 时 AGENTS.md 的框架区域跟随模板更新，用户定制内容完整保留"
+        },
+        {
+          "name": "执行器路由内置",
+          "description": "AGENTS.md 模板新增 apply 执行器路由规则"
+        }
+      ]
+    },
+    {
+      "type": "feat",
+      "label": "新增 Skills",
+      "items": [
+        {
+          "name": "domain-init",
+          "description": "新增领域初始化 skill，对项目全盘扫描后自动生成专属 rules、skills 和 agents"
+        },
+        {
+          "name": "setup 重写",
+          "description": "setup skill 改为推荐工具自动配置器"
+        }
+      ]
+    },
+    {
+      "type": "fix",
+      "label": "更新机制修正",
+      "items": [
+        {
+          "name": "Commands 全量同步",
+          "description": "commands 目录改为全量覆盖"
+        },
+        {
+          "name": "Schemas 更新修复",
+          "description": "修复 schema 更新时旧文件残留的问题"
+        }
+      ]
+    }
+  ]
+}

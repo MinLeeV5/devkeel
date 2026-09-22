@@ -1,0 +1,44 @@
+{
+  "versions": ["0.6.0", "0.6.1"],
+  "releasedAt": { "from": "2026-06-01T14:39:00+08:00" },
+  "title": "精简工作流模式，降低小变更流程开销",
+  "archived": true,
+  "groups": [
+    {
+      "type": "feat",
+      "label": "新能力",
+      "items": [
+        {
+          "name": "⭐ 默认工作流切换为精简模式",
+          "description": "流程从完整模式切换为：`brainstorm → [design] → [specs] → tasks → [human-review] → apply → verify → retrospective`，方括号表示可选阶段，需求明确时可跳过直达任务拆分"
+        },
+        {
+          "name": "全局配置精简",
+          "description": "移除 OMC/OMX 相关编排配置，改为通用规则，配置体积减少约 60%"
+        },
+        {
+          "name": "上下文消耗优化",
+          "description": "大幅精简 skill 调用指令、全局 context rule 等话术，减少每次 artifact 生成时的 token 开销"
+        },
+        {
+          "name": "需求分析增强",
+          "description": "需求分析 skill 新增可选能力支持，按项目复杂度自适应分析深度"
+        },
+        {
+          "name": "增加 sync 命令",
+          "description": "可以随时增加支持的平台配置"
+        }
+      ]
+    },
+    {
+      "type": "fix",
+      "label": "修复",
+      "items": [
+        {
+          "name": "工作流阶段命名",
+          "description": "修正工作流中阶段名称不一致的问题，统一为用户可理解的中文描述"
+        }
+      ]
+    }
+  ]
+}

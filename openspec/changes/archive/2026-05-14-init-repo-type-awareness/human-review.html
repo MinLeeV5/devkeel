@@ -1,0 +1,673 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>init-repo-type-awareness — 变更验收文档</title>
+<link rel="stylesheet" href="https://cdn.jsdmirror.com/npm/@highlightjs/cdn-assets@11.11.1/styles/github.min.css">
+<link rel="stylesheet" href="https://cdn.jsdmirror.com/npm/@highlightjs/cdn-assets@11.11.1/styles/github-dark.min.css" media="(prefers-color-scheme: dark)">
+<script src="https://cdn.jsdmirror.com/npm/@highlightjs/cdn-assets@11.11.1/highlight.min.js"></script>
+<script src="https://cdn.jsdmirror.com/npm/mermaid@11/dist/mermaid.min.js"></script>
+<style>
+:root {
+  --font-sans: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Noto Sans SC', 'PingFang SC', 'Microsoft YaHei', sans-serif;
+  --font-mono: 'SF Mono', 'Cascadia Code', 'JetBrains Mono', Consolas, monospace;
+  --text-base: 15px; --text-sm: 13px; --text-xs: 11px; --text-lg: 17px;
+  --text-xl: 20px; --text-2xl: 26px; --text-3xl: 34px;
+  --line-height: 1.8; --line-height-tight: 1.3;
+  --heading-weight: 700; --letter-spacing-tight: -0.02em;
+  --max-width: 860px; --content-padding: 2.5rem;
+  --section-gap: 3.5rem; --card-radius: 10px; --card-padding: 1.5rem 2rem;
+  --bg: #f8fafc; --surface: #ffffff; --surface-hover: #f8fafc;
+  --text: #0f172a; --text-secondary: #475569; --text-muted: #94a3b8;
+  --accent: #4f46e5; --accent-hover: #4338ca; --accent-light: #eef2ff;
+  --accent-border: #c7d2fe; --accent-text: #3730a3;
+  --border: #e2e8f0; --border-light: #f1f5f9;
+  --code-bg: #f1f5f9; --code-text: #334155;
+  --success: #059669; --warning: #d97706; --danger: #dc2626;
+  --badge-bg: #fef3c7; --badge-text: #92400e; --badge-border: #fcd34d;
+  --shadow-sm: 0 1px 2px rgba(0,0,0,0.04);
+  --shadow: 0 1px 3px rgba(0,0,0,0.06), 0 1px 2px rgba(0,0,0,0.04);
+  --header-gradient: linear-gradient(135deg, #eef2ff 0%, #f8fafc 50%, #f0f9ff 100%);
+}
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #0f172a; --surface: #1e293b; --surface-hover: #334155;
+    --text: #f1f5f9; --text-secondary: #94a3b8; --text-muted: #64748b;
+    --accent: #818cf8; --accent-hover: #a5b4fc;
+    --accent-light: rgba(99,102,241,0.12); --accent-border: rgba(99,102,241,0.25);
+    --accent-text: #c7d2fe; --border: #334155; --border-light: #1e293b;
+    --code-bg: #0f172a; --code-text: #cbd5e1;
+    --success: #34d399; --warning: #fbbf24; --danger: #f87171;
+    --badge-bg: rgba(251,191,36,0.15); --badge-text: #fcd34d; --badge-border: rgba(251,191,36,0.3);
+    --shadow-sm: 0 1px 2px rgba(0,0,0,0.2);
+    --shadow: 0 1px 3px rgba(0,0,0,0.3), 0 1px 2px rgba(0,0,0,0.2);
+    --header-gradient: linear-gradient(135deg, rgba(67,56,202,0.08) 0%, #1e293b 50%, rgba(14,165,233,0.06) 100%);
+  }
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{font-size:var(--text-base);scroll-behavior:smooth;-webkit-text-size-adjust:100%}
+body{font-family:var(--font-sans);line-height:var(--line-height);color:var(--text);background:var(--bg);-webkit-font-smoothing:antialiased}
+
+.page-header{background:var(--header-gradient);border-bottom:1px solid var(--border);padding:3rem var(--content-padding) 2.5rem}
+.page-header-inner{max-width:var(--max-width);margin:0 auto}
+.badge{display:inline-flex;align-items:center;gap:6px;font-size:var(--text-xs);font-weight:600;letter-spacing:0.05em;text-transform:uppercase;padding:4px 12px;border-radius:100px;background:var(--badge-bg);color:var(--badge-text);border:1px solid var(--badge-border);margin-bottom:1rem}
+.badge::before{content:'';width:6px;height:6px;border-radius:50%;background:var(--warning);animation:pulse-dot 2s ease-in-out infinite}
+@keyframes pulse-dot{0%,100%{opacity:1}50%{opacity:0.4}}
+@media(prefers-reduced-motion:reduce){.badge::before{animation:none}}
+.page-header h1{font-size:var(--text-3xl);font-weight:800;letter-spacing:var(--letter-spacing-tight);line-height:var(--line-height-tight);margin-bottom:0.5rem}
+.page-header .subtitle{font-size:var(--text-lg);color:var(--text-secondary);margin-bottom:0.75rem}
+.page-header .meta{font-size:var(--text-sm);color:var(--text-muted)}
+.progress-bar{display:flex;gap:4px;margin-top:1.5rem}
+.progress-segment{flex:1;height:4px;border-radius:2px;background:var(--border)}
+.progress-segment.complete{background:var(--success)}
+.progress-segment.current{background:var(--accent)}
+
+.page-body{max-width:var(--max-width);margin:0 auto;padding:0 var(--content-padding);padding-bottom:4rem}
+
+.toc{background:var(--surface);border:1px solid var(--border);border-radius:var(--card-radius);padding:1.5rem 2rem;margin:2rem 0 var(--section-gap);box-shadow:var(--shadow-sm)}
+.toc-title{font-size:var(--text-sm);font-weight:600;text-transform:uppercase;letter-spacing:0.08em;color:var(--text-muted);margin-bottom:1rem}
+.toc ol{list-style:none;counter-reset:toc-counter}
+.toc ol li{counter-increment:toc-counter;margin-bottom:0.35rem}
+.toc ol li a{display:flex;align-items:baseline;gap:0.75rem;padding:0.35rem 0.5rem;border-radius:6px;text-decoration:none;color:var(--text-secondary);font-size:var(--text-sm);font-weight:500;transition:background 150ms,color 150ms}
+.toc ol li a::before{content:counter(toc-counter,decimal-leading-zero);font-size:var(--text-xs);font-weight:700;font-variant-numeric:tabular-nums;color:var(--accent);min-width:1.5em}
+.toc ol li a:hover{background:var(--accent-light);color:var(--accent-text)}
+
+.section{padding-top:var(--section-gap)}
+.section+.section{border-top:1px solid var(--border-light)}
+.section-header{display:flex;align-items:baseline;gap:0.75rem;margin-bottom:1.5rem}
+.section-number{font-size:var(--text-xl);font-weight:800;font-variant-numeric:tabular-nums;color:var(--accent);letter-spacing:var(--letter-spacing-tight)}
+.section-title{font-size:var(--text-2xl);font-weight:var(--heading-weight);letter-spacing:var(--letter-spacing-tight);line-height:var(--line-height-tight)}
+
+.section-content h3{font-size:var(--text-xl);font-weight:600;margin:2rem 0 0.75rem;padding-bottom:0.5rem;border-bottom:1px solid var(--border-light)}
+.section-content h4{font-size:var(--text-lg);font-weight:600;margin:1.5rem 0 0.5rem}
+.section-content p{margin-bottom:1rem;color:var(--text-secondary)}
+.section-content p:last-child{margin-bottom:0}
+.section-content strong{color:var(--text);font-weight:600}
+.section-content ul,.section-content ol{margin-bottom:1rem;padding-left:1.25rem;color:var(--text-secondary)}
+.section-content li{margin-bottom:0.35rem}
+.section-content a{color:var(--accent);text-decoration:underline;text-underline-offset:2px;text-decoration-color:var(--accent-border)}
+
+.summary-block{background:var(--accent-light);border:1px solid var(--accent-border);border-radius:var(--card-radius);padding:1.5rem 2rem;margin-bottom:1.5rem}
+.summary-block p{color:var(--accent-text)!important;font-weight:500}
+
+.card{background:var(--surface);border:1px solid var(--border);border-radius:var(--card-radius);padding:var(--card-padding);margin-bottom:1rem;box-shadow:var(--shadow-sm);transition:box-shadow 200ms}
+.card:hover{box-shadow:var(--shadow)}
+.card-label{font-size:var(--text-xs);font-weight:600;text-transform:uppercase;letter-spacing:0.05em;color:var(--accent);margin-bottom:0.35rem}
+
+.requirement-card{background:var(--surface);border:1px solid var(--border);border-left:3px solid var(--accent);border-radius:0 var(--card-radius) var(--card-radius) 0;padding:var(--card-padding);margin-bottom:1.25rem}
+.requirement-card h4{margin:0 0 0.5rem!important;padding:0!important;border:none!important;font-size:var(--text-base);font-weight:600}
+
+.scenario{background:var(--accent-light);border:1px solid var(--accent-border);border-radius:8px;padding:1rem 1.25rem;margin:0.75rem 0;font-size:var(--text-sm)}
+.scenario-label{font-size:var(--text-xs);font-weight:700;text-transform:uppercase;letter-spacing:0.06em;color:var(--accent);margin-bottom:0.5rem}
+.scenario .when,.scenario .then{margin-bottom:0.35rem;color:var(--text-secondary)}
+.scenario .when strong,.scenario .then strong{color:var(--accent-text);font-weight:700;font-size:var(--text-xs);text-transform:uppercase;letter-spacing:0.04em;margin-right:0.5rem}
+
+code{font-family:var(--font-mono);font-size:0.875em;background:var(--code-bg);color:var(--code-text);padding:0.15em 0.4em;border-radius:4px}
+pre{background:var(--code-bg);border:1px solid var(--border);border-radius:8px;padding:1.25rem 1.5rem;overflow-x:auto;margin-bottom:1rem;font-size:var(--text-sm);line-height:1.6}
+pre code{background:none;padding:0;border-radius:0}
+
+.task-list{list-style:none;padding:0}
+.task-list li{display:flex;align-items:flex-start;gap:0.75rem;padding:0.6rem 0;border-bottom:1px solid var(--border-light);color:var(--text-secondary);font-size:var(--text-sm)}
+.task-list li:last-child{border-bottom:none}
+.checkbox{flex-shrink:0;width:18px;height:18px;border:2px solid var(--border);border-radius:4px;margin-top:2px;position:relative;background:var(--surface)}
+.checkbox.checked{background:var(--success);border-color:var(--success)}
+.checkbox.checked::after{content:'';position:absolute;left:4px;top:1px;width:6px;height:10px;border:solid white;border-width:0 2px 2px 0;transform:rotate(45deg)}
+.task-list li.completed{color:var(--text-muted);text-decoration:line-through}
+.task-group-title{font-size:var(--text-base);font-weight:600;color:var(--text);margin:1.5rem 0 0.5rem}
+.task-group-title:first-child{margin-top:0}
+
+table{width:100%;border-collapse:collapse;margin-bottom:1rem;font-size:var(--text-sm)}
+thead th{text-align:left;font-weight:600;color:var(--text-muted);font-size:var(--text-xs);text-transform:uppercase;letter-spacing:0.06em;padding:0.75rem 1rem;border-bottom:2px solid var(--border);background:var(--border-light)}
+tbody td{padding:0.75rem 1rem;border-bottom:1px solid var(--border-light);color:var(--text-secondary)}
+tbody tr:hover{background:var(--surface-hover)}
+
+.callout{display:flex;gap:0.75rem;padding:1rem 1.25rem;border-radius:8px;margin-bottom:1rem;font-size:var(--text-sm)}
+.callout-info{background:var(--accent-light);border:1px solid var(--accent-border);color:var(--accent-text)}
+.callout-icon{flex-shrink:0;font-size:var(--text-lg);line-height:1.4}
+
+.empty-state{text-align:center;padding:2rem;color:var(--text-muted);font-style:italic;font-size:var(--text-sm);border:1px dashed var(--border);border-radius:var(--card-radius)}
+
+.acceptance{margin-top:var(--section-gap);padding-top:2.5rem;border-top:2px solid var(--accent)}
+.acceptance-header{display:flex;align-items:center;gap:0.75rem;margin-bottom:1.5rem}
+.acceptance-icon{width:40px;height:40px;background:var(--accent-light);border:1px solid var(--accent-border);border-radius:10px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.acceptance-title{font-size:var(--text-xl);font-weight:var(--heading-weight)}
+.acceptance ol{padding-left:1.25rem;margin-bottom:1.5rem;color:var(--text-secondary)}
+.acceptance ol li{margin-bottom:0.5rem}
+.next-step{background:var(--surface);border:1px solid var(--border);border-radius:var(--card-radius);padding:1.5rem 2rem;margin-top:1.5rem;box-shadow:var(--shadow-sm)}
+.next-step-label{font-size:var(--text-xs);font-weight:600;text-transform:uppercase;letter-spacing:0.06em;color:var(--accent);margin-bottom:0.75rem}
+.next-step code{display:block;font-size:var(--text-lg);font-weight:600;padding:0.75rem 1rem;background:var(--code-bg);border-radius:6px;color:var(--accent-text);user-select:all;cursor:pointer;border:1px dashed var(--accent-border);text-align:center;transition:background 150ms}
+.next-step code:hover{background:var(--accent-light)}
+
+.page-footer{max-width:var(--max-width);margin:0 auto;padding:2rem var(--content-padding);text-align:center;font-size:var(--text-xs);color:var(--text-muted);border-top:1px solid var(--border-light)}
+
+.mermaid{background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:1.5rem;margin-bottom:1rem;text-align:center}
+
+@media(max-width:768px){
+  :root{--content-padding:1.25rem;--section-gap:2.5rem;--text-3xl:28px;--text-2xl:22px}
+  .page-header{padding:2rem var(--content-padding) 1.5rem}
+  .card,.requirement-card{padding:1.25rem 1.5rem}
+}
+@media(max-width:480px){
+  :root{--content-padding:1rem;--text-3xl:24px;--text-2xl:20px}
+  .section-header{flex-direction:column;gap:0.25rem}
+  table{display:block;overflow-x:auto}
+}
+@media print{
+  :root{--bg:#fff;--surface:#fff;--text:#000;--text-secondary:#333;--accent:#4f46e5;--border:#ccc}
+  body{background:white}
+  .page-header{background:none!important;border-bottom:2px solid #000}
+  .badge{display:none}
+  .card,.requirement-card,.scenario,.summary-block{box-shadow:none;break-inside:avoid}
+  .toc{break-after:page}
+  .acceptance{break-before:page}
+}
+</style>
+</head>
+<body>
+
+<header class="page-header">
+  <div class="page-header-inner">
+    <div class="badge">Pending Review</div>
+    <h1>init-repo-type-awareness</h1>
+    <p class="subtitle">让 devkeel init 区分主仓库和领域子仓库，智能覆写 CLAUDE.md/AGENTS.md</p>
+    <p class="meta">生成于 <time>2026-05-14</time></p>
+    <div class="progress-bar">
+      <div class="progress-segment complete" title="Brainstorm"></div>
+      <div class="progress-segment complete" title="Proposal"></div>
+      <div class="progress-segment complete" title="Design"></div>
+      <div class="progress-segment complete" title="Specs"></div>
+      <div class="progress-segment complete" title="Tasks"></div>
+      <div class="progress-segment complete" title="Plan"></div>
+      <div class="progress-segment current" title="Review"></div>
+    </div>
+  </div>
+</header>
+
+<main class="page-body">
+
+  <nav class="toc" aria-label="目录">
+    <div class="toc-title">目录</div>
+    <ol>
+      <li><a href="#requirements">需求背景</a></li>
+      <li><a href="#proposal">变更提案</a></li>
+      <li><a href="#design">技术设计</a></li>
+      <li><a href="#specs">规格清单</a></li>
+      <li><a href="#tasks">任务列表</a></li>
+      <li><a href="#plan">实现计划</a></li>
+    </ol>
+  </nav>
+
+  <!-- 01 需求背景 -->
+  <section class="section" id="requirements">
+    <div class="section-header">
+      <span class="section-number">01</span>
+      <h2 class="section-title">需求背景</h2>
+    </div>
+    <div class="section-content">
+      <div class="summary-block">
+        <p>让 <code>devkeel init</code> 区分主仓库和领域子仓库，领域子仓库只落对应领域模板（不含通用模板和 openspec），同时修复 CLAUDE.md / AGENTS.md 被无条件覆写的问题。</p>
+      </div>
+
+      <h3>问题陈述</h3>
+      <p>当前 <code>devkeel init</code> 存在三个核心问题：</p>
+      <ol>
+        <li><strong>CLAUDE.md 被无条件覆写</strong> — <code>fs.writeFileSync</code> 直接写入，用户精心编写的项目描述、API 文档引用等内容会被模板替换。<code>detect.ts</code> 中声称"追加 @AGENTS.md 引用"，但代码实际是全量覆写。AGENTS.md 同理。</li>
+        <li><strong>无仓库类型区分</strong> — config 只有 <code>project.types</code>（frontend/backend/other），没有"主仓库 vs 领域子仓库"概念。所有仓库走完全相同的 init 流程。</li>
+        <li><strong>子模块初始化过于简陋</strong> — 当前只创建 <code>.gitkeep</code> 存根和一行空白 AGENTS.md，不复制任何领域模板内容。</li>
+      </ol>
+
+      <h3>目标用户</h3>
+      <table>
+        <thead><tr><th>角色</th><th>关注点</th></tr></thead>
+        <tbody>
+          <tr><td>主仓库维护者</td><td>init 后所有子仓库都有正确的领域规范，不需要手动二次配置</td></tr>
+          <tr><td>领域子仓库开发者</td><td><code>.harness/</code> 中的 skills/rules/agents 与自己的技术栈匹配，无多余噪音</td></tr>
+          <tr><td>CI/CD 工程师</td><td>config.yml 中有明确的 repoType 字段，便于自动化流程判断</td></tr>
+        </tbody>
+      </table>
+
+      <h3>核心用例</h3>
+      <h4>用例 1：CLAUDE.md / AGENTS.md 智能覆写</h4>
+      <table>
+        <thead><tr><th>场景</th><th>行为</th></tr></thead>
+        <tbody>
+          <tr><td>文件不存在</td><td>写入完整模板</td></tr>
+          <tr><td>文件存在，内容与模板一致</td><td>覆写为最新模板</td></tr>
+          <tr><td>文件存在，包含非模板内容</td><td>只确保顶部有 <code>@AGENTS.md</code> 引用，不修改其余内容</td></tr>
+        </tbody>
+      </table>
+
+      <h4>用例 4：领域子仓库 init 流程</h4>
+      <pre class="mermaid">
+flowchart TD
+    A[检测为领域子仓库] --> B[用户选择领域类型]
+    B --> C[复制领域模板到 .harness/]
+    C --> D[写入领域版 AGENTS.md]
+    D --> E[智能写入 CLAUDE.md]
+    E --> F[创建平台 symlink]
+      </pre>
+      <p>领域子仓库 <strong>不</strong>执行：复制通用模板、落 openspec 脚手架、复制 commands 目录。</p>
+
+      <h3>需求边界</h3>
+      <h4>In Scope</h4>
+      <ul>
+        <li>CLAUDE.md / AGENTS.md 智能覆写（对比模板内容判断）</li>
+        <li>config.yml 新增 <code>project.repoType</code>（<code>main</code> | <code>domain</code>）</li>
+        <li>config.yml 新增 <code>project.domainType</code>（领域子仓库专用）</li>
+        <li>仓库类型自动检测（基于 .gitmodules）+ 用户确认</li>
+        <li>领域子仓库 init 流程</li>
+        <li>主仓库 init 时批量为子模块选择领域类型并初始化</li>
+      </ul>
+      <h4>Out of Scope</h4>
+      <ul>
+        <li>setup skill 自动生成项目描述 — 后续迭代</li>
+        <li>领域子仓库的 openspec 支持 — 明确排除</li>
+        <li>主仓库/子仓库间的 config 继承或联动机制</li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- 02 变更提案 -->
+  <section class="section" id="proposal">
+    <div class="section-header">
+      <span class="section-number">02</span>
+      <h2 class="section-title">变更提案</h2>
+    </div>
+    <div class="section-content">
+      <h3>Why</h3>
+      <p>当前 <code>devkeel init</code> 对所有仓库执行统一流程，存在三个痛点：(1) CLAUDE.md / AGENTS.md 被无条件覆写；(2) 无主仓库/领域子仓库的概念区分；(3) 子模块初始化只创建空存根。团队在多仓库场景下使用 harness-cli 已成常态，需要 init 命令具备仓库类型感知能力。</p>
+
+      <h3>What Changes</h3>
+      <table>
+        <thead><tr><th>变更项</th><th>From</th><th>To</th></tr></thead>
+        <tbody>
+          <tr>
+            <td><strong>CLAUDE.md 写入行为</strong></td>
+            <td><code>fs.writeFileSync</code> 无条件覆写</td>
+            <td>智能覆写 — 检测非模板内容则保留，只确保 <code>@AGENTS.md</code> 引用</td>
+          </tr>
+          <tr>
+            <td><strong>仓库类型检测</strong></td>
+            <td>config 只有 <code>project.types</code></td>
+            <td>新增 <code>repoType</code> + <code>domainType</code>，基于 <code>.gitmodules</code> 自动检测</td>
+          </tr>
+          <tr>
+            <td><strong>领域子仓库 init</strong></td>
+            <td>创建 <code>.gitkeep</code> 存根</td>
+            <td>完整的领域 init — 复制领域模板 + 领域版 AGENTS.md/CLAUDE.md + 平台 symlink</td>
+          </tr>
+          <tr>
+            <td><strong>子模块批量 init</strong></td>
+            <td>只选择哪些子模块要 init</td>
+            <td>还需为每个子模块选择领域类型</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <h3>Capabilities</h3>
+      <h4>新增能力</h4>
+      <ul>
+        <li><strong>smart-file-write</strong> — CLAUDE.md / AGENTS.md 智能覆写机制</li>
+        <li><strong>repo-type-detection</strong> — 仓库类型自动检测与交互确认</li>
+        <li><strong>domain-subrepo-init</strong> — 领域子仓库 init 流程</li>
+        <li><strong>domain-templates</strong> — 领域子仓库的 AGENTS.md / CLAUDE.md 模板</li>
+      </ul>
+
+      <h3>Impact</h3>
+      <table>
+        <thead><tr><th>影响范围</th><th>说明</th></tr></thead>
+        <tbody>
+          <tr><td><code>src/commands/init.ts</code></td><td>主要改动 — 流程分支、交互提示、子模块处理重构</td></tr>
+          <tr><td><code>src/lib/templates.ts</code></td><td>新增 <code>hasUserContent()</code>、<code>writeSmartFile()</code></td></tr>
+          <tr><td><code>src/lib/detect.ts</code></td><td>新增 <code>detectRepoType()</code></td></tr>
+          <tr><td><code>src/lib/config.ts</code></td><td>接口扩展 <code>repoType</code>、<code>domainType</code> 字段</td></tr>
+          <tr><td><code>templates/</code></td><td>新增 <code>agents-md-domain.md</code>、<code>claude-md-domain.md</code></td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- 03 技术设计 -->
+  <section class="section" id="design">
+    <div class="section-header">
+      <span class="section-number">03</span>
+      <h2 class="section-title">技术设计</h2>
+    </div>
+    <div class="section-content">
+      <h3>数据模型变更</h3>
+      <pre><code class="language-typescript">interface HarnessConfig {
+  version: string
+  project: {
+    name: string
+    types: string[]
+    repoType: 'main' | 'domain'    // 新增
+    domainType?: string             // 新增，领域子仓库专用
+  }
+  targets: string[]
+}</code></pre>
+
+      <h3>init 流程分支</h3>
+      <pre class="mermaid">
+flowchart TD
+    Start[devkeel init] --> Detect[检测仓库类型]
+    Detect --> Confirm{用户确认 repoType}
+    Confirm -->|main| MainFlow[主仓库流程]
+    Confirm -->|domain| DomainFlow[领域子仓库流程]
+    MainFlow --> M1[复制通用模板]
+    M1 --> M2[复制领域模板到 domain/]
+    M2 --> M3[处理 openspec]
+    M3 --> M4[子模块批量 init]
+    M4 --> M5[智能写入 AGENTS.md/CLAUDE.md]
+    M5 --> M6[创建平台 symlink]
+    DomainFlow --> D1[用户选择领域类型]
+    D1 --> D2[只复制领域模板到 .harness/]
+    D2 --> D3[智能写入领域版 AGENTS.md/CLAUDE.md]
+    D3 --> D4[创建平台 symlink]
+      </pre>
+
+      <h3>智能覆写策略</h3>
+      <p>在 <code>src/lib/templates.ts</code> 新增 <code>hasUserContent(filePath, templateContent)</code>：读取现有文件，渲染模板，去除 HTML 注释占位符后对比，有实质差异则返回 true。</p>
+      <p>写入策略函数 <code>writeSmartFile(filePath, templateContent, ensureDirective)</code>：文件不存在 → 写入完整模板；无用户内容 → 覆写；有用户内容 → 只确保 <code>@AGENTS.md</code> 引用存在。</p>
+    </div>
+  </section>
+
+  <!-- 04 规格清单 -->
+  <section class="section" id="specs">
+    <div class="section-header">
+      <span class="section-number">04</span>
+      <h2 class="section-title">规格清单</h2>
+    </div>
+    <div class="section-content">
+
+      <h3>smart-file-write</h3>
+
+      <div class="requirement-card">
+        <div class="card-label">Requirement</div>
+        <h4>Smart file write SHALL detect user-authored content</h4>
+        <p>系统在写入 CLAUDE.md 或 AGENTS.md 前，SHALL 将现有文件内容与渲染后的模板内容进行对比。去除 HTML 注释占位符后，如果存在实质性差异，则判定文件包含用户自定义内容。</p>
+        <div class="scenario">
+          <div class="scenario-label">Scenario: File does not exist</div>
+          <p class="when"><strong>WHEN</strong> 目标路径不存在 CLAUDE.md 或 AGENTS.md</p>
+          <p class="then"><strong>THEN</strong> 系统 SHALL 写入完整渲染后的模板内容</p>
+        </div>
+        <div class="scenario">
+          <div class="scenario-label">Scenario: File exists with only template placeholders</div>
+          <p class="when"><strong>WHEN</strong> 文件存在且内容与渲染后的模板一致</p>
+          <p class="then"><strong>THEN</strong> 系统 SHALL 覆写为最新渲染后的模板内容</p>
+        </div>
+        <div class="scenario">
+          <div class="scenario-label">Scenario: File exists with user-authored content</div>
+          <p class="when"><strong>WHEN</strong> 文件存在且内容与渲染后的模板存在实质性差异</p>
+          <p class="then"><strong>THEN</strong> 系统 SHALL 保留现有内容不做修改</p>
+        </div>
+      </div>
+
+      <div class="requirement-card">
+        <div class="card-label">Requirement</div>
+        <h4>Smart file write SHALL ensure @AGENTS.md directive exists</h4>
+        <p>当文件被判定包含用户自定义内容时，系统 SHALL 检查文件顶部是否包含 <code>@AGENTS.md</code> 引用指令。</p>
+        <div class="scenario">
+          <div class="scenario-label">Scenario: User content file missing directive</div>
+          <p class="when"><strong>WHEN</strong> 文件包含用户自定义内容且顶部不包含 <code>@AGENTS.md</code></p>
+          <p class="then"><strong>THEN</strong> 系统 SHALL 在文件顶部插入 <code>@AGENTS.md\n\n</code></p>
+        </div>
+        <div class="scenario">
+          <div class="scenario-label">Scenario: User content file already has directive</div>
+          <p class="when"><strong>WHEN</strong> 文件包含用户自定义内容且已包含 <code>@AGENTS.md</code></p>
+          <p class="then"><strong>THEN</strong> 系统 SHALL 不做任何修改</p>
+        </div>
+      </div>
+
+      <h3>repo-type-detection</h3>
+
+      <div class="requirement-card">
+        <div class="card-label">Requirement</div>
+        <h4>System SHALL auto-detect repo type based on .gitmodules</h4>
+        <p>系统在 init 流程启动时 SHALL 检查 <code>.gitmodules</code> 是否存在且包含子模块条目。</p>
+        <div class="scenario">
+          <div class="scenario-label">Scenario: Project has .gitmodules with submodules</div>
+          <p class="when"><strong>WHEN</strong> <code>.gitmodules</code> 包含至少一个 <code>[submodule "..."]</code> 条目</p>
+          <p class="then"><strong>THEN</strong> 推断仓库类型为 <code>main</code></p>
+        </div>
+        <div class="scenario">
+          <div class="scenario-label">Scenario: No .gitmodules or empty</div>
+          <p class="when"><strong>WHEN</strong> 不存在 <code>.gitmodules</code> 或文件为空</p>
+          <p class="then"><strong>THEN</strong> 推断仓库类型为 <code>domain</code></p>
+        </div>
+      </div>
+
+      <div class="requirement-card">
+        <div class="card-label">Requirement</div>
+        <h4>Config SHALL include repoType and domainType fields</h4>
+        <p><code>HarnessConfig</code> 接口 SHALL 包含 <code>project.repoType</code>（<code>main</code> | <code>domain</code>）。领域子仓库还需 <code>project.domainType</code>。</p>
+        <div class="scenario">
+          <div class="scenario-label">Scenario: Existing config without repoType</div>
+          <p class="when"><strong>WHEN</strong> 读取已有 config.yml 且缺少 repoType</p>
+          <p class="then"><strong>THEN</strong> 系统 SHALL 正常运行不报错（向后兼容）</p>
+        </div>
+      </div>
+
+      <h3>domain-subrepo-init</h3>
+
+      <div class="requirement-card">
+        <div class="card-label">Requirement</div>
+        <h4>Domain sub-repo init SHALL only copy domain-specific templates</h4>
+        <p>当 repoType 为 <code>domain</code> 时，只将对应领域模板的 skills/rules/agents 复制到 <code>.harness/</code> 顶层。</p>
+        <div class="scenario">
+          <div class="scenario-label">Scenario: No generic templates or openspec copied</div>
+          <p class="when"><strong>WHEN</strong> repoType 为 <code>domain</code></p>
+          <p class="then"><strong>THEN</strong> 不调用通用模板复制，不创建 <code>openspec/</code> 目录，不复制 commands</p>
+        </div>
+      </div>
+
+      <div class="requirement-card">
+        <div class="card-label">Requirement</div>
+        <h4>Main repo batch init SHALL use domain sub-repo logic</h4>
+        <p>主仓库 init 时批量初始化子模块 SHALL 调用领域子仓库 init 逻辑，而非创建 <code>.gitkeep</code> 存根。</p>
+        <div class="scenario">
+          <div class="scenario-label">Scenario: Batch init with domain type selection</div>
+          <p class="when"><strong>WHEN</strong> 主仓库 init 选择了子模块并指定了领域类型</p>
+          <p class="then"><strong>THEN</strong> 对每个子模块执行领域子仓库 init 流程</p>
+        </div>
+      </div>
+
+      <h3>domain-templates</h3>
+
+      <div class="requirement-card">
+        <div class="card-label">Requirement</div>
+        <h4>System SHALL provide domain-specific templates</h4>
+        <p>系统 SHALL 包含领域子仓库专用的 AGENTS.md 和 CLAUDE.md 模板，支持 <code>{{PROJECT_NAME}}</code> 和 <code>{{DOMAIN_TYPE}}</code> 变量。</p>
+        <div class="scenario">
+          <div class="scenario-label">Scenario: Domain templates are simpler than main</div>
+          <p class="when"><strong>WHEN</strong> 对比领域模板与主仓库模板</p>
+          <p class="then"><strong>THEN</strong> 领域模板不包含 openspec 路由、子模块处理等主仓库特有内容</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 05 任务列表 -->
+  <section class="section" id="tasks">
+    <div class="section-header">
+      <span class="section-number">05</span>
+      <h2 class="section-title">任务列表</h2>
+    </div>
+    <div class="section-content">
+      <h3 class="task-group-title">1. 数据模型扩展</h3>
+      <ul class="task-list">
+        <li class="completed"><span class="checkbox checked"></span><span>1.1 在 HarnessConfig 接口中新增 <code>project.repoType</code> 字段</span></li>
+        <li class="completed"><span class="checkbox checked"></span><span>1.2 新增 <code>project.domainType</code> 字段</span></li>
+        <li class="completed"><span class="checkbox checked"></span><span>1.3 确保 buildConfig/writeConfig 正确处理新字段</span></li>
+      </ul>
+      <h3 class="task-group-title">2. 仓库类型检测</h3>
+      <ul class="task-list">
+        <li class="completed"><span class="checkbox checked"></span><span>2.1 新增 <code>detectRepoType()</code> 函数</span></li>
+        <li class="completed"><span class="checkbox checked"></span><span>2.2 处理边界情况（空 .gitmodules）</span></li>
+      </ul>
+      <h3 class="task-group-title">3. 智能文件覆写</h3>
+      <ul class="task-list">
+        <li class="completed"><span class="checkbox checked"></span><span>3.1 新增 <code>hasUserContent()</code></span></li>
+        <li class="completed"><span class="checkbox checked"></span><span>3.2 新增 <code>writeSmartFile()</code></span></li>
+        <li class="completed"><span class="checkbox checked"></span><span>3.3 CLAUDE.md 写入改用 writeSmartFile</span></li>
+        <li class="completed"><span class="checkbox checked"></span><span>3.4 AGENTS.md 写入改用 writeSmartFile</span></li>
+        <li class="completed"><span class="checkbox checked"></span><span>3.5 GEMINI.md 写入改用 writeSmartFile</span></li>
+      </ul>
+      <h3 class="task-group-title">4. 领域模板文件</h3>
+      <ul class="task-list">
+        <li class="completed"><span class="checkbox checked"></span><span>4.1 创建 <code>agents-md-domain.md</code></span></li>
+        <li class="completed"><span class="checkbox checked"></span><span>4.2 创建 <code>claude-md-domain.md</code></span></li>
+      </ul>
+      <h3 class="task-group-title">5. init 流程重构</h3>
+      <ul class="task-list">
+        <li class="completed"><span class="checkbox checked"></span><span>5.1 新增仓库类型检测 + 确认步骤</span></li>
+        <li class="completed"><span class="checkbox checked"></span><span>5.2 领域类型选择提示</span></li>
+        <li class="completed"><span class="checkbox checked"></span><span>5.3 抽取领域子仓库 init 为独立函数</span></li>
+        <li class="completed"><span class="checkbox checked"></span><span>5.4 主仓库流程改用 writeSmartFile</span></li>
+        <li class="completed"><span class="checkbox checked"></span><span>5.5 新增 <code>copyDomainTemplateAsRoot()</code></span></li>
+      </ul>
+      <h3 class="task-group-title">6. 子模块批量 init 优化</h3>
+      <ul class="task-list">
+        <li class="completed"><span class="checkbox checked"></span><span>6.1 每个子模块增加领域类型选择</span></li>
+        <li class="completed"><span class="checkbox checked"></span><span>6.2 改用 <code>runDomainInit()</code> 逻辑</span></li>
+        <li class="completed"><span class="checkbox checked"></span><span>6.3 更新子模块 config 写入</span></li>
+      </ul>
+      <h3 class="task-group-title">7. 测试</h3>
+      <ul class="task-list">
+        <li class="completed"><span class="checkbox checked"></span><span>7.1 detectRepoType 单元测试</span></li>
+        <li class="completed"><span class="checkbox checked"></span><span>7.2 hasUserContent 单元测试</span></li>
+        <li class="completed"><span class="checkbox checked"></span><span>7.3 writeSmartFile 单元测试</span></li>
+        <li class="completed"><span class="checkbox checked"></span><span>7.4 领域子仓库 init 集成测试</span></li>
+        <li class="completed"><span class="checkbox checked"></span><span>7.5 主仓库智能覆写集成测试</span></li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- 06 实现计划 -->
+  <section class="section" id="plan">
+    <div class="section-header">
+      <span class="section-number">06</span>
+      <h2 class="section-title">实现计划</h2>
+    </div>
+    <div class="section-content">
+      <p>共 9 个任务，每个任务按 TDD 流程（RED → GREEN → REFACTOR）拆解为微步骤。</p>
+
+      <div class="card">
+        <div class="card-label">Task 1 — 数据模型扩展</div>
+        <p>修改 <code>src/lib/config.ts</code>：扩展 HarnessConfig 接口和 buildDefaultConfig 函数。</p>
+        <ul>
+          <li>写失败测试 → 实现接口扩展 → 通过测试 → 类型检查 → 提交</li>
+        </ul>
+      </div>
+
+      <div class="card">
+        <div class="card-label">Task 2 — 仓库类型检测</div>
+        <p>在 <code>src/lib/detect.ts</code> 新增 <code>detectRepoType()</code>，基于 <code>.gitmodules</code> 正则匹配。</p>
+        <ul>
+          <li>3 个测试场景：有子模块 → main，无文件 → domain，空文件 → domain</li>
+        </ul>
+      </div>
+
+      <div class="card">
+        <div class="card-label">Task 3 — 智能文件覆写</div>
+        <p>在 <code>src/lib/templates.ts</code> 新增 <code>hasUserContent()</code> 和 <code>writeSmartFile()</code>。</p>
+        <ul>
+          <li>stripComments 去除 HTML 注释后对比</li>
+          <li>4 个写入场景：新建、覆写、保留+插入 directive、保留不动</li>
+        </ul>
+      </div>
+
+      <div class="card">
+        <div class="card-label">Task 4-5 — 领域模板 + 复制函数</div>
+        <p>创建 <code>agents-md-domain.md</code> / <code>claude-md-domain.md</code>，新增 <code>copyDomainTemplateAsRoot()</code>。</p>
+      </div>
+
+      <div class="card">
+        <div class="card-label">Task 6-7 — init 流程重构 + 子模块优化</div>
+        <p>修改 <code>src/commands/init.ts</code>：插入仓库类型检测步骤，按 repoType 分流主仓库/领域子仓库流程，子模块处理改用领域 init 逻辑。</p>
+      </div>
+
+      <div class="card">
+        <div class="card-label">Task 8-9 — 集成测试 + 最终验证</div>
+        <p>领域子仓库 init 输出验证、智能覆写集成测试、全套测试 + 构建 + 手动冒烟测试。</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- 验收指引 -->
+  <footer class="acceptance">
+    <div class="acceptance-header">
+      <div class="acceptance-icon">
+        <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+          <path d="M16.667 5L7.5 14.167 3.333 10" stroke="var(--accent)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </div>
+      <h2 class="acceptance-title">验收指引</h2>
+    </div>
+    <ol>
+      <li>请仔细阅读以上内容，确认规划方向正确。</li>
+      <li>验收完毕后，请关闭此页面。</li>
+      <li>在终端中运行 <code>/new</code> 开启新会话。</li>
+      <li>执行以下命令开始实现。</li>
+    </ol>
+    <div class="next-step">
+      <div class="next-step-label">下一步</div>
+      <code>/opsx:apply init-repo-type-awareness</code>
+    </div>
+  </footer>
+
+</main>
+
+<footer class="page-footer">
+  由 OpenSpec superpowers-bridge 生成 &middot; 2026-05-14
+</footer>
+
+<script>
+hljs.highlightAll();
+const isDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+mermaid.initialize({
+  startOnLoad: true,
+  theme: 'base',
+  themeVariables: isDark ? {
+    background: '#0f172a',
+    primaryColor: 'rgba(99,102,241,0.25)',
+    primaryTextColor: '#f1f5f9',
+    primaryBorderColor: '#818cf8',
+    secondaryColor: 'rgba(6,78,59,0.4)',
+    secondaryTextColor: '#f1f5f9',
+    secondaryBorderColor: '#34d399',
+    tertiaryColor: 'rgba(76,29,149,0.4)',
+    tertiaryTextColor: '#f1f5f9',
+    tertiaryBorderColor: '#a78bfa',
+    lineColor: '#94a3b8',
+    textColor: '#f1f5f9',
+    mainBkg: 'rgba(99,102,241,0.15)',
+    nodeBorder: '#818cf8',
+    clusterBkg: 'rgba(30,41,59,0.6)',
+    clusterBorder: '#475569',
+    edgeLabelBackground: '#1e293b',
+    fontSize: '14px'
+  } : {
+    background: '#ffffff',
+    primaryColor: '#eef2ff',
+    primaryTextColor: '#1e293b',
+    primaryBorderColor: '#4f46e5',
+    secondaryColor: '#f0fdf4',
+    secondaryTextColor: '#1e293b',
+    secondaryBorderColor: '#059669',
+    tertiaryColor: '#faf5ff',
+    tertiaryTextColor: '#1e293b',
+    tertiaryBorderColor: '#7c3aed',
+    lineColor: '#475569',
+    textColor: '#1e293b',
+    mainBkg: '#eef2ff',
+    nodeBorder: '#4f46e5',
+    clusterBkg: '#f8fafc',
+    clusterBorder: '#e2e8f0',
+    edgeLabelBackground: '#ffffff',
+    fontSize: '14px'
+  }
+});
+</script>
+</body>
+</html>

@@ -1,0 +1,40 @@
+{
+  "versions": ["0.8.10"],
+  "releasedAt": { "from": "2026-07-06T10:05:00+08:00" },
+  "title": "模板版本可选，评审页支持跨平台打开",
+  "archived": false,
+  "groups": [
+    {
+      "type": "feat",
+      "label": "新能力",
+      "items": [
+        {
+          "name": "指定模板版本",
+          "description": "`devkeel update 1.2.4` 或 `devkeel update --template-version 1.2.4` 可更新到指定稳定版本，方便复现环境或临时回退"
+        },
+        {
+          "name": "体验 beta 模板",
+          "description": "`devkeel update --beta` 会自动选择最新 beta 版本，无需手动查询完整版本号"
+        },
+        {
+          "name": "版本结果可见",
+          "description": "模板拉取完成后会显示实际使用的版本，便于确认更新结果"
+        },
+        {
+          "name": "跨平台打开 human-review",
+          "description": "评审页生成后通过 `npx devkeel@latest open-review <html-path>` 在 macOS、Windows 或 Linux 的浏览器中打开；失败时会提示文件路径，方便手动查看"
+        }
+      ]
+    },
+    {
+      "type": "fix",
+      "label": "修复",
+      "items": [
+        {
+          "name": "版本输入校验",
+          "description": "不合法版本号、同时指定不同版本或将 `--beta` 与固定版本混用时会直接提示，避免拉取错误模板"
+        }
+      ]
+    }
+  ]
+}

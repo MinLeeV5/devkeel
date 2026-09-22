@@ -1,0 +1,18 @@
+{
+  "versions": ["0.8.9"],
+  "releasedAt": { "from": "2026-07-03T12:14:00+08:00" },
+  "title": "新增实现证据收集命令",
+  "archived": false,
+  "groups": [
+    {
+      "type": "feat",
+      "label": "新能力",
+      "items": [
+        {
+          "name": "devkeel evidence",
+          "description": "新增顶层命令，用于记录 apply 前的主仓库与子模块基线，并在 verify 阶段输出提交数、任务完成数等 JSON 证据"
+        }
+      ]
+    }
+  ]
+}

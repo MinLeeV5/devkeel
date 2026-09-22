@@ -1,0 +1,4 @@
+interface:
+  display_name: "测试用例设计"
+  short_description: "依据需求与代码整理测试点、完整用例及回归验证范围，支持分阶段产出"
+  default_prompt: "使用 $test-case-designer 为当前需求设计测试用例。"

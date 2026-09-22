@@ -1,0 +1,51 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 320" role="img" aria-labelledby="title desc" data-graph-role="diagram" data-diagram-type="flowchart" data-style="glassmorphism" data-quality-profile="showcase" data-bounds="0 0 1200 320">
+  <title id="title">domain-init 将项目事实转成任务约束</title>
+  <desc id="desc">项目依赖、目录、配置与代码经过 domain-init 的识别、扫描和提炼，形成 rules、skills、agents 与 AGENTS.md，并在任务运行时按需加载为执行约束。</desc>
+  <defs>
+    <linearGradient id="card-blue" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#7aa2f7" stop-opacity=".17"/><stop offset="1" stop-color="#1c2039" stop-opacity=".78"/></linearGradient>
+    <linearGradient id="card-purple" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#bb9af7" stop-opacity=".18"/><stop offset="1" stop-color="#1c2039" stop-opacity=".78"/></linearGradient>
+    <linearGradient id="card-green" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#9ece6a" stop-opacity=".17"/><stop offset="1" stop-color="#1c2039" stop-opacity=".78"/></linearGradient>
+    <linearGradient id="flow-domain" gradientUnits="userSpaceOnUse" x1="260" y1="155" x2="988" y2="155"><stop offset="0" stop-color="#7aa2f7"/><stop offset=".52" stop-color="#bb9af7"/><stop offset="1" stop-color="#9ece6a"/></linearGradient>
+    <marker id="arrow-domain" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto"><path d="M0 0 L10 5 L0 10 Z" fill="#9ece6a"/></marker>
+    <style>.sans{font-family:'Inter','Noto Sans SC','PingFang SC','Microsoft YaHei',sans-serif}.mono{font-family:'JetBrains Mono','SFMono-Regular',monospace}.text{fill:#c8d1e6}.muted{fill:#7b89a8}.blue{fill:#7aa2f7}.purple{fill:#bb9af7}.green{fill:#9ece6a}.label{font-size:13px;font-weight:700;letter-spacing:1.5px}.title{font-size:21px;font-weight:700}.body{font-size:14px}.small{font-size:12px}.edge{fill:none;stroke:url(#flow-domain);stroke-width:3;stroke-linecap:round;marker-end:url(#arrow-domain)}</style>
+  </defs>
+
+  <path d="M260 155 H308" class="edge" data-graph-role="edge" data-edge-id="facts-to-domain-init" data-edge-start="260 155" data-edge-end="308 155" data-edge-points="260 155;308 155"/>
+  <path d="M540 155 H588" class="edge" data-graph-role="edge" data-edge-id="domain-init-to-assets" data-edge-start="540 155" data-edge-end="588 155" data-edge-points="540 155;588 155"/>
+  <path d="M940 155 H988" class="edge" data-graph-role="edge" data-edge-id="assets-to-runtime" data-edge-start="940 155" data-edge-end="988 155" data-edge-points="940 155;988 155"/>
+
+  <g data-graph-role="node" data-node-id="repository-facts" data-bounds="40 72 220 166">
+    <rect x="40" y="72" width="220" height="166" rx="20" fill="url(#card-blue)" stroke="#7aa2f7" stroke-opacity=".45"/>
+    <text x="66" y="108" class="mono label blue">REPOSITORY FACTS</text>
+    <text x="66" y="142" class="sans title text">项目真实信号</text>
+    <text x="66" y="173" class="sans body muted">依赖 · 目录 · 配置</text>
+    <text x="66" y="198" class="sans body muted">入口 · 代码 · 命令</text>
+  </g>
+
+  <g data-graph-role="node" data-node-id="domain-init" data-bounds="320 72 220 166">
+    <rect x="320" y="72" width="220" height="166" rx="20" fill="url(#card-purple)" stroke="#bb9af7" stroke-opacity=".5"/>
+    <text x="346" y="108" class="mono label purple">DOMAIN-INIT</text>
+    <text x="430" y="147" text-anchor="middle" class="sans title text">识别 · 扫描 · 提炼</text>
+    <line x1="350" y1="170" x2="510" y2="170" stroke="#bb9af7" stroke-opacity=".24"/>
+    <text x="430" y="201" text-anchor="middle" class="sans body muted">人工审查后写入</text>
+  </g>
+
+  <g data-graph-role="node" data-node-id="project-assets" data-bounds="600 50 340 210">
+    <rect x="600" y="50" width="340" height="210" rx="22" fill="url(#card-purple)" stroke="#bb9af7" stroke-opacity=".48"/>
+    <text x="626" y="82" class="mono label purple">PROJECT ASSETS</text>
+    <g><rect x="626" y="99" width="288" height="30" rx="8" fill="#7aa2f7" fill-opacity=".09"/><text x="642" y="119" class="mono small blue">rules/</text><text x="900" y="119" text-anchor="end" class="sans small muted">项目边界与约定</text></g>
+    <g><rect x="626" y="136" width="288" height="30" rx="8" fill="#bb9af7" fill-opacity=".09"/><text x="642" y="156" class="mono small purple">skills/</text><text x="900" y="156" text-anchor="end" class="sans small muted">专项任务方法</text></g>
+    <g><rect x="626" y="173" width="288" height="30" rx="8" fill="#7dcfff" fill-opacity=".08"/><text x="642" y="193" class="mono small" fill="#7dcfff">agents/</text><text x="900" y="193" text-anchor="end" class="sans small muted">角色与协作边界</text></g>
+    <g><rect x="626" y="210" width="288" height="30" rx="8" fill="#9ece6a" fill-opacity=".09"/><text x="642" y="230" class="mono small green">AGENTS.md</text><text x="900" y="230" text-anchor="end" class="sans small muted">发现与路由地图</text></g>
+  </g>
+
+  <g data-graph-role="node" data-node-id="task-runtime" data-bounds="1000 72 160 166">
+    <rect x="1000" y="72" width="160" height="166" rx="20" fill="url(#card-green)" stroke="#9ece6a" stroke-opacity=".5"/>
+    <text x="1080" y="108" text-anchor="middle" class="mono label green">TASK RUNTIME</text>
+    <text x="1080" y="150" text-anchor="middle" class="sans title text">按需加载</text>
+    <text x="1080" y="180" text-anchor="middle" class="sans body muted">地图路由</text>
+    <text x="1080" y="204" text-anchor="middle" class="sans body green">受约束执行</text>
+  </g>
+
+  <text x="600" y="294" text-anchor="middle" class="sans body text" data-graph-role="annotation" data-bounds="340 276 520 28"><tspan class="blue" font-weight="700">项目事实</tspan><tspan> → 可发现资产 → </tspan><tspan class="green" font-weight="700">任务中按需生效</tspan></text>
+</svg>

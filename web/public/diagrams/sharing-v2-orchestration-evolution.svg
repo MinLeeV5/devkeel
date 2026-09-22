@@ -1,0 +1,129 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 440" role="img" aria-labelledby="title desc"
+  data-graph-role="diagram" data-diagram-type="timeline" data-style="glassmorphism"
+  data-quality-profile="showcase" data-bounds="0 0 1200 440">
+  <title id="title">DevKeel V1 与 V2 编排轨道</title>
+  <desc id="desc">完整生命周期依次为 brainstorm → design → specs → tasks → apply → verify → retrospective → archive。DevKeel V1 固定加载全部阶段；DevKeel V2 按任务风险选择 Direct、Lite 或 Full。Direct：apply → verify；Lite：brainstorm → tasks → apply → archive；Full：完整生命周期。路径可以变短，但必要调查、最小实现、对应验证与完成证据等工程底线不变。</desc>
+  <defs>
+    <marker id="arrow-v1" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto">
+      <polygon points="0 0,8 3,0 6" fill="#a9b4c8"/>
+    </marker>
+    <marker id="arrow-direct" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto">
+      <polygon points="0 0,8 3,0 6" fill="#7aa2f7"/>
+    </marker>
+    <marker id="arrow-lite" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto">
+      <polygon points="0 0,8 3,0 6" fill="#bb9af7"/>
+    </marker>
+    <marker id="arrow-full" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto">
+      <polygon points="0 0,8 3,0 6" fill="#9ece6a"/>
+    </marker>
+    <linearGradient id="summary-gradient" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0" stop-color="#bb9af7"/>
+      <stop offset="1" stop-color="#9ece6a"/>
+    </linearGradient>
+    <style>
+      .sans{font-family:'Inter','Noto Sans SC','PingFang SC','Microsoft YaHei',sans-serif}
+      .mono{font-family:'JetBrains Mono','SFMono-Regular',monospace}
+      .text{fill:#c8d1e6}.muted{fill:#7b89a8}.slate{fill:#a9b4c8}.blue{fill:#7aa2f7}.purple{fill:#bb9af7}.green{fill:#9ece6a}.warn{fill:#e0af68}
+      .stage{font-size:11px;font-weight:600}.kicker{font-size:12px;font-weight:700;letter-spacing:1.4px}
+      .lane{font-size:12px;font-weight:700;letter-spacing:1.4px}.note{font-size:10px}.micro{font-size:9px}
+      .guide{stroke:#7b89a8;stroke-opacity:.13;stroke-width:1;stroke-dasharray:3 7}
+      .axis{stroke:#7b89a8;stroke-opacity:.22;stroke-width:1}
+      .route{fill:none;stroke-width:3;stroke-linecap:round}
+      .node{fill:#0f1119;stroke-width:2}.node-core{stroke:none}
+    </style>
+  </defs>
+
+  <g id="lifecycle-axis" data-graph-role="annotation" data-bounds="48 24 1112 48">
+    <text x="48" y="53" class="mono kicker muted">完整生命周期</text>
+    <line x1="48" y1="70" x2="1160" y2="70" class="axis"/>
+    <text x="265" y="52" text-anchor="middle" class="mono stage text">brainstorm</text>
+    <text x="390" y="52" text-anchor="middle" class="mono stage text">design</text>
+    <text x="515" y="52" text-anchor="middle" class="mono stage text">specs</text>
+    <text x="640" y="52" text-anchor="middle" class="mono stage text">tasks</text>
+    <text x="765" y="52" text-anchor="middle" class="mono stage text">apply</text>
+    <text x="890" y="52" text-anchor="middle" class="mono stage text">verify</text>
+    <text x="1015" y="52" text-anchor="middle" class="mono stage text">retrospective</text>
+    <text x="1140" y="52" text-anchor="middle" class="mono stage text">archive</text>
+  </g>
+
+  <g id="stage-guides" data-graph-role="decoration">
+    <line x1="265" y1="72" x2="265" y2="350" class="guide"/>
+    <line x1="390" y1="72" x2="390" y2="350" class="guide"/>
+    <line x1="515" y1="72" x2="515" y2="350" class="guide"/>
+    <line x1="640" y1="72" x2="640" y2="350" class="guide"/>
+    <line x1="765" y1="72" x2="765" y2="350" class="guide"/>
+    <line x1="890" y1="72" x2="890" y2="350" class="guide"/>
+    <line x1="1015" y1="72" x2="1015" y2="350" class="guide"/>
+    <line x1="1140" y1="72" x2="1140" y2="350" class="guide"/>
+  </g>
+
+  <g id="harness-v1" data-graph-role="container" data-node-id="harness-v1" data-bounds="48 88 1112 66">
+    <text x="48" y="111" class="mono kicker slate">HARNESS V1</text>
+    <text x="48" y="132" class="sans note muted">OpenSpec × SuperPowers</text>
+  <text x="195" y="124" class="mono lane slate">FULL</text>
+    <text x="195" y="142" class="sans micro muted">全流程</text>
+
+    <path d="M265 120 H1160" class="route" stroke="#a9b4c8" stroke-opacity=".86" marker-end="url(#arrow-v1)"
+      data-graph-role="edge" data-edge-id="v1-fixed-route" data-edge-start="265 120" data-edge-end="1160 120"
+      data-edge-points="265 120;1160 120" data-flow="fixed"/>
+
+    <g data-graph-role="node" data-node-id="v1-brainstorm"><circle cx="265" cy="120" r="8" class="node" stroke="#a9b4c8"/><circle cx="265" cy="120" r="3" class="node-core" fill="#a9b4c8"/></g>
+    <g data-graph-role="node" data-node-id="v1-design"><circle cx="390" cy="120" r="8" class="node" stroke="#a9b4c8"/><circle cx="390" cy="120" r="3" class="node-core" fill="#a9b4c8"/></g>
+    <g data-graph-role="node" data-node-id="v1-specs"><circle cx="515" cy="120" r="8" class="node" stroke="#a9b4c8"/><circle cx="515" cy="120" r="3" class="node-core" fill="#a9b4c8"/></g>
+    <g data-graph-role="node" data-node-id="v1-tasks"><circle cx="640" cy="120" r="8" class="node" stroke="#a9b4c8"/><circle cx="640" cy="120" r="3" class="node-core" fill="#a9b4c8"/></g>
+    <g data-graph-role="node" data-node-id="v1-apply"><circle cx="765" cy="120" r="8" class="node" stroke="#e0af68"/><circle cx="765" cy="120" r="3" class="node-core" fill="#e0af68"/></g>
+    <g data-graph-role="node" data-node-id="v1-verify"><circle cx="890" cy="120" r="8" class="node" stroke="#a9b4c8"/><circle cx="890" cy="120" r="3" class="node-core" fill="#a9b4c8"/></g>
+    <g data-graph-role="node" data-node-id="v1-retrospective"><circle cx="1015" cy="120" r="8" class="node" stroke="#a9b4c8"/><circle cx="1015" cy="120" r="3" class="node-core" fill="#a9b4c8"/></g>
+    <g data-graph-role="node" data-node-id="v1-archive"><circle cx="1140" cy="120" r="8" class="node" stroke="#a9b4c8"/><circle cx="1140" cy="120" r="3" class="node-core" fill="#a9b4c8"/></g>
+
+    <path d="M765 130 V137" stroke="#e0af68" stroke-width="1.2"/>
+    <text x="765" y="150" text-anchor="middle" class="mono micro warn">TDD · code-review</text>
+  </g>
+
+  <line x1="48" y1="164" x2="1160" y2="164" class="axis"/>
+
+  <g id="harness-v2" data-graph-role="container" data-node-id="harness-v2" data-bounds="48 174 1112 178">
+    <text x="48" y="188" class="mono kicker green">HARNESS V2</text>
+    <text x="48" y="207" class="sans note muted">按任务风险加载</text>
+    <path d="M132 205 H142 V326 H132" fill="none" stroke="#9ece6a" stroke-opacity=".45" stroke-width="1.4"/>
+
+    <text x="158" y="218" class="mono lane blue">DIRECT</text>
+    <text x="158" y="270" class="mono lane purple">LITE</text>
+    <text x="158" y="322" class="mono lane green">FULL</text>
+
+    <path d="M765 214 H910" class="route" stroke="#7aa2f7" stroke-opacity=".9" marker-end="url(#arrow-direct)"
+      data-graph-role="edge" data-edge-id="v2-direct-route" data-edge-start="765 214" data-edge-end="910 214"
+      data-edge-points="765 214;910 214" data-flow="direct"/>
+    <g data-graph-role="node" data-node-id="direct-apply"><circle cx="765" cy="214" r="8" class="node" stroke="#7aa2f7"/><circle cx="765" cy="214" r="3" class="node-core" fill="#7aa2f7"/></g>
+    <g data-graph-role="node" data-node-id="direct-verify"><circle cx="890" cy="214" r="8" class="node" stroke="#7aa2f7"/><circle cx="890" cy="214" r="3" class="node-core" fill="#7aa2f7"/></g>
+
+    <path d="M265 266 H1160" class="route" stroke="#bb9af7" stroke-opacity=".86" marker-end="url(#arrow-lite)"
+      data-graph-role="edge" data-edge-id="v2-lite-route" data-edge-start="265 266" data-edge-end="1160 266"
+      data-edge-points="265 266;1160 266" data-flow="lite"/>
+    <g data-graph-role="node" data-node-id="lite-brainstorm"><circle cx="265" cy="266" r="8" class="node" stroke="#bb9af7"/><circle cx="265" cy="266" r="3" class="node-core" fill="#bb9af7"/></g>
+    <g data-graph-role="node" data-node-id="lite-tasks"><circle cx="640" cy="266" r="8" class="node" stroke="#bb9af7"/><circle cx="640" cy="266" r="3" class="node-core" fill="#bb9af7"/></g>
+    <g data-graph-role="node" data-node-id="lite-apply"><circle cx="765" cy="266" r="8" class="node" stroke="#bb9af7"/><circle cx="765" cy="266" r="3" class="node-core" fill="#bb9af7"/></g>
+    <g data-graph-role="node" data-node-id="lite-archive"><circle cx="1140" cy="266" r="8" class="node" stroke="#bb9af7"/><circle cx="1140" cy="266" r="3" class="node-core" fill="#bb9af7"/></g>
+
+    <path d="M265 318 H1160" class="route" stroke="#9ece6a" stroke-opacity=".9" marker-end="url(#arrow-full)"
+      data-graph-role="edge" data-edge-id="v2-full-route" data-edge-start="265 318" data-edge-end="1160 318"
+      data-edge-points="265 318;1160 318" data-flow="full"/>
+    <g data-graph-role="node" data-node-id="full-brainstorm"><circle cx="265" cy="318" r="8" class="node" stroke="#9ece6a"/><circle cx="265" cy="318" r="3" class="node-core" fill="#9ece6a"/></g>
+    <g data-graph-role="node" data-node-id="full-design"><circle cx="390" cy="318" r="8" class="node" stroke="#9ece6a"/><circle cx="390" cy="318" r="3" class="node-core" fill="#9ece6a"/></g>
+    <g data-graph-role="node" data-node-id="full-specs"><circle cx="515" cy="318" r="8" class="node" stroke="#9ece6a"/><circle cx="515" cy="318" r="3" class="node-core" fill="#9ece6a"/></g>
+    <g data-graph-role="node" data-node-id="full-tasks"><circle cx="640" cy="318" r="8" class="node" stroke="#9ece6a"/><circle cx="640" cy="318" r="3" class="node-core" fill="#9ece6a"/></g>
+    <g data-graph-role="node" data-node-id="full-apply"><circle cx="765" cy="318" r="8" class="node" stroke="#e0af68"/><circle cx="765" cy="318" r="3" class="node-core" fill="#e0af68"/></g>
+    <g data-graph-role="node" data-node-id="full-verify"><circle cx="890" cy="318" r="8" class="node" stroke="#9ece6a"/><circle cx="890" cy="318" r="3" class="node-core" fill="#9ece6a"/></g>
+    <g data-graph-role="node" data-node-id="full-retrospective"><circle cx="1015" cy="318" r="8" class="node" stroke="#9ece6a"/><circle cx="1015" cy="318" r="3" class="node-core" fill="#9ece6a"/></g>
+    <g data-graph-role="node" data-node-id="full-archive"><circle cx="1140" cy="318" r="8" class="node" stroke="#9ece6a"/><circle cx="1140" cy="318" r="3" class="node-core" fill="#9ece6a"/></g>
+
+    <path d="M765 328 V335" stroke="#e0af68" stroke-width="1.2"/>
+    <text x="765" y="348" text-anchor="middle" class="mono micro warn">TDD（适用时）· code-review</text>
+  </g>
+
+  <line x1="48" y1="366" x2="1160" y2="366" class="axis"/>
+  <g id="takeaway" data-graph-role="annotation" data-bounds="230 378 740 50">
+    <text x="600" y="394" text-anchor="middle" class="sans" font-size="15" font-weight="700" fill="url(#summary-gradient)">固定全流程 → 选择最短充分路径</text>
+    <text x="600" y="420" text-anchor="middle" class="sans" font-size="11" fill="#7b89a8"><tspan fill="#c8d1e6" font-weight="600">路径可以变短，工程底线不变</tspan><tspan>  ·  必要调查  ·  最小实现  ·  对应验证  ·  完成证据</tspan></text>
+  </g>
+</svg>

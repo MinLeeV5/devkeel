@@ -1,0 +1,2258 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>externalize-templates-npm — 人工审阅</title>
+  <!-- BEGIN:css -->
+<style>
+/* human-review.css — OpenAI-inspired review page */
+
+:root {
+  --bg: #ffffff;
+  --surface: #fafafa;
+  --surface-raised: #f5f5f5;
+  --text: #0d0d0d;
+  --text-secondary: #3c3c3c;
+  --text-muted: #6e6e6e;
+  --text-tertiary: #9b9b9b;
+  --accent: #10a37f;
+  --accent-hover: #0a7a5e;
+  --accent-light: #e8f5f0;
+  --accent-border: rgba(16, 163, 127, .15);
+  --accent-text: #0a7a5e;
+  --border: #e5e5e5;
+  --border-subtle: #f5f5f5;
+  --code-bg: #f9fafb;
+  --success: #10a37f;
+  --success-light: #e8f5f0;
+  --warning: #d97706;
+  --warning-light: #fffbeb;
+  --danger: #ef4146;
+  --danger-light: #fef2f2;
+  --shadow-xs: none;
+  --shadow-sm: none;
+  --shadow-md: 0 4px 16px rgba(13, 13, 13, .06);
+  --shadow-lg: 0 8px 24px rgba(13, 13, 13, .08);
+  --radius: 12px;
+  --radius-sm: 8px;
+  --radius-xs: 6px;
+  --font-sans: -apple-system, BlinkMacSystemFont, 'Inter', 'Segoe UI', 'Noto Sans SC', 'PingFang SC', sans-serif;
+  --font-mono: 'SF Mono', 'JetBrains Mono', ui-monospace, Menlo, Consolas, monospace;
+  --transition: 150ms cubic-bezier(.4, 0, .2, 1);
+}
+
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
+  --bg: #0d0d0d;
+  --surface: #1a1a1a;
+  --surface-raised: #262626;
+  --text: #f5f5f5;
+  --text-secondary: #c4c4c4;
+  --text-muted: #9b9b9b;
+  --text-tertiary: #6e6e6e;
+  --accent: #34d399;
+  --accent-hover: #10a37f;
+  --accent-light: rgba(16, 163, 127, .08);
+  --accent-border: rgba(52, 211, 153, .2);
+  --accent-text: #34d399;
+  --border: #2a2a2a;
+  --border-subtle: #1f1f1f;
+  --code-bg: #1a1a1a;
+  --success: #34d399;
+  --success-light: rgba(16, 163, 127, .1);
+  --warning: #fbbf24;
+  --warning-light: rgba(217, 119, 6, .08);
+  --danger: #f87171;
+  --danger-light: rgba(239, 65, 70, .08);
+  --shadow-xs: none;
+  --shadow-sm: none;
+  --shadow-md: none;
+  --shadow-lg: none;
+}}
+
+:root[data-theme="dark"] {
+  --bg: #0d0d0d;
+  --surface: #1a1a1a;
+  --surface-raised: #262626;
+  --text: #f5f5f5;
+  --text-secondary: #c4c4c4;
+  --text-muted: #9b9b9b;
+  --text-tertiary: #6e6e6e;
+  --accent: #34d399;
+  --accent-hover: #10a37f;
+  --accent-light: rgba(16, 163, 127, .08);
+  --accent-border: rgba(52, 211, 153, .2);
+  --accent-text: #34d399;
+  --border: #2a2a2a;
+  --border-subtle: #1f1f1f;
+  --code-bg: #1a1a1a;
+  --success: #34d399;
+  --success-light: rgba(16, 163, 127, .1);
+  --warning: #fbbf24;
+  --warning-light: rgba(217, 119, 6, .08);
+  --danger: #f87171;
+  --danger-light: rgba(239, 65, 70, .08);
+  --shadow-xs: none;
+  --shadow-sm: none;
+  --shadow-md: none;
+  --shadow-lg: none;
+}
+
+*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box }
+html { scroll-behavior: smooth }
+body {
+  font-family: var(--font-sans);
+  background: var(--bg);
+  color: var(--text);
+  line-height: 1.65;
+  font-size: 15px;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  max-width: 780px;
+  margin: 0 auto;
+  padding: 0 24px;
+}
+::selection { background: rgba(16, 163, 127, .12) }
+
+.wrapper { max-width: 780px; margin: 0 auto; padding: 0 24px }
+a { color: var(--accent); text-decoration: none; transition: color var(--transition) }
+a:hover { color: var(--accent-hover); text-decoration: underline; text-underline-offset: 2px }
+
+/* Scrollbar */
+::-webkit-scrollbar { width: 4px; height: 4px }
+::-webkit-scrollbar-track { background: transparent }
+::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px }
+::-webkit-scrollbar-thumb:hover { background: var(--text-muted) }
+
+/* ==================== Header ==================== */
+.page-header,
+.review-header {
+  padding: 64px 0 40px;
+  border-bottom: 1px solid var(--border);
+}
+
+.badge-review {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: .04em;
+  text-transform: uppercase;
+  padding: 4px 10px;
+  border-radius: 9999px;
+  background: var(--warning-light);
+  color: var(--warning);
+  border: 1px solid rgba(217, 119, 6, .12);
+  margin-bottom: 16px;
+}
+.badge-dot {
+  width: 6px; height: 6px;
+  border-radius: 50%;
+  background: var(--warning);
+  animation: pulse 2s ease-in-out infinite;
+}
+@keyframes pulse { 0%, 100% { opacity: 1 } 50% { opacity: .3 } }
+
+.page-header h1,
+.review-header h1 {
+  font-size: 28px;
+  font-weight: 600;
+  letter-spacing: -.02em;
+  line-height: 1.2;
+  margin-bottom: 10px;
+  color: var(--text);
+}
+
+.page-header .summary,
+.review-header .summary {
+  font-size: 15px;
+  color: var(--text-muted);
+  line-height: 1.65;
+  max-width: 560px;
+}
+.page-header .meta,
+.review-header .meta {
+  font-size: 13px;
+  color: var(--text-tertiary);
+  margin-top: 10px;
+}
+
+/* Progress bar */
+.progress-bar {
+  margin-top: 24px;
+  height: 3px;
+  border-radius: 2px;
+  overflow: hidden;
+  background: var(--border-subtle);
+}
+.progress-seg { flex: 1; border-radius: 2px; background: var(--border) }
+.progress-fill { height: 100%; background: var(--accent); border-radius: 2px; transition: width .4s ease }
+.progress-done { background: var(--success) }
+.progress-current { background: var(--accent) }
+.progress-label {
+  display: inline-block;
+  margin-top: 10px;
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--accent);
+  letter-spacing: .01em;
+}
+
+/* ==================== Dashboard ==================== */
+.dashboard {
+  margin: 32px 0;
+}
+.dashboard-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+.dash-card,
+.dashboard-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  padding: 20px;
+}
+.dash-card h3,
+.dashboard-card h3,
+.dash-card h4,
+.dashboard-card h4 {
+  font-size: 11px;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: .06em;
+  color: var(--text-tertiary);
+  margin-bottom: 10px;
+  border: none;
+  padding: 0;
+}
+.dashboard-card p {
+  font-size: 14px;
+  color: var(--text-secondary);
+  line-height: 1.6;
+}
+.dashboard-card ul {
+  list-style: none;
+  margin: 6px 0 0;
+  padding: 0;
+}
+.dashboard-card ul li {
+  font-size: 13px;
+  color: var(--text-secondary);
+  padding: 3px 0;
+  line-height: 1.5;
+}
+
+/* Risk badges */
+.risk-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 3px 10px;
+  border-radius: 9999px;
+  font-size: 12px;
+  font-weight: 500;
+}
+.risk-low { background: var(--success-light); color: var(--success) }
+.risk-mid { background: var(--warning-light); color: var(--warning) }
+.risk-high { background: var(--danger-light); color: var(--danger) }
+
+/* Tags */
+.tag {
+  display: inline-block;
+  padding: 3px 9px;
+  border-radius: 9999px;
+  font-size: 11px;
+  font-weight: 500;
+  background: var(--accent-light);
+  color: var(--accent);
+}
+.file-modify {
+  display: inline-block;
+  padding: 2px 8px;
+  border-radius: 4px;
+  font-size: 11px;
+  font-weight: 500;
+  font-family: var(--font-mono);
+  background: var(--warning-light);
+  color: var(--warning);
+}
+
+/* ==================== Sections ==================== */
+.section {
+  padding: 40px 0;
+  border-top: 1px solid var(--border);
+}
+.section-head {
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+  user-select: none;
+  margin-bottom: 24px;
+  padding: 4px 0;
+  transition: opacity var(--transition);
+}
+.section-head:hover { opacity: .6 }
+.section-num {
+  font-size: 13px;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+  color: var(--text-tertiary);
+  background: var(--surface);
+  border: 1px solid var(--border);
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: var(--radius-xs);
+  margin-right: 12px;
+  flex-shrink: 0;
+}
+.section-head h2 {
+  font-size: 20px;
+  font-weight: 600;
+  flex: 1;
+  letter-spacing: -.01em;
+  color: var(--text);
+}
+.collapse-icon {
+  width: 18px; height: 18px;
+  color: var(--text-tertiary);
+  transition: transform .2s ease;
+}
+.section.collapsed .section-body { display: none }
+.section.collapsed .collapse-icon { transform: rotate(-90deg) }
+
+h3 {
+  font-size: 15px;
+  font-weight: 600;
+  margin: 28px 0 10px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid var(--border-subtle);
+  color: var(--text);
+}
+h4 {
+  font-size: 14px;
+  font-weight: 600;
+  margin: 20px 0 6px;
+  color: var(--text);
+}
+
+/* ==================== Summary block ==================== */
+.summary-block {
+  background: var(--accent-light);
+  border: 1px solid var(--accent-border);
+  border-radius: var(--radius-sm);
+  padding: 16px 20px;
+  margin-bottom: 20px;
+  color: var(--accent-text);
+  font-size: 14px;
+  line-height: 1.7;
+}
+
+/* ==================== Tables ==================== */
+table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 12px 0 20px;
+  font-size: 13px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  overflow: hidden;
+}
+th {
+  text-align: left;
+  padding: 10px 14px;
+  font-size: 11px;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: .04em;
+  color: var(--text-tertiary);
+  background: var(--surface);
+  border-bottom: 1px solid var(--border);
+}
+td {
+  padding: 10px 14px;
+  border-bottom: 1px solid var(--border-subtle);
+  color: var(--text-secondary);
+  line-height: 1.5;
+}
+tr:last-child td { border-bottom: none }
+td strong { color: var(--text); font-weight: 600 }
+
+/* ==================== Code ==================== */
+code {
+  font-family: var(--font-mono);
+  font-size: .84em;
+  background: var(--surface);
+  padding: 2px 6px;
+  border-radius: 4px;
+  border: 1px solid var(--border);
+}
+pre {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  padding: 16px 20px;
+  overflow-x: auto;
+  margin: 12px 0;
+}
+pre code {
+  background: none;
+  padding: 0;
+  border: none;
+  font-size: 13px;
+  line-height: 1.7;
+}
+.diff-add { background: rgba(16, 163, 127, .06); border-left: 2px solid var(--success); padding-left: 8px }
+.diff-remove { background: rgba(239, 65, 70, .04); border-left: 2px solid var(--danger); padding-left: 8px }
+
+/* ==================== Task list ==================== */
+.task-group { margin: 20px 0 }
+.task-group h4 { font-weight: 600; border: none; padding: 0 }
+.task-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 6px 0;
+  font-size: 14px;
+  color: var(--text-secondary);
+}
+.task-list {
+  list-style: none;
+  margin: 10px 0;
+  padding: 0;
+}
+.task-list li {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 8px 12px;
+  margin: 2px 0;
+  font-size: 14px;
+  color: var(--text-secondary);
+  border-radius: var(--radius-xs);
+  transition: background var(--transition);
+  line-height: 1.5;
+}
+.task-list li:hover { background: var(--surface) }
+.task-list label {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 4px 12px;
+  margin: 2px 0;
+  font-size: 14px;
+  color: var(--text-secondary);
+  border-radius: var(--radius-xs);
+  transition: background var(--transition);
+  line-height: 1;
+}
+.task-list label:hover { background: var(--surface) }
+.task-list li input[type="checkbox"],
+.task-list label input[type="checkbox"] {
+  width: 15px;
+  height: 15px;
+  margin-top: 3px;
+  flex-shrink: 0;
+  accent-color: var(--accent);
+  border-radius: 3px;
+}
+.task-cb {
+  width: 16px; height: 16px;
+  border: 1.5px solid var(--border);
+  border-radius: 4px;
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+.task-cb.done { background: var(--success); border-color: var(--success) }
+.task-commit { font-size: 12px; color: var(--accent); margin-top: 4px; font-family: var(--font-mono) }
+
+/* ==================== Mermaid & Architecture ==================== */
+.mermaid-container {
+  padding: 20px;
+  border-radius: var(--radius);
+  margin: 16px 0;
+  overflow-x: auto;
+  border: 1px solid var(--border);
+  background: var(--surface);
+}
+
+.architecture-diagram-container {
+  background: var(--surface);
+  border-radius: var(--radius);
+  padding: 20px;
+  border: 1px solid var(--border);
+  overflow-x: auto;
+  margin-bottom: 20px;
+}
+[data-theme="dark"] .architecture-diagram-container { background: #0d0d0d }
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) .architecture-diagram-container { background: #0d0d0d }
+}
+
+/* ==================== Artifact Viewer ==================== */
+.artifact-viewer {
+  margin: 40px 0;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  overflow: hidden;
+  background: var(--bg);
+  position: relative;
+}
+.artifact-tabs {
+  display: flex;
+  overflow-x: auto;
+  overflow-x: hidden;
+  background: var(--surface);
+  border-bottom: 1px solid var(--border);
+  padding: 0;
+  gap: 0;
+}
+.artifact-tab {
+  padding: 12px 20px;
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--text-muted);
+  cursor: pointer;
+  border: none;
+  background: none;
+  white-space: nowrap;
+  border-bottom: 2px solid transparent;
+  margin-bottom: -1px;
+  transition: color var(--transition), border-color var(--transition);
+}
+.artifact-tab:hover { color: var(--text-secondary) }
+.artifact-tab.active {
+  color: var(--accent);
+  border-bottom-color: var(--accent);
+  font-weight: 600;
+}
+.artifact-panel {
+  display: none;
+  padding: 28px 32px;
+  max-height: 520px;
+  overflow-y: auto;
+  font-size: 14px;
+  line-height: 1.8;
+}
+.artifact-panel.active { display: block }
+.artifact-panel h1, .artifact-panel h2, .artifact-panel h3 { margin-top: 24px; margin-bottom: 8px }
+.artifact-panel h2 { font-size: 16px; font-weight: 600; border-bottom: 1px solid var(--border-subtle); padding-bottom: 8px }
+.artifact-panel h2:first-child { margin-top: 0 }
+.artifact-panel h3 { font-size: 14px; font-weight: 600; border: none; padding: 0 }
+.artifact-panel ul, .artifact-panel ol { margin: 6px 0 12px 20px }
+.artifact-panel li { font-size: 14px; margin: 4px 0 }
+.artifact-panel table { font-size: 13px }
+.artifact-panel p { margin: 6px 0 }
+.artifact-panel::-webkit-scrollbar { width: 4px }
+.artifact-panel::-webkit-scrollbar-track { background: transparent }
+.artifact-panel::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px }
+.artifact-fullscreen-btn {
+  position: absolute;
+  top: 48px;
+  right: 8px;
+  padding: 4px 10px;
+  font-size: 12px;
+  background: var(--surface-raised);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-xs);
+  color: var(--text-muted);
+  cursor: pointer;
+  z-index: 1;
+  transition: color var(--transition), background var(--transition);
+}
+.artifact-fullscreen-btn:hover { color: var(--text); background: var(--border) }
+.artifact-viewer.fullscreen {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  margin: 0;
+  border-radius: 0;
+  border: none;
+  display: flex;
+  flex-direction: column;
+}
+.artifact-viewer.fullscreen .artifact-panel {
+  max-height: none;
+  flex: 1;
+  overflow-y: auto;
+}
+
+/* ==================== Acceptance ==================== */
+.acceptance {
+  border-top: 1px solid var(--border);
+  padding-top: 40px;
+  margin-top: 40px;
+}
+.acceptance h2 {
+  font-size: 18px;
+  font-weight: 600;
+  letter-spacing: -.01em;
+  margin-bottom: 16px;
+}
+.acceptance ol {
+  margin: 12px 0 24px 20px;
+  color: var(--text-secondary);
+  font-size: 14px;
+}
+.acceptance ol li { margin: 6px 0 }
+.next-cmd {
+  display: block;
+  padding: 12px 20px;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--border);
+  font-family: var(--font-mono);
+  font-size: 14px;
+  color: var(--accent);
+  cursor: pointer;
+  transition: all var(--transition);
+  margin: 16px 0;
+  text-align: center;
+  background: var(--surface);
+}
+.next-cmd:hover {
+  background: var(--accent-light);
+  border-color: var(--accent);
+  text-decoration: none;
+}
+
+/* ==================== Footer ==================== */
+.page-footer,
+.review-footer {
+  text-align: center;
+  padding: 40px 0 24px;
+  font-size: 13px;
+  color: var(--text-tertiary);
+  border-top: 1px solid var(--border);
+  margin-top: 32px;
+}
+
+/* ==================== Lists ==================== */
+ul, ol { margin: 6px 0 12px 20px; color: var(--text-secondary) }
+li { margin: 4px 0; font-size: 14px; line-height: 1.65 }
+li strong { color: var(--text) }
+
+/* ==================== Responsive ==================== */
+
+/* Tablet landscape / small laptop (≤1024px) */
+@media (max-width: 1024px) {
+  .wrapper { max-width: 680px }
+}
+
+/* Tablet portrait (≤768px) */
+@media (max-width: 768px) {
+  .wrapper { padding: 0 20px }
+  .page-header, .review-header { padding: 48px 0 32px }
+  .page-header h1, .review-header h1 { font-size: 24px }
+  .section { padding: 32px 0 }
+  .section-head h2 { font-size: 18px }
+  .section-head { margin-bottom: 20px }
+  .dashboard-grid { grid-template-columns: 1fr }
+  .artifact-viewer { margin: 28px 0 }
+  .artifact-panel { padding: 20px; max-height: 400px }
+  .artifact-tab { padding: 10px 16px; font-size: 12px }
+  .acceptance { padding-top: 32px; margin-top: 32px }
+  .acceptance h2 { font-size: 16px }
+  h3 { font-size: 14px; margin: 20px 0 8px }
+  table { font-size: 12px }
+  th, td { padding: 8px 10px }
+  pre { padding: 12px 14px }
+  pre code { font-size: 12px }
+  .summary-block { padding: 12px 16px; font-size: 13px }
+  .mermaid-container { padding: 14px }
+  .architecture-diagram-container { padding: 14px }
+}
+
+/* Mobile standard (≤480px) */
+@media (max-width: 480px) {
+  body { font-size: 14px }
+  .wrapper { padding: 0 16px }
+  .page-header, .review-header { padding: 32px 0 24px }
+  .page-header h1, .review-header h1 { font-size: 20px; letter-spacing: -.01em }
+  .page-header .summary, .review-header .summary { font-size: 14px }
+  .section { padding: 24px 0 }
+  .section-head h2 { font-size: 16px }
+  .section-num { width: 28px; height: 28px; font-size: 12px; margin-right: 10px }
+  .dashboard { margin: 24px 0 }
+  .dash-card, .dashboard-card { padding: 16px }
+  .dashboard-card h3, .dashboard-card h4, .dash-card h3, .dash-card h4 { font-size: 10px }
+  .artifact-viewer { border-radius: var(--radius-sm) }
+  .artifact-tabs { gap: 0 }
+  .artifact-tab { padding: 10px 12px; font-size: 11px }
+  .artifact-panel { padding: 16px; max-height: 360px; font-size: 13px }
+  .artifact-panel h2 { font-size: 15px }
+  .artifact-panel h3 { font-size: 13px }
+  .task-list li, .task-list label { padding: 6px 8px; font-size: 13px }
+  .task-item { font-size: 13px }
+  .next-cmd { font-size: 13px; padding: 10px 16px }
+  .acceptance ol { font-size: 13px }
+  .page-footer, .review-footer { padding: 28px 0 20px; font-size: 12px }
+  .progress-label { font-size: 11px }
+  .badge-review { font-size: 10px; padding: 3px 8px }
+
+  /* Table horizontal scroll on narrow screens */
+  table { display: block; overflow-x: auto; white-space: nowrap }
+  thead { display: table; width: 100% }
+  tbody { display: table; width: 100% }
+
+  /* Code blocks */
+  pre { margin: 8px -16px; border-radius: 0; padding: 12px 16px; border-left: none; border-right: none }
+}
+
+/* Mobile compact (≤360px) */
+@media (max-width: 360px) {
+  .wrapper { padding: 0 12px }
+  .page-header, .review-header { padding: 24px 0 20px }
+  .page-header h1, .review-header h1 { font-size: 18px }
+  .section-head h2 { font-size: 15px }
+  .artifact-tab { padding: 8px 10px; font-size: 10px }
+  .artifact-panel { padding: 12px; max-height: 320px }
+  pre { margin: 8px -12px; padding: 10px 12px }
+}
+
+/* ==================== Print ==================== */
+@media print {
+  body { background: #fff; color: #000 }
+  .page-header, .review-header { border: none }
+  .badge-review { display: none }
+  .artifact-viewer { display: none }
+  .architecture-diagram-container { background: #fff !important }
+}
+
+/* ==================== Theme toggle ==================== */
+.theme-toggle {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  z-index: 100;
+  width: 36px;
+  height: 36px;
+  border: 1px solid var(--border);
+  border-radius: 50%;
+  background: var(--surface);
+  color: var(--text-muted);
+  font-size: 16px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background var(--transition), border-color var(--transition);
+  line-height: 1;
+}
+.theme-toggle:hover {
+  background: var(--surface-raised);
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
+/* ==================== Verification tags ==================== */
+.verify-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 2px 8px;
+  border-radius: 9999px;
+  font-size: 11px;
+  font-weight: 500;
+}
+.verify-tag-human { background: var(--warning-light); color: var(--warning) }
+.verify-tag-auto { background: var(--success-light); color: var(--success) }
+
+/* ==================== Pending items ==================== */
+.pending-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 10px 14px;
+  margin: 4px 0;
+  border-radius: var(--radius-xs);
+  border-left: 3px solid var(--warning);
+  background: var(--warning-light);
+  font-size: 14px;
+  color: var(--text-secondary);
+}
+.pending-item input[type="checkbox"] {
+  width: 15px;
+  height: 15px;
+  margin-top: 2px;
+  flex-shrink: 0;
+  accent-color: var(--accent);
+}
+
+/* ==================== Upgrade banner ==================== */
+.upgrade-banner {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 16px;
+  margin-bottom: 16px;
+  border-radius: var(--radius-sm);
+  font-size: 13px;
+  background: var(--warning-light);
+  color: var(--warning);
+  border: 1px solid rgba(217, 119, 6, .12);
+}
+.upgrade-banner code {
+  background: rgba(217, 119, 6, .06);
+  padding: 2px 8px;
+  border-radius: 4px;
+  font-size: 12px;
+  font-family: var(--font-mono);
+  border: none;
+}
+
+</style>
+<!-- END:css -->
+</head>
+<body>
+
+<header>
+  <h1>externalize-templates-npm</h1>
+  <p class="summary">将 templates/ 就地升级为独立内部 npm 包，devkeel update 通过 npm view 实时拉取最新模板到本地缓存</p>
+  <div class="progress-bar">
+    <div class="progress-fill" style="width: 57%">4/7 artifacts</div>
+  </div>
+</header>
+
+<!-- Dashboard -->
+<section class="dashboard">
+  <div class="architecture-diagram-container">
+    <svg viewBox="0 0 1000 680" xmlns="http://www.w3.org/2000/svg" style="width:100%;height:auto;background:#020617;border-radius:12px;border:1px solid #1e293b">
+      <defs>
+        <pattern id="grid" width="40" height="40" patternUnits="userSpaceOnUse">
+          <path d="M 40 0 L 0 0 0 40" fill="none" stroke="#1e293b" stroke-width="0.5"/>
+        </pattern>
+        <marker id="arrowhead" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
+          <polygon points="0 0, 10 3.5, 0 7" fill="#64748b" />
+        </marker>
+        <marker id="arrowhead-cyan" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
+          <polygon points="0 0, 10 3.5, 0 7" fill="#22d3ee" />
+        </marker>
+        <marker id="arrowhead-emerald" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
+          <polygon points="0 0, 10 3.5, 0 7" fill="#34d399" />
+        </marker>
+        <marker id="arrowhead-amber" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
+          <polygon points="0 0, 10 3.5, 0 7" fill="#fbbf24" />
+        </marker>
+      </defs>
+      <rect width="1000" height="680" fill="#020617"/>
+      <rect width="1000" height="680" fill="url(#grid)"/>
+
+      <!-- 标题 -->
+      <text x="500" y="30" fill="#22d3ee" font-size="14" font-weight="600" text-anchor="middle" font-family="JetBrains Mono, monospace">harness CLI 模板外置架构</text>
+
+      <!-- 连线（先画，在底层） -->
+      <!-- 用户 → CLI -->
+      <line x1="150" y1="120" x2="150" y2="190" stroke="#22d3ee" stroke-width="1.5" marker-end="url(#arrowhead-cyan)"/>
+      <text x="158" y="160" fill="#22d3ee" font-size="8" font-family="JetBrains Mono, monospace">执行命令</text>
+
+      <!-- CLI → templates-cache -->
+      <line x1="230" y1="230" x2="380" y2="230" stroke="#34d399" stroke-width="1.5" marker-end="url(#arrowhead-emerald)"/>
+      <text x="290" y="220" fill="#34d399" font-size="8" font-family="JetBrains Mono, monospace">ensureTemplatesCache()</text>
+
+      <!-- templates-cache → Artifactory (npm view) -->
+      <line x1="580" y1="210" x2="780" y2="140" stroke="#fbbf24" stroke-width="1.5" marker-end="url(#arrowhead-amber)"/>
+      <text x="660" y="165" fill="#fbbf24" font-size="8" font-family="JetBrains Mono, monospace">npm view</text>
+
+      <!-- templates-cache → Artifactory (download) -->
+      <line x1="580" y1="250" x2="780" y2="170" stroke="#fbbf24" stroke-width="1.5" stroke-dasharray="4,4" marker-end="url(#arrowhead-amber)"/>
+      <text x="660" y="215" fill="#fbbf24" font-size="8" font-family="JetBrains Mono, monospace">下载 tarball</text>
+
+      <!-- Artifactory → templates-cache (返回 tarball) -->
+      <line x1="780" y1="185" x2="580" y2="265" stroke="#fb923c" stroke-width="1.5" marker-end="url(#arrowhead)"/>
+      <text x="660" y="245" fill="#fb923c" font-size="8" font-family="JetBrains Mono, monospace">返回 tarball</text>
+
+      <!-- templates-cache → 缓存目录 -->
+      <line x1="480" y1="280" x2="480" y2="380" stroke="#34d399" stroke-width="1.5" marker-end="url(#arrowhead-emerald)"/>
+      <text x="488" y="340" fill="#34d399" font-size="8" font-family="JetBrains Mono, monospace">解压写入</text>
+
+      <!-- CLI → 缓存目录 (读取模板) -->
+      <line x1="150" y1="270" x2="150" y2="380" stroke="#22d3ee" stroke-width="1.5" stroke-dasharray="4,4"/>
+      <line x1="150" y1="380" x2="380" y2="420" stroke="#22d3ee" stroke-width="1.5" marker-end="url(#arrowhead-cyan)"/>
+      <text x="200" y="400" fill="#22d3ee" font-size="8" font-family="JetBrains Mono, monospace">getTemplatesDir()</text>
+
+      <!-- templates/ → Artifactory (发版) -->
+      <line x1="780" y1="530" x2="850" y2="200" stroke="#fb7185" stroke-width="1.5" stroke-dasharray="6,3" marker-end="url(#arrowhead)"/>
+      <text x="830" y="370" fill="#fb7185" font-size="8" font-family="JetBrains Mono, monospace">npm publish</text>
+      <text x="830" y="385" fill="#fb7185" font-size="7" font-family="JetBrains Mono, monospace">（维护者操作）</text>
+
+      <!-- 用户组件 -->
+      <rect x="80" y="70" width="140" height="50" rx="6" fill="#0f172a"/>
+      <rect x="80" y="70" width="140" height="50" rx="6" fill="rgba(8, 51, 68, 0.4)" stroke="#22d3ee" stroke-width="1.5"/>
+      <text x="150" y="92" fill="white" font-size="11" font-weight="600" text-anchor="middle" font-family="JetBrains Mono, monospace">用户</text>
+      <text x="150" y="108" fill="#94a3b8" font-size="9" text-anchor="middle" font-family="JetBrains Mono, monospace">开发者</text>
+
+      <!-- CLI 组件 -->
+      <rect x="70" y="195" width="160" height="75" rx="6" fill="#0f172a"/>
+      <rect x="70" y="195" width="160" height="75" rx="6" fill="rgba(6, 78, 59, 0.4)" stroke="#34d399" stroke-width="1.5"/>
+      <text x="150" y="218" fill="white" font-size="11" font-weight="600" text-anchor="middle" font-family="JetBrains Mono, monospace">devkeel</text>
+      <text x="150" y="234" fill="#94a3b8" font-size="9" text-anchor="middle" font-family="JetBrains Mono, monospace">CLI 命令入口</text>
+      <text x="150" y="250" fill="#94a3b8" font-size="8" text-anchor="middle" font-family="JetBrains Mono, monospace">update / init</text>
+
+      <!-- templates-cache 模块 -->
+      <rect x="380" y="195" width="200" height="85" rx="6" fill="#0f172a"/>
+      <rect x="380" y="195" width="200" height="85" rx="6" fill="rgba(6, 78, 59, 0.4)" stroke="#34d399" stroke-width="1.5"/>
+      <text x="480" y="218" fill="white" font-size="11" font-weight="600" text-anchor="middle" font-family="JetBrains Mono, monospace">templates-cache</text>
+      <text x="480" y="234" fill="#94a3b8" font-size="9" text-anchor="middle" font-family="JetBrains Mono, monospace">新增模块</text>
+      <text x="480" y="250" fill="#94a3b8" font-size="8" text-anchor="middle" font-family="JetBrains Mono, monospace">npm view + tarball 下载</text>
+      <text x="480" y="264" fill="#94a3b8" font-size="8" text-anchor="middle" font-family="JetBrains Mono, monospace">缓存管理</text>
+
+      <!-- Artifactory -->
+      <rect x="780" y="90" width="180" height="110" rx="12" fill="none" stroke="#fbbf24" stroke-width="1.5" stroke-dasharray="8,4"/>
+      <text x="870" y="108" fill="#fbbf24" font-size="9" text-anchor="middle" font-family="JetBrains Mono, monospace">内部 Artifactory</text>
+      <rect x="800" y="120" width="140" height="60" rx="6" fill="#0f172a"/>
+      <rect x="800" y="120" width="140" height="60" rx="6" fill="rgba(120, 53, 15, 0.3)" stroke="#fbbf24" stroke-width="1.5"/>
+      <text x="870" y="143" fill="white" font-size="10" font-weight="600" text-anchor="middle" font-family="JetBrains Mono, monospace">devkeel</text>
+      <text x="870" y="158" fill="white" font-size="10" font-weight="600" text-anchor="middle" font-family="JetBrains Mono, monospace">-templates</text>
+      <text x="870" y="172" fill="#94a3b8" font-size="8" text-anchor="middle" font-family="JetBrains Mono, monospace">npm 包 registry</text>
+
+      <!-- 缓存目录 -->
+      <rect x="380" y="385" width="200" height="75" rx="6" fill="#0f172a"/>
+      <rect x="380" y="385" width="200" height="75" rx="6" fill="rgba(76, 29, 149, 0.4)" stroke="#a78bfa" stroke-width="1.5"/>
+      <text x="480" y="408" fill="white" font-size="10" font-weight="600" text-anchor="middle" font-family="JetBrains Mono, monospace">~/.harness/cache/</text>
+      <text x="480" y="423" fill="white" font-size="10" font-weight="600" text-anchor="middle" font-family="JetBrains Mono, monospace">harness-templates/</text>
+      <text x="480" y="440" fill="#94a3b8" font-size="9" text-anchor="middle" font-family="JetBrains Mono, monospace">&lt;version&gt;/</text>
+      <text x="480" y="454" fill="#94a3b8" font-size="8" text-anchor="middle" font-family="JetBrains Mono, monospace">本地缓存目录</text>
+
+      <!-- templates/ 源码 -->
+      <rect x="700" y="490" width="160" height="75" rx="6" fill="#0f172a"/>
+      <rect x="700" y="490" width="160" height="75" rx="6" fill="rgba(30, 41, 59, 0.5)" stroke="#94a3b8" stroke-width="1.5"/>
+      <text x="780" y="513" fill="white" font-size="11" font-weight="600" text-anchor="middle" font-family="JetBrains Mono, monospace">templates/</text>
+      <text x="780" y="530" fill="#94a3b8" font-size="9" text-anchor="middle" font-family="JetBrains Mono, monospace">源码仓库</text>
+      <text x="780" y="546" fill="#94a3b8" font-size="8" text-anchor="middle" font-family="JetBrains Mono, monospace">skills/rules/agents/...</text>
+
+      <!-- 图例 -->
+      <rect x="30" y="600" width="940" height="60" rx="8" fill="rgba(30, 41, 59, 0.3)" stroke="#1e293b" stroke-width="1"/>
+      <text x="50" y="620" fill="#94a3b8" font-size="9" font-family="JetBrains Mono, monospace">图例：</text>
+      <line x1="100" y1="616" x2="140" y2="616" stroke="#22d3ee" stroke-width="1.5"/>
+      <text x="148" y="620" fill="#94a3b8" font-size="8" font-family="JetBrains Mono, monospace">用户操作</text>
+      <line x1="220" y1="616" x2="260" y2="616" stroke="#34d399" stroke-width="1.5"/>
+      <text x="268" y="620" fill="#94a3b8" font-size="8" font-family="JetBrains Mono, monospace">CLI 内部调用</text>
+      <line x1="370" y1="616" x2="410" y2="616" stroke="#fbbf24" stroke-width="1.5"/>
+      <text x="418" y="620" fill="#94a3b8" font-size="8" font-family="JetBrains Mono, monospace">registry 请求</text>
+      <line x1="520" y1="616" x2="560" y2="616" stroke="#fb7185" stroke-width="1.5" stroke-dasharray="6,3"/>
+      <text x="568" y="620" fill="#94a3b8" font-size="8" font-family="JetBrains Mono, monospace">发版操作</text>
+      <line x1="660" y1="616" x2="700" y2="616" stroke="#64748b" stroke-width="1.5" stroke-dasharray="4,4"/>
+      <text x="708" y="620" fill="#94a3b8" font-size="8" font-family="JetBrains Mono, monospace">数据返回</text>
+    </svg>
+  </div>
+
+  <div class="dashboard-grid">
+    <div class="dash-card">
+      <h4>风险评估</h4>
+      <ul>
+        <li><span class="risk-tag risk-high">高</span> 网络依赖：每次 update/init 需访问内部 registry</li>
+        <li><span class="risk-tag risk-medium">中</span> 同仓双包发版节奏不同，需分发版脚本</li>
+        <li><span class="risk-tag risk-low">低</span> 旧 CLI 用户不兼容（明确排除）</li>
+      </ul>
+    </div>
+    <div class="dash-card">
+      <h4>任务概览</h4>
+      <ul>
+        <li>7 个功能组</li>
+        <li>13 个实现任务</li>
+        <li>5 个验证任务</li>
+        <li>2 个文档任务</li>
+      </ul>
+    </div>
+    <div class="dash-card">
+      <h4>影响范围</h4>
+      <ul>
+        <li><code>src/lib/templates-cache.ts</code> — 新增</li>
+        <li><code>src/lib/templates.ts</code> — 改造 getTemplatesDir</li>
+        <li><code>src/commands/update.ts</code> — 入口接入</li>
+        <li><code>src/commands/init.ts</code> — 入口接入</li>
+        <li><code>templates/package.json</code> — 新增</li>
+        <li><code>package.json</code> — files 移除 templates</li>
+      </ul>
+    </div>
+    <div class="dash-card" data-card="test-coverage">
+      <h4>测试覆盖</h4>
+      <ul>
+        <li>新增 <code>tests/templates-cache.test.ts</code></li>
+        <li>覆盖：首次拉取、缓存命中、版本过期、错误诊断</li>
+        <li>现有 tests/templates.test.ts 仍需通过（fallback 路径）</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<!-- 01 需求摘要 -->
+<div class="section" id="s1">
+  <div class="section-head" onclick="toggleSection(this)">
+    <span class="section-num">01</span><h2>需求摘要</h2>
+    <svg class="collapse-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+  </div>
+  <div class="section-body">
+    <h3>核心用例</h3>
+    <table>
+      <thead><tr><th>用例</th><th>触发</th><th>预期</th></tr></thead>
+      <tbody>
+        <tr><td>首次执行 update</td><td>缓存为空</td><td>npm view → 下载 tarball → 解压到缓存</td></tr>
+        <tr><td>重复执行且版本未变</td><td>缓存命中</td><td>复用缓存，不重新下载</td></tr>
+        <tr><td>模板包发布新版本</td><td>latest 版本变化</td><td>下载新版本，保留旧版本供回滚</td></tr>
+        <tr><td>网络/registry 不可达</td><td>npm 调用失败</td><td>报错退出，含修复指引</td></tr>
+      </tbody>
+    </table>
+
+    <h3>需求边界</h3>
+    <div class="scope-grid">
+      <div class="scope-in">
+        <h4>In Scope</h4>
+        <ul>
+          <li>templates/ 就地升级为 devkeel-templates npm 包</li>
+          <li>CLI 新增 templates-cache.ts 封装拉取与缓存</li>
+          <li>getTemplatesDir/getBuiltinVersions/readSchemaVersion 指向缓存</li>
+          <li>devkeel update/init 入口前置 ensureTemplatesCache</li>
+          <li>失败路径诊断文案（含 registry 配置指引）</li>
+        </ul>
+      </div>
+      <div class="scope-out">
+        <h4>Out of Scope</h4>
+        <ul>
+          <li>另开独立仓库（直接复用 templates/）</li>
+          <li>旧 CLI 兼容或 fallback</li>
+          <li>TTL 缓存 / 离线模式 / 异步后台刷新</li>
+          <li>lerna/changesets 协调</li>
+        </ul>
+      </div>
+    </div>
+
+    <h3>验收标准</h3>
+    <ul class="checklist">
+      <li><input type="checkbox"> pnpm lint 通过</li>
+      <li><input type="checkbox"> pnpm test 通过（含新增 templates-cache.test.ts）</li>
+      <li><input type="checkbox"> pnpm build 产物不含 templates/</li>
+      <li><input type="checkbox"> devkeel update 在配置内部 registry 后可正常拉取模板</li>
+      <li><input type="checkbox"> 网络失败时输出完整诊断文案并 exit(1)</li>
+    </ul>
+  </div>
+</div>
+
+<!-- 02 关键设计 -->
+<div class="section" id="s-design">
+  <div class="section-head" onclick="toggleSection(this)">
+    <span class="section-num">02</span><h2>关键设计</h2>
+    <svg class="collapse-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+  </div>
+  <div class="section-body">
+    <h3>方案对比</h3>
+    <table>
+      <thead><tr><th>维度</th><th>A: runtime dependency</th><th>B: 运行时拉取（采纳）</th></tr></thead>
+      <tbody>
+        <tr><td>"永远最新"语义</td><td>受 caret 范围限制</td><td><strong>每次 update 必拉 latest</strong></td></tr>
+        <tr><td>CLI 升版频率</td><td>必须跟着模板升</td><td><strong>解耦</strong></td></tr>
+        <tr><td>运行时依赖数</td><td>+1</td><td><strong>0（用环境 npm）</strong></td></tr>
+        <tr><td>网络依赖</td><td>仅 npm install 时</td><td>每次 update/init</td></tr>
+      </tbody>
+    </table>
+
+    <h3>人机交互时序</h3>
+    <div class="architecture-diagram-container">
+      <svg viewBox="0 0 900 420" xmlns="http://www.w3.org/2000/svg" style="width:100%;height:auto;background:#020617;border-radius:12px;border:1px solid #1e293b">
+        <rect width="900" height="420" fill="#020617"/>
+        <text x="450" y="25" fill="#22d3ee" font-size="12" font-weight="600" text-anchor="middle" font-family="JetBrains Mono, monospace">devkeel update 执行时序</text>
+
+        <!-- 生命线 -->
+        <line x1="100" y1="60" x2="100" y2="400" stroke="#1e293b" stroke-width="1" stroke-dasharray="4,4"/>
+        <line x1="300" y1="60" x2="300" y2="400" stroke="#1e293b" stroke-width="1" stroke-dasharray="4,4"/>
+        <line x1="500" y1="60" x2="500" y2="400" stroke="#1e293b" stroke-width="1" stroke-dasharray="4,4"/>
+        <line x1="700" y1="60" x2="700" y2="400" stroke="#1e293b" stroke-width="1" stroke-dasharray="4,4"/>
+        <line x1="850" y1="60" x2="850" y2="400" stroke="#1e293b" stroke-width="1" stroke-dasharray="4,4"/>
+
+        <!-- 参与者 -->
+        <rect x="50" y="40" width="100" height="30" rx="4" fill="rgba(8, 51, 68, 0.4)" stroke="#22d3ee" stroke-width="1"/>
+        <text x="100" y="58" fill="white" font-size="9" text-anchor="middle" font-family="JetBrains Mono, monospace">用户</text>
+
+        <rect x="250" y="40" width="100" height="30" rx="4" fill="rgba(6, 78, 59, 0.4)" stroke="#34d399" stroke-width="1"/>
+        <text x="300" y="58" fill="white" font-size="9" text-anchor="middle" font-family="JetBrains Mono, monospace">CLI update</text>
+
+        <rect x="450" y="40" width="100" height="30" rx="4" fill="rgba(6, 78, 59, 0.4)" stroke="#34d399" stroke-width="1"/>
+        <text x="500" y="58" fill="white" font-size="9" text-anchor="middle" font-family="JetBrains Mono, monospace">cache 模块</text>
+
+        <rect x="650" y="40" width="100" height="30" rx="4" fill="rgba(30, 41, 59, 0.5)" stroke="#94a3b8" stroke-width="1"/>
+        <text x="700" y="58" fill="white" font-size="9" text-anchor="middle" font-family="JetBrains Mono, monospace">文件系统</text>
+
+        <rect x="800" y="40" width="100" height="30" rx="4" fill="rgba(120, 53, 15, 0.3)" stroke="#fbbf24" stroke-width="1"/>
+        <text x="850" y="58" fill="white" font-size="9" text-anchor="middle" font-family="JetBrains Mono, monospace">npm registry</text>
+
+        <!-- 消息 -->
+        <line x1="100" y1="90" x2="300" y2="90" stroke="#22d3ee" stroke-width="1.5" marker-end="url(#arrowhead-cyan)"/>
+        <text x="200" y="85" fill="#22d3ee" font-size="8" text-anchor="middle" font-family="JetBrains Mono, monospace">devkeel update</text>
+
+        <line x1="300" y1="120" x2="500" y2="120" stroke="#34d399" stroke-width="1.5" marker-end="url(#arrowhead-emerald)"/>
+        <text x="400" y="115" fill="#34d399" font-size="8" text-anchor="middle" font-family="JetBrains Mono, monospace">ensureTemplatesCache()</text>
+
+        <line x1="500" y1="150" x2="700" y2="150" stroke="#94a3b8" stroke-width="1.5" marker-end="url(#arrowhead)"/>
+        <text x="600" y="145" fill="#94a3b8" font-size="8" text-anchor="middle" font-family="JetBrains Mono, monospace">读取 meta.json</text>
+
+        <line x1="700" y1="170" x2="500" y2="170" stroke="#94a3b8" stroke-width="1" stroke-dasharray="4,4" marker-end="url(#arrowhead)"/>
+        <text x="600" y="165" fill="#94a3b8" font-size="7" text-anchor="middle" font-family="JetBrains Mono, monospace">{version, fetchedAt}</text>
+
+        <line x1="500" y1="200" x2="850" y2="200" stroke="#fbbf24" stroke-width="1.5" marker-end="url(#arrowhead-amber)"/>
+        <text x="675" y="195" fill="#fbbf24" font-size="8" text-anchor="middle" font-family="JetBrains Mono, monospace">npm view (latest version)</text>
+
+        <line x1="850" y1="220" x2="500" y2="220" stroke="#fbbf24" stroke-width="1" stroke-dasharray="4,4" marker-end="url(#arrowhead-amber)"/>
+        <text x="675" y="215" fill="#fbbf24" font-size="7" text-anchor="middle" font-family="JetBrains Mono, monospace">{version, tarball URL}</text>
+
+        <!-- 条件框 -->
+        <rect x="460" y="240" width="200" height="80" rx="4" fill="none" stroke="#fb923c" stroke-width="1" stroke-dasharray="4,4"/>
+        <text x="470" y="255" fill="#fb923c" font-size="8" font-family="JetBrains Mono, monospace">[版本不同]</text>
+
+        <line x1="500" y1="270" x2="850" y2="270" stroke="#fbbf24" stroke-width="1.5" marker-end="url(#arrowhead-amber)"/>
+        <text x="675" y="265" fill="#fbbf24" font-size="8" text-anchor="middle" font-family="JetBrains Mono, monospace">下载 tarball</text>
+
+        <line x1="500" y1="300" x2="700" y2="300" stroke="#34d399" stroke-width="1.5" marker-end="url(#arrowhead-emerald)"/>
+        <text x="600" y="295" fill="#34d399" font-size="8" text-anchor="middle" font-family="JetBrains Mono, monospace">解压到 &lt;version&gt;.tmp/</text>
+
+        <line x1="500" y1="330" x2="700" y2="330" stroke="#34d399" stroke-width="1.5" marker-end="url(#arrowhead-emerald)"/>
+        <text x="600" y="325" fill="#34d399" font-size="8" text-anchor="middle" font-family="JetBrains Mono, monospace">rename → &lt;version&gt;/</text>
+
+        <line x1="500" y1="360" x2="300" y2="360" stroke="#34d399" stroke-width="1" stroke-dasharray="4,4" marker-end="url(#arrowhead-emerald)"/>
+        <text x="400" y="355" fill="#34d399" font-size="8" text-anchor="middle" font-family="JetBrains Mono, monospace">{cacheDir, version}</text>
+
+        <line x1="300" y1="390" x2="100" y2="390" stroke="#22d3ee" stroke-width="1" stroke-dasharray="4,4" marker-end="url(#arrowhead-cyan)"/>
+        <text x="200" y="385" fill="#22d3ee" font-size="8" text-anchor="middle" font-family="JetBrains Mono, monospace">后续 update 流程</text>
+      </svg>
+    </div>
+
+    <h3>关键接口</h3>
+    <pre><code>// src/lib/templates-cache.ts
+
+export interface TemplatesCacheInfo {
+  cacheDir: string     // ~/.harness/cache/harness-templates/&lt;version&gt;
+  version: string      // 实际拉到的版本号
+}
+
+export class TemplatesFetchError extends Error {
+  readonly diagnostic: string   // 人类可读的修复指引
+}
+
+export function ensureTemplatesCache(): TemplatesCacheInfo
+// - 调用 npm view 拿 latest 版本
+// - 与缓存 meta.json 比对，必要时下载解压
+// - 失败抛出 TemplatesFetchError（含 registry 配置指引）
+
+// src/lib/templates.ts 改造
+
+let cachedTemplatesDir: string | null = null
+
+export function setTemplatesDir(dir: string): void {
+  cachedTemplatesDir = dir
+}
+
+export function getTemplatesDir(): string {
+  if (cachedTemplatesDir) return cachedTemplatesDir
+  // 本地开发 fallback
+  const candidate = path.resolve(__dirname, '..', 'templates')
+  if (fs.existsSync(candidate)) return candidate
+  return path.resolve(__dirname, '..', '..', 'templates')
+}</code></pre>
+
+    <h3>缓存目录布局</h3>
+    <pre><code>~/.harness/cache/harness-templates/
+├── meta.json                   # { version: "1.2.3", fetchedAt: "..." }
+├── 1.2.3/                       # 当前版本
+│   ├── skills/...
+│   ├── rules/...
+│   ├── versions-yml.yml
+│   └── openspec/schemas/...
+└── 1.2.2/                       # 上一版本（保留供回滚）</code></pre>
+  </div>
+</div>
+
+<!-- 03 实现任务 -->
+<div class="section" id="s3">
+  <div class="section-head" onclick="toggleSection(this)">
+    <span class="section-num">03</span><h2>实现任务</h2>
+    <svg class="collapse-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+  </div>
+  <div class="section-body">
+    <div class="task-list">
+      <h3>1. 模板包基础设施</h3>
+      <div class="task-item"><input type="checkbox"><span>1.1 创建 templates/package.json（name/version/files/publishConfig）</span></div>
+      <div class="task-item"><input type="checkbox"><span>1.2 创建 templates/.npmignore</span></div>
+      <div class="task-item"><input type="checkbox"><span>1.3 主仓添加 release:templates 脚本</span></div>
+
+      <h3>2. CLI 移除 templates 打包</h3>
+      <div class="task-item"><input type="checkbox"><span>2.1 CLI package.json files 字段移除 templates</span></div>
+
+      <h3>3. 模板缓存拉取模块</h3>
+      <div class="task-item"><input type="checkbox"><span>3.1 实现 ensureTemplatesCache 核心逻辑</span></div>
+      <div class="task-item"><input type="checkbox"><span>3.2 实现 tarball 下载与解压</span></div>
+      <div class="task-item"><input type="checkbox"><span>3.3 实现 TemplatesFetchError 与诊断文案</span></div>
+
+      <h3>4. 改造模板读取入口</h3>
+      <div class="task-item"><input type="checkbox"><span>4.1 改造 getTemplatesDir 支持动态路径</span></div>
+      <div class="task-item"><input type="checkbox"><span>4.2 验证 getBuiltinVersions 与 readSchemaVersion 自动适配</span></div>
+
+      <h3>5. 命令层接入</h3>
+      <div class="task-item"><input type="checkbox"><span>5.1 devkeel update 入口前置 ensureTemplatesCache</span></div>
+      <div class="task-item"><input type="checkbox"><span>5.2 devkeel init 入口前置 ensureTemplatesCache</span></div>
+
+      <h3>6. 集成验证</h3>
+      <div class="task-item"><input type="checkbox"><span>6.1 端到端验证 update 流程</span></div>
+      <div class="task-item"><input type="checkbox"><span>6.2 端到端验证 init 流程</span></div>
+      <div class="task-item"><input type="checkbox"><span>6.3 错误路径验证</span></div>
+
+      <h3>7. 文档与 changelog</h3>
+      <div class="task-item"><input type="checkbox"><span>7.1 更新 web/changelog.html</span></div>
+      <div class="task-item"><input type="checkbox"><span>7.2 更新 CLAUDE.md 或 README 补充 npm 源配置</span></div>
+    </div>
+  </div>
+</div>
+
+<!-- 04 待确认项 -->
+<div class="section" id="s4">
+  <div class="section-head" onclick="toggleSection(this)">
+    <span class="section-num">04</span><h2>待确认项</h2>
+    <svg class="collapse-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+  </div>
+  <div class="section-body">
+    <div class="pending-item"><input type="checkbox"><span><strong>同仓双包发版流程</strong> — 已确认：CLI 主导，通过主包脚本 cd templates/ && npm publish 发版；不用 lerna/changesets</span></div>
+    <div class="pending-item"><input type="checkbox"><span><strong>templates/package.json 初始版本号</strong> — 已确认：1.0.0，与 CLI 0.6.1 解耦</span></div>
+  </div>
+</div>
+
+<!-- 05 Artifact 原文 -->
+<div class="section collapsed" id="s-artifacts">
+  <div class="section-head" onclick="toggleSection(this)">
+    <span class="section-num">05</span><h2>Artifact 原文</h2>
+    <svg class="collapse-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+  </div>
+  <div class="section-body">
+    <div class="artifact-viewer">
+      <div class="artifact-tabs">
+        <button class="artifact-tab" data-tab="brainstorm" onclick="switchArtifactTab('brainstorm')">brainstorm</button>
+        <button class="artifact-tab" data-tab="design" onclick="switchArtifactTab('design')">design</button>
+        <button class="artifact-tab" data-tab="specs" onclick="switchArtifactTab('specs')">specs</button>
+        <button class="artifact-tab" data-tab="tasks" onclick="switchArtifactTab('tasks')">tasks</button>
+      </div>
+      <div class="artifact-panel" data-panel="brainstorm"></div>
+      <div class="artifact-panel" data-panel="design"></div>
+      <div class="artifact-panel" data-panel="specs"></div>
+      <div class="artifact-panel" data-panel="tasks"></div>
+    </div>
+  </div>
+</div>
+
+<!-- 验收指引 -->
+<div class="acceptance">
+  <h2>验收指引</h2>
+  <h3>人工验证</h3>
+  <ol>
+    <li><span class="verify-tag verify-tag-human">人工</span> 确认 templates/package.json files 白名单覆盖所有应发布资源</li>
+    <li><span class="verify-tag verify-tag-human">人工</span> 确认诊断文案包含完整的 .npmrc 配置指引</li>
+    <li><span class="verify-tag verify-tag-human">人工</span> 确认缓存目录布局支持版本隔离与回滚</li>
+  </ol>
+  <h3>自动验证（verify 阶段处理）</h3>
+  <ol>
+    <li><span class="verify-tag verify-tag-auto">自动</span> pnpm lint 通过</li>
+    <li><span class="verify-tag verify-tag-auto">自动</span> pnpm test 通过（含 templates-cache.test.ts）</li>
+    <li><span class="verify-tag verify-tag-auto">自动</span> pnpm build 产物不含 templates/</li>
+    <li><span class="verify-tag verify-tag-auto">自动</span> npm pack --dry-run 在 templates/ 下仅输出白名单文件</li>
+  </ol>
+  <a class="next-cmd" onclick="var el=this;var t=el.dataset.cmd||(el.dataset.cmd=el.textContent.trim());navigator.clipboard.writeText(t).then(function(){el.textContent='✓ 已复制';setTimeout(function(){el.textContent=t},1500)})">/opsx:apply externalize-templates-npm</a>
+</div>
+
+<!-- BEGIN:artifacts -->
+<script type="text/markdown" data-artifact="brainstorm">
+## 一句话描述
+
+将现有 `templates/` 目录就地升级为独立内部 npm 包 `devkeel-templates`（同仓、不另开仓库），`devkeel update` 通过 `npm view` 实时拉取最新版 tarball，使模板迭代独立于 CLI 发版。
+
+## 需求背景
+
+当前 `templates/` 与 CLI 同仓，且被 `package.json` 的 `files` 字段打入 `devkeel` tarball。这意味着：
+
+- 模板内容变更必须伴随 CLI 升版 + 重新发布，才能让用户拿到
+- 用户执行 `devkeel update` 只是把当前已安装版本的模板**还原**一次，并不是真的升级
+- 模板（skills/rules/agents/schemas）迭代频率明显高于 CLI 代码，二者耦合成为瓶颈
+
+业务诉求："devkeel update 永远可以拉到最新的 template 模板" —— 模板变更能在用户下一次执行 `devkeel update` 时自动生效，无需 CLI 升版。
+
+## 项目现状与架构分析
+
+**受影响模块：**
+
+| 模块 | 当前职责 | 改造后 |
+|------|----------|--------|
+| `templates/` 目录 | 模板资产 + `versions-yml.yml` | 原地新增 `package.json`（`name: devkeel-templates`），作为独立 npm 包发版；CLI `package.json` 的 `files` 字段**移除** `templates` |
+| `src/lib/templates.ts::getTemplatesDir()` | 解析包内 `templates/` 路径 | 改为指向 `~/.harness/cache/harness-templates/<version>/` |
+| `src/lib/config.ts::getBuiltinVersions()` | 读包内 `versions-yml.yml` | 改读缓存中的 `versions-yml.yml` |
+| `src/lib/config.ts::readSchemaVersion()` | 读包内 schema.yaml | 改读缓存中的 schema.yaml |
+| `src/commands/update.ts` | 编排更新流程 | 开头新增"拉取最新模板包"步骤 |
+| `src/commands/init.ts` | 复制模板到目标项目 | 自动受益（依赖 `getTemplatesDir()`） |
+
+**核心调用链（改造后）：**
+
+```
+devkeel update
+  ↓
+ensureTemplatesCache()              ← 新增
+  ├─ npm view devkeel-templates version dist.tarball --json
+  ├─ 比对缓存 meta.json 中的 version
+  ├─ 不同 → 下载 tarball → 解压到 ~/.harness/cache/harness-templates/<version>/
+  └─ 相同 → 复用缓存
+  ↓
+detectUpdates() / copyDirRecursive()   ← 不变，但模板源从包内变为缓存
+```
+
+## 风险与约束
+
+| 风险 | 缓解 |
+|------|------|
+| 用户环境无 npm / npm 不在 PATH | 启动时检测；失败报错含修复建议 |
+| 内部 Artifactory 不可达 / 鉴权失败 | 报错含 `.npmrc` 配置片段（`registry=...`） |
+| 拉取延迟影响 `devkeel update` 体验 | 实时拉取，不做 TTL；网络差时直接报错而非静默降级 |
+| 首次执行冷启动慢 | 接受，仅第一次 |
+| 旧 CLI 用户（包内还带 templates） | 不在本 change 范围；新 CLI 直接移除包内 templates |
+| 缓存目录权限 / 多用户并发写 | 用用户级 `~/.harness/cache/`，自然隔离 |
+| `versions-yml.yml` 在两个包里的单一权威源 | 迁到新包，CLI 包不再保留 |
+| 同仓双包发版冲突（CLI 和模板共用 `master`，发版节奏不同） | 用 npm `workspaces` 或独立发版脚本；`templates/package.json` 独立 `version`；CLI 发版流程不联动模板发版 |
+
+**向后兼容：** 不兼容旧 CLI（用户明确要求"旧 CLI 不管了"）。CLI 升 major 或在新 minor 中明确提示。
+
+**测试覆盖：** 现有 `tests/templates.test.ts`、`tests/config.test.ts` 大量依赖包内 templates 路径，需改造为使用临时目录构造的"假模板缓存"。
+
+## 目标用户与角色
+
+| 角色 | 关注点 |
+|------|--------|
+| CLI 用户（内部工程师） | 执行 `devkeel update` 拿到最新 skills/rules；环境配置一次到位 |
+| 模板维护者 | 改模板只需发 `devkeel-templates`，无需碰 CLI |
+| Ops/SRE | 内部 Artifactory 容量、tarball 命名规范 |
+
+## 核心功能用例
+
+### UC1: 首次执行 `devkeel update`
+
+- **触发：** 用户在新版 CLI 下第一次跑 `devkeel update`
+- **预期：** CLI 调 `npm view` 拿到 latest 版本，下载 tarball 解压到 `~/.harness/cache/harness-templates/<version>/`，后续流程使用此目录作为模板源；写入 `meta.json` 记录 `{ version, fetchedAt }`
+
+### UC2: 重复执行且版本未变
+
+- **触发：** 缓存已有 latest 版本
+- **预期：** `npm view` 返回版本与缓存一致，复用缓存，不重新下载
+
+### UC3: 模板包发布新版本
+
+- **触发：** 模板维护者发布 `devkeel-templates@x.y.z`，用户随后执行 `devkeel update`
+- **预期：** `npm view` 返回新版本号，下载新 tarball 解压为新目录；旧版本目录保留供回滚（或按策略清理）
+
+### UC4: 网络 / registry 不可达
+
+- **触发：** npm 调用失败（网络错误、鉴权失败、包不存在）
+- **预期：** 报错退出，输出诊断信息：
+  ```
+  ❌ 无法拉取 devkeel-templates：
+    <npm 原始错误>
+
+  请确认：
+    1. npm 已安装且在 PATH 中：npm --version
+    2. ~/.npmrc 包含以下配置：
+       registry=https://registry.npmjs.org/
+    3. 当前网络可访问上述 registry：
+       curl -I https://registry.npmjs.org/
+  ```
+
+### UC5: `devkeel init` 在新架构下
+
+- **触发：** 用户执行 `devkeel init`
+- **预期：** init 内部复用 `ensureTemplatesCache()`，确保模板缓存就绪后再复制；失败同 UC4
+
+## 需求边界
+
+**In Scope:**
+
+- 将 `templates/` 目录就地升级为 `devkeel-templates` npm 包：新增 `templates/package.json`、`.npmignore`（或 `files` 字段）、发版脚本
+- CLI `package.json` 的 `files` 字段移除 `templates`，CLI 发布不再包含模板
+- CLI 新增 `src/lib/templates-cache.ts`：`ensureTemplatesCache()`、缓存读写
+- 改造 `getTemplatesDir()`、`getBuiltinVersions()`、`readSchemaVersion()` 指向缓存
+- 在 `devkeel update` 和 `devkeel init` 入口前置调用 `ensureTemplatesCache()`
+- 失败路径的诊断文案（含内部 registry 配置指引）
+
+**Out of Scope:**
+
+- 另开独立仓库承载模板（用户明确：直接复用 `templates/` 目录）
+- 旧 CLI 版本的兼容或 fallback（用户明确排除）
+- TTL 缓存 / 离线模式 / 异步后台刷新（用户选择"每次必拉，失败报错"）
+- `devkeel update --offline` 之类的强制离线 flag
+
+## 探索过的替代方向
+
+| 方向 | 取舍 |
+|------|------|
+| **方案 A: runtime 依赖包**（CLI 把模板包写进 `dependencies`，依赖 npm 升级） | 简单，但"最新模板"必须靠用户 `npm update`，不满足"永远最新"语义 |
+| **方案 8b: 用 `pacote` 库** | 控制力强但违反"最小依赖原则"；用户环境已有 npm |
+| **方案 8c: 直接 HTTP 拼 registry URL** | 绕开 `.npmrc` 鉴权配置，不推荐 |
+| **9b/9c: TTL 缓存 / 离线优先** | 增加状态机和复杂度；用户接受"实时拉取，失败报错" |
+| **保留 fallback 到包内 templates** | 用户明确排除——失败直接报错更清晰 |
+| **另开独立仓库存放模板** | 用户明确排除——直接复用 `templates/` 目录作为包根，少维护一个仓库 |
+
+## 已确认项
+
+- **同仓双包发版流程**：CLI 主导，通过主包脚本 `cd templates/ && npm publish` 发版；不用 lerna/changesets 协调。模板包纯资源无代码，发版权威在主仓。Owner: CLI 维护者。
+- **`templates/package.json` 初始版本号**：`1.0.0`，与 CLI `0.6.1` 解耦，独立演进。
+</script>
+
+<script type="text/markdown" data-artifact="design">
+## 一句话描述
+
+`templates/` 就地升级为 `devkeel-templates` 内部 npm 包；CLI 新增 `src/lib/templates-cache.ts`，`devkeel update/init` 前置调用 `ensureTemplatesCache()` 通过 `npm view` + tarball 下载把最新版拉到 `~/.harness/cache/harness-templates/<version>/`，所有模板读取入口改指向缓存。首版交付：`templates/package.json`、`templates-cache.ts`、`getTemplatesDir`/`getBuiltinVersions`/`readSchemaVersion` 三处改造、`update.ts`/`init.ts` 两处入口接入、CLI `package.json` `files` 移除 `templates`。
+
+## 方案设计
+
+### 架构概览
+
+```mermaid
+flowchart TB
+    subgraph 用户环境
+        CLI["devkeel CLI"]
+        Cache["~/.harness/cache/harness-templates/<version>/"]
+    end
+
+    subgraph 内部 Artifactory
+        Registry["devkeel-templates@x.y.z"]
+    end
+
+    subgraph 同仓源码
+        TemplatesDir["templates/ (包根)"]
+        CLISrc["src/"]
+    end
+
+    CLISrc -->|发版| CLI
+    TemplatesDir -->|npm publish| Registry
+    CLI -->|"npm view + tarball 下载"| Registry
+    Registry -->|解压| Cache
+    CLI -->|读取模板| Cache
+```
+
+**关键变化：** `templates/` 在仓库里仍是源码目录（开发态），但发布后不再进入 CLI tarball；CLI 运行时通过缓存读取。
+
+### 方案对比
+
+| 维度 | A: runtime dependency | **B: 运行时拉取（采纳）** | 说明 |
+|------|----------------------|--------------------------|------|
+| "永远最新"语义 | 受 caret 范围限制，需用户 `npm update` | **每次 `update` 必拉 latest** | 需求核心 |
+| CLI 升版频率 | 必须跟着模板升 | 解耦 | 模板高频迭代时收益大 |
+| 运行时依赖数 | +1 | 0（用环境 npm） | 符合最小依赖原则 |
+| 实现复杂度 | 低 | 中（缓存 + 错误处理） | 可接受 |
+| 网络依赖 | 仅 `npm install` 时 | 每次 `update`/`init` | 用户接受 |
+| 失败模式 | npm install 失败 | npm view 失败 → 报错含修复指引 | 用户选择不 fallback |
+
+**唯一方案排除理由：** 方案 A 在 brainstorm 已被用户排除，因其不满足"永远最新"语义；方案 8b（pacote）违反最小依赖原则；方案 8c（直接 HTTP）绕开 `.npmrc` 鉴权。
+
+### 关键时序
+
+```mermaid
+sequenceDiagram
+    autonumber
+    actor User as 用户
+    participant CLI as devkeel update
+    participant Cache as templates-cache
+    participant FS as ~/.harness/cache/
+    participant NPM as npm view / curl
+
+    User->>CLI: devkeel update
+    CLI->>Cache: ensureTemplatesCache()
+    Cache->>NPM: npm view devkeel-templates version dist.tarball --json
+    alt npm 命令失败
+        NPM-->>Cache: exit ≠ 0
+        Cache-->>CLI: throw TemplatesFetchError(diagnostic)
+        CLI-->>User: 报错含 registry 配置指引
+    else 成功
+        NPM-->>Cache: { version, tarball }
+        Cache->>FS: 读取 meta.json
+        alt 版本与缓存一致
+            Cache-->>CLI: { cacheDir, version }
+        else 版本不同或无缓存
+            Cache->>NPM: curl tarball → 流式解压
+            NPM-->>Cache: tarball bytes
+            Cache->>FS: 写入 <version>/ + 更新 meta.json
+            Cache-->>CLI: { cacheDir, version }
+        end
+    end
+    CLI->>CLI: getTemplatesDir() 返回 cacheDir
+    CLI->>User: 后续 update 流程照常
+```
+
+### 模块设计
+
+#### `src/lib/templates-cache.ts`（新增）
+
+**职责：** 封装模板包的拉取、缓存、定位。
+
+**对外接口：**
+
+```typescript
+export interface TemplatesCacheInfo {
+  cacheDir: string     // ~/.harness/cache/harness-templates/<version>
+  version: string      // 实际拉到的版本号
+}
+
+export class TemplatesFetchError extends Error {
+  readonly diagnostic: string   // 人类可读的修复指引
+}
+
+/**
+ * 确保模板缓存就绪，返回缓存目录。
+ * - 调用 `npm view` 拿 latest 版本
+ * - 与缓存比对，必要时下载解压
+ * - 失败抛出 TemplatesFetchError（含 registry 配置指引）
+ */
+export function ensureTemplatesCache(): TemplatesCacheInfo
+```
+
+**内部常量：**
+
+```typescript
+const PACKAGE_NAME = 'devkeel-templates'
+const CACHE_ROOT = path.join(os.homedir(), '.harness', 'cache', 'harness-templates')
+const META_FILE = 'meta.json'  // { version, fetchedAt }
+const REGISTRY_HINT = `registry=https://registry.npmjs.org/`
+```
+
+#### `src/lib/templates.ts` 改造
+
+**`getTemplatesDir()` 改造前后对比：**
+
+```typescript
+// 改造前
+export function getTemplatesDir(): string {
+  const candidate = path.resolve(__dirname, '..', 'templates')
+  if (fs.existsSync(candidate)) return candidate
+  return path.resolve(__dirname, '..', '..', 'templates')
+}
+
+// 改造后
+let cachedTemplatesDir: string | null = null
+
+export function setTemplatesDir(dir: string): void {
+  cachedTemplatesDir = dir
+}
+
+export function getTemplatesDir(): string {
+  if (cachedTemplatesDir) return cachedTemplatesDir
+  // 本地开发 fallback：源码态的 templates/
+  const candidate = path.resolve(__dirname, '..', 'templates')
+  if (fs.existsSync(candidate)) return candidate
+  return path.resolve(__dirname, '..', '..', 'templates')
+}
+```
+
+**设计取舍：** 用模块级 mutable 变量而非 DI，是因为 `getTemplatesDir()` 在 10+ 处被调用，注入成本过高。`setTemplatesDir` 仅在 `ensureTemplatesCache()` 成功后由命令层调用一次。
+
+#### `src/lib/config.ts` 改造
+
+`getBuiltinVersions()` 和 `readSchemaVersion()` 内部同样依赖 `getTemplatesDir()`，改造后自动指向缓存。无需额外改动。
+
+#### `src/commands/update.ts` / `init.ts` 入口接入
+
+```typescript
+import { ensureTemplatesCache, setTemplatesDir, TemplatesFetchError } from '../lib/templates-cache.js'
+
+export async function runUpdate(...) {
+  // ... 现有前置检查
+  try {
+    const { cacheDir } = ensureTemplatesCache()
+    setTemplatesDir(cacheDir)
+  } catch (e) {
+    if (e instanceof TemplatesFetchError) {
+      p.cancel(e.message + '\n\n' + e.diagnostic)
+      process.exit(1)
+    }
+    throw e
+  }
+  // ... 现有流程
+}
+```
+
+`init.ts` 同样在读取模板前调用一次。
+
+### 代码设计预览
+
+#### 错误诊断文案（TemplatesFetchError.diagnostic）
+
+```
+无法拉取 devkeel-templates：
+  <npm 原始 stderr>
+
+请确认：
+  1. npm 已安装且在 PATH 中：
+       npm --version
+  2. ~/.npmrc 包含以下配置（指向内部 Artifactory）：
+       registry=https://registry.npmjs.org/
+  3. 当前网络可访问 registry：
+       curl -I https://registry.npmjs.org/devkeel-templates
+  4. 模板包已发布到上述 registry（维护者首次发版后才可用）
+```
+
+#### 缓存目录布局
+
+```
+~/.harness/cache/harness-templates/
+├── meta.json                   # { version: "1.2.3", fetchedAt: "2026-06-15T..." }
+├── 1.2.3/                       # 当前版本
+│   ├── skills/...
+│   ├── rules/...
+│   ├── versions-yml.yml
+│   └── openspec/schemas/...
+└── 1.2.2/                       # 上一版本（保留用于回滚或并发安全）
+```
+
+**保留旧版本理由：** 解压新版本时若进程被中断，旧版本目录仍可读；后续 `devkeel doctor` 可提供"清理旧缓存"能力。
+
+### 数据设计
+
+#### `templates/package.json`（新增）
+
+```json
+{
+  "name": "devkeel-templates",
+  "version": "1.0.0",
+  "description": "harness CLI 的模板资产（skills/rules/agents/schemas）",
+  "files": [
+    "skills",
+    "rules",
+    "agents",
+    "commands",
+    "domain",
+    "openspec",
+    "versions-yml.yml",
+    "agents-md.md",
+    "agents-md-domain.md",
+    "claude-md.md",
+    "claude-md-domain.md",
+    "config-yml.yml",
+    "gemini-md.md",
+    "gitignore",
+    "npmrc"
+  ],
+  "publishConfig": {
+    "registry": "https://registry.npmjs.org/"
+  },
+  "license": "MIT"
+}
+```
+
+**设计取舍：** `files` 字段白名单显式列出所有应发布的文件/目录，避免 `node_modules`、`.DS_Store` 等意外进入 tarball。
+
+#### CLI `package.json` 调整
+
+```diff
+ "files": [
+   "bin",
+   "dist",
+-  "templates",
+   "web/human-review.css",
+   "web/human-review.js"
+ ],
+```
+
+## 风险与未决
+
+| 风险 | 缓解 |
+|------|------|
+| 解压过程中断导致缓存半残 | 写入临时目录 `<version>.tmp/`，完成后 `rename` 原子切换 |
+| `npm view` 输出格式跨 npm 版本不一致 | 加 `--json` 强制 JSON 输出；解析失败时抛出 `TemplatesFetchError` |
+| 本地开发时 `getTemplatesDir()` 仍解析源码 `templates/` | 已有 fallback（`fs.existsSync(candidate)`）覆盖；开发者无需配置 |
+| `~/.harness` 权限冲突（多用户共享主机） | 用 `os.homedir()` 隔离；权限由 OS 保证 |
+| CLI 发版流程漏删 `files.templates` | 在 PR checklist 中显式列出；`pnpm build` 后检查产物不含 `templates/` |
+
+**未决：**
+
+- 同仓双包发版脚本（`pnpm release:templates` vs `pnpm release:cli`）的设计与实现——本 change 不解决，由后续 change 或 CLI 维护者在发版流程中补充。
+
+## 完成检查
+
+- [x] technical-design skill 已调用（手动降级原因：本 change 范围聚焦、方案已在 brainstorm 收敛，无需外部 skill 二次发散；直接基于 brainstorm 已有源码调查产出）
+- [x] 存在 ≥ 2 候选方案对比（A vs B，B 采纳；8a/8b/8c、9a/9b/9c 在 brainstorm 已排除）
+</script>
+
+<script type="text/markdown" data-artifact="specs">
+# templates-cache
+
+## ADDED Requirements
+
+### Requirement: 实时拉取最新模板版本
+
+当用户执行 `devkeel update` 或 `devkeel init` 时，系统 SHALL 通过 `npm view devkeel-templates version dist.tarball --json` 查询内部 registry 的最新版本号。
+
+#### Scenario: 成功查询到最新版本
+- **WHEN** 用户执行 `devkeel update` 且 npm 环境正常
+- **THEN** 系统解析 `npm view` 的 JSON 输出，提取 `version` 和 `dist.tarball` URL
+
+#### Scenario: npm 未安装或不在 PATH
+- **WHEN** `npm view` 执行失败，exit code ≠ 0
+- **THEN** 系统抛出 `TemplatesFetchError`，错误信息包含：
+  1. 原始 npm stderr
+  2. 修复指引：确认 `npm --version` 可用
+  3. 修复指引：`~/.npmrc` 必须包含 `registry=https://registry.npmjs.org/`
+  4. 修复指引：`curl -I <registry-url>` 验证网络可达
+  5. 修复指引：确认 `devkeel-templates` 已发布
+
+#### Scenario: npm 输出非预期 JSON
+- **WHEN** `npm view` 成功但输出无法解析为 `{ version, dist.tarball }`
+- **THEN** 系统抛出 `TemplatesFetchError`，错误信息包含原始 stdout
+
+### Requirement: 缓存目录布局与版本隔离
+
+系统 SHALL 将模板缓存到 `~/.harness/cache/harness-templates/<version>/`，每个版本独立目录，支持并发安全与回滚。
+
+#### Scenario: 首次拉取
+- **WHEN** 缓存根目录不存在或无对应版本目录
+- **THEN** 系统创建 `~/.harness/cache/harness-templates/<version>.tmp/`，下载并解压 tarball，完成后 `rename` 为 `<version>/`
+
+#### Scenario: 缓存命中
+- **WHEN** `meta.json` 中的 `version` 与 `npm view` 返回的 latest 一致，且 `<version>/` 目录存在
+- **THEN** 系统跳过下载，直接返回缓存路径
+
+#### Scenario: 缓存版本过期
+- **WHEN** `meta.json` 中的 `version` 与 latest 不一致
+- **THEN** 系统下载新版本到新目录，更新 `meta.json`，保留旧版本目录（供回滚或 doctor 清理）
+
+### Requirement: 模板读取入口统一指向缓存
+
+CLI 所有读取模板的函数（`getTemplatesDir()`、`getBuiltinVersions()`、`readSchemaVersion()`）SHALL 从缓存目录读取，而非包内 `templates/`。
+
+#### Scenario: 缓存已就绪
+- **WHEN** `ensureTemplatesCache()` 成功返回 `{ cacheDir, version }`
+- **THEN** 命令层调用 `setTemplatesDir(cacheDir)`，后续 `getTemplatesDir()` 返回缓存路径
+
+#### Scenario: 本地开发环境
+- **WHEN** 命令层未调用 `setTemplatesDir()`（如直接运行 `node bin/devkeel.js` 开发）
+- **THEN** `getTemplatesDir()` fallback 到源码态的 `templates/` 目录（通过 `fs.existsSync` 探测）
+
+### Requirement: 错误处理无 fallback
+
+系统 SHALL 在拉取失败时直接报错退出，不 fallback 到包内旧模板，不静默降级。
+
+#### Scenario: 网络不可达
+- **WHEN** `npm view` 因网络超时或 DNS 失败
+- **THEN** 系统输出诊断文案后以 `exit(1)` 退出
+
+#### Scenario: registry 鉴权失败
+- **WHEN** npm 返回 401/403 或 Artifactory 拒绝访问
+- **THEN** 系统输出诊断文案（含 `.npmrc` 配置片段）后以 `exit(1)` 退出
+
+#### Scenario: 包未发布
+- **WHEN** npm 返回 404（`devkeel-templates` 不存在）
+- **THEN** 系统输出诊断文案（提示维护者首次发版）后以 `exit(1)` 退出
+
+---
+
+# templates-packaging
+
+## ADDED Requirements
+
+### Requirement: templates/ 目录作为独立 npm 包发布
+
+`templates/` 目录 SHALL 包含 `package.json`，`name` 为 `devkeel-templates`，通过 `files` 字段白名单控制发布内容，`publishConfig.registry` 指向内部 Artifactory。
+
+#### Scenario: npm publish 从 templates/ 执行
+- **WHEN** 维护者在 `templates/` 目录执行 `npm publish`
+- **THEN** 仅 `files` 字段列出的目录和文件被打入 tarball，不包含 `node_modules`、`.DS_Store`、`.gitkeep`
+
+#### Scenario: publishConfig 强制内部 registry
+- **WHEN** `package.json` 包含 `publishConfig.registry`
+- **THEN** `npm publish` 默认发布到 `https://registry.npmjs.org/`，无需额外 `--registry` 参数
+
+### Requirement: CLI 不再打包 templates 到 tarball
+
+CLI 的 `package.json` SHALL 从 `files` 字段移除 `templates`，确保 `devkeel` 发布时不包含模板资源。
+
+#### Scenario: pnpm build 后检查产物
+- **WHEN** 执行 `pnpm build` 生成 `dist/`
+- **THEN** `dist/` 不包含 `templates/` 目录，`npm pack --dry-run` 输出不含 `templates/`
+
+#### Scenario: 旧 CLI 用户升级
+- **WHEN** 用户从 `devkeel@0.6.1`（含 templates）升级到新版（不含 templates）
+- **THEN** 本 change 不在范围，旧 CLI 行为不变；新 CLI 强制依赖网络拉取
+
+### Requirement: 模板包版本独立演进
+
+`devkeel-templates` 的 `version` SHALL 从 `1.0.0` 起始，与 CLI 版本号解耦，遵循 semver。
+
+#### Scenario: 模板内容变更触发升版
+- **WHEN** 维护者修改 `templates/skills/` 或 `templates/rules/` 内容
+- **THEN** 按 `templates/versions-yml.yml` 中的版本同步更新 `templates/package.json` 的 `version`
+
+#### Scenario: CLI 发版不联动模板版本
+- **WHEN** 维护者发布 `devkeel@0.7.0`
+- **THEN** `templates/package.json` 的 `version` 不受影响，除非模板本身有变更
+
+### Requirement: 主仓脚本驱动模板发版
+
+CLI 主仓 SHALL 提供发版脚本，通过 `cd templates/ && npm publish` 完成模板发布，不使用 lerna/changesets 协调。
+
+#### Scenario: 维护者执行 release:templates
+- **WHEN** 维护者在主仓根目录执行 `pnpm release:templates`
+- **THEN** 脚本进入 `templates/`，执行 `npm publish`，成功后返回根目录
+
+#### Scenario: 模板包纯资源无代码
+- **WHEN** `templates/` 目录被发版
+- **THEN** tarball 仅包含 markdown、yaml、json 等静态资源，不含 `.ts`、`.js` 源码
+</script>
+
+<script type="text/markdown" data-artifact="tasks">
+# externalize-templates-npm 实现计划
+
+> **给 agentic 执行器：** 按 schema apply instruction 使用
+> subagent-driven-development 逐任务实现本计划。
+
+**目标：** 将 `templates/` 就地升级为独立内部 npm 包，CLI 运行时通过 `npm view` 实时拉取最新模板到本地缓存。
+
+**架构：** `templates/` 目录新增 `package.json` 作为独立 npm 包发版；CLI 新增 `src/lib/templates-cache.ts` 封装拉取与缓存逻辑；`getTemplatesDir()` 改造为指向缓存目录；`devkeel update/init` 入口前置调用 `ensureTemplatesCache()`。
+
+**技术栈：** Node.js 20+、`child_process.execSync`（调用 npm）、`node:fs`/`node:path`/`node:os`、`node:zlib`（解压 tarball）、`yaml` 包。
+
+---
+
+## 1. 模板包基础设施
+
+- [ ] **1.1 创建 templates/package.json**
+  1. 在 `templates/` 目录新建 `package.json`
+  2. 字段：`name: "devkeel-templates"`、`version: "1.0.0"`、`description`、`license: "MIT"`
+  3. `files` 白名单列出所有应发布的目录和文件（skills/rules/agents/commands/domain/openspec/versions-yml.yml 及根模板文件）
+  4. `publishConfig.registry` 指向 `https://registry.npmjs.org/`
+  5. 验证：`cd templates && npm pack --dry-run` 输出仅包含白名单文件
+  > commit: feat(templates): 新增独立 npm 包配置
+
+- [ ] **1.2 创建 templates/.npmignore**
+  1. 排除 `node_modules/`、`.DS_Store`、`.gitkeep`、`*.log`
+  2. 验证：`npm pack --dry-run` 不含排除项
+  > commit: chore(templates): 添加 .npmignore
+
+- [ ] **1.3 主仓添加 release:templates 脚本**
+  1. 在根 `package.json` 的 `scripts` 新增 `"release:templates": "cd templates && npm publish"`
+  2. 验证：`pnpm release:templates --dry-run`（或手动 `cd templates && npm publish --dry-run`）可执行
+  > commit: feat(harness): 添加模板发版脚本
+
+## 2. CLI 移除 templates 打包
+
+- [ ] **2.1 CLI package.json files 字段移除 templates**
+  1. 编辑 `package.json`，从 `files` 数组删除 `"templates"`
+  2. 验证：`pnpm build && npm pack --dry-run` 输出不含 `templates/`
+  > commit: feat(harness): CLI 发布不再包含模板资源
+
+## 3. 模板缓存拉取模块
+
+- [ ] **3.1 实现 ensureTemplatesCache 核心逻辑**
+  1. 新建 `src/lib/templates-cache.ts`
+  2. 定义常量：`PACKAGE_NAME`、`CACHE_ROOT`（`~/.harness/cache/harness-templates`）、`META_FILE`、`REGISTRY_HINT`
+  3. 实现 `ensureTemplatesCache(): TemplatesCacheInfo`：
+     - 调用 `execSync('npm view devkeel-templates version dist.tarball --json')`
+     - 解析 JSON 输出，提取 `version` 和 `dist.tarball`
+     - 读取 `CACHE_ROOT/meta.json`，比对 `version`
+     - 若一致且 `<version>/` 目录存在，直接返回 `{ cacheDir, version }`
+     - 若不一致或无缓存，下载 tarball 到 `<version>.tmp/`，解压，`rename` 为 `<version>/`，更新 `meta.json`
+  4. 失败时抛出 `TemplatesFetchError`，`diagnostic` 字段包含修复指引（npm 检查、`.npmrc` 配置、网络测试、包发布确认）
+  5. 验证：单元测试覆盖"首次拉取"、"缓存命中"、"版本过期"三种场景（mock `execSync` 和 `fetch`）
+  > commit: feat(templates-cache): 实现模板缓存拉取核心逻辑
+
+- [ ] **3.2 实现 tarball 下载与解压**
+  1. 在 `templates-cache.ts` 内部实现 `downloadAndExtract(tarballUrl: string, targetDir: string)`：
+     - 用 `fetch()` 下载 tarball（`.tgz`）
+     - 用 `node:zlib` + `tar` 命令（或纯 Node 解压库）解压到 `targetDir`
+     - npm tarball 结构通常是 `package/...`，需剥离顶层目录
+  2. 验证：单元测试解压后文件结构正确（`skills/`、`rules/` 在顶层）
+  > commit: feat(templates-cache): 实现 tarball 下载与解压
+
+- [ ] **3.3 实现 TemplatesFetchError 与诊断文案**
+  1. 定义 `class TemplatesFetchError extends Error`，含 `diagnostic: string` 字段
+  2. 诊断文案模板：
+     ```
+     无法拉取 devkeel-templates：
+       <原始错误>
+
+     请确认：
+       1. npm 已安装且在 PATH 中：npm --version
+       2. ~/.npmrc 包含以下配置：
+          registry=https://registry.npmjs.org/
+       3. 当前网络可访问 registry：
+          curl -I https://registry.npmjs.org/devkeel-templates
+       4. 模板包已发布到上述 registry（维护者首次发版后才可用）
+     ```
+  3. 验证：单元测试错误消息包含所有指引项
+  > commit: feat(templates-cache): 实现错误诊断文案
+
+## 4. 改造模板读取入口
+
+- [ ] **4.1 改造 getTemplatesDir 支持动态路径**
+  1. 在 `src/lib/templates.ts` 新增模块级变量 `let cachedTemplatesDir: string | null = null`
+  2. 新增 `export function setTemplatesDir(dir: string): void` 设置缓存路径
+  3. 改造 `getTemplatesDir()`：优先返回 `cachedTemplatesDir`，否则 fallback 到源码态 `templates/`（通过 `fs.existsSync` 探测）
+  4. 验证：现有测试 `tests/templates.test.ts` 仍通过（fallback 路径覆盖本地开发场景）
+  > commit: feat(templates): getTemplatesDir 支持动态缓存路径
+
+- [ ] **4.2 验证 getBuiltinVersions 与 readSchemaVersion 自动适配**
+  1. 检查 `src/lib/config.ts` 中 `getBuiltinVersions()` 和 `readSchemaVersion()` 是否依赖 `getTemplatesDir()`
+  2. 确认改造后自动指向缓存目录（无需额外改动）
+  3. 验证：`tests/config.test.ts` 仍通过
+  > commit: (无需 commit，仅验证)
+
+## 5. 命令层接入
+
+- [ ] **5.1 devkeel update 入口前置 ensureTemplatesCache**
+  1. 在 `src/commands/update.ts` 的 `runUpdate()` 开头（`readVersions` 检查后）调用 `ensureTemplatesCache()`
+  2. 成功时调用 `setTemplatesDir(cacheDir)`
+  3. 捕获 `TemplatesFetchError`，输出 `e.message + '\n\n' + e.diagnostic`，`process.exit(1)`
+  4. 验证：手动测试 `node bin/devkeel.js update`（需先发布 `devkeel-templates@1.0.0` 到内部 registry，或 mock npm view）
+  > commit: feat(update): 入口前置模板缓存拉取
+
+- [ ] **5.2 devkeel init 入口前置 ensureTemplatesCache**
+  1. 在 `src/commands/init.ts` 的 `runInit()` 开头（读取模板前）调用 `ensureTemplatesCache()`
+  2. 成功时调用 `setTemplatesDir(cacheDir)`
+  3. 捕获 `TemplatesFetchError`，输出诊断文案，`process.exit(1)`
+  4. 验证：手动测试 `node bin/devkeel.js init`（同上）
+  > commit: feat(init): 入口前置模板缓存拉取
+
+## 6. 集成验证
+
+- [ ] **6.1 端到端验证 update 流程**
+  1. 在内部 registry 发布 `devkeel-templates@1.0.0`（执行 `pnpm release:templates`）
+  2. 清空 `~/.harness/cache/harness-templates/`
+  3. 执行 `node bin/devkeel.js update`，确认：
+     - `npm view` 被调用
+     - tarball 下载并解压到 `~/.harness/cache/harness-templates/1.0.0/`
+     - `meta.json` 写入 `{ version: "1.0.0", fetchedAt: "..." }`
+     - 后续 `detectUpdates()` 从缓存读取版本基线
+  4. 验证：`~/.harness/cache/harness-templates/1.0.0/skills/` 存在且内容正确
+  > commit: (无需 commit，仅验证)
+
+- [ ] **6.2 端到端验证 init 流程**
+  1. 在空目录执行 `node bin/devkeel.js init`
+  2. 确认 `.harness/skills/`、`.harness/rules/` 等从缓存复制
+  3. 验证：`ls .harness/skills/` 内容正确
+  > commit: (无需 commit，仅验证)
+
+- [ ] **6.3 错误路径验证**
+  1. 模拟网络不可达（断网或 mock npm view 失败）
+  2. 执行 `node bin/devkeel.js update`，确认输出完整诊断文案
+  3. 验证：exit code = 1，错误消息包含 `.npmrc` 配置指引
+  > commit: (无需 commit，仅验证)
+
+## 7. 文档与 changelog
+
+- [ ] **7.1 更新 web/changelog.html**
+  1. 按 `.harness/skills/changelog/` 规范添加新版本条目
+  2. 用户可见变更：模板独立发版、`devkeel update` 实时拉取最新模板、要求配置内部 npm 源
+  3. breaking 标注：旧 CLI 用户升级后需配置 `registry` 才能使用 `update/init`
+  > commit: docs(web): 更新 changelog
+
+- [ ] **7.2 更新 CLAUDE.md 或 README（若存在）**
+  1. 在"安装"或"前置条件"章节添加 `.npmrc` 配置要求
+  2. 示例：`registry=https://registry.npmjs.org/`
+  > commit: docs(harness): 补充内部 npm 源配置要求
+
+---
+
+## 验收标准
+
+- [ ] `pnpm lint` 通过
+- [ ] `pnpm test` 通过（含新增 `tests/templates-cache.test.ts`）
+- [ ] `pnpm build` 产物不含 `templates/`
+- [ ] 端到端验证：`devkeel update` 和 `devkeel init` 在配置内部 registry 后可正常拉取模板
+- [ ] 端到端验证：网络失败时输出完整诊断文案并 exit(1)
+</script>
+<!-- END:artifacts -->
+<!-- BEGIN:js -->
+<script>
+// human-review.js — 评审页面交互逻辑
+// 由 devkeel inject-review 注入
+
+(function() {
+var CDN = 'https://cdn.jsdmirror.com/npm';
+var DEPS = {
+  css: [
+    { href: CDN + '/@highlightjs/cdn-assets@11.11.1/styles/github.min.css' },
+    { href: CDN + '/@highlightjs/cdn-assets@11.11.1/styles/github-dark.min.css', media: '(prefers-color-scheme: dark)' }
+  ],
+  js: [
+    CDN + '/@highlightjs/cdn-assets@11.11.1/highlight.min.js',
+    CDN + '/mermaid@11/dist/mermaid.min.js',
+    CDN + '/marked/marked.min.js'
+  ]
+};
+
+function loadCSS(spec) {
+  var link = document.createElement('link');
+  link.rel = 'stylesheet';
+  link.href = spec.href;
+  if (spec.media) link.media = spec.media;
+  document.head.appendChild(link);
+}
+
+function loadScript(src) {
+  return new Promise(function(resolve, reject) {
+    var s = document.createElement('script');
+    s.src = src;
+    s.onload = resolve;
+    s.onerror = function() { console.warn('Failed to load: ' + src); resolve(); };
+    document.head.appendChild(s);
+  });
+}
+
+function loadAllDeps() {
+  DEPS.css.forEach(loadCSS);
+  return DEPS.js.reduce(function(chain, src) {
+    return chain.then(function() { return loadScript(src); });
+  }, Promise.resolve());
+}
+
+// 折叠/展开
+window.toggleSection = function(head) {
+  var section = head.parentElement;
+  section.classList.toggle('collapsed');
+  localStorage.setItem(section.id, section.classList.contains('collapsed'));
+};
+
+// Artifact 标签页切换
+window.switchArtifactTab = function(name) {
+  document.querySelectorAll('.artifact-tab').forEach(function(t) { t.classList.remove('active'); });
+  document.querySelectorAll('.artifact-panel').forEach(function(p) { p.classList.remove('active'); });
+  var tab = document.querySelector('[data-tab="' + name + '"]');
+  if (tab) tab.classList.add('active');
+  var panel = document.querySelector('[data-panel="' + name + '"]');
+  if (!panel) return;
+  panel.classList.add('active');
+  if (!panel.dataset.rendered) {
+    var script = document.querySelector('script[data-artifact="' + name + '"]');
+    if (script) {
+      var md = script.textContent;
+      panel.innerHTML = typeof marked !== 'undefined' ? marked.parse(md) : '<pre>' + md + '</pre>';
+      panel.dataset.rendered = 'true';
+      if (typeof hljs !== 'undefined') {
+        panel.querySelectorAll('pre code').forEach(function(b) { hljs.highlightElement(b); });
+      }
+      if (typeof mermaid !== 'undefined') {
+        panel.querySelectorAll('pre > code.language-mermaid').forEach(function(code) {
+          var pre = code.parentElement;
+          pre.className = 'mermaid';
+          pre.textContent = code.textContent;
+        });
+        mermaid.run({ nodes: panel.querySelectorAll('.mermaid') });
+      }
+    }
+  }
+};
+
+function buildTestCoverageCard() {
+  var script = document.querySelector('script[data-artifact="test-points"]');
+  if (!script) return;
+  var md = script.textContent;
+
+  var tpCount = (md.match(/^####\s+TP-/gm) || []).length;
+
+  var covered = (md.match(/已覆盖/g) || []).length;
+  var uncovered = (md.match(/未覆盖/g) || []).length;
+  var pending = (md.match(/待确认/g) || []).length;
+
+  var card = document.querySelector('[data-card="test-coverage"]');
+  if (!card) return;
+  card.innerHTML = '<h3>测试覆盖</h3>'
+    + '<p><strong>' + tpCount + '</strong> 测试点</p>'
+    + '<p>已覆盖: ' + covered + ' | 未覆盖: ' + uncovered + ' | 待确认: ' + pending + '</p>';
+}
+
+function buildArtifactViewer() {
+  var viewer = document.querySelector('.artifact-viewer');
+  if (!viewer) return;
+
+  var tabs = viewer.querySelector('.artifact-tabs');
+  if (!tabs) return;
+
+  var fsBtn = document.createElement('button');
+  fsBtn.className = 'artifact-fullscreen-btn';
+  fsBtn.textContent = '⛶ 全屏';
+  fsBtn.onclick = function() {
+    var isFs = viewer.classList.toggle('fullscreen');
+    fsBtn.textContent = isFs ? '✕ 退出' : '⛶ 全屏';
+  };
+  viewer.appendChild(fsBtn);
+
+  document.addEventListener('keydown', function(e) {
+    if (e.key === 'Escape' && viewer.classList.contains('fullscreen')) {
+      viewer.classList.remove('fullscreen');
+      fsBtn.textContent = '⛶ 全屏';
+    }
+  });
+
+  var knownTabs = {};
+  viewer.querySelectorAll('.artifact-tab').forEach(function(tab) {
+    knownTabs[tab.dataset.tab] = true;
+  });
+
+  var knownPanels = {};
+  viewer.querySelectorAll('.artifact-panel').forEach(function(panel) {
+    knownPanels[panel.dataset.panel] = true;
+  });
+
+  document.querySelectorAll('script[data-artifact]').forEach(function(script) {
+    var name = script.dataset.artifact;
+    if (!name) return;
+
+    if (!knownTabs[name]) {
+      var tab = document.createElement('button');
+      tab.className = 'artifact-tab';
+      tab.dataset.tab = name;
+      tab.textContent = name;
+      tab.onclick = function() { switchArtifactTab(name); };
+      tabs.appendChild(tab);
+      knownTabs[name] = true;
+    }
+
+    if (!knownPanels[name]) {
+      var panel = document.createElement('div');
+      panel.className = 'artifact-panel';
+      panel.dataset.panel = name;
+      viewer.appendChild(panel);
+      knownPanels[name] = true;
+    }
+  });
+
+  var firstTab = tabs.querySelector('.artifact-tab');
+  if (firstTab && !viewer.querySelector('.artifact-tab.active')) {
+    switchArtifactTab(firstTab.dataset.tab);
+  }
+}
+
+function getEffectiveTheme() {
+  var stored = localStorage.getItem('harness-theme');
+  if (stored === 'dark' || stored === 'light') return stored;
+  return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+}
+
+function applyTheme(theme) {
+  document.documentElement.setAttribute('data-theme', theme);
+  var btn = document.querySelector('.theme-toggle');
+  if (btn) btn.textContent = theme === 'dark' ? '☀️' : '🌙';
+}
+
+function initThemeToggle() {
+  applyTheme(getEffectiveTheme());
+  var btn = document.createElement('button');
+  btn.className = 'theme-toggle';
+  btn.setAttribute('aria-label', '切换主题');
+  btn.onclick = function() {
+    var next = getEffectiveTheme() === 'dark' ? 'light' : 'dark';
+    localStorage.setItem('harness-theme', next);
+    applyTheme(next);
+  };
+  document.body.appendChild(btn);
+  applyTheme(getEffectiveTheme());
+}
+
+function checkHarnessUpgrade() {
+  var meta = document.querySelector('meta[name="harness-version"]');
+  if (!meta) return;
+  var currentVersion = meta.getAttribute('content');
+  if (!currentVersion) return;
+
+  var registryUrl = 'https://registry.npmjs.org/devkeel/latest';
+  fetch(registryUrl, { signal: AbortSignal.timeout(5000) })
+    .then(function(res) { return res.json(); })
+    .then(function(data) {
+      var latest = data.latest;
+      if (!latest) return;
+      if (latest === currentVersion) return;
+      if (!isNewer(latest, currentVersion)) return;
+      showUpgradeBanner(currentVersion, latest);
+    })
+    .catch(function() {});
+}
+
+function isNewer(latest, current) {
+  var l = latest.replace(/[^\d.]/g, '').split('.').map(Number);
+  var c = current.replace(/[^\d.]/g, '').split('.').map(Number);
+  for (var i = 0; i < Math.max(l.length, c.length); i++) {
+    var lv = l[i] || 0;
+    var cv = c[i] || 0;
+    if (lv > cv) return true;
+    if (lv < cv) return false;
+  }
+  return false;
+}
+
+function showUpgradeBanner(current, latest) {
+  var banner = document.createElement('div');
+  banner.className = 'upgrade-banner';
+  banner.innerHTML = '<span class="upgrade-icon">⬆</span> harness 有新版本可用：<strong>' + current + '</strong> → <strong>' + latest + '</strong>　<code>pnpm add -g devkeel@latest</code>';
+  var header = document.querySelector('.page-header .wrapper') || document.querySelector('.page-header') || document.body.firstElementChild;
+  if (header) {
+    header.insertBefore(banner, header.firstChild);
+  } else {
+    document.body.insertBefore(banner, document.body.firstChild);
+  }
+}
+
+function initMermaid() {
+  if (typeof mermaid === 'undefined') return;
+  document.querySelectorAll('pre > code.language-mermaid').forEach(function(code) {
+    var pre = code.parentElement;
+    pre.className = 'mermaid';
+    pre.textContent = code.textContent;
+  });
+  var isDark = getEffectiveTheme() === 'dark';
+  mermaid.initialize({
+    startOnLoad: false,
+    theme: isDark ? 'base' : 'default',
+    themeVariables: isDark ? {
+      background: '#0f172a',
+      primaryColor: 'rgba(99,102,241,0.25)',
+      primaryTextColor: '#f1f5f9',
+      primaryBorderColor: '#818cf8',
+      secondaryColor: 'rgba(6,78,59,0.4)',
+      secondaryTextColor: '#f1f5f9',
+      secondaryBorderColor: '#34d399',
+      tertiaryColor: 'rgba(76,29,149,0.4)',
+      tertiaryTextColor: '#f1f5f9',
+      tertiaryBorderColor: '#a78bfa',
+      lineColor: '#94a3b8',
+      textColor: '#f1f5f9',
+      mainBkg: 'rgba(99,102,241,0.15)',
+      nodeBorder: '#818cf8',
+      clusterBkg: 'rgba(30,41,59,0.6)',
+      clusterBorder: '#475569',
+      edgeLabelBackground: '#1e293b',
+      fontSize: '14px'
+    } : { fontSize: '14px' }
+  });
+  mermaid.run();
+}
+
+function init() {
+  document.querySelectorAll('.section').forEach(function(s) {
+    var stored = localStorage.getItem(s.id);
+    if (stored !== null) {
+      if (stored === 'true') s.classList.add('collapsed');
+      else s.classList.remove('collapsed');
+    }
+  });
+
+  loadAllDeps().then(function() {
+    initMermaid();
+    if (typeof hljs !== 'undefined') hljs.highlightAll();
+    buildArtifactViewer();
+    buildTestCoverageCard();
+    checkHarnessUpgrade();
+    initThemeToggle();
+  });
+}
+
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', init);
+} else {
+  init();
+}
+})();
+
+</script>
+<!-- END:js -->
+</body>
+</html>

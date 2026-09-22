@@ -1,0 +1,13 @@
+version: "2.0"
+project:
+  name: "devkeel"
+  types:
+    - other
+  repoType: main
+targets:
+  - claude-code
+  - codex
+  - cursor
+  - copilot
+telemetry:
+  id: d228e7a9-b43a-454e-860b-e436df32243c

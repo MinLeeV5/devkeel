@@ -1,0 +1,49 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 320" role="img" aria-labelledby="title desc" data-graph-role="diagram" data-diagram-type="flowchart" data-style="glassmorphism" data-quality-profile="showcase" data-bounds="0 0 1200 320">
+  <title id="title">verify-init 将测试缺口转成可复跑证据</title>
+  <desc id="desc">现有项目经过 verify-init 检测现状、确认缺口和增量补齐，形成测试脚手架、测试规则与验证角色，并在任务运行时提供可复跑的测试、构建和审查证据。</desc>
+  <defs>
+    <linearGradient id="card-blue" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#7aa2f7" stop-opacity=".16"/><stop offset="1" stop-color="#1c2039" stop-opacity=".78"/></linearGradient>
+    <linearGradient id="card-green" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#9ece6a" stop-opacity=".19"/><stop offset="1" stop-color="#1c2039" stop-opacity=".78"/></linearGradient>
+    <linearGradient id="flow-verify" gradientUnits="userSpaceOnUse" x1="260" y1="155" x2="988" y2="155"><stop offset="0" stop-color="#7aa2f7"/><stop offset=".5" stop-color="#7dcfff"/><stop offset="1" stop-color="#9ece6a"/></linearGradient>
+    <marker id="arrow-verify" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto"><path d="M0 0 L10 5 L0 10 Z" fill="#9ece6a"/></marker>
+    <style>.sans{font-family:'Inter','Noto Sans SC','PingFang SC','Microsoft YaHei',sans-serif}.mono{font-family:'JetBrains Mono','SFMono-Regular',monospace}.text{fill:#c8d1e6}.muted{fill:#7b89a8}.blue{fill:#7aa2f7}.cyan{fill:#7dcfff}.green{fill:#9ece6a}.label{font-size:13px;font-weight:700;letter-spacing:1.5px}.title{font-size:21px;font-weight:700}.body{font-size:14px}.small{font-size:12px}.edge{fill:none;stroke:url(#flow-verify);stroke-width:3;stroke-linecap:round;marker-end:url(#arrow-verify)}</style>
+  </defs>
+
+  <path d="M260 155 H308" class="edge" data-graph-role="edge" data-edge-id="repo-to-verify-init" data-edge-start="260 155" data-edge-end="308 155" data-edge-points="260 155;308 155"/>
+  <path d="M540 155 H588" class="edge" data-graph-role="edge" data-edge-id="verify-init-to-base" data-edge-start="540 155" data-edge-end="588 155" data-edge-points="540 155;588 155"/>
+  <path d="M940 155 H988" class="edge" data-graph-role="edge" data-edge-id="base-to-evidence" data-edge-start="940 155" data-edge-end="988 155" data-edge-points="940 155;988 155"/>
+
+  <g data-graph-role="node" data-node-id="current-repo" data-bounds="40 72 220 166">
+    <rect x="40" y="72" width="220" height="166" rx="20" fill="url(#card-blue)" stroke="#7aa2f7" stroke-opacity=".44"/>
+    <text x="66" y="108" class="mono label blue">CURRENT REPO</text>
+    <text x="66" y="142" class="sans title text">已有测试基础</text>
+    <text x="66" y="173" class="sans body muted">依赖 · 配置 · 锁文件</text>
+    <text x="66" y="198" class="sans body muted">scripts · tests · CI</text>
+  </g>
+
+  <g data-graph-role="node" data-node-id="verify-init" data-bounds="320 72 220 166">
+    <rect x="320" y="72" width="220" height="166" rx="20" fill="url(#card-green)" stroke="#9ece6a" stroke-opacity=".5"/>
+    <text x="346" y="108" class="mono label green">VERIFY-INIT</text>
+    <text x="430" y="147" text-anchor="middle" class="sans title text">检测 · 确认 · 补齐</text>
+    <line x1="350" y1="170" x2="510" y2="170" stroke="#9ece6a" stroke-opacity=".24"/>
+    <text x="430" y="201" text-anchor="middle" class="sans body muted">只补缺口，不覆盖已有</text>
+  </g>
+
+  <g data-graph-role="node" data-node-id="executable-base" data-bounds="600 50 340 210">
+    <rect x="600" y="50" width="340" height="210" rx="22" fill="url(#card-green)" stroke="#9ece6a" stroke-opacity=".48"/>
+    <text x="626" y="82" class="mono label green">EXECUTABLE BASE</text>
+    <g><rect x="626" y="99" width="288" height="38" rx="8" fill="#7aa2f7" fill-opacity=".08"/><text x="642" y="123" class="mono small blue">TEST SCAFFOLD</text><text x="900" y="123" text-anchor="end" class="sans small muted">框架 · 配置 · 示例 · scripts</text></g>
+    <g><rect x="626" y="145" width="288" height="38" rx="8" fill="#7dcfff" fill-opacity=".08"/><text x="642" y="169" class="mono small cyan">TESTING RULE</text><text x="900" y="169" text-anchor="end" class="sans small muted">统一验证原则与命令</text></g>
+    <g><rect x="626" y="191" width="288" height="38" rx="8" fill="#9ece6a" fill-opacity=".09"/><text x="642" y="215" class="mono small green">VERIFY AGENT</text><text x="900" y="215" text-anchor="end" class="sans small muted">验证职责成为可执行角色</text></g>
+  </g>
+
+  <g data-graph-role="node" data-node-id="evidence-loop" data-bounds="1000 72 160 166">
+    <rect x="1000" y="72" width="160" height="166" rx="20" fill="url(#card-green)" stroke="#9ece6a" stroke-opacity=".52"/>
+    <text x="1080" y="108" text-anchor="middle" class="mono label green">VERIFY LOOP</text>
+    <text x="1080" y="150" text-anchor="middle" class="sans title text">可复跑反馈</text>
+    <text x="1080" y="180" text-anchor="middle" class="sans body muted">test · build</text>
+    <text x="1080" y="204" text-anchor="middle" class="sans body green">preview · review</text>
+  </g>
+
+  <text x="600" y="294" text-anchor="middle" class="sans body text" data-graph-role="annotation" data-bounds="326 276 548 28"><tspan class="blue" font-weight="700">测试缺口</tspan><tspan> → 可执行反馈 → </tspan><tspan class="green" font-weight="700">完成声明有证据</tspan></text>
+</svg>

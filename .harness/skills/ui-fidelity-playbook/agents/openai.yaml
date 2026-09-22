@@ -1,0 +1,4 @@
+interface:
+  display_name: "UI 高保真还原"
+  short_description: "根据已有设计参考对齐页面结构、视觉和交互，并验证实现与设计的一致性"
+  default_prompt: "使用 $ui-fidelity-playbook 按提供的设计参考实现界面。"

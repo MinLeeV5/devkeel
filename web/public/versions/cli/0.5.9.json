@@ -1,0 +1,39 @@
+{
+  "versions": ["0.5.6", "0.5.7", "0.5.8", "0.5.9"],
+  "releasedAt": {
+    "from": "2026-05-25T20:50:00+08:00",
+    "to": "2026-05-26T18:13:00+08:00"
+  },
+  "title": "非 TTY 兼容、架构图增强与 commit skill 升级",
+  "archived": true,
+  "groups": [
+    {
+      "type": "feat",
+      "label": "新能力",
+      "items": [
+        {
+          "name": "非 TTY 环境兼容",
+          "description": "脚本化调用（如 `npx devkeel init` 管道场景）不再因缺少终端交互而报错，自动降级为静默输出"
+        },
+        {
+          "name": "评审架构图生成",
+          "description": "human-review 页面集成 architecture-diagram skill，自动从设计文档提取组件和数据流生成 SVG 架构图"
+        },
+        {
+          "name": "commit skill 升级",
+          "description": "提交规范 skill 增强差异分析和拆分策略，支持更精细的原子化提交"
+        }
+      ]
+    },
+    {
+      "type": "fix",
+      "label": "修复",
+      "items": [
+        {
+          "name": "init TTY 报错",
+          "description": "修复非交互式终端执行 init 时因 @clack/prompts 未降级导致的崩溃"
+        }
+      ]
+    }
+  ]
+}

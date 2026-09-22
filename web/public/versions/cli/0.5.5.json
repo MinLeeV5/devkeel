@@ -1,0 +1,39 @@
+{
+  "versions": ["0.5.3", "0.5.4", "0.5.5"],
+  "releasedAt": {
+    "from": "2026-05-22T12:19:00+08:00",
+    "to": "2026-05-25T18:42:00+08:00"
+  },
+  "title": "human-review 模板稳定性与中文描述规范",
+  "archived": true,
+  "groups": [
+    {
+      "type": "feat",
+      "label": "新能力",
+      "items": [
+        {
+          "name": "架构图中文描述",
+          "description": "human-review 模板要求 agentic 执行器生成架构图时节点标签、分组标题等尽可能使用中文"
+        },
+        {
+          "name": "任务模板 commit 规范",
+          "description": "tasks 模板中的 commit 示例统一为中文描述格式"
+        }
+      ]
+    },
+    {
+      "type": "fix",
+      "label": "修复",
+      "items": [
+        {
+          "name": "human-review 硬性禁止规则",
+          "description": "明确禁止 AI 生成自定义 `<style>` 块和自创 CSS 类名，防止覆盖 CSS 变量导致暗色主题崩溃"
+        },
+        {
+          "name": "human-review 模板精简",
+          "description": "移除冗余 HTML 骨架，只保留 AI 易出错的关键结构，减少约 55% 的模板内容"
+        }
+      ]
+    }
+  ]
+}

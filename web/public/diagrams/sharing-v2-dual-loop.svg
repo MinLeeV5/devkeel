@@ -1,0 +1,133 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 560" width="1200" height="560" role="img" aria-labelledby="title desc" data-generator="fireworks-tech-graph" data-schema-version="1" data-style-id="5" data-visual-theme="Glassmorphism · Tokyo Night" data-diagram-type="process-flow" data-semantic-profile="generic" data-semantic-valid="true" data-quality-profile="showcase" data-max-bends-per-edge="2" data-max-total-bends="8" data-max-route-stretch="1.35" data-max-bridged-crossings="0" data-min-node-gap="40" data-min-container-gutter="20" data-min-label-clearance="4">
+  <title id="title">一次交付驱动任务内纠偏与任务间进化</title>
+  <desc id="desc">任务内循环从明确目标、执行实现、观察验证到证据判断；未通过时回到执行实现，通过后形成证据化交付。交付进入任务间循环，依次复盘、提炼、更新 DevKeel，再让下一次任务自动加载新规则。</desc>
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#111522"/>
+      <stop offset="1" stop-color="#0f1119"/>
+    </linearGradient>
+    <linearGradient id="inner-fill" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#7aa2f7" stop-opacity=".08"/>
+      <stop offset="1" stop-color="#bb9af7" stop-opacity=".04"/>
+    </linearGradient>
+    <linearGradient id="outer-fill" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#bb9af7" stop-opacity=".07"/>
+      <stop offset="1" stop-color="#9ece6a" stop-opacity=".04"/>
+    </linearGradient>
+    <marker id="arrow-main" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
+      <polygon points="0 0,10 3.5,0 7" fill="#bb9af7"/>
+    </marker>
+    <marker id="arrow-pass" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
+      <polygon points="0 0,10 3.5,0 7" fill="#9ece6a"/>
+    </marker>
+    <marker id="arrow-feedback" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
+      <polygon points="0 0,10 3.5,0 7" fill="#f7768e"/>
+    </marker>
+    <marker id="arrow-learn" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
+      <polygon points="0 0,10 3.5,0 7" fill="#7dcfff"/>
+    </marker>
+    <style>
+      text{font-family:'Noto Sans SC','PingFang SC','Microsoft YaHei',sans-serif}.mono{font-family:'JetBrains Mono','SFMono-Regular',monospace}.text{fill:#c8d1e6}.muted{fill:#7b89a8}.blue{fill:#7aa2f7}.purple{fill:#bb9af7}.green{fill:#9ece6a}.cyan{fill:#7dcfff}.red{fill:#f7768e}.warn{fill:#e0af68}.section{font-size:14px;font-weight:800;letter-spacing:1.4px}.section-sub{font-size:12px}.cadence{font-size:12px;font-weight:800;letter-spacing:.7px}.node-title{font-size:18px;font-weight:750}.node-sub{font-size:12px}.decision{font-size:16px;font-weight:750}.edge-label{font-size:12px;font-weight:700}.legend{font-size:12px}.rule{stroke:#7b89a8;stroke-opacity:.18}.edge-main{fill:none;stroke:#bb9af7;stroke-width:2.5;stroke-linecap:round;stroke-linejoin:round;marker-end:url(#arrow-main)}.edge-pass{fill:none;stroke:#9ece6a;stroke-width:2.5;stroke-linecap:round;stroke-linejoin:round;marker-end:url(#arrow-pass)}.edge-feedback{fill:none;stroke:#f7768e;stroke-width:2.3;stroke-linecap:round;stroke-linejoin:round;stroke-dasharray:6 4;marker-end:url(#arrow-feedback)}.edge-learn{fill:none;stroke:#7dcfff;stroke-width:2.5;stroke-linecap:round;stroke-linejoin:round;marker-end:url(#arrow-learn)}
+    </style>
+  </defs>
+
+  <rect data-graph-role="background" width="1200" height="560" rx="18" fill="url(#bg)"/>
+  <path d="M0 510H1200" class="rule"/>
+
+  <g id="inner" data-graph-role="container" data-container-id="inner" data-semantic-role="boundary" data-graph-bounds="40,32,1160,270">
+    <rect x="40" y="32" width="1120" height="238" rx="20" fill="url(#inner-fill)" stroke="#7aa2f7" stroke-opacity=".30" stroke-dasharray="7 6"/>
+    <line x1="41" y1="52" x2="41" y2="250" stroke="#7aa2f7" stroke-width="2"/>
+    <text x="64" y="68" class="mono section blue">01 · INNER LOOP · 当前任务</text>
+    <text x="1136" y="68" text-anchor="end" class="mono cadence blue">分钟级 · 一次执行内</text>
+    <text x="64" y="92" class="section-sub muted">达标前：目标 → 实现 → 验证 → 判断</text>
+    <rect data-graph-role="reserved" data-reserved-kind="container-header" x="56" y="48" width="170" height="56" fill="none"/>
+  </g>
+
+  <g id="outer" data-graph-role="container" data-container-id="outer" data-semantic-role="boundary" data-graph-bounds="40,306,1160,510">
+    <rect x="40" y="306" width="1120" height="204" rx="20" fill="url(#outer-fill)" stroke="#bb9af7" stroke-opacity=".30" stroke-dasharray="7 6"/>
+    <line x1="41" y1="326" x2="41" y2="490" stroke="#bb9af7" stroke-width="2"/>
+    <text x="64" y="340" class="mono section purple">02 · OUTER LOOP · 任务之间</text>
+    <text x="1136" y="340" text-anchor="end" class="mono cadence purple">迭代级 · 跨任务持续</text>
+    <text x="64" y="364" class="section-sub muted">达标后：复盘 → 提炼 → 更新 DevKeel → 下一次加载</text>
+    <rect data-graph-role="reserved" data-reserved-kind="container-header" x="56" y="320" width="170" height="56" fill="none"/>
+  </g>
+
+  <path id="goal-execute" data-graph-role="edge" data-edge-id="goal-execute" data-source="goal" data-target="execute" data-edge-kind="flow" data-flow="control" data-bends="0" data-route-stretch="1" d="M400 166H460" class="edge-main"/>
+  <path id="execute-verify" data-graph-role="edge" data-edge-id="execute-verify" data-source="execute" data-target="verify" data-edge-kind="flow" data-flow="read" data-bends="0" data-route-stretch="1" d="M620 166H680" class="edge-pass"/>
+  <path id="verify-decide" data-graph-role="edge" data-edge-id="verify-decide" data-source="verify" data-target="decide" data-edge-kind="flow" data-flow="read" data-bends="0" data-route-stretch="1" d="M840 166H890" class="edge-pass"/>
+  <path id="decide-delivery" data-graph-role="edge" data-edge-id="decide-delivery" data-source="decide" data-target="delivery" data-edge-kind="flow" data-flow="write" data-bends="0" data-route-stretch="1" d="M990 166H1040" class="edge-pass"/>
+  <path id="retry" data-graph-role="edge" data-edge-id="retry" data-source="decide" data-target="execute" data-edge-kind="flow" data-flow="feedback" data-bends="2" data-route-stretch="1.08" d="M940 116V96H540V128" class="edge-feedback"/>
+  <path id="delivery-review" data-graph-role="edge" data-edge-id="delivery-review" data-source="delivery" data-target="review" data-edge-kind="flow" data-flow="control" data-bends="2" data-route-stretch="1.03" d="M1090 208V286H1040V400" class="edge-main"/>
+  <path id="review-extract" data-graph-role="edge" data-edge-id="review-extract" data-source="review" data-target="extract" data-edge-kind="flow" data-flow="control" data-bends="0" data-route-stretch="1" d="M960 436H880" class="edge-main"/>
+  <path id="extract-update" data-graph-role="edge" data-edge-id="extract-update" data-source="extract" data-target="update" data-edge-kind="flow" data-flow="write" data-bends="0" data-route-stretch="1" d="M720 436H640" class="edge-learn"/>
+  <path id="update-next" data-graph-role="edge" data-edge-id="update-next" data-source="update" data-target="next" data-edge-kind="flow" data-flow="write" data-bends="0" data-route-stretch="1" d="M480 436H400" class="edge-main"/>
+  <path id="next-goal" data-graph-role="edge" data-edge-id="next-goal" data-source="next" data-target="goal" data-edge-kind="flow" data-flow="feedback" data-bends="0" data-route-stretch="1" d="M320 400V208" class="edge-main" stroke-dasharray="6 4"/>
+
+  <g id="node-goal" data-graph-role="node" data-node-id="goal" data-semantic-role="rect" data-graph-bounds="240,128,400,208">
+    <rect x="240" y="128" width="160" height="80" rx="18" fill="#7aa2f7" fill-opacity=".12" stroke="#7aa2f7" stroke-width="1.8"/>
+    <text x="320" y="163" text-anchor="middle" class="node-title text">明确目标</text>
+    <text x="320" y="187" text-anchor="middle" class="node-sub muted">验收 + 停止条件</text>
+  </g>
+  <g id="node-execute" data-graph-role="node" data-node-id="execute" data-semantic-role="rect" data-graph-bounds="460,128,620,208">
+    <rect x="460" y="128" width="160" height="80" rx="18" fill="#bb9af7" fill-opacity=".11" stroke="#bb9af7" stroke-width="1.8"/>
+    <text x="540" y="163" text-anchor="middle" class="node-title text">执行实现</text>
+    <text x="540" y="187" text-anchor="middle" class="node-sub muted">修改手机登录</text>
+  </g>
+  <g id="node-verify" data-graph-role="node" data-node-id="verify" data-semantic-role="rect" data-graph-bounds="680,128,840,208">
+    <rect x="680" y="128" width="160" height="80" rx="18" fill="#9ece6a" fill-opacity=".10" stroke="#9ece6a" stroke-width="1.8"/>
+    <text x="760" y="163" text-anchor="middle" class="node-title text">观察验证</text>
+    <text x="760" y="187" text-anchor="middle" class="node-sub muted">测试 + 预览</text>
+  </g>
+  <g id="node-decide" data-graph-role="node" data-node-id="decide" data-semantic-role="diamond" data-graph-bounds="890,116,990,216">
+    <polygon points="940,116 990,166 940,216 890,166" fill="#e0af68" fill-opacity=".12" stroke="#e0af68" stroke-width="2"/>
+    <text x="940" y="162" text-anchor="middle" class="decision text">证据</text>
+    <text x="940" y="183" text-anchor="middle" class="decision text">通过？</text>
+  </g>
+  <g id="node-delivery" data-graph-role="node" data-node-id="delivery" data-semantic-role="output" data-graph-bounds="1040,128,1140,208">
+    <rect x="1040" y="128" width="100" height="80" rx="18" fill="#9ece6a" fill-opacity=".12" stroke="#9ece6a" stroke-width="1.8"/>
+    <text x="1090" y="163" text-anchor="middle" class="node-title text">交付</text>
+    <text x="1090" y="187" text-anchor="middle" class="node-sub muted">证据化完成</text>
+  </g>
+
+  <g id="node-next" data-graph-role="node" data-node-id="next" data-semantic-role="input" data-graph-bounds="240,400,400,472">
+    <rect x="240" y="400" width="160" height="72" rx="18" fill="#7aa2f7" fill-opacity=".10" stroke="#7aa2f7" stroke-width="1.8"/>
+    <text x="320" y="432" text-anchor="middle" class="node-title text">下一次任务</text>
+    <text x="320" y="455" text-anchor="middle" class="node-sub muted">自动加载新规则</text>
+  </g>
+  <g id="node-update" data-graph-role="node" data-node-id="update" data-semantic-role="rect" data-graph-bounds="480,400,640,472">
+    <rect x="480" y="400" width="160" height="72" rx="18" fill="#bb9af7" fill-opacity=".10" stroke="#bb9af7" stroke-width="1.8"/>
+    <text x="560" y="432" text-anchor="middle" class="node-title text">更新 DevKeel</text>
+    <text x="560" y="455" text-anchor="middle" class="node-sub muted">规则 · Skill · 测试</text>
+  </g>
+  <g id="node-extract" data-graph-role="node" data-node-id="extract" data-semantic-role="rect" data-graph-bounds="720,400,880,472">
+    <rect x="720" y="400" width="160" height="72" rx="18" fill="#7dcfff" fill-opacity=".10" stroke="#7dcfff" stroke-width="1.8"/>
+    <text x="800" y="432" text-anchor="middle" class="node-title text">提炼经验</text>
+    <text x="800" y="455" text-anchor="middle" class="node-sub muted">定位可复用模式</text>
+  </g>
+  <g id="node-review" data-graph-role="node" data-node-id="review" data-semantic-role="rect" data-graph-bounds="960,400,1120,472">
+    <rect x="960" y="400" width="160" height="72" rx="18" fill="#f7768e" fill-opacity=".10" stroke="#f7768e" stroke-width="1.8"/>
+    <text x="1040" y="432" text-anchor="middle" class="node-title text">评审复盘</text>
+    <text x="1040" y="455" text-anchor="middle" class="node-sub muted">偏差 + 根因</text>
+  </g>
+
+  <g data-graph-role="label" data-owner="retry" data-graph-bounds="660,70,820,90">
+    <text x="740" y="86" text-anchor="middle" class="edge-label red">未通过 · 定向修正</text>
+  </g>
+  <g data-graph-role="label" data-owner="delivery-review" data-graph-bounds="1092,276,1152,296">
+    <text x="1094" y="292" class="edge-label purple">进入外环</text>
+  </g>
+  <g data-graph-role="label" data-owner="next-goal" data-graph-bounds="338,276,410,296">
+    <text x="338" y="292" class="edge-label purple">下一次加载</text>
+  </g>
+
+  <g data-graph-role="legend" data-graph-bounds="328,522,544,26">
+    <line x1="328" y1="536" x2="360" y2="536" stroke="#bb9af7" stroke-width="2.3" marker-end="url(#arrow-main)"/>
+    <text x="372" y="541" class="legend muted">执行主链</text>
+    <line x1="468" y1="536" x2="500" y2="536" stroke="#9ece6a" stroke-width="2.3" marker-end="url(#arrow-pass)"/>
+    <text x="512" y="541" class="legend muted">验证通过</text>
+    <line x1="608" y1="536" x2="640" y2="536" stroke="#f7768e" stroke-width="2.3" stroke-dasharray="6 4" marker-end="url(#arrow-feedback)"/>
+    <text x="652" y="541" class="legend muted">纠偏反馈</text>
+    <line x1="748" y1="536" x2="780" y2="536" stroke="#7dcfff" stroke-width="2.3" marker-end="url(#arrow-learn)"/>
+    <text x="792" y="541" class="legend muted">经验沉淀</text>
+  </g>
+</svg>

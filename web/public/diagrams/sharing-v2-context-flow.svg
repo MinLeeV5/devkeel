@@ -1,0 +1,122 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 560" width="1200" height="560" role="img" aria-labelledby="title desc" data-generator="fireworks-tech-graph" data-schema-version="1" data-style-id="5" data-visual-theme="Glassmorphism · Tokyo Night" data-diagram-type="data-flow" data-semantic-profile="generic" data-semantic-valid="true" data-quality-profile="showcase" data-max-bends-per-edge="2" data-max-total-bends="8" data-max-bridged-crossings="0" data-min-node-gap="40" data-min-container-gutter="20" data-min-label-clearance="4" data-min-segment-length="16">
+  <title id="title">Context 动态编排流程</title>
+  <desc id="desc">代码、契约、规范与证据经过筛选、压缩和按需注入进入 Agent 当前上下文，执行反馈再刷新下一轮选择。</desc>
+  <defs>
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#0f1119"/>
+      <stop offset="52%" stop-color="#15192a"/>
+      <stop offset="100%" stop-color="#0f1119"/>
+    </linearGradient>
+    <radialGradient id="glowCyan" cx="38%" cy="42%" r="42%">
+      <stop offset="0%" stop-color="#7dcfff" stop-opacity="0.12"/>
+      <stop offset="100%" stop-color="#7dcfff" stop-opacity="0"/>
+    </radialGradient>
+    <radialGradient id="glowGreen" cx="72%" cy="72%" r="34%">
+      <stop offset="0%" stop-color="#9ece6a" stop-opacity="0.10"/>
+      <stop offset="100%" stop-color="#9ece6a" stop-opacity="0"/>
+    </radialGradient>
+    <linearGradient id="titleGradient" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#7dcfff"/>
+      <stop offset="100%" stop-color="#bb9af7"/>
+    </linearGradient>
+    <marker id="arrowPrimary" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
+      <polygon points="0 0, 10 3.5, 0 7" fill="#7dcfff"/>
+    </marker>
+    <marker id="arrowFeedback" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
+      <polygon points="0 0, 10 3.5, 0 7" fill="#9ece6a"/>
+    </marker>
+    <filter id="softShadow" x="-20%" y="-30%" width="140%" height="170%">
+      <feDropShadow dx="0" dy="8" stdDeviation="12" flood-color="#020617" flood-opacity="0.28"/>
+    </filter>
+    <style>
+      text { font-family: 'Helvetica Neue', Helvetica, Arial, 'PingFang SC', 'Microsoft YaHei', 'Microsoft JhengHei', 'SimHei', sans-serif; }
+      .title { font-size: 30px; font-weight: 700; fill: url(#titleGradient); }
+      .subtitle { font-size: 14px; font-weight: 500; fill: #7b89a8; }
+      .section { font-size: 13px; font-weight: 700; fill: #7dcfff; letter-spacing: 1.4px; }
+      .node-title { font-size: 20px; font-weight: 700; fill: #c8d1e6; }
+      .node-sub { font-size: 12px; font-weight: 500; fill: #7b89a8; }
+      .source-title { font-size: 15px; font-weight: 700; fill: #c8d1e6; }
+      .source-sub { font-size: 11px; font-weight: 500; fill: #7b89a8; }
+      .edge-label { font-size: 12px; font-weight: 600; fill: #c8d1e6; }
+      .legend { font-size: 12px; font-weight: 500; fill: #7b89a8; }
+    </style>
+  </defs>
+
+  <rect data-graph-role="background" width="1200" height="560" fill="url(#bg)"/>
+  <rect data-graph-role="decoration" data-owner="background" width="1200" height="560" fill="url(#glowCyan)"/>
+  <rect data-graph-role="decoration" data-owner="background" width="1200" height="560" fill="url(#glowGreen)"/>
+
+  <text x="600" y="48" text-anchor="middle" class="title">Context 是一条动态编排链</text>
+  <text x="600" y="75" text-anchor="middle" class="subtitle">不是把整个仓库塞进窗口，而是在正确时机提供最相关、最新、可验证的信息</text>
+
+  <path id="sources-select" data-graph-role="edge" data-edge-id="sources-select" data-source="sources" data-target="select" data-edge-kind="flow" data-flow="read" data-bends="0" data-route-stretch="1" d="M 280 240 L 340 240" fill="none" stroke="#7dcfff" stroke-width="2.2" stroke-linecap="round" marker-end="url(#arrowPrimary)"/>
+  <path id="select-compress" data-graph-role="edge" data-edge-id="select-compress" data-source="select" data-target="compress" data-edge-kind="flow" data-flow="transform" data-bends="0" data-route-stretch="1" d="M 500 240 L 560 240" fill="none" stroke="#7dcfff" stroke-width="2.2" stroke-linecap="round" marker-end="url(#arrowPrimary)"/>
+  <path id="compress-inject" data-graph-role="edge" data-edge-id="compress-inject" data-source="compress" data-target="inject" data-edge-kind="flow" data-flow="transform" data-bends="0" data-route-stretch="1" d="M 720 240 L 780 240" fill="none" stroke="#7dcfff" stroke-width="2.2" stroke-linecap="round" marker-end="url(#arrowPrimary)"/>
+  <path id="inject-agent" data-graph-role="edge" data-edge-id="inject-agent" data-source="inject" data-target="agent" data-edge-kind="flow" data-flow="read" data-bends="0" data-route-stretch="1" d="M 940 240 L 1000 240" fill="none" stroke="#7dcfff" stroke-width="2.2" stroke-linecap="round" marker-end="url(#arrowPrimary)"/>
+  <path id="agent-refresh" data-graph-role="edge" data-edge-id="agent-refresh" data-source="agent" data-target="refresh" data-edge-kind="feedback" data-flow="feedback" data-bends="1" data-route-stretch="1.7" d="M 1080 295 L 1080 410 L 940 410" fill="none" stroke="#9ece6a" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#arrowFeedback)"/>
+  <path id="refresh-select" data-graph-role="edge" data-edge-id="refresh-select" data-source="refresh" data-target="select" data-edge-kind="feedback" data-flow="feedback" data-bends="1" data-route-stretch="1.7" d="M 560 410 L 420 410 L 420 295" fill="none" stroke="#9ece6a" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#arrowFeedback)"/>
+
+  <g id="node-sources" data-graph-role="node" data-node-id="sources" data-semantic-role="container" data-graph-bounds="40,120,280,370">
+    <rect x="40" y="120" width="240" height="250" rx="18" fill="#1c2039" fill-opacity="0.62" stroke="#7dcfff" stroke-opacity="0.46" stroke-width="1.4" stroke-dasharray="7 6"/>
+    <text x="66" y="149" class="section">信息源 SOURCES</text>
+    <g data-graph-role="decoration" data-owner="sources">
+      <rect x="70" y="170" width="180" height="38" rx="10" fill="#7aa2f7" fill-opacity="0.10" stroke="#7aa2f7" stroke-opacity="0.42"/>
+      <text x="90" y="194" class="source-title">代码</text>
+      <text x="132" y="194" class="source-sub">组件 · 调用链</text>
+      <rect x="70" y="218" width="180" height="38" rx="10" fill="#bb9af7" fill-opacity="0.10" stroke="#bb9af7" stroke-opacity="0.42"/>
+      <text x="90" y="242" class="source-title">契约</text>
+      <text x="132" y="242" class="source-sub">接口 · 错误码</text>
+      <rect x="70" y="266" width="180" height="38" rx="10" fill="#7dcfff" fill-opacity="0.10" stroke="#7dcfff" stroke-opacity="0.42"/>
+      <text x="90" y="290" class="source-title">规范</text>
+      <text x="132" y="290" class="source-sub">边界 · Token</text>
+      <rect x="70" y="314" width="180" height="38" rx="10" fill="#9ece6a" fill-opacity="0.10" stroke="#9ece6a" stroke-opacity="0.42"/>
+      <text x="90" y="338" class="source-title">证据</text>
+      <text x="132" y="338" class="source-sub">测试 · 决策</text>
+    </g>
+  </g>
+
+  <g id="node-select" data-graph-role="node" data-node-id="select" data-semantic-role="process" data-graph-bounds="340,185,500,295">
+    <rect x="340" y="185" width="160" height="110" rx="18" fill="#1c2039" fill-opacity="0.76" stroke="#7dcfff" stroke-width="1.8" filter="url(#softShadow)"/>
+    <text x="420" y="228" text-anchor="middle" class="node-title">筛选</text>
+    <text x="420" y="253" text-anchor="middle" class="node-sub">相关性 · 新鲜度</text>
+    <text x="420" y="273" text-anchor="middle" class="node-sub">任务阶段</text>
+  </g>
+  <g id="node-compress" data-graph-role="node" data-node-id="compress" data-semantic-role="process" data-graph-bounds="560,185,720,295">
+    <rect x="560" y="185" width="160" height="110" rx="18" fill="#1c2039" fill-opacity="0.76" stroke="#bb9af7" stroke-width="1.8"/>
+    <text x="640" y="228" text-anchor="middle" class="node-title">压缩</text>
+    <text x="640" y="253" text-anchor="middle" class="node-sub">摘要 · 去重</text>
+    <text x="640" y="273" text-anchor="middle" class="node-sub">保留关键约束</text>
+  </g>
+  <g id="node-inject" data-graph-role="node" data-node-id="inject" data-semantic-role="process" data-graph-bounds="780,185,940,295">
+    <rect x="780" y="185" width="160" height="110" rx="18" fill="#1c2039" fill-opacity="0.76" stroke="#7aa2f7" stroke-width="1.8"/>
+    <text x="860" y="228" text-anchor="middle" class="node-title">注入</text>
+    <text x="860" y="253" text-anchor="middle" class="node-sub">按需加载</text>
+    <text x="860" y="273" text-anchor="middle" class="node-sub">控制窗口预算</text>
+  </g>
+  <g id="node-agent" data-graph-role="node" data-node-id="agent" data-semantic-role="double_rect" data-graph-bounds="1000,185,1160,295">
+    <rect x="1000" y="185" width="160" height="110" rx="18" fill="#1c2039" fill-opacity="0.82" stroke="#9ece6a" stroke-width="2" filter="url(#softShadow)"/>
+    <rect x="1007" y="192" width="146" height="96" rx="14" fill="none" stroke="#9ece6a" stroke-opacity="0.48" stroke-width="1.1"/>
+    <text x="1080" y="228" text-anchor="middle" class="node-title">Agent 执行</text>
+    <text x="1080" y="253" text-anchor="middle" class="node-sub">读取 · 推理</text>
+    <text x="1080" y="273" text-anchor="middle" class="node-sub">工具调用</text>
+  </g>
+  <g id="node-refresh" data-graph-role="node" data-node-id="refresh" data-semantic-role="process" data-graph-bounds="560,370,940,450">
+    <rect x="560" y="370" width="380" height="80" rx="18" fill="#9ece6a" fill-opacity="0.08" stroke="#9ece6a" stroke-opacity="0.68" stroke-width="1.6"/>
+    <text x="750" y="403" text-anchor="middle" class="node-title" font-size="18">刷新 Context</text>
+    <text x="750" y="429" text-anchor="middle" class="node-sub">根据文件变化、测试结果与新决策更新下一轮输入</text>
+  </g>
+
+  <text x="310" y="222" text-anchor="middle" class="edge-label">候选事实</text>
+  <text x="530" y="222" text-anchor="middle" class="edge-label">高信号</text>
+  <text x="750" y="222" text-anchor="middle" class="edge-label">最小上下文</text>
+  <text x="970" y="222" text-anchor="middle" class="edge-label">当前窗口</text>
+  <text x="1010" y="395" text-anchor="middle" class="edge-label">执行反馈</text>
+  <text x="490" y="395" text-anchor="middle" class="edge-label">刷新选择</text>
+
+  <g id="legend" data-graph-role="reserved" data-graph-bounds="423,500,777,528">
+    <line x1="423" y1="514" x2="467" y2="514" stroke="#7dcfff" stroke-width="2.2" marker-end="url(#arrowPrimary)"/>
+    <text x="481" y="518" class="legend">当前任务的上下文流</text>
+    <line x1="639" y1="514" x2="683" y2="514" stroke="#9ece6a" stroke-width="2.2" marker-end="url(#arrowFeedback)"/>
+    <text x="697" y="518" class="legend">执行后的刷新回路</text>
+  </g>
+</svg>

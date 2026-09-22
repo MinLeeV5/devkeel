@@ -1,0 +1,25 @@
+{
+  "versions": ["0.4.4", "0.4.5"],
+  "releasedAt": {
+    "from": "2026-05-20T17:40:00+08:00",
+    "to": "2026-05-20T17:42:00+08:00"
+  },
+  "title": "缺陷处理 Skill 全面升级",
+  "archived": true,
+  "groups": [
+    {
+      "type": "feat",
+      "label": "新能力",
+      "items": [
+        {
+          "name": "缺陷处理编排器",
+          "description": "原 defect-orchestrator 升级为 jira-defect-orchestrator，新增状态机、确认门禁、评论模板、缺陷剧本等参考文档"
+        },
+        {
+          "name": "Schema v6.1",
+          "description": "支持更精细的执行器路由策略"
+        }
+      ]
+    }
+  ]
+}

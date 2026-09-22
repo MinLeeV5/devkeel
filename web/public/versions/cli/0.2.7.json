@@ -1,0 +1,32 @@
+{
+  "versions": ["0.2.7"],
+  "releasedAt": { "from": "2026-05-15T17:50:00+08:00" },
+  "title": "内置 9 个工作流 Skills + Doctor 修复能力",
+  "archived": true,
+  "groups": [
+    {
+      "type": "feat",
+      "label": "9 个工作流 Skills 内置",
+      "items": [
+        {
+          "name": "开箱即用的工作流能力",
+          "description": "init / update 后直接获得 9 个工作流 skill"
+        },
+        {
+          "name": "覆盖完整开发周期",
+          "description": "brainstorming、writing-plans、TDD、executing-plans、requesting-code-review、finishing-a-development-branch、subagent-driven-development、using-git-worktrees、architecture-diagram"
+        }
+      ]
+    },
+    {
+      "type": "feat",
+      "label": "Doctor 自动修复",
+      "items": [
+        {
+          "name": "`devkeel doctor --fix`",
+          "description": "检测到损坏的平台目录 symlink 时可一键修复"
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,7 @@
+{
+  "versions": ["0.2.6"],
+  "releasedAt": { "from": "2026-05-15T14:46:00+08:00" },
+  "title": "Init 交互增强 + 废弃检测精准化",
+  "archived": true,
+  "groups": []
+}

@@ -1,0 +1,18 @@
+{
+  "versions": ["1.0.4"],
+  "releasedAt": { "from": "2026-06-18T16:27:00+08:00" },
+  "title": "brainstorming 精简，移除流程图与冗余审查模板",
+  "archived": false,
+  "groups": [
+    {
+      "type": "refactor",
+      "label": "重构",
+      "items": [
+        {
+          "name": "brainstorming 精简",
+          "description": "移除流程图辅助与未被调用的 spec 审查 subagent 模板，skill 内容更聚焦"
+        }
+      ]
+    }
+  ]
+}

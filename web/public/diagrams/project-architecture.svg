@@ -1,0 +1,131 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 660" width="1200" height="660" role="img" aria-labelledby="title desc" data-generator="fireworks-tech-graph" data-schema-version="1" data-text-metrics="heuristic-v1" data-style-id="1" data-visual-theme="Flat Icon · DevKeel" data-diagram-type="architecture" data-semantic-profile="generic" data-semantic-valid="true" data-quality-profile="showcase" data-max-bends-per-edge="2" data-max-total-bends="8" data-max-route-stretch="1.35" data-max-bridged-crossings="0" data-min-node-gap="40.0" data-min-container-gutter="20.0" data-min-label-clearance="4.0" data-min-segment-length="16.0">
+  <title id="title">DevKeel 系统能力到仓库载体的映射</title>
+  <desc id="desc">编排能力落到 AGENTS.md 与 OpenSpec，约束能力落到 rules、skills 与 agents，验证能力落到测试、构建、预览与 Review；这些资产共同形成 Agent-ready repository，驱动 Coding Agent 交付手机登录代码与可复跑证据。</desc>
+  <defs>
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#f7f8fc"/>
+      <stop offset="50%" stop-color="#ffffff"/>
+      <stop offset="100%" stop-color="#f7f8fc"/>
+    </linearGradient>
+    <radialGradient id="glow-blue" cx="18%" cy="30%" r="42%">
+      <stop offset="0%" stop-color="#3563e9" stop-opacity="0.13"/>
+      <stop offset="100%" stop-color="#3563e9" stop-opacity="0"/>
+    </radialGradient>
+    <radialGradient id="glow-purple" cx="52%" cy="42%" r="40%">
+      <stop offset="0%" stop-color="#8b5cf6" stop-opacity="0.11"/>
+      <stop offset="100%" stop-color="#8b5cf6" stop-opacity="0"/>
+    </radialGradient>
+    <radialGradient id="glow-green" cx="84%" cy="34%" r="40%">
+      <stop offset="0%" stop-color="#07986a" stop-opacity="0.10"/>
+      <stop offset="100%" stop-color="#07986a" stop-opacity="0"/>
+    </radialGradient>
+    <linearGradient id="repo-fill" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#3563e9" stop-opacity="0.11"/>
+      <stop offset="50%" stop-color="#8b5cf6" stop-opacity="0.13"/>
+      <stop offset="100%" stop-color="#07986a" stop-opacity="0.11"/>
+    </linearGradient>
+    <marker id="arrow-blue" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
+      <polygon points="0 0, 10 3.5, 0 7" fill="#3563e9"/>
+    </marker>
+    <marker id="arrow-purple" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
+      <polygon points="0 0, 10 3.5, 0 7" fill="#8b5cf6"/>
+    </marker>
+    <marker id="arrow-green" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
+      <polygon points="0 0, 10 3.5, 0 7" fill="#07986a"/>
+    </marker>
+    <marker id="arrow-cyan" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
+      <polygon points="0 0, 10 3.5, 0 7" fill="#2563eb"/>
+    </marker>
+    <style>
+      text { font-family: 'PingFang SC','Hiragino Sans GB','Microsoft YaHei','Microsoft JhengHei','SimHei','Helvetica Neue',Helvetica,Arial,sans-serif; }
+      .lane-code { font-size: 12px; font-weight: 700; letter-spacing: 1.8px; }
+      .lane-title { font-size: 25px; font-weight: 700; fill: #182033; }
+      .lane-sub { font-size: 13px; font-weight: 500; fill: #657083; }
+      .carrier-label { font-size: 11px; font-weight: 700; fill: #7d8799; letter-spacing: 1.3px; }
+      .carrier-title { font-size: 18px; font-weight: 700; fill: #182033; }
+      .carrier-sub { font-size: 12px; font-weight: 500; fill: #657083; }
+      .repo-code { font-size: 11px; font-weight: 700; fill: #07986a; letter-spacing: 1.6px; }
+      .repo-title { font-size: 23px; font-weight: 700; fill: #182033; }
+      .repo-sub { font-size: 12px; font-weight: 500; fill: #657083; }
+      .flow-title { font-size: 18px; font-weight: 700; fill: #182033; }
+      .flow-sub { font-size: 12px; font-weight: 500; fill: #657083; }
+    </style>
+  </defs>
+
+  <rect data-graph-role="background" width="1200" height="660" fill="url(#bg)"/>
+  <rect width="1200" height="660" fill="url(#glow-blue)"/>
+  <rect width="1200" height="660" fill="url(#glow-purple)"/>
+  <rect width="1200" height="660" fill="url(#glow-green)"/>
+
+  <!-- Edges are drawn before nodes so every connector stays behind content. -->
+  <path id="route-to-carrier" data-graph-role="edge" data-edge-id="route-to-carrier" data-source="capability-route" data-target="carrier-route" data-edge-kind="flow" data-flow="write" data-bends="0" data-route-stretch="1.0" d="M 210,130 L 210,180" fill="none" stroke="#3563e9" stroke-width="2.2" stroke-linecap="round" marker-end="url(#arrow-blue)"/>
+  <path id="rules-to-carrier" data-graph-role="edge" data-edge-id="rules-to-carrier" data-source="capability-rules" data-target="carrier-rules" data-edge-kind="flow" data-flow="write" data-bends="0" data-route-stretch="1.0" d="M 600,130 L 600,180" fill="none" stroke="#8b5cf6" stroke-width="2.2" stroke-linecap="round" marker-end="url(#arrow-purple)"/>
+  <path id="evidence-to-carrier" data-graph-role="edge" data-edge-id="evidence-to-carrier" data-source="capability-evidence" data-target="carrier-evidence" data-edge-kind="flow" data-flow="write" data-bends="0" data-route-stretch="1.0" d="M 990,130 L 990,180" fill="none" stroke="#07986a" stroke-width="2.2" stroke-linecap="round" marker-end="url(#arrow-green)"/>
+  <path id="route-to-repo" data-graph-role="edge" data-edge-id="route-to-repo" data-source="carrier-route" data-target="repository" data-edge-kind="flow" data-flow="write" data-bends="0" data-route-stretch="1.0" d="M 210,315 L 210,375" fill="none" stroke="#3563e9" stroke-width="2.2" stroke-linecap="round" marker-end="url(#arrow-blue)"/>
+  <path id="rules-to-repo" data-graph-role="edge" data-edge-id="rules-to-repo" data-source="carrier-rules" data-target="repository" data-edge-kind="flow" data-flow="write" data-bends="0" data-route-stretch="1.0" d="M 600,315 L 600,375" fill="none" stroke="#8b5cf6" stroke-width="2.2" stroke-linecap="round" marker-end="url(#arrow-purple)"/>
+  <path id="evidence-to-repo" data-graph-role="edge" data-edge-id="evidence-to-repo" data-source="carrier-evidence" data-target="repository" data-edge-kind="flow" data-flow="write" data-bends="0" data-route-stretch="1.0" d="M 990,315 L 990,375" fill="none" stroke="#07986a" stroke-width="2.2" stroke-linecap="round" marker-end="url(#arrow-green)"/>
+  <path id="repo-to-agent" data-graph-role="edge" data-edge-id="repo-to-agent" data-source="repository" data-target="coding-agent" data-edge-kind="flow" data-flow="write" data-bends="0" data-route-stretch="1.0" d="M 600,435 L 600,480" fill="none" stroke="#2563eb" stroke-width="2.4" stroke-linecap="round" marker-end="url(#arrow-cyan)"/>
+  <path id="agent-to-delivery" data-graph-role="edge" data-edge-id="agent-to-delivery" data-source="coding-agent" data-target="delivery" data-edge-kind="flow" data-flow="write" data-bends="0" data-route-stretch="1.0" d="M 600,545 L 600,585" fill="none" stroke="#07986a" stroke-width="2.4" stroke-linecap="round" marker-end="url(#arrow-green)"/>
+
+  <g id="capability-route" data-graph-role="node" data-node-id="capability-route" data-semantic-role="rect" data-graph-bounds="55,45,365,130">
+    <rect x="55" y="45" width="310" height="85" rx="14" fill="#ffffff" fill-opacity="0.90" stroke="#3563e9" stroke-width="2"/>
+    <line x1="69" y1="46" x2="351" y2="46" stroke="#3563e9" stroke-opacity="0.65"/>
+    <text x="80" y="70" class="lane-code" fill="#3563e9">ROUTE</text>
+    <text x="80" y="100" class="lane-title">编排</text>
+    <text x="160" y="100" class="lane-sub">选择路径与持久化状态</text>
+  </g>
+  <g id="capability-rules" data-graph-role="node" data-node-id="capability-rules" data-semantic-role="rect" data-graph-bounds="445,45,755,130">
+    <rect x="445" y="45" width="310" height="85" rx="14" fill="#ffffff" fill-opacity="0.90" stroke="#8b5cf6" stroke-width="2"/>
+    <line x1="459" y1="46" x2="741" y2="46" stroke="#8b5cf6" stroke-opacity="0.65"/>
+    <text x="470" y="70" class="lane-code" fill="#8b5cf6">RULES</text>
+    <text x="470" y="100" class="lane-title">约束</text>
+    <text x="550" y="100" class="lane-sub">加载规则、技能与角色</text>
+  </g>
+  <g id="capability-evidence" data-graph-role="node" data-node-id="capability-evidence" data-semantic-role="rect" data-graph-bounds="835,45,1145,130">
+    <rect x="835" y="45" width="310" height="85" rx="14" fill="#ffffff" fill-opacity="0.90" stroke="#07986a" stroke-width="2"/>
+    <line x1="849" y1="46" x2="1131" y2="46" stroke="#07986a" stroke-opacity="0.65"/>
+    <text x="860" y="70" class="lane-code" fill="#07986a">VERIFY</text>
+    <text x="860" y="100" class="lane-title">验证</text>
+    <text x="940" y="100" class="lane-sub">运行可复跑的完成信号</text>
+  </g>
+
+  <g id="carrier-route" data-graph-role="node" data-node-id="carrier-route" data-semantic-role="rect" data-graph-bounds="55,180,365,315">
+    <rect x="55" y="180" width="310" height="135" rx="16" fill="#ffffff" fill-opacity="0.88" stroke="#3563e9" stroke-opacity="0.48" stroke-width="1.5"/>
+    <text x="80" y="207" class="carrier-label">REPOSITORY CARRIER</text>
+    <text x="80" y="245" class="carrier-title">AGENTS.md + openspec/</text>
+    <text x="80" y="273" class="carrier-sub">总控入口与项目地图</text>
+    <text x="80" y="296" class="carrier-sub">Direct / Lite / Full 工作状态</text>
+  </g>
+  <g id="carrier-rules" data-graph-role="node" data-node-id="carrier-rules" data-semantic-role="rect" data-graph-bounds="445,180,755,315">
+    <rect x="445" y="180" width="310" height="135" rx="16" fill="#ffffff" fill-opacity="0.88" stroke="#8b5cf6" stroke-opacity="0.48" stroke-width="1.5"/>
+    <text x="470" y="207" class="carrier-label">REPOSITORY CARRIER</text>
+    <text x="470" y="245" class="carrier-title">rules/ + skills/ + agents/</text>
+    <text x="470" y="273" class="carrier-sub">架构边界与授权门禁</text>
+    <text x="470" y="296" class="carrier-sub">专项方法与角色分工</text>
+  </g>
+  <g id="carrier-evidence" data-graph-role="node" data-node-id="carrier-evidence" data-semantic-role="rect" data-graph-bounds="835,180,1145,315">
+    <rect x="835" y="180" width="310" height="135" rx="16" fill="#ffffff" fill-opacity="0.88" stroke="#07986a" stroke-opacity="0.48" stroke-width="1.5"/>
+    <text x="860" y="207" class="carrier-label">VERIFICATION SURFACE</text>
+    <text x="860" y="245" class="carrier-title">tests · build · preview · review</text>
+    <text x="860" y="273" class="carrier-sub">行为、构建与视觉检查</text>
+    <text x="860" y="296" class="carrier-sub">变更范围与完成证据</text>
+  </g>
+
+  <g id="repository" data-graph-role="node" data-node-id="repository" data-semantic-role="rect" data-graph-bounds="100,375,1100,435">
+    <rect x="100" y="375" width="1000" height="60" rx="18" fill="url(#repo-fill)" stroke="#2563eb" stroke-opacity="0.72" stroke-width="1.8"/>
+    <text x="130" y="397" class="repo-code">PERSISTED SYSTEM</text>
+    <text x="600" y="405" text-anchor="middle" class="repo-title">共同构成 Agent-ready Repository</text>
+    <text x="1070" y="421" text-anchor="end" class="repo-sub">可发现 · 可加载 · 可验证</text>
+  </g>
+  <g id="coding-agent" data-graph-role="node" data-node-id="coding-agent" data-semantic-role="double_rect" data-graph-bounds="450,480,750,545">
+    <rect x="450" y="480" width="300" height="65" rx="18" fill="#ffffff" stroke="#8b5cf6" stroke-width="2"/>
+    <rect x="456" y="486" width="288" height="53" rx="14" fill="none" stroke="#8b5cf6" stroke-opacity="0.50" stroke-width="1"/>
+    <text x="600" y="510" text-anchor="middle" class="flow-title">Coding Agent</text>
+    <text x="600" y="532" text-anchor="middle" class="flow-sub">读取载体 · 执行任务 · 调用验证</text>
+  </g>
+  <g id="delivery" data-graph-role="node" data-node-id="delivery" data-semantic-role="rect" data-graph-bounds="350,585,850,640">
+    <rect x="350" y="585" width="500" height="55" rx="18" fill="#ffffff" stroke="#07986a" stroke-width="2"/>
+    <text x="600" y="610" text-anchor="middle" class="flow-title">手机登录交付</text>
+    <text x="600" y="630" text-anchor="middle" class="flow-sub">实现代码 + 可复跑证据</text>
+  </g>
+</svg>

@@ -1,0 +1,6 @@
+interface:
+  display_name: "Human Review"
+  short_description: "Render OpenSpec artifacts for optional human review"
+  default_prompt: "Use $human-review to render and open the current OpenSpec change artifacts for review."
+policy:
+  allow_implicit_invocation: false

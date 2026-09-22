@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="从 Agent Skills、Superpowers 与 Matt Skills 的开源调研，看 DevKeel 脚手架如何选择、改造并补齐工程化能力。">
+<title>从开源 Skills 到 DevKeel · 脚手架调研与演进</title>
+<link rel="icon" href="./assets/favicon.ico" type="image/x-icon">
+<link rel="stylesheet" href="https://api.fontshare.com/v2/css?f[]=clash-display@400;500;600;700&f[]=satoshi@400;500;700&display=swap">
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Noto+Sans+SC:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#0f1119;--card:#1c2039;--card-2:#171b2d;--text:#c8d1e6;--muted:#7b89a8;--dim:#4a5470;--blue:#7aa2f7;--purple:#bb9af7;--cyan:#7dcfff;--green:#9ece6a;--orange:#e0af68;--red:#f7768e;--border:rgba(122,162,247,.12);--grad:linear-gradient(135deg,#7aa2f7,#bb9af7 55%,#f7768e);--display:'Clash Display','Noto Sans SC',sans-serif;--body:'Satoshi','Noto Sans SC',sans-serif;--mono:'JetBrains Mono',monospace;--h2:clamp(1.45rem,4vw,3rem);--body-size:clamp(.78rem,1.25vw,1.02rem);--small:clamp(.63rem,.9vw,.8rem);--pad:clamp(1.35rem,4vw,4.5rem);--ease:cubic-bezier(.16,1,.3,1)}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}html,body{height:100%;overflow-x:hidden}html{scroll-snap-type:y mandatory;scroll-behavior:smooth;scrollbar-width:thin;scrollbar-color:rgba(122,162,247,.2) transparent}body{font-family:var(--body);background:var(--bg);color:var(--text);line-height:1.55;-webkit-font-smoothing:antialiased}
+.slide{width:100vw;height:100vh;height:100dvh;overflow:hidden;scroll-snap-align:start;display:flex;position:relative;background-image:radial-gradient(ellipse at 20% 0%,rgba(122,162,247,.08),transparent 50%),radial-gradient(ellipse at 80% 100%,rgba(187,154,247,.06),transparent 50%)}.slide.grid-bg{background-image:linear-gradient(rgba(122,162,247,.035) 1px,transparent 1px),linear-gradient(90deg,rgba(122,162,247,.035) 1px,transparent 1px);background-size:60px 60px}.slide-content{width:100%;height:100%;padding:var(--pad);display:flex;flex-direction:column;justify-content:flex-start;overflow:hidden}.glow-line{position:absolute;top:0;left:50%;transform:translateX(-50%);width:clamp(200px,40vw,500px);height:1px;background:linear-gradient(90deg,transparent,var(--blue),transparent);opacity:.55}
+.eyebrow{font-family:var(--mono);font-size:var(--small);color:var(--blue);letter-spacing:.15em;text-transform:uppercase;margin-bottom:clamp(.4rem,1.2vw,.9rem)}h2{font-family:var(--display);font-size:var(--h2);font-weight:600;line-height:1.18;letter-spacing:-.025em}.gradient{background:var(--grad);background-clip:text;-webkit-background-clip:text;-webkit-text-fill-color:transparent}.green{color:var(--green)}.cyan{color:var(--cyan)}.purple{color:var(--purple)}.orange{color:var(--orange)}
+.diagram{width:100%;margin:clamp(.55rem,1.4vw,1.1rem) auto;background:rgba(15,17,25,.45);border:1px solid var(--border);border-radius:14px;padding:clamp(.25rem,.8vw,.65rem);display:flex;align-items:center;justify-content:center;overflow:hidden}.diagram img{width:100%;height:100%;max-height:100%;object-fit:contain;display:block}.hbox{padding:clamp(.55rem,1.1vw,.9rem) clamp(.75rem,1.4vw,1.1rem);border-radius:10px;font-size:var(--body-size);color:var(--muted);text-align:center;background:rgba(122,162,247,.06);border:1px solid rgba(122,162,247,.16)}.hbox strong{color:var(--blue)}.hbox.green-box{background:rgba(158,206,106,.06);border-color:rgba(158,206,106,.16)}.hbox.green-box strong{color:var(--green)}.hbox.purple-box{background:rgba(187,154,247,.06);border-color:rgba(187,154,247,.16)}.hbox.purple-box strong{color:var(--purple)}.source{font-family:var(--mono);font-size:clamp(.55rem,.72vw,.68rem);color:var(--dim);margin-top:clamp(.35rem,.8vw,.65rem)}.source a{color:var(--muted);text-decoration:none}.source a:hover{color:var(--blue)}
+.mechanisms{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:clamp(.55rem,1.2vw,.9rem);min-height:0}.mechanism{--tone:var(--blue);background:linear-gradient(155deg,color-mix(in srgb,var(--tone) 10%,var(--card)),var(--card));border:1px solid color-mix(in srgb,var(--tone) 32%,transparent);border-top:2px solid var(--tone);border-radius:13px;padding:clamp(.75rem,1.4vw,1.1rem)}.mechanism:nth-child(2){--tone:var(--orange)}.mechanism:nth-child(3){--tone:var(--green)}.mechanism:nth-child(4){--tone:var(--purple)}.mechanism span{font-family:var(--mono);font-size:var(--small);font-weight:700;letter-spacing:.09em;color:var(--tone)}.mechanism h3{font-size:clamp(1rem,2vw,1.4rem);margin:.35rem 0}.mechanism p{font-size:var(--body-size);color:var(--muted)}.mechanism code{color:var(--text)}.contrast{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));border:1px solid var(--border);border-radius:12px;overflow:hidden;background:rgba(13,16,23,.52)}.contrast>div{padding:clamp(.55rem,1.1vw,.85rem) clamp(.7rem,1.4vw,1.05rem);font-size:var(--body-size);color:var(--muted)}.contrast>div+div{border-left:1px solid var(--border)}.contrast strong{display:block;font-family:var(--mono);font-size:var(--small);margin-bottom:.15rem}
+.skill-stack{display:grid;grid-template-rows:auto auto auto;gap:clamp(.5rem,1vw,.8rem);min-height:0}.skill-lane{--tone:var(--blue);display:grid;grid-template-columns:minmax(135px,.42fr) minmax(0,2.6fr);border:1px solid color-mix(in srgb,var(--tone) 24%,transparent);border-left:3px solid var(--tone);border-radius:13px;background:linear-gradient(90deg,color-mix(in srgb,var(--tone) 7%,var(--card)),rgba(28,32,57,.62));overflow:hidden}.skill-lane.discipline{--tone:var(--cyan)}.lane-label{display:flex;flex-direction:column;justify-content:center;padding:clamp(.65rem,1.2vw,.95rem);border-right:1px solid color-mix(in srgb,var(--tone) 20%,transparent)}.lane-label span{font-family:var(--mono);font-size:var(--small);font-weight:700;color:var(--tone);letter-spacing:.08em}.lane-label b{font-size:var(--body-size);margin-top:.15rem}.skill-pills{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:clamp(.3rem,.7vw,.55rem);align-items:center;padding:clamp(.55rem,1vw,.8rem)}.pill{text-align:center;border:1px solid color-mix(in srgb,var(--tone) 28%,transparent);background:rgba(13,16,23,.42);border-radius:9px;padding:clamp(.45rem,.85vw,.65rem) .25rem;font-family:var(--mono);font-size:var(--small)}.bridge{display:flex;align-items:center;justify-content:center;gap:.55rem;font-family:var(--mono);font-size:var(--small);color:var(--muted)}.bridge::before,.bridge::after{content:'';height:1px;max-width:150px;flex:1;background:linear-gradient(90deg,transparent,var(--cyan))}.bridge::after{background:linear-gradient(90deg,var(--cyan),transparent)}.bridge b{color:var(--cyan)}
+.table-stage{overflow:hidden;border-radius:12px}.compare{width:100%;border-collapse:separate;border-spacing:0;font-size:var(--small);background:var(--card);border:1px solid var(--border);border-radius:12px;overflow:hidden}.compare th,.compare td{padding:clamp(.42rem,.9vw,.7rem);text-align:left;border-right:1px solid var(--border);border-bottom:1px solid var(--border);vertical-align:top}.compare th{background:var(--card-2);font-size:var(--body-size)}.compare th:nth-child(2){color:var(--green)}.compare th:nth-child(3){color:var(--cyan)}.compare th:nth-child(4){color:var(--purple)}.compare td{color:var(--muted)}.compare tr:last-child td{border-bottom:0}.compare th:last-child,.compare td:last-child{border-right:0}.compare .rowhead{color:var(--text);font-weight:650;white-space:nowrap}
+.progress{position:fixed;top:0;left:0;height:2px;z-index:100;background:var(--grad);width:0;transition:width .3s var(--ease)}.nav{position:fixed;right:clamp(.45rem,1.4vw,1.1rem);top:50%;transform:translateY(-50%);display:flex;flex-direction:column;gap:7px;z-index:90}.dot{width:8px;height:8px;border-radius:50%;border:1.5px solid var(--dim);padding:0;background:transparent;cursor:pointer}.dot.active{background:var(--blue);border-color:var(--blue);transform:scale(1.3)}.counter{position:absolute;right:var(--pad);bottom:clamp(.65rem,1.5vw,1.2rem);font-family:var(--mono);font-size:var(--small);color:var(--dim)}.reveal{opacity:0;transform:translateY(22px);transition:opacity .65s var(--ease),transform .65s var(--ease)}.slide.visible .reveal{opacity:1;transform:none}
+@media(min-width:761px) and (min-height:650px){.slide-content{padding-top:clamp(2.6rem,6.5vh,4.6rem);padding-bottom:clamp(2.2rem,5vh,3.8rem)}#slide-01 .diagram,#slide-02 .diagram,#slide-05 .diagram,#slide-07 .diagram{flex:1}#slide-03 .mechanisms,#slide-04 .skill-stack{flex:1;align-content:center;margin:clamp(.7rem,1.8vh,1.2rem) 0}#slide-06 .table-stage{flex:1;display:flex;align-items:center;margin:clamp(.7rem,1.8vh,1.3rem) 0}}
+@media(max-width:760px){:root{--pad:clamp(1rem,5vw,1.6rem);--body-size:clamp(.7rem,2.5vw,.86rem);--small:clamp(.58rem,2vw,.72rem);--h2:clamp(1.18rem,6vw,1.8rem)}.mechanisms{grid-template-columns:repeat(2,minmax(0,1fr));gap:.4rem}.mechanism{padding:.5rem}.skill-lane{grid-template-columns:100px minmax(0,1fr)}.skill-pills{gap:.25rem;padding:.4rem}.pill{font-size:.55rem;padding:.35rem .15rem}.compare th,.compare td{padding:.34rem}.diagram{max-height:57vh}.nav{display:none}}
+@media(max-height:560px){.source,.nav{display:none}.slide-content{padding-top:.55rem;padding-bottom:.55rem}}@media(prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.01ms!important;transition-duration:.01ms!important}html{scroll-behavior:auto}}
+</style>
+</head>
+<body data-template-version="1.0.0">
+<div class="progress" id="progressBar"></div>
+<nav class="nav" id="navDots" aria-label="幻灯片导航"></nav>
+
+<section class="slide grid-bg" id="slide-01">
+  <div class="glow-line"></div><div class="slide-content">
+    <p class="eyebrow reveal">// open-source research</p>
+    <h2 class="reveal">我们不是从零发明 <span class="gradient">DevKeel</span></h2>
+    <div class="diagram reveal"><img src="./diagrams/sharing-v2-research-map.svg" alt="DevKeel 开源调研地图：Agent Skills、Superpowers、Matt Skills 与 Harness Engineering 分别提供格式、流程、组合和系统视角"></div>
+    <div class="hbox reveal"><strong>调研看的不是 Skill 数量，</strong>而是何时触发、如何组合、状态存哪、如何自证，以及怎样安全演进。</div>
+    <p class="source reveal">研究对象：<a href="https://github.com/agentskills/agentskills" target="_blank" rel="noopener">Agent Skills</a> · <a href="https://github.com/obra/superpowers" target="_blank" rel="noopener">Superpowers</a> · <a href="https://github.com/mattpocock/skills" target="_blank" rel="noopener">Matt Skills</a> · <a href="https://openai.com/index/harness-engineering/" target="_blank" rel="noopener">Harness Engineering</a></p>
+  </div><div class="counter">01 / 07</div>
+</section>
+
+<section class="slide" id="slide-02">
+  <div class="slide-content">
+    <p class="eyebrow reveal">research 01 · superpowers</p>
+    <h2 class="reveal">Superpowers：一套<span class="green">强纪律</span>的完整开发方法论</h2>
+    <div class="diagram reveal"><img src="./diagrams/sharing-v2-superpowers-flow.svg" alt="Superpowers 从 brainstorming、worktree、计划、实现、TDD、Review 到完成分支的强约束流程"></div>
+    <div class="hbox green-box reveal"><strong>它把方法论写成必须执行的 workflow，</strong>而不是提醒 Agent“最好这样做”。</div>
+    <p class="source reveal">来源：<a href="https://github.com/obra/superpowers" target="_blank" rel="noopener">obra/superpowers</a></p>
+  </div><div class="counter">02 / 07</div>
+</section>
+
+<section class="slide grid-bg" id="slide-03">
+  <div class="glow-line"></div><div class="slide-content">
+    <p class="eyebrow reveal">inside the methodology</p>
+    <h2 class="reveal">Superpowers 真正工程化在<span class="gradient">哪里</span>？</h2>
+    <div class="mechanisms reveal">
+      <div class="mechanism"><span>BOOTSTRAP</span><h3>自动进入</h3><p>会话开始即加载 <code>using-superpowers</code>；行动前先检查是否有匹配 Skill。</p></div>
+      <div class="mechanism"><span>HARD GATE</span><h3>不允许跳步</h3><p>设计需确认、测试先失败、Review 问题清零，关键节点都有门禁。</p></div>
+      <div class="mechanism"><span>EVIDENCE</span><h3>证据优先</h3><p>验证命令与实际输出优先于“应该没问题”，完成声明必须可复查。</p></div>
+      <div class="mechanism"><span>SKILL TDD</span><h3>方法也要测试</h3><p>用压力场景验证 Skill：先观察基线失败，再证明新纪律能改变行为。</p></div>
+    </div>
+    <div class="contrast reveal"><div><strong class="green">收益 · 高一致性</strong>复杂任务有稳定节奏，关键质量动作不依赖模型临场自觉。</div><div><strong class="orange">取舍 · 默认偏重</strong>worktree、TDD、subagent、commit 全程启用，对日常小改动成本较高。</div></div>
+    <p class="source reveal">来源：<a href="https://github.com/obra/superpowers" target="_blank" rel="noopener">Superpowers README 与 Skills</a></p>
+  </div><div class="counter">03 / 07</div>
+</section>
+
+<section class="slide" id="slide-04">
+  <div class="slide-content">
+    <p class="eyebrow reveal">research 02 · matt skills</p>
+    <h2 class="reveal">Matt Skills：<span class="cyan">小、可改、可组合</span></h2>
+    <div class="skill-stack reveal">
+      <div class="skill-lane"><div class="lane-label"><span>USER-INVOKED</span><b>编排入口</b></div><div class="skill-pills"><div class="pill">ask-matt</div><div class="pill">grill</div><div class="pill">to-spec</div><div class="pill">to-tickets</div><div class="pill">implement</div></div></div>
+      <div class="bridge"><b>↓</b> 编排层调用可复用纪律层 <b>↓</b></div>
+      <div class="skill-lane discipline"><div class="lane-label"><span>MODEL-INVOKED</span><b>专项纪律</b></div><div class="skill-pills"><div class="pill">research</div><div class="pill">tdd</div><div class="pill">diagnosing</div><div class="pill">domain-model</div><div class="pill">code-review</div></div></div>
+    </div>
+    <div class="hbox reveal"><strong>组合规则保持简单：</strong>用户入口负责选路，专项 Skill 负责一件事；一个用户入口不再套另一个用户入口。</div>
+    <p class="source reveal">来源：<a href="https://github.com/mattpocock/skills" target="_blank" rel="noopener">mattpocock/skills</a></p>
+  </div><div class="counter">04 / 07</div>
+</section>
+
+<section class="slide grid-bg" id="slide-05">
+  <div class="glow-line"></div><div class="slide-content">
+    <p class="eyebrow reveal">flow over catalog</p>
+    <h2 class="reveal">Matt 的核心是一条 <span class="cyan">Flow</span>，不是一份工具目录</h2>
+    <div class="diagram reveal"><img src="./diagrams/sharing-v2-matt-flow.svg" alt="Matt Skills 从 grill、spec、tickets、implement 到 review 的主流程，并由 setup、research、TDD 和诊断能力接入"></div>
+    <div class="hbox reveal"><strong>项目记忆也进入流程：</strong>setup、issue tracker、tickets 与 domain docs 让下一步建立在上一步的持久化结果上。</div>
+    <p class="source reveal">来源：<a href="https://github.com/mattpocock/skills" target="_blank" rel="noopener">Matt Pocock · Skills</a></p>
+  </div><div class="counter">05 / 07</div>
+</section>
+
+<section class="slide" id="slide-06">
+  <div class="slide-content">
+    <p class="eyebrow reveal">compare · engineering choices</p>
+    <h2 class="reveal">两套方法论，分别解决了<span class="gradient">什么</span>？</h2>
+    <div class="table-stage reveal"><table class="compare">
+      <thead><tr><th>维度</th><th>Superpowers</th><th>Matt Skills</th><th>DevKeel 选择</th></tr></thead>
+      <tbody>
+        <tr><td class="rowhead">定位</td><td>完整、强约束的方法论</td><td>小型、可编辑、可组合能力</td><td>中央契约 + 专项能力</td></tr>
+        <tr><td class="rowhead">入口</td><td>自动触发强制流程</td><td>用户 Router + 自动纪律</td><td>L0 专项 + 风险路由</td></tr>
+        <tr><td class="rowhead">状态</td><td>design / plan / branch</td><td>tracker / tickets / domain docs</td><td>OpenSpec artifacts</td></tr>
+        <tr><td class="rowhead">质量</td><td>默认 TDD / Review / worktree</td><td>TDD、诊断、双轴 Review</td><td>与任务风险相称的验证</td></tr>
+        <tr><td class="rowhead">演进</td><td>plugin 与 Skill 更新</td><td>可编辑副本或 managed bundle</td><td>versions.yml + 安全迁移</td></tr>
+      </tbody>
+    </table></div>
+    <div class="hbox purple-box reveal"><strong>我们的判断：</strong>保留 Superpowers 的纪律、吸收 Matt 的组合性，再补上项目级授权、状态与升级治理。</div>
+  </div><div class="counter">06 / 07</div>
+</section>
+
+<section class="slide grid-bg" id="slide-07">
+  <div class="glow-line"></div><div class="slide-content">
+    <p class="eyebrow reveal">from research to scaffold</p>
+    <h2 class="reveal">从 Superpowers Bridge 到 <span class="purple">DevKeel</span></h2>
+    <div class="diagram reveal"><img src="./diagrams/sharing-v2-harness-lineage.svg" alt="DevKeel 从嵌入 Superpowers、superpowers bridge、superpowers lite 演进到 Lite 与 Full；Agent Skills 与 Matt Skills 位于外部设计对照层"></div>
+    <div class="hbox purple-box reveal"><strong>借鉴纪律 · 重构默认路径 · 补齐项目治理</strong>——外部对照是设计启发，不冒充仓库历史依赖。</div>
+  </div><div class="counter">07 / 07</div>
+</section>
+
+<script>
+(function(){
+  const slides=[...document.querySelectorAll('.slide')],bar=document.getElementById('progressBar'),nav=document.getElementById('navDots');let active=0;
+  const show=index=>slides[Math.max(0,Math.min(slides.length-1,index))].scrollIntoView({behavior:'smooth'});
+  slides.forEach((slide,index)=>{const button=document.createElement('button');button.type='button';button.className='dot'+(index===0?' active':'');button.setAttribute('aria-label',`跳转到第 ${index+1} 页`);button.addEventListener('click',()=>show(index));nav.appendChild(button)});
+  const dots=[...nav.querySelectorAll('.dot')];
+  const observer=new IntersectionObserver(entries=>{entries.forEach(entry=>{if(entry.isIntersecting){active=slides.indexOf(entry.target);entry.target.classList.add('visible');dots.forEach((dot,index)=>dot.classList.toggle('active',index===active));bar.style.width=`${((active+1)/slides.length)*100}%`}})},{threshold:.55});
+  slides.forEach(slide=>observer.observe(slide));
+  document.addEventListener('keydown',event=>{if(['ArrowDown','ArrowRight','PageDown',' '].includes(event.key)){event.preventDefault();show(active+1)}if(['ArrowUp','ArrowLeft','PageUp'].includes(event.key)){event.preventDefault();show(active-1)}if(event.key==='Home')show(0);if(event.key==='End')show(slides.length-1)});
+  slides[0].classList.add('visible');
+})();
+</script>
+</body>
+</html>

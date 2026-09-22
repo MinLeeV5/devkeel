@@ -1,0 +1,57 @@
+{
+  "versions": ["0.10.1", "0.10.2", "0.11.0"],
+  "releasedAt": {
+    "from": "2026-08-13T12:15:51+08:00",
+    "to": "2026-09-05T01:50:42+08:00"
+  },
+  "title": "仓库分层、Windows 兼容与规划升级",
+  "archived": false,
+  "groups": [
+    {
+      "type": "breaking",
+      "label": "升级行为变化",
+      "items": [
+        {
+          "name": "规划入口收敛",
+          "description": "`devkeel update` 会退役受管的 `/opsx:propose` 命令与 `openspec-propose` Skill；新规划分别通过 `/opsx:new` 访谈或在完整快照已确认后使用 `/opsx:ff`。"
+        },
+        {
+          "name": "OpenSpec 根配置归一",
+          "description": "新初始化的项目仅使用 `openspec/config.yaml` 作为受管根配置，不再分发 `settings.json` 与 `environment.toml`，减少重复 selector 和配置漂移。"
+        }
+      ]
+    },
+    {
+      "type": "feat",
+      "label": "新能力",
+      "items": [
+        {
+          "name": "OpenSpec 1.12 兼容",
+          "description": "内置 OpenSpec 升级到 1.12，`devkeel openspec`、初始化和更新流程可识别新版 Schema 状态，并按上游规则处理跳过的 artifacts 与严格 spec 校验。"
+        },
+        {
+          "name": "V2 技术分享页",
+          "description": "官网新增 V2 技术分享入口，以架构图、路由演进和实践案例集中说明 DevKeel 的上下文组织与渐进治理方式。"
+        },
+        {
+          "name": "V1/V2 日活统计",
+          "description": "公开统计页新增 V1 与 V2 的每日活跃用户趋势，便于分别观察两代工作流的实际采用情况。"
+        }
+      ]
+    },
+    {
+      "type": "fix",
+      "label": "修复",
+      "items": [
+        {
+          "name": "主仓库与领域仓库分层",
+          "description": "`devkeel init`、`update` 和 `doctor` 会按仓库类型管理资产：领域子仓库只保留领域知识与 `AGENTS.md`，OpenSpec、命令和共享能力继续由主仓库统一维护。"
+        },
+        {
+          "name": "Windows npm 调用兼容",
+          "description": "Windows 环境会使用正确的 npm 可执行入口获取版本和模板，避免更新检查或模板下载因命令解析失败而中断。"
+        }
+      ]
+    }
+  ]
+}

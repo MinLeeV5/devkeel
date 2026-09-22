@@ -1,0 +1,33 @@
+{
+  "versions": ["0.8.0", "0.8.1", "0.8.2", "0.8.3", "0.8.4"],
+  "releasedAt": {
+    "from": "2026-06-16T23:27:00+08:00",
+    "to": "2026-06-17T02:12:00+08:00"
+  },
+  "title": "openspec 代理：零配置透传调用",
+  "archived": false,
+  "groups": [
+    {
+      "type": "feat",
+      "label": "新能力",
+      "items": [
+        {
+          "name": "devkeel openspec 代理命令",
+          "description": "新增 `devkeel openspec` 子命令，所有参数、子命令、输出和退出码完全透传到 openspec CLI，体验与直接调用一致"
+        },
+        {
+          "name": "零配置使用",
+          "description": "openspec 作为 harness 依赖内置（版本 1.4.1），无需全局安装，通过 `npx devkeel@latest openspec` 即可使用"
+        },
+        {
+          "name": "Skill 命令统一",
+          "description": "所有 openspec 相关 skill 中的命令已更新为 `npx devkeel@latest openspec`"
+        },
+        {
+          "name": "遥测统计报表",
+          "description": "新增可视化统计页面，包含命令分布、每日趋势、Skill 热度、版本分布等 8 个图表，以及项目列表和最近事件表格"
+        }
+      ]
+    }
+  ]
+}

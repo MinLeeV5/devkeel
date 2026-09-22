@@ -1,0 +1,28 @@
+{
+  "versions": ["1.0.2"],
+  "releasedAt": { "from": "2026-06-16T15:50:00+08:00" },
+  "title": "移除 domain 模板体系，新增 systematic-debugging skill",
+  "archived": false,
+  "groups": [
+    {
+      "type": "breaking",
+      "label": "破坏性变更",
+      "items": [
+        {
+          "name": "移除 domain 模板体系",
+          "description": "frontend / backend 领域专属 skills、rules、agents 全部移除，不再通过 `devkeel init` 分发领域模板，改为由 `domain-init` skill 按需生成"
+        }
+      ]
+    },
+    {
+      "type": "feat",
+      "label": "新能力",
+      "items": [
+        {
+          "name": "systematic-debugging skill",
+          "description": "新增系统化调试 skill，引导结构化排查流程"
+        }
+      ]
+    }
+  ]
+}

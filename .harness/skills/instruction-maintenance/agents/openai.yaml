@@ -1,0 +1,4 @@
+interface:
+  display_name: "Instruction Maintenance"
+  short_description: "精简并校验 Agent、Schema 与 Skill 指令契约"
+  default_prompt: "Use $instruction-maintenance to audit and simplify the current instruction diff without weakening behavior."

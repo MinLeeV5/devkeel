@@ -1,0 +1,28 @@
+{
+  "versions": ["1.2.4"],
+  "releasedAt": { "from": "2026-07-03T12:14:00+08:00" },
+  "title": "验证证据跨平台收集，支持子模块提交",
+  "archived": false,
+  "groups": [
+    {
+      "type": "feat",
+      "label": "新能力",
+      "items": [
+        {
+          "name": "实现证据收集",
+          "description": "apply 阶段会记录主仓库和子模块的基线快照，verify 阶段用统一命令统计提交证据，全部提交发生在子模块时也能正常通过验证门禁"
+        }
+      ]
+    },
+    {
+      "type": "fix",
+      "label": "修复",
+      "items": [
+        {
+          "name": "跨平台验证",
+          "description": "verify 不再依赖 bash 管道、grep 或固定 main/master 分支名，Windows 和非标准分支工作流下也能按 apply 前记录的基线计算增量"
+        }
+      ]
+    }
+  ]
+}

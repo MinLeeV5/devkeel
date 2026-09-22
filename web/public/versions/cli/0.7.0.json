@@ -1,0 +1,40 @@
+{
+  "versions": ["0.7.0"],
+  "releasedAt": { "from": "2026-06-15T18:16:00+08:00" },
+  "title": "模板实时拉取，缓存机制，worktree 可选",
+  "archived": false,
+  "groups": [
+    {
+      "type": "feat",
+      "label": "新能力",
+      "items": [
+        {
+          "name": "实时拉取最新模板",
+          "description": "`devkeel update` 和 `devkeel init` 自动从内部 npm 源下载最新版模板，每次执行都能拿到最新 skills / rules / schemas"
+        },
+        {
+          "name": "模板缓存机制",
+          "description": "支持版本比对与 tarball 增量下载，缓存在 `~/.harness/cache/`，网络不可达时自动降级为本地缓存"
+        },
+        {
+          "name": "worktree 改为可选",
+          "description": "apply 阶段不再强制使用 git worktree，会主动询问是否启用隔离开发环境"
+        },
+        {
+          "name": "版本显示增强",
+          "description": "`devkeel --version` 同时显示 CLI 版本和模板包版本"
+        }
+      ]
+    },
+    {
+      "type": "breaking",
+      "label": "破坏性变更",
+      "items": [
+        {
+          "name": "CLI 不再内置模板",
+          "description": "升级后 `devkeel update` / `devkeel init` 需要网络访问公共 npm registry，请确保 `~/.npmrc` 包含：\n`registry=https://registry.npmjs.org/`"
+        }
+      ]
+    }
+  ]
+}

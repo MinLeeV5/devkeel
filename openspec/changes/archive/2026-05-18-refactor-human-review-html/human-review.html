@@ -1,0 +1,1468 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Human Review — refactor-human-review-html</title>
+  <link rel="stylesheet" href="https://cdn.jsdmirror.com/npm/@highlightjs/cdn-assets@11.11.1/styles/github.min.css">
+  <link rel="stylesheet" href="https://cdn.jsdmirror.com/npm/@highlightjs/cdn-assets@11.11.1/styles/github-dark.min.css" media="(prefers-color-scheme: dark)">
+  <script src="https://cdn.jsdmirror.com/npm/@highlightjs/cdn-assets@11.11.1/highlight.min.js"></script>
+  <script src="https://cdn.jsdmirror.com/npm/mermaid@11/dist/mermaid.min.js"></script>
+  <script src="https://cdn.jsdmirror.com/npm/marked/marked.min.js"></script>
+  <style>
+    :root {
+      --bg: #f8fafc; --surface: #ffffff; --text: #0f172a; --text-secondary: #475569;
+      --text-muted: #94a3b8; --accent: #4f46e5; --accent-light: #eef2ff;
+      --accent-border: #c7d2fe; --accent-text: #3730a3; --border: #e2e8f0;
+      --code-bg: #f1f5f9; --success: #059669; --warning: #d97706; --danger: #dc2626;
+      --font-sans: -apple-system,BlinkMacSystemFont,'Segoe UI','Noto Sans SC','PingFang SC','Microsoft YaHei',sans-serif;
+      --font-mono: 'SF Mono','Cascadia Code','JetBrains Mono',Consolas,monospace;
+    }
+    @media(prefers-color-scheme:dark){:root{
+      --bg:#0f172a;--surface:#1e293b;--text:#f1f5f9;--text-secondary:#94a3b8;
+      --text-muted:#64748b;--accent:#818cf8;--accent-light:rgba(99,102,241,0.12);
+      --accent-border:rgba(99,102,241,0.25);--accent-text:#c7d2fe;--border:#334155;
+      --code-bg:#0f172a;--success:#34d399;--warning:#fbbf24;--danger:#f87171;
+    }}
+    *,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+    html{scroll-behavior:smooth}
+    body{font-family:var(--font-sans);background:var(--bg);color:var(--text);line-height:1.8;font-size:15px}
+    ::selection{background:rgba(79,70,229,.2)}
+    .wrapper{max-width:860px;margin:0 auto;padding:0 2.5rem}
+    a{color:var(--accent);text-decoration:none}
+    a:hover{text-decoration:underline}
+
+    /* Header */
+    .page-header{background:linear-gradient(135deg,#eef2ff,#f8fafc,#f0f9ff);border-bottom:1px solid var(--border);padding:3rem 0 2.5rem}
+    @media(prefers-color-scheme:dark){.page-header{background:linear-gradient(135deg,rgba(30,41,59,.8),var(--bg),rgba(15,23,42,.9))}}
+    .badge-review{display:inline-flex;align-items:center;gap:8px;font-size:11px;font-weight:600;letter-spacing:.05em;text-transform:uppercase;padding:6px 14px;border-radius:999px;background:rgba(217,119,6,.1);color:var(--warning);border:1px solid rgba(217,119,6,.2);margin-bottom:1rem}
+    .badge-dot{width:8px;height:8px;border-radius:50%;background:var(--warning);animation:pulse 2s infinite}
+    @keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
+    .page-header h1{font-size:34px;font-weight:800;letter-spacing:-.02em;margin-bottom:.5rem}
+    .page-header .summary{font-size:15px;color:var(--text-secondary);margin-bottom:1rem}
+    .page-header .meta{font-size:13px;color:var(--text-muted)}
+    .progress-bar{display:flex;gap:4px;margin-top:1.25rem}
+    .progress-seg{height:6px;flex:1;border-radius:3px}
+    .progress-done{background:var(--success)}
+    .progress-current{background:var(--accent)}
+
+    /* Dashboard */
+    .dashboard{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:2rem;margin:2.5rem 0}
+    .dashboard-grid{display:grid;grid-template-columns:1fr 1fr;gap:1.5rem;margin-top:1.5rem}
+    @media(max-width:768px){.dashboard-grid{grid-template-columns:1fr}}
+    .dash-card{background:var(--bg);border:1px solid var(--border);border-radius:8px;padding:1.25rem}
+    .dash-card h4{font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.05em;color:var(--text-muted);margin-bottom:.75rem}
+    .risk-badge{display:inline-flex;align-items:center;gap:6px;padding:4px 10px;border-radius:6px;font-size:12px;font-weight:600}
+    .risk-low{background:rgba(5,150,105,.1);color:var(--success);border:1px solid rgba(5,150,105,.2)}
+    .risk-mid{background:rgba(217,119,6,.1);color:var(--warning);border:1px solid rgba(217,119,6,.2)}
+    .tag{display:inline-block;padding:2px 8px;border-radius:4px;font-size:11px;font-weight:600;background:var(--accent-light);color:var(--accent);border:1px solid var(--accent-border)}
+
+    /* Sections */
+    .section{padding:3rem 0;border-top:1px solid var(--border)}
+    .section-head{display:flex;align-items:center;cursor:pointer;user-select:none;margin-bottom:1.5rem}
+    .section-head:hover{opacity:.8}
+    .section-num{font-size:28px;font-weight:800;color:var(--accent);margin-right:12px}
+    .section-head h2{font-size:26px;font-weight:700;flex:1}
+    .collapse-icon{width:24px;height:24px;transition:transform .2s}
+    .section.collapsed .section-body{display:none}
+    .section.collapsed .collapse-icon{transform:rotate(-90deg)}
+    h3{font-size:20px;font-weight:600;margin:1.5rem 0 .75rem;padding-bottom:.5rem;border-bottom:1px solid var(--border)}
+    h4{font-size:17px;font-weight:600;margin:1.25rem 0 .5rem}
+
+    /* Summary block */
+    .summary-block{background:var(--accent-light);border:1px solid var(--accent-border);border-radius:10px;padding:1.25rem 1.5rem;margin-bottom:1.5rem;color:var(--accent-text);font-size:15px;line-height:1.7}
+
+    /* Tables */
+    table{width:100%;border-collapse:collapse;margin:1rem 0 1.5rem;font-size:14px}
+    th{text-align:left;padding:.75rem 1rem;font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.05em;color:var(--text-muted);background:var(--accent-light);border-bottom:2px solid var(--border)}
+    td{padding:.75rem 1rem;border-bottom:1px solid var(--border);color:var(--text-secondary)}
+    tr:hover td{background:var(--accent-light)}
+    td strong{color:var(--text);font-weight:600}
+
+    /* Code */
+    code{font-family:var(--font-mono);font-size:.88em;background:var(--code-bg);padding:2px 6px;border-radius:4px}
+    pre{background:var(--code-bg);border:1px solid var(--border);border-radius:8px;padding:1rem 1.25rem;overflow-x:auto;margin:1rem 0}
+    pre code{background:none;padding:0;font-size:13px}
+    .diff-add{background:rgba(34,197,94,.1)}
+    .diff-remove{background:rgba(239,68,68,.1)}
+    @media(prefers-color-scheme:dark){.diff-add{background:rgba(34,197,94,.15)}.diff-remove{background:rgba(239,68,68,.15)}}
+
+    /* Task list */
+    .task-group{margin:1.5rem 0}
+    .task-group h4{font-weight:600;border:none;padding:0}
+    .task-item{display:flex;align-items:flex-start;gap:10px;padding:.5rem 0;font-size:14px;color:var(--text-secondary)}
+    .task-cb{width:18px;height:18px;border:2px solid var(--border);border-radius:4px;flex-shrink:0;margin-top:2px}
+    .task-commit{font-size:12px;color:var(--accent);margin-top:4px;font-family:var(--font-mono)}
+
+    /* Mermaid */
+    .mermaid-container{padding:1.5rem;border-radius:10px;margin:1.5rem 0;overflow-x:auto}
+    @media(prefers-color-scheme:dark){.mermaid-container{background:rgba(15,23,42,.5)}}
+
+    /* Architecture diagram container */
+    .architecture-diagram-container{background:#020617;border-radius:10px;padding:1.5rem;border:1px solid var(--border);overflow-x:auto;margin:1.5rem 0}
+    @media(prefers-color-scheme:dark){.architecture-diagram-container{border-color:#334155}}
+
+    /* Artifact Viewer */
+    .artifact-viewer{margin:3rem 0;border:1px solid var(--border);border-radius:12px;overflow:hidden}
+    .artifact-tabs{display:flex;overflow-x:auto;background:var(--surface);border-bottom:1px solid var(--border)}
+    .artifact-tab{padding:.75rem 1.25rem;font-size:13px;font-weight:500;color:var(--text-muted);cursor:pointer;border:none;background:none;white-space:nowrap;border-bottom:2px solid transparent;transition:all .15s}
+    .artifact-tab:hover{color:var(--text);background:var(--accent-light)}
+    .artifact-tab.active{color:var(--accent);border-bottom-color:var(--accent);font-weight:600}
+    .artifact-panel{display:none;padding:1.5rem 2rem;max-height:500px;overflow-y:auto;font-size:14px;line-height:1.8}
+    .artifact-panel.active{display:block}
+    .artifact-panel h1,.artifact-panel h2,.artifact-panel h3{margin-top:1.5rem;margin-bottom:.5rem}
+    .artifact-panel h2{font-size:18px;border-bottom:1px solid var(--border);padding-bottom:.5rem}
+    .artifact-panel ul,.artifact-panel ol{margin:.5rem 0 1rem 1.25rem}
+    .artifact-panel table{font-size:13px}
+
+    /* Acceptance */
+    .acceptance{border-top:2px solid var(--accent);padding-top:2.5rem;margin-top:3.5rem}
+    .acceptance h2{display:flex;align-items:center;gap:10px;font-size:22px;font-weight:700}
+    .acceptance ol{margin:1rem 0 1.5rem 1.25rem;color:var(--text-secondary);font-size:14px}
+    .acceptance ol li{margin:.5rem 0}
+    .next-cmd{display:block;padding:1rem 1.25rem;border-radius:8px;border:2px dashed var(--accent-border);font-family:var(--font-mono);font-size:14px;color:var(--accent);cursor:pointer;transition:background .15s;margin:1rem 0;text-align:center}
+    .next-cmd:hover{background:var(--accent-light);text-decoration:none}
+
+    /* Footer */
+    .page-footer{text-align:center;padding:2.5rem 0;font-size:13px;color:var(--text-muted)}
+
+    /* Lists */
+    ul,ol{margin:.5rem 0 1rem 1.25rem;color:var(--text-secondary)}
+    li{margin:.25rem 0;font-size:14px}
+    li strong{color:var(--text)}
+
+    /* Responsive */
+    @media(max-width:768px){.wrapper{padding:0 1.25rem}.page-header h1{font-size:26px}.section-num{font-size:22px}.section-head h2{font-size:22px}}
+    @media(max-width:480px){.wrapper{padding:0 1rem}.page-header h1{font-size:22px}}
+
+    /* Print */
+    @media print{body{background:#fff;color:#000}.page-header{background:#fff!important;border:none}.badge-review{display:none}.artifact-viewer{display:none}.architecture-diagram-container{background:#fff!important}}
+  </style>
+</head>
+<body>
+
+<!-- Header -->
+<header class="page-header">
+  <div class="wrapper">
+    <div class="badge-review"><span class="badge-dot"></span>Pending Review</div>
+    <h1>refactor-human-review-html</h1>
+    <p class="summary">重构 human-review.html：从 6 章全量文档改为 Dashboard + 2 章精简评审页面 + Artifact 原文查看器，新增代码设计预览和交互功能。</p>
+    <p class="meta">superpowers-bridge v5 &middot; 2026-05-18 &middot; <span class="tag">refactor</span></p>
+    <div class="progress-bar">
+      <div class="progress-seg progress-done"></div>
+      <div class="progress-seg progress-done"></div>
+      <div class="progress-seg progress-done"></div>
+      <div class="progress-seg progress-done"></div>
+      <div class="progress-seg progress-done"></div>
+      <div class="progress-seg progress-done"></div>
+      <div class="progress-seg progress-current"></div>
+    </div>
+  </div>
+</header>
+
+<main class="wrapper">
+
+  <!-- Dashboard -->
+  <section class="dashboard">
+    <h2 style="font-size:20px;font-weight:700;margin-bottom:.5rem">📊 变更总览</h2>
+
+    <!-- Impact Diagram -->
+    <div class="architecture-diagram-container">
+      <svg width="100%" viewBox="0 0 700 280" preserveAspectRatio="xMidYMid meet" xmlns="http://www.w3.org/2000/svg">
+        <defs>
+          <linearGradient id="g1" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#818cf8" stop-opacity="0.3"/><stop offset="100%" stop-color="#6366f1" stop-opacity="0.1"/></linearGradient>
+          <linearGradient id="g2" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#34d399" stop-opacity="0.3"/><stop offset="100%" stop-color="#059669" stop-opacity="0.1"/></linearGradient>
+        </defs>
+        <!-- Schema Source -->
+        <rect x="20" y="100" width="180" height="80" rx="8" fill="url(#g1)" stroke="#818cf8" stroke-width="1.5"/>
+        <text x="110" y="130" text-anchor="middle" fill="#c7d2fe" font-size="11" font-weight="600">SOURCE OF TRUTH</text>
+        <text x="110" y="150" text-anchor="middle" fill="#f1f5f9" font-size="13">templates/openspec/</text>
+        <text x="110" y="168" text-anchor="middle" fill="#94a3b8" font-size="11">schemas/superpowers-bridge/</text>
+
+        <!-- Files being modified -->
+        <rect x="260" y="30" width="200" height="44" rx="6" fill="none" stroke="#f87171" stroke-width="1.5" stroke-dasharray="4"/>
+        <text x="360" y="50" text-anchor="middle" fill="#f87171" font-size="11" font-weight="600">重写</text>
+        <text x="360" y="66" text-anchor="middle" fill="#f1f5f9" font-size="12">human-review.md</text>
+
+        <rect x="260" y="90" width="200" height="44" rx="6" fill="none" stroke="#fbbf24" stroke-width="1.5" stroke-dasharray="4"/>
+        <text x="360" y="110" text-anchor="middle" fill="#fbbf24" font-size="11" font-weight="600">新增 section</text>
+        <text x="360" y="126" text-anchor="middle" fill="#f1f5f9" font-size="12">design.md</text>
+
+        <rect x="260" y="150" width="200" height="44" rx="6" fill="none" stroke="#fbbf24" stroke-width="1.5" stroke-dasharray="4"/>
+        <text x="360" y="170" text-anchor="middle" fill="#fbbf24" font-size="11" font-weight="600">instruction + v5</text>
+        <text x="360" y="186" text-anchor="middle" fill="#f1f5f9" font-size="12">schema.yaml</text>
+
+        <!-- Sync arrow -->
+        <path d="M 460 120 L 500 120" stroke="#94a3b8" stroke-width="1" stroke-dasharray="3" marker-end="url(#arrow)"/>
+        <defs><marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M 0 0 L 10 5 L 0 10 z" fill="#94a3b8"/></marker></defs>
+
+        <!-- Project copy -->
+        <rect x="510" y="80" width="170" height="80" rx="8" fill="url(#g2)" stroke="#34d399" stroke-width="1.5"/>
+        <text x="595" y="110" text-anchor="middle" fill="#a7f3d0" font-size="11" font-weight="600">项目内副本</text>
+        <text x="595" y="130" text-anchor="middle" fill="#f1f5f9" font-size="13">openspec/schemas/</text>
+        <text x="595" y="148" text-anchor="middle" fill="#94a3b8" font-size="11">同步更新</text>
+
+        <!-- New capabilities -->
+        <rect x="260" y="220" width="420" height="44" rx="6" fill="rgba(99,102,241,0.08)" stroke="#818cf8" stroke-width="1"/>
+        <text x="280" y="246" fill="#818cf8" font-size="11" font-weight="600">新增能力：</text>
+        <text x="360" y="246" fill="#c7d2fe" font-size="11">Dashboard SVG · 代码设计预览 · 折叠/展开 · Diff 高亮 · Artifact 查看器</text>
+      </svg>
+    </div>
+
+    <div class="dashboard-grid">
+      <div class="dash-card">
+        <h4>风险评估</h4>
+        <span class="risk-badge risk-low">● 低风险</span>
+        <p style="margin-top:.5rem;font-size:13px;color:var(--text-secondary)">非破坏性变更，仅影响模板文件。已归档 change 不受影响。无 TypeScript 代码变更。</p>
+      </div>
+      <div class="dash-card">
+        <h4>任务概览</h4>
+        <p style="font-size:24px;font-weight:700;color:var(--accent)">5 组 / 10 个任务</p>
+        <p style="font-size:13px;color:var(--text-secondary);margin-top:.25rem">design.md · human-review.md · schema.yaml · 同步 · 验证</p>
+      </div>
+      <div class="dash-card">
+        <h4>影响范围</h4>
+        <table style="margin:0;font-size:12px">
+          <tr><td><strong>重写</strong></td><td>human-review.md（230行）</td></tr>
+          <tr><td><strong>修改</strong></td><td>design.md, schema.yaml</td></tr>
+          <tr><td><strong>同步</strong></td><td>openspec/schemas/ 副本 ×3</td></tr>
+        </table>
+      </div>
+      <div class="dash-card">
+        <h4>新增依赖</h4>
+        <p style="font-size:13px;color:var(--text-secondary)"><code>marked.js</code> CDN（jsdmirror 镜像，与现有 highlight.js/mermaid 同源）</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- 01 需求与设计 -->
+  <div class="section" id="s1">
+    <div class="section-head" onclick="toggleSection(this)">
+      <span class="section-num">01</span>
+      <h2>需求与设计</h2>
+      <svg class="collapse-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+    </div>
+    <div class="section-body">
+      <div class="summary-block">
+        重构 human-review.html：从 6 章全量文档改为 Dashboard + 2 章精简评审页面 + Artifact 原文查看器，新增代码设计预览和交互功能，让评审者一眼看清全局、快速定位风险。
+      </div>
+
+      <h3>目标用户</h3>
+      <table>
+        <thead><tr><th>角色</th><th>关注点</th><th>评审时间</th></tr></thead>
+        <tbody>
+          <tr><td><strong>技术负责人</strong></td><td>方案合理性、风险可控、影响范围</td><td>5-10 分钟</td></tr>
+          <tr><td><strong>同组工程师</strong></td><td>代码设计、接口合理性、任务拆分</td><td>10-20 分钟</td></tr>
+          <tr><td><strong>跨组评审者</strong></td><td>是否影响自己模块、接口契约变更</td><td>3-5 分钟</td></tr>
+        </tbody>
+      </table>
+
+      <h3>架构决策</h3>
+
+      <div class="mermaid-container">
+        <pre class="mermaid">
+graph LR
+    subgraph 输入
+        A[brainstorm.md]
+        B[explore.md]
+        C[design.md]
+        D[proposal.md]
+        E[specs/*.md]
+        F[tasks.md]
+    end
+    subgraph "human-review.html 新结构"
+        G[Dashboard SVG]
+        H[01 需求与设计]
+        I[02 实现任务]
+        J[Artifact 查看器]
+    end
+    A & B & C & D & E & F --> G
+    A & C --> H
+    F --> I
+    A & B & C & D & E & F --> J
+        </pre>
+      </div>
+
+      <h3>ATAM 方案对比</h3>
+      <table>
+        <thead><tr><th>质量属性</th><th>A: 模板重写 ✓</th><th>B: 章节开关</th><th>权重</th></tr></thead>
+        <tbody>
+          <tr><td><strong>可维护性</strong></td><td style="color:var(--success)">高 — 结构清晰</td><td>中 — 条件逻辑复杂</td><td>35%</td></tr>
+          <tr><td><strong>评审体验</strong></td><td style="color:var(--success)">高 — Dashboard 首屏聚焦</td><td>中 — 仍是线性文档</td><td>35%</td></tr>
+          <tr><td><strong>向后兼容</strong></td><td style="color:var(--success)">高</td><td style="color:var(--success)">高</td><td>15%</td></tr>
+          <tr><td><strong>实现成本</strong></td><td>中</td><td style="color:var(--success)">低</td><td>15%</td></tr>
+        </tbody>
+      </table>
+
+      <h3>代码设计预览</h3>
+
+      <h4>HTML 新结构（伪代码）</h4>
+      <pre><code class="language-html">&lt;!-- Dashboard --&gt;
+&lt;section class="dashboard"&gt;
+  &lt;div class="architecture-diagram-container"&gt;SVG...&lt;/div&gt;
+  &lt;div class="dashboard-grid"&gt;摘要 + 风险 + 任务 + 依赖&lt;/div&gt;
+&lt;/section&gt;
+
+&lt;!-- 01 需求与设计（可折叠）--&gt;
+&lt;div class="section" id="s1"&gt;...&lt;/div&gt;
+
+&lt;!-- 02 实现任务（可折叠）--&gt;
+&lt;div class="section" id="s2"&gt;...&lt;/div&gt;
+
+&lt;!-- Artifact 原文查看器 --&gt;
+&lt;div class="artifact-viewer"&gt;
+  &lt;div class="artifact-tabs"&gt;标签页按钮&lt;/div&gt;
+  &lt;div class="artifact-panel"&gt;marked.js 渲染内容&lt;/div&gt;
+&lt;/div&gt;
+
+&lt;!-- 内嵌 .md 原文 --&gt;
+&lt;script type="text/markdown" data-artifact="brainstorm"&gt;...&lt;/script&gt;</code></pre>
+
+      <h4>交互 JS</h4>
+      <pre><code class="language-javascript">// 折叠/展开 + localStorage 持久化
+function toggleSection(head) {
+  const section = head.parentElement;
+  section.classList.toggle('collapsed');
+  localStorage.setItem(section.id, section.classList.contains('collapsed'));
+}
+
+// Artifact 标签页 + 按需 marked.js 渲染
+function switchArtifactTab(name) {
+  document.querySelectorAll('.artifact-tab').forEach(t => t.classList.remove('active'));
+  document.querySelectorAll('.artifact-panel').forEach(p => p.classList.remove('active'));
+  document.querySelector(`[data-tab="${name}"]`).classList.add('active');
+  const panel = document.querySelector(`[data-panel="${name}"]`);
+  panel.classList.add('active');
+  if (!panel.dataset.rendered) {
+    const md = document.querySelector(`script[data-artifact="${name}"]`).textContent;
+    panel.innerHTML = typeof marked !== 'undefined' ? marked.parse(md) : `<pre>${md}</pre>`;
+    panel.dataset.rendered = 'true';
+  }
+}</code></pre>
+
+      <h4>变更前后对比</h4>
+      <pre><code class="language-diff">  ## 输出内容
+- | 01 | 需求背景 | brainstorm.md | TL;DR + 核心需求 |
+- | 02 | 现状调查 | explore.md | 架构 + 代码路径 |
+- | 03 | 技术设计 | design.md | 架构图 + 决策 |
+- | 04 | 变更提案 | proposal.md | Why + What |
+- | 05 | 规格清单 | specs/*.md | Requirement 卡片 |
+- | 06 | 实现任务 | tasks.md | 任务 checkbox |
++ | — | Dashboard | 所有 artifact | SVG + 摘要 + 风险 + 任务 |
++ | 01 | 需求与设计 | brainstorm+design | TL;DR + 架构图 + 代码设计 |
++ | 02 | 实现任务 | tasks.md | 任务 checkbox |
++ | — | Artifact 原文 | 所有 .md | 标签页 + marked.js |</code></pre>
+    </div>
+  </div>
+
+  <!-- 02 实现任务 -->
+  <div class="section" id="s2">
+    <div class="section-head" onclick="toggleSection(this)">
+      <span class="section-num">02</span>
+      <h2>实现任务</h2>
+      <svg class="collapse-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+    </div>
+    <div class="section-body">
+      <div class="task-group">
+        <h4>1. design.md 模板新增代码设计预览</h4>
+        <div class="task-item"><div class="task-cb"></div><div><strong>1.1 修改 design.md 模板</strong><div class="task-commit">feat(schema): design.md 模板新增代码设计预览 section</div></div></div>
+      </div>
+      <div class="task-group">
+        <h4>2. human-review.md 模板重写</h4>
+        <div class="task-item"><div class="task-cb"></div><div><strong>2.1 重写 CDN 依赖</strong>（+marked.js）</div></div>
+        <div class="task-item"><div class="task-cb"></div><div><strong>2.2 重写输出内容</strong>（6章 → Dashboard+2章+Viewer）</div></div>
+        <div class="task-item"><div class="task-cb"></div><div><strong>2.3 新增交互 JS section</strong></div></div>
+        <div class="task-item"><div class="task-cb"></div><div><strong>2.4 新增 Diff 高亮样式</strong></div></div>
+        <div class="task-item"><div class="task-cb"></div><div><strong>2.5 新增 Dashboard 区域规格</strong></div></div>
+        <div class="task-item"><div class="task-cb"></div><div><strong>2.6 新增 Artifact 原文查看器规格</strong></div></div>
+        <div class="task-item"><div class="task-cb"></div><div class="task-commit">feat(schema): 重写 human-review.md 模板</div></div>
+      </div>
+      <div class="task-group">
+        <h4>3. schema.yaml 更新</h4>
+        <div class="task-item"><div class="task-cb"></div><div><strong>3.1 更新 instruction</strong></div></div>
+        <div class="task-item"><div class="task-cb"></div><div><strong>3.2 版本号 → v5</strong><div class="task-commit">feat(schema): 更新 human-review instruction 并升级至 v5</div></div></div>
+      </div>
+      <div class="task-group">
+        <h4>4. 项目内副本同步</h4>
+        <div class="task-item"><div class="task-cb"></div><div><strong>4.1 同步到 openspec/schemas/</strong><div class="task-commit">chore(schema): 同步模板到项目内副本</div></div></div>
+      </div>
+      <div class="task-group">
+        <h4>5. 验证</h4>
+        <div class="task-item"><div class="task-cb"></div><div><strong>5.1 openspec validate</strong></div></div>
+        <div class="task-item"><div class="task-cb"></div><div><strong>5.2 浏览器验证</strong>（Dashboard + 折叠 + 标签页 + Diff + 深色模式 + 响应式）</div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Artifact Viewer -->
+  <div class="artifact-viewer">
+    <div class="artifact-tabs">
+      <button class="artifact-tab active" data-tab="brainstorm" onclick="switchArtifactTab('brainstorm')">brainstorm</button>
+      <button class="artifact-tab" data-tab="explore" onclick="switchArtifactTab('explore')">explore</button>
+      <button class="artifact-tab" data-tab="design" onclick="switchArtifactTab('design')">design</button>
+      <button class="artifact-tab" data-tab="proposal" onclick="switchArtifactTab('proposal')">proposal</button>
+      <button class="artifact-tab" data-tab="specs" onclick="switchArtifactTab('specs')">specs</button>
+      <button class="artifact-tab" data-tab="tasks" onclick="switchArtifactTab('tasks')">tasks</button>
+    </div>
+    <div class="artifact-panel active" data-panel="brainstorm" data-rendered="true">
+      <p style="color:var(--text-muted);font-size:13px">点击标签页查看各 artifact 原文。内容由 marked.js 按需渲染。</p>
+      <p style="margin-top:1rem;font-size:14px"><strong>TL;DR:</strong> 重构 human-review.html 输出：从 6 章全量文档精简为 Dashboard + 2 章评审页面，新增代码设计预览、Diff 高亮对比、章节折叠和 Artifact 原文查看器。</p>
+    </div>
+    <div class="artifact-panel" data-panel="explore"></div>
+    <div class="artifact-panel" data-panel="design"></div>
+    <div class="artifact-panel" data-panel="proposal"></div>
+    <div class="artifact-panel" data-panel="specs"></div>
+    <div class="artifact-panel" data-panel="tasks"></div>
+  </div>
+
+  <!-- Acceptance -->
+  <div class="acceptance">
+    <h2>
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+      验收指引
+    </h2>
+    <ol>
+      <li>确认 Dashboard 总览是否清晰展示了变更全貌</li>
+      <li>确认「需求与设计」章节是否包含足够的代码设计预览信息</li>
+      <li>确认任务拆分粒度是否合理</li>
+      <li>测试折叠/展开、Artifact 标签页切换是否正常</li>
+      <li>如有修改意见，编辑 <code>openspec/changes/refactor-human-review-html/</code> 下对应文件</li>
+    </ol>
+    <p style="margin-top:1.5rem;font-weight:600">下一步：</p>
+    <a class="next-cmd" onclick="navigator.clipboard.writeText('/opsx:apply refactor-human-review-html')">
+      /opsx:apply refactor-human-review-html
+      <br><span style="font-size:12px;color:var(--text-muted);font-family:var(--font-sans)">点击复制</span>
+    </a>
+  </div>
+
+</main>
+
+<footer class="page-footer">由 OpenSpec superpowers-bridge v5 生成 &middot; 2026-05-18</footer>
+
+<script>
+// Section collapse/expand
+function toggleSection(head) {
+  const section = head.parentElement;
+  section.classList.toggle('collapsed');
+  localStorage.setItem(section.id, section.classList.contains('collapsed'));
+}
+// Restore states
+document.querySelectorAll('.section').forEach(s => {
+  if (localStorage.getItem(s.id) === 'true') s.classList.add('collapsed');
+});
+
+// Artifact tab switching
+function switchArtifactTab(name) {
+  document.querySelectorAll('.artifact-tab').forEach(t => t.classList.remove('active'));
+  document.querySelectorAll('.artifact-panel').forEach(p => p.classList.remove('active'));
+  document.querySelector(`[data-tab="${name}"]`).classList.add('active');
+  const panel = document.querySelector(`[data-panel="${name}"]`);
+  panel.classList.add('active');
+  if (!panel.dataset.rendered) {
+    const script = document.querySelector(`script[data-artifact="${name}"]`);
+    if (script) {
+      const md = script.textContent;
+      panel.innerHTML = typeof marked !== 'undefined' ? marked.parse(md) : '<pre>' + md + '</pre>';
+      panel.dataset.rendered = 'true';
+      panel.querySelectorAll('pre code').forEach(b => hljs.highlightElement(b));
+    }
+  }
+}
+
+// Init
+hljs.highlightAll();
+const isDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+mermaid.initialize({
+  startOnLoad: true,
+  theme: 'base',
+  themeVariables: isDark ? {
+    background:'#0f172a',primaryColor:'rgba(99,102,241,0.25)',primaryTextColor:'#f1f5f9',
+    primaryBorderColor:'#818cf8',lineColor:'#94a3b8',textColor:'#f1f5f9',
+    mainBkg:'rgba(99,102,241,0.15)',nodeBorder:'#818cf8',
+    clusterBkg:'rgba(30,41,59,0.6)',clusterBorder:'#475569',fontSize:'14px'
+  } : {
+    background:'#ffffff',primaryColor:'#eef2ff',primaryTextColor:'#1e293b',
+    primaryBorderColor:'#4f46e5',lineColor:'#475569',textColor:'#1e293b',
+    mainBkg:'#eef2ff',nodeBorder:'#4f46e5',
+    clusterBkg:'#f8fafc',clusterBorder:'#e2e8f0',fontSize:'14px'
+  }
+});
+</script>
+
+<!-- Embedded artifact sources for on-demand rendering -->
+<script type="text/markdown" data-artifact="brainstorm">
+## TL;DR
+
+重构 human-review.html 输出：从 6 章全量文档精简为 Dashboard + 2 章评审页面，新增代码设计预览、Diff 高亮对比、章节折叠和 Artifact 原文查看器，让评审者一眼看清全局、快速定位风险，同时保留完整过程追溯能力。
+
+## 需求背景
+
+当前 `human-review.html` 是一份 600-700 行的静态 HTML，包含 6 个章节（需求背景、现状调查、技术设计、变更提案、规格清单、实现任务），完整复制了所有 planning artifact 的内容。
+
+**核心痛点：**
+
+1. **信息过载** — 评审者需要滚过大量中间过程信息（现状调查、变更提案、BDD 规格）才能找到关键决策点，实际评审时这些章节被跳过
+2. **无法评审代码设计** — 技术设计章节只有架构图和决策表，缺少伪代码/接口设计/关键函数签名，评审者无法判断 AI 即将实施的代码方案是否合理
+3. **无交互能力** — 纯静态页面，评审者无法折叠无关内容、无法对比变更前后差异、无法标注意见
+4. **缺少全局视图** — 没有一个 Dashboard 式的总览让评审者一眼掌握变更范围和风险分布
+
+## 目标用户与角色
+
+| 角色 | 关注点 | 评审时间 |
+|------|--------|----------|
+| **技术负责人** | 方案是否合理、风险是否可控、影响范围多大 | 5-10 分钟快速扫描 |
+| **同组工程师** | 代码设计是否符合规范、接口是否合理、任务拆分是否清晰 | 10-20 分钟详细审阅 |
+| **跨组评审者** | 是否影响自己负责的模块、接口契约是否变更 | 3-5 分钟看 Dashboard |
+
+## 核心功能用例
+
+### UC-1: Dashboard 总览
+
+评审者打开 HTML 后，首屏即看到一个 Dashboard 式总览，核心是「一图胜千言」：
+- **影响范围可视化** — 使用 architecture-diagram skill 生成 inline SVG，以拓扑图/模块关系图展示变更涉及的模块、文件和依赖关系，用颜色区分新增/修改/删除
+- 变更摘要（一句话 + 关键标签）
+- 风险信号指示器（破坏性变更、新依赖、跨模块影响）
+- 任务进度概览（N 个任务，预估工作量）
+
+Dashboard 的图表优先级：能用 SVG 图表达的信息绝不用文字段落。
+
+### UC-2: 代码设计预览
+
+在技术设计章节中，评审者能看到：
+- 关键函数/接口的签名和伪代码
+- 数据流示意（输入 → 处理 → 输出）
+- 变更前后的代码结构对比（Diff 高亮）
+- 核心类型定义 / interface 变更
+
+### UC-3: 章节折叠/展开
+
+- 默认展开 Dashboard 总览和技术设计
+- 其他章节默认折叠，标题可见
+- 点击标题展开/折叠，状态记忆（localStorage）
+
+### UC-4: Diff 高亮对比
+
+对于涉及的关键变更（接口变更、配置变更、架构调整），以 Diff 视图展示前后对比，类似 GitHub PR 的 diff 样式。
+
+### UC-5: Artifact 原文查看器
+
+评审者可以在页面内查看各 artifact .md 的原文内容：
+- .md 原文以 `<script type="text/markdown" data-artifact="xxx">` 内嵌到 HTML 中（纯文本，零渲染开销）
+- 页面底部提供标签页切换，点击时用轻量 markdown 渲染器（marked.js ~8KB CDN）按需渲染
+- 所有 artifact 都保留（brainstorm/explore/design/proposal/specs/tasks），不删除任何过程信息
+- 好处：主体评审页面精简聚焦，但完整过程文档随时可查，体积增量仅为 .md 原文大小（通常 2-5KB/个）
+
+## 需求边界
+
+**In Scope:**
+
+- 重新定义 human-review.html 的章节结构（从 6 章 → 3 章 + Dashboard）
+- 修改 `templates/openspec/schemas/superpowers-bridge/templates/human-review.md` 模板
+- 同步修改 `openspec/schemas/superpowers-bridge/templates/human-review.md`
+- 新增 Dashboard 总览区域
+- 新增代码设计预览区域（伪代码 + 接口签名）
+- 新增 Diff 高亮对比组件
+- 新增章节折叠/展开交互
+- 新增 Artifact 原文查看器（内嵌 .md + marked.js 按需渲染）
+- 在 design.md 模板中新增「代码设计」section（函数签名、伪代码、interface 变更）
+- 新增 CDN 依赖：marked.js（markdown 渲染）
+- 保留现有视觉风格（Slate Indigo 主题）
+
+**Out of Scope:**
+
+- 不改变 schema 的 artifact 流程（brainstorm → explore → ... → human-review 顺序不变）
+- 不新增 artifact（代码设计信息在现有 design.md 中增加 section）
+- 不涉及评审批注/评论功能（需要后端支持，超出静态 HTML 范围）
+- 不涉及审批打分/投票功能（同上）
+- 不改变 CSS 主题 / 设计令牌
+- 不使用 iframe 加载本地 .md（浏览器 file:// 安全策略限制）
+
+## 新章节结构
+
+| # | 章节 | 内容来源 | 说明 |
+|---|------|----------|------|
+| — | **Dashboard 总览** | 所有 artifact 聚合 | 首屏：摘要 + **架构图式影响范围可视化**（architecture-diagram skill 生成 inline SVG）+ 风险信号 + 任务概览 |
+| 01 | **需求与设计** | brainstorm.md + design.md | TL;DR + 目标用户 + 架构图 + 关键决策 + **代码设计预览**（签名、伪代码、Diff） |
+| 02 | **实现任务** | tasks.md | 任务 checkbox + 微步骤 + commit 建议 |
+| — | **Artifact 原文** | 所有 .md | 标签页切换，点击按需渲染，默认隐藏 |
+| — | **验收指引** | — | 精简保留 |
+
+**关键变化：**
+- 去掉独立的「现状调查」「变更提案」「规格清单」章节（主体不展示）
+- 这些内容通过 Artifact 原文查看器保留完整追溯能力
+- design.md 模板新增「代码设计」section，human-review 从中提取渲染
+
+## 探索过的替代方向
+
+| 方向 | 取舍 |
+|------|------|
+| 保留 6 章但默认全部折叠 | 信息量仍在，折叠只是视觉隐藏，不解决内容冗余问题 |
+| 评审批注/评论功能 | 需要后端存储，超出静态 HTML 的能力边界 |
+| 生成 PDF 而非 HTML | 失去交互能力（折叠、Diff），不符合需求 |
+| iframe 加载本地 .md | 浏览器 file:// 安全策略禁止跨文件 iframe/fetch，不可行 |
+| 把规格清单精简保留 | 用户明确表示不需要 BDD 风格的 Requirement/Scenario |
+
+## 待确认项
+
+1. **代码设计预览的粒度** — 建议：关键函数签名 + 伪代码 + 核心 interface 变更，不展示完整实现。在 design.md 模板中新增 section 指引 agent 产出
+2. **Diff 对比的来源** — 需要在 design.md 模板中要求 agent 以代码块形式给出变更前后对比，human-review 渲染时加 diff 高亮样式
+3. **Dashboard 数据密度** — 建议：定性标签（高/中/低风险）为主 + 影响文件列表作为定量参考
+
+---
+
+## 下一步
+
+在新会话中粘贴以下命令：
+
+/opsx:continue refactor-human-review-html
+</script>
+
+<script type="text/markdown" data-artifact="explore">
+## 调查范围
+
+基于 brainstorm.md，聚焦以下区域：
+
+1. **human-review.md 模板** — HTML 生成指引的结构和内容定义
+2. **schema.yaml** — human-review artifact 的依赖链和 instruction
+3. **design.md 模板** — 是否有代码设计预览的 section（需新增）
+4. **已生成的 human-review.html** — 实际产出的结构和体积
+5. **模板同步机制** — templates/ vs openspec/schemas/ 的关系
+
+## 现有架构
+
+### 文件布局
+
+```
+templates/openspec/schemas/superpowers-bridge/
+├── schema.yaml                    # 权威 schema 定义（init 时复制到项目）
+└── templates/
+    ├── human-review.md            # HTML 生成指引（视觉规格 + 章节定义）
+    ├── design.md                  # 技术设计模板
+    └── ...                        # 其他 artifact 模板
+
+openspec/schemas/superpowers-bridge/
+├── schema.yaml                    # 项目内副本（devkeel init/update 同步）
+└── templates/
+    └── human-review.md            # 项目内副本
+```
+
+两处 schema.yaml 内容基本一致（templates/ 是 source of truth，openspec/ 是项目副本）。
+
+### human-review 生成流程
+
+```
+brainstorm.md ─┐
+explore.md ────┤
+design.md ─────┼── human-review artifact instruction ──► 读取所有 .md
+proposal.md ───┤                                         ↓
+specs/*.md ────┤                              读取 human-review.md 模板
+tasks.md ──────┘                              （视觉规格 + 章节定义）
+                                                         ↓
+                                              生成 human-review.html
+                                              （6 章 + 验收指引）
+```
+
+human-review.html 不是由代码生成的，而是由 **AI agent 根据 human-review.md 模板指引**手动组装。模板定义了：
+- CDN 依赖（highlight.js, mermaid）
+- CSS 设计令牌（Slate Indigo 主题）
+- 组件样式规格
+- 6 章的来源映射
+
+### design.md 模板现状
+
+当前 design.md 模板（`templates/openspec/schemas/superpowers-bridge/templates/design.md`）包含以下 section：
+
+| Section | 内容 |
+|---------|------|
+| TL;DR | 一句话方案 + 交付清单 |
+| 需求引用 | 引用 brainstorm.md |
+| 方案设计 | 架构概览(C4) + ATAM 对比 + 关键时序 + 模块设计 + 数据设计 |
+| 质量设计 | SLO + STRIDE + 旁路隔离 |
+| 决策追溯 | 决策 → 需求追溯 |
+| 风险与未决 | 风险 + 缓解 |
+
+**缺失：没有「代码设计预览」section**（函数签名、伪代码、interface 变更、Diff 对比）。这是 brainstorm 确认的核心新增需求。
+
+## 关键代码路径
+
+### 变更点 1：human-review.md 模板
+
+**文件**：`templates/openspec/schemas/superpowers-bridge/templates/human-review.md`（230 行）
+
+当前定义 6 章输出：
+
+| 章节 | 来源 | 保留？ |
+|------|------|--------|
+| 01 需求背景 | brainstorm.md | ✓ 合并到「需求与设计」 |
+| 02 现状调查 | explore.md | ✗ 移入 Artifact 原文查看器 |
+| 03 技术设计 | design.md | ✓ 合并到「需求与设计」 |
+| 04 变更提案 | proposal.md | ✗ 移入 Artifact 原文查看器 |
+| 05 规格清单 | specs/*.md | ✗ 移入 Artifact 原文查看器 |
+| 06 实现任务 | tasks.md | ✓ 保留为独立章节 |
+
+需要重写为：Dashboard + 2 章 + Artifact 查看器 + 验收指引。
+
+**关键新增内容**：
+- Dashboard 区域（architecture-diagram SVG + 摘要 + 风险信号 + 任务概览）
+- Artifact 原文查看器（`<script type="text/markdown">` + marked.js 按需渲染）
+- 代码设计预览区域（从 design.md 新增 section 提取）
+- Diff 高亮对比样式
+- 章节折叠/展开交互（JS + localStorage）
+- CDN 新增：marked.js
+
+### 变更点 2：design.md 模板
+
+**文件**：`templates/openspec/schemas/superpowers-bridge/templates/design.md`（69 行）
+
+需要在「模块设计」之后新增「代码设计预览」section：
+
+```markdown
+### 代码设计预览
+
+<!-- 关键函数签名、伪代码、interface 变更 -->
+<!-- 评审者通过此 section 判断 AI 即将实施的代码方案是否合理 -->
+<!-- 变更前后对比使用代码块 + diff 标注 -->
+```
+
+### 变更点 3：schema.yaml human-review instruction
+
+**文件**：`templates/openspec/schemas/superpowers-bridge/schema.yaml`（行 219-274）
+
+instruction 中描述了 6 章的收集和生成流程，需要更新为新章节结构。同时需要增加：
+- 读取 marked.js CDN
+- 内嵌所有 .md 原文为 `<script type="text/markdown">`
+- 调用 architecture-diagram skill 生成 Dashboard SVG
+- 折叠/展开 JS 交互
+
+### 变更点 4：项目内副本同步
+
+变更 templates/ 后，需要同步更新 openspec/schemas/superpowers-bridge/ 下的对应文件。`devkeel update` 命令会处理这个同步，但开发时需要手动保持一致。
+
+## 测试覆盖
+
+### 已有测试
+
+human-review 相关的自动化测试：**无**。
+
+human-review.html 是 AI agent 根据模板指引生成的产物，不经过代码路径，因此没有单元测试覆盖。验证方式是人工在浏览器中打开检查。
+
+### 模板文件的测试
+
+templates/ 目录的测试在 `tests/templates.test.ts`，覆盖模板复制逻辑（`copyTemplateSkills`、`copyDirRecursive` 等），但不验证模板内容本身。
+
+### 测试需求
+
+本次变更的测试策略：
+- 模板内容变更不需要新增自动化测试（模板是指引文档，不是可执行代码）
+- 验证方式：修改后用一个现有 change 重新生成 human-review.html，在浏览器中验证
+
+## 风险与约束
+
+### R1：marked.js CDN 可用性
+
+新增 marked.js CDN 依赖（jsdmirror 镜像）。与现有 highlight.js 和 mermaid 使用同一镜像源，风险等级与现有一致。
+
+**缓解**：Artifact 原文查看器在 marked.js 加载失败时可优雅降级为显示原始 markdown 文本。
+
+### R2：architecture-diagram skill 依赖
+
+Dashboard 的影响范围可视化依赖 architecture-diagram skill。若该 skill 不可用，需要在 human-review.md 指引中说明降级方案（使用 Mermaid 图替代）。
+
+### R3：HTML 体积控制
+
+内嵌所有 artifact .md 原文会增加 HTML 体积。估算：
+
+| 组件 | 当前体积 | 新增 |
+|------|----------|------|
+| HTML + CSS + JS | ~25KB | +5KB（交互 JS + Diff 样式） |
+| 内嵌 .md 原文 | 0 | +15-25KB（6 个 .md × 2-5KB） |
+| Dashboard SVG | 0 | +5-10KB |
+| **总计** | ~25KB | ~50-60KB |
+
+体积翻倍但仍在合理范围（<100KB），且 .md 原文是纯文本、高度可压缩。
+
+### R4：向后兼容性
+
+human-review.md 模板变更后，已归档的 change 不受影响（它们已经生成了 HTML）。新 change 会使用新模板。没有向后兼容性问题。
+
+### R5：双份模板同步
+
+`templates/` 和 `openspec/schemas/` 下都有模板文件副本。修改时必须同步两处，否则 `devkeel update` 后会覆盖项目内的修改。
+
+**缓解**：先改 `templates/`（source of truth），再手动复制到 `openspec/schemas/`。
+
+---
+
+## 下一步
+
+在新会话中粘贴以下命令：
+
+/opsx:continue refactor-human-review-html
+</script>
+
+<script type="text/markdown" data-artifact="design">
+## TL;DR
+
+重构 human-review.html 生成模板：从 6 章全量文档改为 Dashboard + 2 章精简评审页面 + Artifact 原文查看器。涉及 3 个文件变更：human-review.md 模板重写、design.md 模板新增代码设计 section、schema.yaml 版本升级至 v5。
+
+交付清单：
+1. `templates/openspec/schemas/superpowers-bridge/templates/human-review.md` — 重写
+2. `templates/openspec/schemas/superpowers-bridge/templates/design.md` — 新增 section
+3. `templates/openspec/schemas/superpowers-bridge/schema.yaml` — instruction 更新 + version 5
+4. `openspec/schemas/superpowers-bridge/` — 同步项目内副本
+
+## 需求引用
+
+- brainstorm UC-1：Dashboard 总览（architecture-diagram SVG + 摘要 + 风险 + 任务概览）
+- brainstorm UC-2：代码设计预览（签名 + 伪代码 + Diff）
+- brainstorm UC-3：章节折叠/展开（localStorage 记忆）
+- brainstorm UC-4：Diff 高亮对比
+- brainstorm UC-5：Artifact 原文查看器（内嵌 `<script type="text/markdown">` + marked.js）
+- brainstorm 新章节结构：Dashboard → 需求与设计 → 实现任务 → Artifact 原文 → 验收指引
+
+## 方案设计
+
+### 架构概览
+
+```mermaid
+graph TD
+    subgraph "规划 Artifact"
+        BS[brainstorm.md]
+        EX[explore.md]
+        DE[design.md]
+        PR[proposal.md]
+        SP[specs/*.md]
+        TK[tasks.md]
+    end
+
+    subgraph "生成模板"
+        HRM[human-review.md<br/>视觉规格 + 章节定义]
+        DET[design.md 模板<br/>新增: 代码设计预览 section]
+    end
+
+    subgraph "产出: human-review.html"
+        DASH[Dashboard 总览<br/>architecture-diagram SVG]
+        S1[01 需求与设计<br/>brainstorm + design 合并]
+        S2[02 实现任务<br/>tasks checkbox]
+        AV[Artifact 原文查看器<br/>标签页 + marked.js]
+        ACC[验收指引]
+    end
+
+    BS & EX & DE & PR & SP & TK --> HRM
+    HRM --> DASH & S1 & S2 & AV & ACC
+    DET -.->|agent 填写| DE
+    DE -->|代码设计预览| S1
+```
+
+### ATAM 方案对比
+
+| 质量属性 | A: 模板重写（选定） | B: 模板参数化（章节开关） | 权重 |
+|----------|---------------------|---------------------------|------|
+| 可维护性 | 高 — 模板结构清晰，一处定义 | 中 — 条件逻辑增加复杂度 | 35% |
+| 评审体验 | 高 — Dashboard 首屏聚焦，交互丰富 | 中 — 仍是线性文档，只是可隐藏 | 35% |
+| 向后兼容 | 高 — 已归档 change 不受影响 | 高 — 同 | 15% |
+| 实现成本 | 中 — 需重写模板 + 更新 instruction | 低 — 只加开关 | 15% |
+
+**选定方案 A** — 模板重写。方案 B 的章节开关只解决「可隐藏」问题，不解决信息过载和缺少代码设计预览的核心痛点。
+
+### 关键时序
+
+```mermaid
+sequenceDiagram
+    participant Agent
+    participant Template as human-review.md
+    participant Artifacts as change/*.md
+    participant ArchSkill as architecture-diagram
+    participant HTML as human-review.html
+
+    Agent->>Template: 读取视觉规格和章节定义
+    Agent->>Artifacts: 读取所有 planning artifact
+    Agent->>ArchSkill: 生成影响范围 SVG（Dashboard）
+    ArchSkill-->>Agent: inline SVG
+    Agent->>HTML: 组装 Dashboard（SVG + 摘要 + 风险 + 任务概览）
+    Agent->>HTML: 组装 01 需求与设计（brainstorm + design 合并）
+    Agent->>HTML: 组装 02 实现任务（tasks checkbox）
+    Agent->>HTML: 内嵌所有 .md 原文为 script[type=text/markdown]
+    Agent->>HTML: 添加交互 JS（折叠 + 标签页 + marked.js 渲染）
+    Agent->>HTML: 添加验收指引
+    Agent-->>User: 展示文件路径，引导浏览器打开
+```
+
+### 模块设计
+
+本次变更不涉及 TypeScript 代码，全部是模板文件（.md + .yaml）。「模块」对应模板文件中的逻辑分区：
+
+#### human-review.md 模板新结构
+
+| 分区 | 职责 | 变更类型 |
+|------|------|----------|
+| CDN 依赖 | highlight.js + mermaid + **marked.js（新增）** | 修改 |
+| 视觉风格 | Slate Indigo 设计令牌（保留） | 不变 |
+| 组件样式 | 保留现有 + **新增折叠/Diff/标签页/Dashboard 样式** | 修改 |
+| 输出内容 | **从 6 章改为 Dashboard + 2 章 + Artifact 查看器** | 重写 |
+| 架构图渲染 | 保留 architecture-diagram skill 指引 | 不变 |
+| 交互 JS | **新增折叠/展开 + 标签页切换 + marked.js 按需渲染** | 新增 |
+
+#### design.md 模板新增 section
+
+在「模块设计」和「数据设计」之间插入：
+
+```markdown
+### 代码设计预览
+
+#### 关键接口与类型
+
+<!-- 新增/修改的 interface、type、函数签名 -->
+
+#### 核心实现伪代码
+
+<!-- 关键函数的伪代码逻辑，评审者据此判断实现方案 -->
+
+#### 变更前后对比
+
+<!-- 用 diff 代码块展示关键变更 -->
+```
+
+### 数据设计
+
+本次不涉及数据模型变更。HTML 中内嵌的 .md 原文以 `<script type="text/markdown" data-artifact="xxx">` 存储，是纯文本，无结构化数据。
+
+### 代码设计预览
+
+> 本 section 即是 design.md 模板新增能力的自我示范。
+
+#### 关键接口与类型
+
+本次无 TypeScript 接口变更。变更对象是 3 个模板文件。
+
+#### 核心实现伪代码
+
+**human-review.md 新章节结构（伪模板）：**
+
+```
+HTML 结构:
+  <header>  — Pending Review 徽章 + 标题 + 摘要 + 进度条
+  <dashboard>
+    <影响范围 SVG>  — architecture-diagram skill 生成
+    <摘要卡片>      — TL;DR + 标签（feat/refactor/fix）
+    <风险信号>      — 破坏性？跨模块？新依赖？
+    <任务概览>      — N/M 完成 + 按组折叠
+  </dashboard>
+  <section 01="需求与设计" collapsible default-open>
+    <需求背景>      ← brainstorm.md TL;DR + 目标用户 + 边界
+    <技术设计>      ← design.md 架构图 + ATAM + 关键决策
+    <代码设计预览>  ← design.md 新 section（签名 + 伪代码 + Diff）
+  </section>
+  <section 02="实现任务" collapsible default-open>
+    <任务 checkbox>  ← tasks.md
+  </section>
+  <artifact-viewer>
+    <tab-bar>  — brainstorm | explore | design | proposal | specs | tasks
+    <tab-panel> — marked.js 按需渲染 script[type=text/markdown] 内容
+  </artifact-viewer>
+  <acceptance>  — 验收指引 + /opsx:apply 命令
+```
+
+**交互 JS 伪代码：**
+
+```javascript
+// 折叠/展开
+document.querySelectorAll('.section-head').forEach(head => {
+  head.addEventListener('click', () => {
+    const section = head.parentElement
+    section.classList.toggle('collapsed')
+    localStorage.setItem(section.id, section.classList.contains('collapsed'))
+  })
+  // 恢复状态
+  const saved = localStorage.getItem(head.parentElement.id)
+  if (saved === 'true') head.parentElement.classList.add('collapsed')
+})
+
+// Artifact 标签页
+function switchArtifactTab(name) {
+  // 隐藏所有 panel
+  // 显示选中 panel
+  // 若 panel 未渲染，用 marked.parse() 渲染 script[data-artifact=name] 内容
+}
+```
+
+#### 变更前后对比
+
+**human-review.md 输出内容 section：**
+
+```diff
+- | # | 章节 | 来源文件 | 提取内容 |
+- |---|------|----------|----------|
+- | 01 | 需求背景 | brainstorm.md | TL;DR + 核心需求 + 目标用户 + 边界 |
+- | 02 | 现状调查 | explore.md | 架构 + 代码路径 + 测试 + 风险 |
+- | 03 | 技术设计 | design.md | 架构图 + 决策 + SLO |
+- | 04 | 变更提案 | proposal.md | Why + What + Capabilities + Impact |
+- | 05 | 规格清单 | specs/*.md | Requirement 卡片 + Scenario |
+- | 06 | 实现任务 | tasks.md | 任务 checkbox |
++ | # | 章节 | 来源文件 | 提取内容 |
++ |---|------|----------|----------|
++ | — | Dashboard | 所有 artifact | SVG 影响图 + 摘要 + 风险 + 任务概览 |
++ | 01 | 需求与设计 | brainstorm + design | TL;DR + 用户 + 架构图 + 决策 + 代码设计 |
++ | 02 | 实现任务 | tasks.md | 任务 checkbox |
++ | — | Artifact 原文 | 所有 .md | 标签页切换，marked.js 按需渲染 |
++ | — | 验收指引 | — | /opsx:apply 命令 |
+```
+
+**schema.yaml 版本：**
+
+```diff
+- version: 4
++ version: 5
+```
+
+## 质量设计
+
+### SLO 指标
+
+本次不涉及 — 变更对象是模板文件（AI agent 指引文档），无运行时指标。
+
+### 安全（STRIDE 简表）
+
+本次不涉及 — 模板文件不处理用户输入、不存储数据、不暴露网络接口。human-review.html 是本地打开的静态文件。
+
+### 旁路隔离
+
+本次不涉及 — 无旁路/观测系统。
+
+## 决策追溯
+
+| 决策 | 追溯到 |
+|------|--------|
+| 去掉现状调查、变更提案、规格清单独立章节 | brainstorm 用户确认：完全去掉 |
+| Artifact 原文用 `<script type="text/markdown">` 内嵌 | brainstorm UC-5 + 讨论：iframe 不可行（file:// 安全策略），方案 A 胜出 |
+| Dashboard 用 architecture-diagram SVG | brainstorm UC-1 + 用户要求「一图胜千言」 |
+| design.md 新增代码设计预览 section | brainstorm UC-2 + 用户反馈「没办法判断 AI 准备实施的代码是否满足要求」 |
+| schema.yaml 版本升至 v5 | 用户明确要求 |
+| marked.js CDN 引入 | explore R1：与现有 CDN 同源（jsdmirror），风险一致 |
+| 折叠/展开用 localStorage | brainstorm UC-3 |
+
+## 风险与未决
+
+| 风险 | 严重程度 | 缓解 |
+|------|----------|------|
+| architecture-diagram skill 不可用 | 中 | human-review.md 指引中说明降级方案：用 Mermaid 图替代 |
+| marked.js CDN 加载失败 | 低 | Artifact 查看器降级显示原始 markdown 文本 |
+| HTML 体积膨胀 | 低 | 预估 ~50-60KB，仍在合理范围；.md 原文高度可压缩 |
+| 双份模板忘记同步 | 低 | tasks 中明确列出同步步骤；可在后续考虑自动化 |
+
+---
+
+## 下一步
+
+在新会话中粘贴以下命令：
+
+/opsx:continue refactor-human-review-html
+</script>
+
+<script type="text/markdown" data-artifact="proposal">
+## Why
+
+当前 human-review.html 是一份 6 章全量文档（600-700 行），完整复制所有 planning artifact 内容。评审者实际只关注 3 个核心区域（需求背景、技术设计、任务清单），其余章节被跳过。同时缺少代码设计预览，评审者无法判断 AI 即将实施的代码方案是否合理。
+
+## What Changes
+
+| 变更 | From | To | 影响 |
+|------|------|----|------|
+| HTML 章节结构 | 6 章线性文档 | Dashboard + 2 章 + Artifact 查看器 | human-review.md 模板重写 |
+| 代码设计可见性 | design.md 无代码设计 section | 新增「代码设计预览」section（签名 + 伪代码 + Diff） | design.md 模板修改 |
+| 交互能力 | 纯静态 | 折叠/展开 + Diff 高亮 + Artifact 标签页 | human-review.md 新增 JS 指引 |
+| Dashboard | 无 | 首屏 architecture-diagram SVG + 摘要 + 风险信号 + 任务概览 | human-review.md 新增 |
+| CDN 依赖 | highlight.js + mermaid | + marked.js | human-review.md 修改 |
+| schema 版本 | version 4 | version 5 | schema.yaml 修改 |
+
+## Capabilities
+
+**新增能力：**
+
+- **`dashboard-overview`** — Dashboard 总览区域：architecture-diagram SVG 影响图、变更摘要、风险信号指示器、任务进度概览
+- **`code-design-preview`** — 代码设计预览：design.md 模板新增 section + human-review 中的渲染
+- **`interactive-review`** — 交互式评审：章节折叠/展开（localStorage）、Diff 高亮对比样式、Artifact 原文查看器（内嵌 markdown + marked.js 按需渲染）
+
+**修改能力：**
+
+- **`human-review-gate`** — 修改章节结构（6 章 → Dashboard + 2 章 + Artifact 查看器）、更新 schema.yaml instruction 和版本号
+
+## Impact
+
+| 文件 | 变更类型 |
+|------|----------|
+| `templates/openspec/schemas/superpowers-bridge/templates/human-review.md` | 重写 |
+| `templates/openspec/schemas/superpowers-bridge/templates/design.md` | 新增 section |
+| `templates/openspec/schemas/superpowers-bridge/schema.yaml` | instruction 更新 + version 5 |
+| `openspec/schemas/superpowers-bridge/templates/human-review.md` | 同步重写 |
+| `openspec/schemas/superpowers-bridge/templates/design.md` | 同步新增 section |
+| `openspec/schemas/superpowers-bridge/schema.yaml` | 同步 |
+
+不影响已归档的 change（它们已生成 HTML）。不影响 TypeScript 源码或测试。
+
+---
+
+## 下一步
+
+在新会话中粘贴以下命令：
+
+/opsx:continue refactor-human-review-html
+</script>
+
+<script type="text/markdown" data-artifact="tasks">
+## 1. design.md 模板新增代码设计预览 section
+
+- [ ] **1.1 修改 design.md 模板**
+
+  文件：`templates/openspec/schemas/superpowers-bridge/templates/design.md`
+
+  在 `### 模块设计` 和 `### 数据设计` 之间插入：
+
+  ```markdown
+  ### 代码设计预览
+
+  #### 关键接口与类型
+
+  <!-- 新增/修改的 interface、type、函数签名 -->
+
+  #### 核心实现伪代码
+
+  <!-- 关键函数的伪代码逻辑，评审者据此判断实现方案是否合理 -->
+
+  #### 变更前后对比
+
+  <!-- 用 ```diff 代码块展示关键变更的前后对比 -->
+  ```
+
+  同步到：`openspec/schemas/superpowers-bridge/templates/design.md`
+
+  commit: `feat(schema): design.md 模板新增代码设计预览 section`
+
+## 2. human-review.md 模板重写
+
+- [ ] **2.1 重写 CDN 依赖 section**
+
+  文件：`templates/openspec/schemas/superpowers-bridge/templates/human-review.md`
+
+  在现有 CDN 列表中新增 marked.js：
+  ```html
+  <script src="https://cdn.jsdmirror.com/npm/marked/marked.min.js">&lt;/script>
+  ```
+
+- [ ] **2.2 重写输出内容 section**
+
+  替换原 6 章结构为新结构：
+
+  | # | 章节 | 来源 | 提取内容 |
+  |---|------|------|----------|
+  | — | Dashboard | 所有 artifact | architecture-diagram SVG + 摘要卡片 + 风险信号 + 任务概览 |
+  | 01 | 需求与设计 | brainstorm + design | TL;DR + 目标用户 + 架构图 + ATAM + 关键决策 + 代码设计预览 |
+  | 02 | 实现任务 | tasks.md | 按组分列任务 checkbox |
+  | — | Artifact 原文 | 所有 .md | 标签页切换，marked.js 按需渲染 |
+  | — | 验收指引 | — | /opsx:apply 命令 |
+
+- [ ] **2.3 新增交互 JS section**
+
+  添加以下交互功能的指引：
+
+  1. 章节折叠/展开（点击 `.section-head` 切换 `.collapsed` class，localStorage 持久化）
+  2. Artifact 标签页切换（点击 tab 按钮，首次点击时用 `marked.parse()` 渲染对应 `<script type="text/markdown">` 内容）
+  3. marked.js 加载失败降级（`<pre>` 显示原文）
+
+- [ ] **2.4 新增 Diff 高亮样式 section**
+
+  添加 diff 代码块的行级着色规格：
+  - `+` 开头行：浅绿背景
+  - `-` 开头行：浅红背景
+  - 深色模式适配
+
+- [ ] **2.5 新增 Dashboard 区域规格**
+
+  描述 Dashboard 区域的布局和内容：
+  - architecture-diagram SVG 容器（深色岛 + 响应式）
+  - 摘要卡片（TL;DR + 变更类型标签）
+  - 风险信号指示器（条件渲染）
+  - 任务概览（组数 + 任务数）
+  - 降级方案：skill 不可用时用 Mermaid 图
+
+- [ ] **2.6 新增 Artifact 原文查看器规格**
+
+  描述内嵌 .md 的方式和交互：
+  - 所有 artifact 以 `<script type="text/markdown" data-artifact="name">` 内嵌
+  - 标签页 UI（brainstorm | explore | design | proposal | specs | tasks）
+  - 按需渲染逻辑
+
+  同步到：`openspec/schemas/superpowers-bridge/templates/human-review.md`
+
+  commit: `feat(schema): 重写 human-review.md 模板为 Dashboard + 2 章 + Artifact 查看器`
+
+## 3. schema.yaml 更新
+
+- [ ] **3.1 更新 human-review instruction**
+
+  文件：`templates/openspec/schemas/superpowers-bridge/schema.yaml`
+
+  修改 human-review artifact 的 instruction，反映新的生成流程：
+  1. 收集所有 .md
+  2. 调用 architecture-diagram skill 生成 Dashboard SVG
+  3. 组装 Dashboard + 2 章 + Artifact 查看器
+  4. 内嵌所有 .md 原文
+  5. 添加交互 JS
+
+- [ ] **3.2 版本号升级**
+
+  ```yaml
+  version: 5
+  ```
+
+  同步到：`openspec/schemas/superpowers-bridge/schema.yaml`
+
+  commit: `feat(schema): 更新 human-review instruction 并升级至 v5`
+
+## 4. 项目内副本同步
+
+- [ ] **4.1 同步所有变更到 openspec/schemas/**
+
+  将 `templates/openspec/schemas/superpowers-bridge/` 下的 3 个变更文件复制到 `openspec/schemas/superpowers-bridge/` 对应位置：
+  - `templates/design.md`
+  - `templates/human-review.md`
+  - `schema.yaml`
+
+  commit: `chore(schema): 同步 superpowers-bridge 模板到项目内副本`
+
+## 5. 验证
+
+- [ ] **5.1 结构验证**
+
+  运行 `openspec validate --all` 确认 schema 结构正确。
+
+- [ ] **5.2 功能验证**
+
+  使用现有已归档 change 的 artifact 数据，按新模板手动生成一份 human-review.html，在浏览器中验证：
+  - Dashboard SVG 渲染正常
+  - 章节折叠/展开工作
+  - Artifact 标签页切换 + marked.js 渲染正常
+  - Diff 高亮颜色正确
+  - 深色模式适配
+  - 响应式（768px/480px）
+
+---
+
+## 下一步
+
+在新会话中粘贴以下命令：
+
+/opsx:continue refactor-human-review-html
+</script>
+
+<script type="text/markdown" data-artifact="specs">
+# code-design-preview
+
+## ADDED Requirements
+
+### Requirement: design.md template SHALL include a Code Design Preview section
+
+`templates/openspec/schemas/superpowers-bridge/templates/design.md` SHALL 在「模块设计」之后新增「代码设计预览」section，包含三个子节：关键接口与类型、核心实现伪代码、变更前后对比。
+
+#### Scenario: 模板包含新 section
+
+- **WHEN** 读取 design.md 模板
+- **THEN** SHALL 在「模块设计」和「数据设计」之间包含 `### 代码设计预览` 标题及三个 level-4 子节
+
+#### Scenario: agent 填写代码设计预览
+
+- **WHEN** agent 执行 design artifact 创建
+- **THEN** SHALL 在代码设计预览 section 中填写关键函数签名、伪代码逻辑和变更前后 diff 对比
+
+### Requirement: human-review.html SHALL render code design with diff highlighting
+
+human-review.md 模板 SHALL 指引 agent 从 design.md 的「代码设计预览」section 提取内容，使用 highlight.js 语法高亮渲染代码块，对 diff 代码块添加绿色/红色行背景。
+
+#### Scenario: Diff 代码块渲染
+
+- **WHEN** design.md 包含 ```diff 代码块
+- **THEN** human-review.html SHALL 渲染为带有 `.diff-add`（绿色背景）和 `.diff-remove`（红色背景）行样式的代码块
+
+#### Scenario: 普通代码块渲染
+
+- **WHEN** design.md 包含普通代码块（非 diff）
+- **THEN** human-review.html SHALL 使用 highlight.js 语法高亮渲染
+
+---
+
+# dashboard-overview
+
+## ADDED Requirements
+
+### Requirement: Dashboard SHALL render an architecture-diagram SVG showing change impact
+
+human-review.md 模板 SHALL 指引 agent 调用 architecture-diagram skill 生成 inline SVG，展示变更涉及的模块、文件和依赖关系拓扑，用颜色区分新增（绿）/修改（蓝）/删除（红）。
+
+#### Scenario: architecture-diagram skill 可用
+
+- **WHEN** agent 生成 human-review.html 且 architecture-diagram skill 可用
+- **THEN** Dashboard 区域 SHALL 包含一个 `.architecture-diagram-container` 内的 inline SVG
+
+#### Scenario: architecture-diagram skill 不可用时降级
+
+- **WHEN** architecture-diagram skill 不可用
+- **THEN** Dashboard SHALL 使用 Mermaid graph 替代，展示相同的模块影响拓扑
+
+### Requirement: Dashboard SHALL display a change summary card
+
+Dashboard 区域 SHALL 包含变更摘要卡片，内容从 brainstorm.md TL;DR 提取，附带变更类型标签（feat/refactor/fix）。
+
+#### Scenario: 摘要卡片内容
+
+- **WHEN** 评审者查看 Dashboard
+- **THEN** SHALL 看到一句话摘要 + 变更类型标签 + change 名称
+
+### Requirement: Dashboard SHALL show risk signal indicators
+
+Dashboard SHALL 展示风险信号指示器，标识：破坏性变更、跨模块影响、新增外部依赖。
+
+#### Scenario: 存在破坏性变更
+
+- **WHEN** proposal.md 中标记了破坏性变更
+- **THEN** Dashboard SHALL 显示红色「破坏性变更」徽章
+
+#### Scenario: 无高风险信号
+
+- **WHEN** 变更为非破坏性、单模块、无新依赖
+- **THEN** Dashboard SHALL 显示绿色「低风险」标识
+
+### Requirement: Dashboard SHALL include task progress overview
+
+Dashboard SHALL 展示任务进度概览，包含总任务数、按组分类的折叠列表。
+
+#### Scenario: 任务概览展示
+
+- **WHEN** tasks.md 包含 N 个 checkbox 任务分为 M 组
+- **THEN** Dashboard SHALL 显示「M 组 / N 个任务」概览
+
+---
+
+# human-review-gate
+
+## MODIFIED Requirements
+
+### Requirement: human-review.html SHALL use a Dashboard + 2 chapter structure
+
+human-review.md 模板 SHALL 指引 agent 生成以下章节结构（替代原 6 章）：
+
+1. Dashboard 总览（architecture-diagram SVG + 摘要 + 风险 + 任务概览）
+2. 01 需求与设计（brainstorm TL;DR + 目标用户 + design 架构图 + 决策 + 代码设计预览）
+3. 02 实现任务（tasks.md checkbox 列表）
+4. Artifact 原文查看器（标签页 + marked.js）
+5. 验收指引（/opsx:apply 命令）
+
+#### Scenario: 去除独立的现状调查章节
+
+- **WHEN** 检查生成的 human-review.html
+- **THEN** SHALL 不包含独立的「02 现状调查」章节（explore.md 内容仅通过 Artifact 查看器可访问）
+
+#### Scenario: 去除独立的变更提案章节
+
+- **WHEN** 检查生成的 human-review.html
+- **THEN** SHALL 不包含独立的「04 变更提案」章节
+
+#### Scenario: 去除独立的规格清单章节
+
+- **WHEN** 检查生成的 human-review.html
+- **THEN** SHALL 不包含独立的「05 规格清单」章节（无 Requirement 卡片 + Scenario 块）
+
+### Requirement: human-review.md template SHALL include marked.js CDN
+
+human-review.md 的 CDN 依赖 section SHALL 新增 marked.js 引用。
+
+#### Scenario: CDN 列表包含 marked.js
+
+- **WHEN** 读取 human-review.md 模板的 CDN 依赖 section
+- **THEN** SHALL 包含 `https://cdn.jsdmirror.com/npm/marked/marked.min.js` 引用
+
+### Requirement: schema.yaml version SHALL be bumped to 5
+
+修改 schema.yaml 后，version 字段 SHALL 从 4 升级为 5。
+
+#### Scenario: 版本号一致性
+
+- **WHEN** 读取 `templates/openspec/schemas/superpowers-bridge/schema.yaml`
+- **THEN** `version` 字段 SHALL 为 `5`
+
+#### Scenario: 项目内副本同步
+
+- **WHEN** 读取 `openspec/schemas/superpowers-bridge/schema.yaml`
+- **THEN** `version` 字段 SHALL 同样为 `5`
+
+### Requirement: schema.yaml human-review instruction SHALL reflect new structure
+
+schema.yaml 中 human-review artifact 的 instruction SHALL 更新为：收集所有 .md → 生成 Dashboard + 2 章 + Artifact 查看器结构的 HTML。
+
+#### Scenario: instruction 引用新章节
+
+- **WHEN** 读取 schema.yaml 的 human-review instruction
+- **THEN** SHALL 描述 Dashboard + 需求与设计 + 实现任务 + Artifact 查看器的生成流程，而非旧的 6 章结构
+
+---
+
+# interactive-review
+
+## ADDED Requirements
+
+### Requirement: Sections SHALL be collapsible with state persistence
+
+human-review.html 中的章节（01 需求与设计、02 实现任务）SHALL 支持点击标题折叠/展开，折叠状态通过 localStorage 持久化。
+
+#### Scenario: 默认展开状态
+
+- **WHEN** 评审者首次打开 human-review.html
+- **THEN** Dashboard 和所有章节 SHALL 默认展开
+
+#### Scenario: 折叠后刷新保持状态
+
+- **WHEN** 评审者折叠了某章节后刷新页面
+- **THEN** 该章节 SHALL 保持折叠状态（从 localStorage 恢复）
+
+#### Scenario: 折叠视觉效果
+
+- **WHEN** 章节被折叠
+- **THEN** 章节内容 SHALL 隐藏，仅显示标题行，标题行包含折叠指示器（箭头方向变化）
+
+### Requirement: Artifact viewer SHALL render markdown on-demand via marked.js
+
+human-review.html SHALL 在页面底部包含 Artifact 原文查看器，以标签页形式展示所有 planning artifact 的 .md 原文。
+
+#### Scenario: Markdown 内嵌方式
+
+- **WHEN** 生成 human-review.html
+- **THEN** 每个 artifact 的 .md 原文 SHALL 以 `<script type="text/markdown" data-artifact="<name>">` 标签内嵌
+
+#### Scenario: 标签页切换渲染
+
+- **WHEN** 评审者点击某个 artifact 标签
+- **THEN** SHALL 使用 marked.js 将对应 `<script>` 标签内容解析为 HTML 并显示在 panel 中
+
+#### Scenario: marked.js 加载失败降级
+
+- **WHEN** marked.js CDN 加载失败
+- **THEN** artifact viewer SHALL 以 `<pre>` 标签显示 .md 原始文本
+
+### Requirement: Diff blocks SHALL use GitHub-style coloring
+
+human-review.html 中的 diff 代码块 SHALL 使用 GitHub PR 风格的行级着色。
+
+#### Scenario: 增加行样式
+
+- **WHEN** diff 代码行以 `+` 开头
+- **THEN** 该行 SHALL 使用浅绿色背景（浅色模式 `#dcfce7`，深色模式 `rgba(34,197,94,0.15)`）
+
+#### Scenario: 删除行样式
+
+- **WHEN** diff 代码行以 `-` 开头
+- **THEN** 该行 SHALL 使用浅红色背景（浅色模式 `#fee2e2`，深色模式 `rgba(239,68,68,0.15)`）
+
+---
+
+</script>
+</body>
+</html>

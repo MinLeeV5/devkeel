@@ -1,0 +1,4 @@
+interface:
+  display_name: "Jira 运行态缺陷排查"
+  short_description: "串联 Jira、部署平台、Apollo、数据库与 MR 的缺陷闭环"
+  default_prompt: "Use $jira-defect-orchestrator to investigate this Jira defect with runtime logs and database evidence, then prepare a verified fix and MR."

@@ -1,0 +1,10 @@
+# Harness managed entries
+.omc/
+.omx/
+node_modules/
+dist/
+*.tsbuildinfo
+.DS_Store
+.superpowers
+.harness/skills-state.json
+.harness/skills-backups/

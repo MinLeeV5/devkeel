@@ -1,0 +1,107 @@
+.marketing-nav {
+  --marketing-nav-bg: rgba(9, 9, 11, .82);
+  --marketing-nav-line: rgba(63, 63, 70, .62);
+  --marketing-nav-text: #fafafa;
+  --marketing-nav-muted: #a1a1aa;
+  --marketing-nav-dim: #8b8b94;
+  --marketing-nav-raised: #27272a;
+  --marketing-nav-surface: #18181b;
+  --marketing-nav-accent: #10b981;
+  background: var(--marketing-nav-bg);
+  border-bottom-color: var(--marketing-nav-line);
+  font-family: 'IBM Plex Sans', 'PingFang SC', 'Microsoft YaHei', sans-serif;
+}
+
+.react-page[data-theme='light'] .marketing-nav {
+  --marketing-nav-bg: rgba(247, 248, 252, .88);
+  --marketing-nav-line: #dfe3ef;
+  --marketing-nav-text: #182033;
+  --marketing-nav-muted: #657083;
+  --marketing-nav-dim: #7d8799;
+  --marketing-nav-raised: #eef1f8;
+  --marketing-nav-surface: #ffffff;
+}
+
+.marketing-nav .nav-inner {
+  max-width: 1320px;
+  height: 64px;
+}
+
+.marketing-nav .nav-mark {
+  background: var(--marketing-nav-accent);
+}
+
+.marketing-nav .nav-logo {
+  color: var(--marketing-nav-text);
+}
+
+.marketing-nav .nav-links a {
+  color: var(--marketing-nav-muted);
+}
+
+.marketing-nav .nav-links a:hover,
+.marketing-nav .nav-links a.active {
+  color: var(--marketing-nav-text);
+}
+
+.marketing-nav .theme-switcher {
+  display: inline-flex;
+  flex: none;
+  gap: 2px;
+  padding: 3px;
+  border: 1px solid var(--marketing-nav-line);
+  border-radius: 8px;
+  background: var(--marketing-nav-raised);
+}
+
+.marketing-nav .theme-option {
+  display: inline-flex;
+  width: 25px;
+  height: 25px;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  border: 0;
+  border-radius: 5px;
+  background: transparent;
+  color: var(--marketing-nav-dim);
+  cursor: pointer;
+  transition: background-color .16s ease, color .16s ease, box-shadow .16s ease;
+}
+
+.marketing-nav .theme-option:hover {
+  color: var(--marketing-nav-text);
+}
+
+.marketing-nav .theme-option[aria-pressed='true'] {
+  background: var(--marketing-nav-surface);
+  color: var(--marketing-nav-accent);
+  box-shadow: 0 1px 5px color-mix(in srgb, var(--marketing-nav-text) 14%, transparent);
+}
+
+.marketing-nav .theme-option:focus-visible {
+  outline: 2px solid var(--marketing-nav-accent);
+  outline-offset: 2px;
+}
+
+.marketing-nav .theme-option svg {
+  width: 14px;
+  height: 14px;
+  fill: none;
+  stroke: currentColor;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-width: 1.7;
+}
+
+@media (max-width: 768px) {
+  .marketing-nav .theme-switcher {
+    order: 2;
+  }
+}
+
+@media (max-width: 560px) {
+  .marketing-nav .nav-links {
+    gap: 2px 10px;
+  }
+}

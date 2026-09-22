@@ -1,0 +1,39 @@
+{
+  "versions": ["0.3.2", "0.3.3", "0.3.4", "0.3.5", "0.3.6"],
+  "releasedAt": {
+    "from": "2026-05-18T19:24:00+08:00",
+    "to": "2026-05-19T13:18:00+08:00"
+  },
+  "title": "更新机制修正与新平台支持",
+  "archived": true,
+  "groups": [
+    {
+      "type": "feat",
+      "label": "新能力",
+      "items": [
+        {
+          "name": "OpenCode 平台支持",
+          "description": "`devkeel init` 和 `devkeel update` 新增对 OpenCode 编辑器的平台链接支持"
+        },
+        {
+          "name": "openspec 配置同步",
+          "description": "`devkeel update` 现在会同步 openspec 基础配置文件"
+        }
+      ]
+    },
+    {
+      "type": "fix",
+      "label": "修正",
+      "items": [
+        {
+          "name": "目录缺失检测",
+          "description": "修复版本号一致但目录实际缺失时不触发更新的问题"
+        },
+        {
+          "name": "领域仓库更新策略",
+          "description": "领域仓库执行 update 时智能跳过通用 skills/agents/rules"
+        }
+      ]
+    }
+  ]
+}

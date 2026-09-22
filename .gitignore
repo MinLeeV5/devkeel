@@ -1,0 +1,30 @@
+node_modules/
+dist/
+*.tsbuildinfo
+.omc/
+coverage/
+*.log
+.DS_Store
+
+# harness runtime state
+.harness/current.yml
+.harness/skills-state.json
+.harness/skills-backups/
+openspec/changes/**/.base-sha
+*.swp
+*.swo
+*~
+.env
+.env.*
+
+.playwright-mcp/
+
+# Harness managed
+.omx/
+web/data/
+
+# worktrees
+.worktrees/
+
+# superpowers SDD scratch (task brief / review package / progress ledger)
+.superpowers/

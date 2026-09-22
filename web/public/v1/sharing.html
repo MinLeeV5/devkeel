@@ -1,0 +1,1134 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>DevKeel 技术分享 · 编排 · 规范 · 沉淀</title>
+<link rel="icon" href="../assets/favicon.ico" type="image/x-icon">
+<link rel="stylesheet" href="https://api.fontshare.com/v2/css?f[]=clash-display@400;500;600;700&f[]=satoshi@400;500;700&display=swap">
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Noto+Sans+SC:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+/* ===========================================
+   CSS CUSTOM PROPERTIES (THEME)
+   Dark tech aesthetic — tokyo-night inspired
+   =========================================== */
+:root {
+  --bg-primary: #0f1119;
+  --bg-secondary: #171b2d;
+  --bg-card: #1c2039;
+  --bg-card-hover: #232848;
+  --text-primary: #c8d1e6;
+  --text-secondary: #7b89a8;
+  --text-dim: #4a5470;
+  --accent: #7aa2f7;
+  --accent-2: #bb9af7;
+  --accent-3: #7dcfff;
+  --green: #9ece6a;
+  --warn: #e0af68;
+  --red: #f7768e;
+  --grad-accent: linear-gradient(135deg, #7aa2f7, #bb9af7 55%, #f7768e);
+  --grad-bg: radial-gradient(ellipse at 20% 0%, rgba(122,162,247,.08) 0%, transparent 50%),
+             radial-gradient(ellipse at 80% 100%, rgba(187,154,247,.06) 0%, transparent 50%);
+  --border: rgba(122,162,247,.1);
+  --border-strong: rgba(122,162,247,.2);
+  --font-display: 'Clash Display', 'Noto Sans SC', sans-serif;
+  --font-body: 'Satoshi', 'Noto Sans SC', sans-serif;
+  --font-mono: 'JetBrains Mono', monospace;
+  --title-size: clamp(2rem, 5.5vw, 4.5rem);
+  --h2-size: clamp(1.5rem, 4vw, 3rem);
+  --h3-size: clamp(1.1rem, 2.5vw, 1.6rem);
+  --body-size: clamp(0.8rem, 1.3vw, 1.05rem);
+  --small-size: clamp(0.7rem, 1vw, 0.85rem);
+  --slide-padding: clamp(1.5rem, 4vw, 5rem);
+  --content-gap: clamp(0.75rem, 2vw, 2rem);
+  --element-gap: clamp(0.3rem, 1vw, 1rem);
+  --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
+  --duration-normal: 0.7s;
+}
+
+/* ===========================================
+   RESET & BASE
+   =========================================== */
+*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+body {
+  font-family: var(--font-body);
+  background: var(--bg-primary);
+  color: var(--text-primary);
+  -webkit-font-smoothing: antialiased;
+  line-height: 1.6;
+}
+::-webkit-scrollbar { width: 6px; height: 6px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: rgba(122,162,247,.2); border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: rgba(122,162,247,.35); }
+html { scrollbar-color: rgba(122,162,247,.2) transparent; scrollbar-width: thin; }
+
+/* ===========================================
+   VIEWPORT FITTING (MANDATORY)
+   =========================================== */
+html, body { height: 100%; overflow-x: hidden; }
+html { scroll-snap-type: y mandatory; scroll-behavior: smooth; }
+.slide {
+  width: 100vw; height: 100vh; height: 100dvh;
+  overflow: hidden; scroll-snap-align: start;
+  display: flex; flex-direction: column; position: relative;
+}
+.slide-content {
+  flex: 1; display: flex; flex-direction: column; justify-content: center;
+  max-height: 100%; overflow: hidden;
+  padding: var(--slide-padding);
+}
+.card, .container, .content-box { max-width: min(90vw, 1000px); max-height: min(80vh, 700px); }
+.feature-list, .bullet-list { gap: clamp(0.4rem, 1vh, 1rem); }
+.feature-list li, .bullet-list li { font-size: var(--body-size); line-height: 1.4; }
+.grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 250px), 1fr)); gap: clamp(0.5rem, 1.5vw, 1rem); }
+img, .image-container { max-width: 100%; max-height: min(50vh, 400px); object-fit: contain; }
+@media (max-height: 700px) {
+  :root { --slide-padding: clamp(0.75rem, 3vw, 2rem); --content-gap: clamp(0.4rem, 1.5vw, 1rem); --title-size: clamp(1.5rem, 4.5vw, 2.5rem); --h2-size: clamp(1.2rem, 3vw, 1.75rem); }
+}
+@media (max-height: 600px) {
+  :root { --slide-padding: clamp(0.5rem, 2.5vw, 1.5rem); --content-gap: clamp(0.3rem, 1vw, 0.75rem); --title-size: clamp(1.1rem, 4vw, 2rem); --body-size: clamp(0.7rem, 1.2vw, 0.95rem); }
+  .nav-dots, .keyboard-hint, .decorative { display: none; }
+}
+@media (max-height: 500px) {
+  :root { --slide-padding: clamp(0.4rem, 2vw, 1rem); --title-size: clamp(1rem, 3.5vw, 1.5rem); --h2-size: clamp(0.9rem, 2.5vw, 1.25rem); --body-size: clamp(0.65rem, 1vw, 0.85rem); }
+}
+@media (max-width: 600px) {
+  :root { --title-size: clamp(1.25rem, 7vw, 2.5rem); }
+  .grid { grid-template-columns: 1fr; }
+}
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation-duration: 0.01ms !important; transition-duration: 0.2s !important; }
+  html { scroll-behavior: auto; }
+}
+
+/* ===========================================
+   ANIMATIONS
+   =========================================== */
+.reveal {
+  opacity: 0; transform: translateY(25px);
+  transition: opacity var(--duration-normal) var(--ease-out-expo), transform var(--duration-normal) var(--ease-out-expo);
+}
+.reveal-left { opacity: 0; transform: translateX(-40px); transition: opacity 0.6s var(--ease-out-expo), transform 0.6s var(--ease-out-expo); }
+.reveal-scale { opacity: 0; transform: scale(0.92); transition: opacity 0.6s var(--ease-out-expo), transform 0.6s var(--ease-out-expo); }
+.reveal-blur { opacity: 0; filter: blur(8px); transition: opacity 0.8s var(--ease-out-expo), filter 0.8s var(--ease-out-expo); }
+.slide.visible .reveal, .slide.visible .reveal-left, .slide.visible .reveal-scale, .slide.visible .reveal-blur {
+  opacity: 1; transform: translateY(0) translateX(0) scale(1); filter: blur(0);
+}
+.reveal:nth-child(1) { transition-delay: 0.05s; }
+.reveal:nth-child(2) { transition-delay: 0.15s; }
+.reveal:nth-child(3) { transition-delay: 0.25s; }
+.reveal:nth-child(4) { transition-delay: 0.35s; }
+.reveal:nth-child(5) { transition-delay: 0.45s; }
+.reveal:nth-child(6) { transition-delay: 0.55s; }
+
+/* ===========================================
+   BACKGROUNDS & DECORATIVE
+   =========================================== */
+.bg-mesh {
+  background: var(--grad-bg), var(--bg-primary);
+}
+.bg-grid {
+  background-image:
+    linear-gradient(rgba(122,162,247,.04) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(122,162,247,.04) 1px, transparent 1px);
+  background-size: 60px 60px;
+}
+.glow-line {
+  position: absolute; top: 0; left: 50%; transform: translateX(-50%);
+  width: clamp(200px, 40vw, 500px); height: 1px;
+  background: linear-gradient(90deg, transparent, var(--accent), transparent);
+  opacity: 0.5;
+}
+.glow-orb {
+  position: absolute; border-radius: 50%; filter: blur(80px); opacity: 0.12; pointer-events: none;
+}
+
+/* ===========================================
+   TYPOGRAPHY
+   =========================================== */
+.eyebrow {
+  font-family: var(--font-mono); font-size: var(--small-size);
+  color: var(--accent); letter-spacing: 0.15em; text-transform: uppercase;
+  margin-bottom: clamp(0.5rem, 1.5vw, 1.2rem);
+}
+h1, .h1 {
+  font-family: var(--font-display); font-size: var(--title-size);
+  font-weight: 700; line-height: 1.1; letter-spacing: -0.03em;
+  color: var(--text-primary);
+}
+h2, .h2 {
+  font-family: var(--font-display); font-size: var(--h2-size);
+  font-weight: 600; line-height: 1.2; letter-spacing: -0.02em;
+}
+h3, .h3 { font-size: var(--h3-size); font-weight: 600; line-height: 1.3; }
+.gradient-text {
+  background: var(--grad-accent); -webkit-background-clip: text;
+  background-clip: text; -webkit-text-fill-color: transparent;
+}
+.lede { font-size: clamp(0.9rem, 1.6vw, 1.2rem); color: var(--text-secondary); line-height: 1.65; max-width: 55ch; }
+.mono { font-family: var(--font-mono); }
+.accent { color: var(--accent); }
+.purple { color: var(--accent-2); }
+.cyan { color: var(--accent-3); }
+.green { color: var(--green); }
+.orange { color: var(--warn); }
+.red { color: var(--red); }
+.dim { color: var(--text-secondary); }
+
+/* ===========================================
+   CARDS
+   =========================================== */
+.card {
+  background: var(--bg-card); border: 1px solid var(--border);
+  border-radius: clamp(8px, 1vw, 14px); padding: clamp(1rem, 2vw, 1.5rem);
+  transition: border-color 0.3s, transform 0.3s;
+}
+.card:hover { border-color: var(--border-strong); transform: translateY(-2px); }
+.card h4 { font-size: var(--h3-size); margin-bottom: clamp(0.3rem, 0.8vw, 0.6rem); }
+.card p { font-size: var(--body-size); color: var(--text-secondary); line-height: 1.55; }
+.card-top { border-top: 2px solid var(--accent); }
+
+/* ===========================================
+   CODE BLOCK
+   =========================================== */
+.code-block {
+  background: #0d1017; border: 1px solid rgba(122,162,247,.08);
+  border-radius: clamp(8px, 1vw, 12px); padding: clamp(0.8rem, 2vw, 1.5rem);
+  font-family: var(--font-mono); font-size: var(--small-size);
+  line-height: 1.75; color: #c8d1e6; white-space: pre-wrap; text-align: left;
+  overflow: hidden;
+}
+.code-block .cm { color: #545c7e; }
+.code-block .kw { color: var(--accent); font-weight: 600; }
+.code-block .st { color: #9ece6a; }
+.code-block .fl { color: #e0af68; }
+.code-block .fn { color: var(--accent-3); }
+
+/* ===========================================
+   LAYOUT HELPERS
+   =========================================== */
+.g2 { grid-template-columns: 1fr 1fr; }
+.g3 { grid-template-columns: repeat(3, 1fr); }
+@media (max-width: 768px) { .g2, .g3 { grid-template-columns: 1fr; } }
+.mt-s { margin-top: clamp(0.3rem, 0.8vw, 0.6rem); }
+.mt-m { margin-top: clamp(0.6rem, 1.5vw, 1.2rem); }
+.mt-l { margin-top: clamp(1rem, 2.5vw, 2rem); }
+.tc { text-align: center; }
+.mx-auto { margin-left: auto; margin-right: auto; }
+
+/* ===========================================
+   TIMELINE
+   =========================================== */
+.timeline { position: relative; padding-left: clamp(1.5rem, 3vw, 2.5rem); }
+.timeline::before {
+  content: ''; position: absolute; left: clamp(0.4rem, 0.8vw, 0.7rem); top: 0; bottom: 0; width: 2px;
+  background: linear-gradient(to bottom, var(--accent-2), var(--accent), var(--accent-3));
+  opacity: 0.3; border-radius: 2px;
+}
+.tl-item { position: relative; padding: clamp(0.25rem, 0.5vw, 0.4rem) 0; }
+.tl-item::before {
+  content: ''; position: absolute; left: calc(clamp(0.4rem, 0.8vw, 0.7rem) - clamp(1.5rem, 3vw, 2.5rem) - 0.2rem);
+  top: 0.55rem; width: 8px; height: 8px; border-radius: 50%;
+  border: 2px solid var(--accent); background: var(--bg-primary);
+}
+.tl-item:nth-child(3n+2)::before { border-color: var(--accent-2); }
+.tl-item:nth-child(3n)::before { border-color: var(--accent-3); }
+.tl-item h4 { font-size: var(--body-size); font-weight: 700; margin-bottom: 2px; display: flex; align-items: center; gap: clamp(0.3rem, 0.6vw, 0.5rem); flex-wrap: wrap; }
+.tl-item p { font-size: var(--small-size); color: var(--text-secondary); }
+.role-desc {
+  font-size: clamp(0.55rem, 0.85vw, 0.72rem);
+  line-height: 1.45;
+  color: var(--text-dim);
+  display: block;
+}
+.role-desc .h { color: var(--warn); }
+.role-desc .a { color: var(--accent-3); }
+.tl-badge {
+  font-size: clamp(0.55rem, 0.8vw, 0.7rem); font-weight: 700; padding: 1px 8px;
+  border-radius: 999px; letter-spacing: 0.04em;
+}
+.tl-spec { background: rgba(187,154,247,.12); color: var(--accent-2); border: 1px solid rgba(187,154,247,.2); }
+.tl-code { background: rgba(122,162,247,.12); color: var(--accent); border: 1px solid rgba(122,162,247,.2); }
+.tl-grow { background: rgba(125,207,255,.12); color: var(--accent-3); border: 1px solid rgba(125,207,255,.2); }
+
+/* ===========================================
+   HIGHLIGHT BOX
+   =========================================== */
+.hbox {
+  padding: clamp(0.6rem, 1.2vw, 1rem) clamp(0.8rem, 1.5vw, 1.2rem);
+  border-radius: clamp(6px, 0.8vw, 10px);
+  font-size: var(--body-size); color: var(--text-secondary); line-height: 1.6;
+}
+.hbox strong { font-weight: 600; }
+.hbox-blue { background: rgba(122,162,247,.06); border: 1px solid rgba(122,162,247,.12); }
+.hbox-blue strong { color: var(--accent); }
+.hbox-green { background: rgba(158,206,106,.06); border: 1px solid rgba(158,206,106,.12); }
+.hbox-green strong { color: var(--green); }
+.hbox-purple { background: rgba(187,154,247,.06); border: 1px solid rgba(187,154,247,.12); }
+.hbox-purple strong { color: var(--accent-2); }
+.hbox-orange { background: rgba(224,175,104,.06); border: 1px solid rgba(224,175,104,.12); }
+.hbox-orange strong { color: var(--warn); }
+.hbox-cyan { background: rgba(125,207,255,.06); border: 1px solid rgba(125,207,255,.12); }
+.hbox-cyan strong { color: var(--accent-3); }
+
+/* ===========================================
+   PILLAR CARDS
+   =========================================== */
+.pillar {
+  padding: clamp(1rem, 2vw, 1.5rem); border-radius: clamp(8px, 1vw, 14px);
+  background: var(--bg-card); border: 1px solid var(--border);
+}
+.pillar h4 { font-size: var(--h3-size); font-weight: 700; margin-bottom: 2px; }
+.pillar .role { font-size: var(--small-size); color: var(--text-dim); font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; margin-bottom: clamp(0.4rem, 0.8vw, 0.6rem); }
+.pillar p { font-size: var(--body-size); color: var(--text-secondary); line-height: 1.55; }
+
+/* ===========================================
+   DIRECTORY TREE
+   =========================================== */
+.tree {
+  font-family: var(--font-mono); font-size: var(--small-size); line-height: 1.8;
+  color: var(--text-secondary); white-space: pre; overflow: hidden;
+  background: var(--bg-card); border: 1px solid var(--border);
+  border-radius: clamp(8px, 1vw, 12px); padding: clamp(0.8rem, 1.5vw, 1.2rem);
+}
+.tree .d { color: var(--accent-3); font-weight: 600; }
+.tree .n { color: var(--text-dim); font-style: italic; }
+
+/* ===========================================
+   FEATURE ROW
+   =========================================== */
+.feat-row {
+  display: flex; gap: clamp(0.6rem, 1.2vw, 1rem); align-items: center; padding: clamp(0.5rem, 1vw, 0.8rem) 0;
+  border-bottom: 1px solid rgba(122,162,247,.06);
+}
+.feat-row:last-child { border-bottom: none; }
+.feat-num {
+  font-size: clamp(1rem, 1.8vw, 1.4rem); font-weight: 700; line-height: 1;
+  flex-shrink: 0; width: clamp(1.5rem, 2.5vw, 2rem);
+}
+.feat-row b { display: block; font-size: var(--body-size); margin-bottom: 2px; color: var(--text-primary); }
+.feat-row p { font-size: var(--small-size); color: var(--text-secondary); line-height: 1.5; margin: 0; }
+
+/* ===========================================
+   PROGRESS BAR
+   =========================================== */
+.progress-bar {
+  position: fixed; top: 0; left: 0; height: 2px; z-index: 100;
+  background: var(--grad-accent); width: 0%;
+  transition: width 0.3s var(--ease-out-expo);
+}
+
+/* ===========================================
+   NAV DOTS
+   =========================================== */
+.nav-dots {
+  position: fixed; right: clamp(0.5rem, 1.5vw, 1.2rem); top: 50%; transform: translateY(-50%);
+  display: flex; flex-direction: column; gap: 8px; z-index: 90;
+}
+.nav-dot {
+  width: 8px; height: 8px; border-radius: 50%; border: 1.5px solid var(--text-dim);
+  padding: 0; background: transparent; cursor: pointer; transition: all 0.3s;
+}
+.nav-dot.active { background: var(--accent); border-color: var(--accent); transform: scale(1.3); }
+
+/* ===========================================
+   SLIDE COUNTER
+   =========================================== */
+.slide-counter {
+  position: absolute; bottom: clamp(1rem, 2vw, 1.5rem); right: var(--slide-padding);
+  font-family: var(--font-mono); font-size: var(--small-size); color: var(--text-dim);
+}
+
+/* ===========================================
+   SPEAKER AVATAR
+   =========================================== */
+.speaker { display: flex; align-items: center; gap: clamp(0.5rem, 1vw, 0.8rem); margin-top: clamp(1rem, 2vw, 2rem); }
+.speaker-av { width: clamp(2rem, 3.5vw, 2.8rem); height: clamp(2rem, 3.5vw, 2.8rem); border-radius: 50%; background: var(--grad-accent); flex-shrink: 0; }
+.speaker b { display: block; font-size: var(--body-size); }
+.speaker span { font-size: var(--small-size); color: var(--text-dim); }
+</style>
+</head>
+<body data-template-version="1.3.1">
+<div class="progress-bar" id="progressBar"></div>
+<nav class="nav-dots" id="navDots" aria-label="幻灯片导航"></nav>
+
+<!-- ===== 1. COVER ===== -->
+<section class="slide bg-mesh bg-grid">
+  <div class="glow-line"></div>
+  <div class="glow-orb" style="width:300px;height:300px;background:var(--accent);top:-100px;left:10%"></div>
+  <div class="glow-orb" style="width:250px;height:250px;background:var(--accent-2);bottom:-80px;right:15%"></div>
+  <div class="slide-content tc">
+    <p class="eyebrow reveal">harness · tech sharing</p>
+    <h1 class="reveal">编排 · 规范 · <span class="gradient-text">沉淀</span></h1>
+    <p class="lede mx-auto mt-m reveal">编排最合适的工具组合，注入领域规范与技能，持续沉淀项目知识<br>让 Agent 进入项目就知道该怎么做</p>
+    <div class="speaker reveal mx-auto" style="justify-content:center">
+      <img class="speaker-av" src="../assets/head.jpg" alt="head">
+      <div style="text-align:left"><b>@MinLee</b></div>
+    </div>
+  </div>
+  <div class="slide-counter">01 / 20</div>
+</section>
+
+<!-- ===== 2. HARNESS ENGINEERING ===== -->
+<section class="slide bg-mesh bg-grid">
+  <div class="glow-line"></div>
+  <div class="glow-orb" style="width:300px;height:300px;background:var(--accent);top:-80px;right:15%;opacity:0.08"></div>
+  <div class="glow-orb" style="width:250px;height:250px;background:var(--accent-2);bottom:-60px;left:10%"></div>
+  <div class="slide-content">
+    <p class="eyebrow reveal">// harness engineering</p>
+    <h2 class="h2 reveal">设计环境，明确意图，<span class="gradient-text">构建反馈回路</span></h2>
+    <div class="hbox hbox-blue mt-m reveal" style="font-size:clamp(0.85rem,1.4vw,1.1rem);padding:clamp(0.8rem,1.5vw,1.2rem)">
+      <strong>Harness Engineering</strong> 是一种工程方法论：工程师不再亲手写每一行代码，而是<strong>设计让 AI Agent 高效工作的环境</strong>——通过约束、文档和反馈回路，让 Agent 进入项目就知道该怎么做。
+    </div>
+    <div class="grid g3 mt-m">
+      <div class="card reveal" style="border-top:2px solid var(--accent-2)">
+        <h4>🧭 <span class="purple">编排</span> · 给 Agent 一张地图</h4>
+        <p>"给 Codex 的是一张地图，而不是一本 1000 页的说明书"——把工具和流程按正确顺序组合，让 Agent 知道先做什么、后做什么。</p>
+      </div>
+      <div class="card reveal" style="border-top:2px solid var(--green)">
+        <h4>📏 <span class="green">规范</span> · 约束是加速器</h4>
+        <p>"有了约束，速度才不会下降"——通过架构边界和编码标准，让 Agent 快速交付而不跑偏。</p>
+      </div>
+      <div class="card reveal" style="border-top:2px solid var(--accent-3)">
+        <h4>📚 <span class="cyan">沉淀</span> · 代码仓库即记忆</h4>
+        <p>"存储在聊天记录或人们头脑中的知识都无法被系统访问"——所有经验归档到仓库，越用越厚。</p>
+      </div>
+    </div>
+    <div class="hbox hbox-purple mt-m reveal tc">
+      <strong>OpenAI 用 3 名工程师 + Codex，5 个月产出百万行代码。</strong>关键不是更好的 prompt，而是更好的 harness。
+    </div>
+    <p class="dim reveal tc mt-s" style="font-size:var(--small-size)">但现实中，大多数团队让 Agent 在没有 harness 的情况下工作……</p>
+  </div>
+  <div class="slide-counter">02 / 20</div>
+</section>
+
+<!-- ===== 3. PAIN POINTS ===== -->
+<section class="slide bg-mesh">
+  <div class="glow-orb" style="width:350px;height:350px;background:var(--red);top:-120px;right:20%;opacity:0.08"></div>
+  <div class="slide-content">
+    <p class="eyebrow reveal">// 现状之痛</p>
+    <h2 class="h2 reveal">AI Agent 协作的<span class="accent">三大痛点</span></h2>
+    <div class="grid g3 mt-l">
+      <div class="card reveal" style="border-top:2px solid var(--red)">
+        <h4>⚠️ 没想清楚就开干</h4>
+        <p>需求没想清楚就让 Agent 写代码，它按自己的理解实现，反复返工。</p>
+      </div>
+      <div class="card reveal" style="border-top:2px solid var(--warn)">
+        <h4>🚧 没人检查就上线</h4>
+        <p>Agent 写完代码直接合入，没人帮它把关，低质量代码悄悄堆积。</p>
+      </div>
+      <div class="card reveal" style="border-top:2px solid var(--accent-2)">
+        <h4>🗑 做完就忘，反复踩坑</h4>
+        <p>每次对话结束就清空记忆，同样的错误换个人、换个时间又犯一遍。</p>
+      </div>
+    </div>
+    <div class="hbox hbox-blue mt-l reveal">
+      <strong>核心矛盾：</strong>Agent 能力很强，但它不了解你的项目——不知道该遵守什么规范、用什么工具、走什么流程。
+    </div>
+  </div>
+  <div class="slide-counter">03 / 20</div>
+</section>
+
+<!-- ===== 3. POSITIONING ===== -->
+<section class="slide bg-mesh bg-grid">
+  <div class="glow-line"></div>
+  <div class="slide-content">
+    <p class="eyebrow reveal">// 是什么</p>
+    <h2 class="h2 reveal">编排 · 规范 · <span class="gradient-text">沉淀</span></h2>
+    <p class="lede reveal">DevKeel 是一个项目知识框架 CLI，解决三个问题：</p>
+    <div class="grid g3 mt-l">
+      <div class="card reveal" style="border-top:2px solid var(--accent-2)">
+        <h4><span class="purple">编排</span>工具</h4>
+        <p>把 OpenSpec、SuperPowers 等最合适的工具组合，编排进项目工作流。不重复造轮子，只做最佳搭配。</p>
+      </div>
+      <div class="card reveal" style="border-top:2px solid var(--green)">
+        <h4><span class="green">注入</span>规范</h4>
+        <p>通过 rules、skills、agents 把团队的领域知识和编码规范注入给 Agent，让它一进项目就知道该遵守什么。</p>
+      </div>
+      <div class="card reveal" style="border-top:2px solid var(--accent-3)">
+        <h4><span class="cyan">沉淀</span>知识</h4>
+        <p>每次 Agent 协作的经验——方案决策、代码审查、踩过的坑——自动归档到 openspec/，越用越厚。</p>
+      </div>
+    </div>
+    <div class="hbox hbox-green mt-m reveal tc">
+      <strong>.harness/</strong> = skills + rules + agents &nbsp;→&nbsp; 分发到 Claude Code / Cursor / Codex / Copilot
+    </div>
+  </div>
+  <div class="slide-counter">04 / 20</div>
+</section>
+
+<!-- ===== 4. OPENSPEC × SUPERPOWERS ===== -->
+<section class="slide bg-mesh">
+  <div class="glow-orb" style="width:280px;height:280px;background:var(--accent-2);top:-60px;left:5%"></div>
+  <div class="glow-orb" style="width:220px;height:220px;background:var(--accent-3);bottom:-40px;right:10%"></div>
+  <div class="slide-content">
+    <p class="eyebrow reveal">// 深度结合</p>
+    <h2 class="h2 reveal">流程 × 方法论 <span class="gradient-text">深度结合</span></h2>
+    <div class="grid g2 mt-l">
+      <div class="pillar reveal" style="border-top:2px solid var(--accent-2)">
+        <h4 class="purple">OpenSpec</h4>
+        <div class="role">流程编排器</div>
+        <p>定义"走哪步"。管理 artifact 链和完整生命周期：brainstorm → design → specs → tasks → apply → verify → archive。每个阶段有明确的输入、输出和依赖关系。</p>
+      </div>
+      <div class="pillar reveal" style="border-top:2px solid var(--green)">
+        <h4 class="green">SuperPowers</h4>
+        <div class="role">方法论工具库</div>
+        <p>定义"怎么做好"。在每个阶段注入专业 skill：requirement-analysis（5W1H/SCAMPER/MECE）、technical-design（C4/ATAM/STRIDE）、writing-plans、TDD、code-review。</p>
+      </div>
+    </div>
+    <div class="hbox hbox-purple mt-m reveal tc">
+      <strong>OpenSpec 管"走哪步"，SuperPowers 管"怎么做好"</strong> —— DevKeel 把它们编排到一起，让每个阶段都有专业方法论支撑。
+    </div>
+  </div>
+  <div class="slide-counter">05 / 20</div>
+</section>
+
+<!-- ===== 5. ONE COMMAND START ===== -->
+<section class="slide bg-mesh bg-grid">
+  <div class="glow-line"></div>
+  <div class="slide-content">
+    <p class="eyebrow reveal">// 怎么开始 · step 1</p>
+    <h2 class="h2 reveal">一行命令，<span class="accent">完整启动</span></h2>
+    <div class="grid g2 mt-l">
+      <div class="code-block reveal">
+<span class="cm"># 免安装直接执行</span>
+<span class="kw">npx</span> <span class="fl">devkeel@latest</span> init
+
+<span class="cm"># 或让 Agent 自动完成全部初始化</span>
+<span class="st">"按照 https://raw.githubusercontent.com/MinLeeV5/devkeel/HEAD/web/public/install.md</span>
+<span class="st"> 完成项目初始化，</span>
+<span class="st"> 我会使用 ClaudeCode、Codex、Cursor"</span>
+
+<span class="cm"># Agent 自动执行的完整流程</span>
+<span class="st">✔</span> <span class="kw">npx</span> <span class="fl">devkeel@latest</span> init  推断参数 → 生成 .harness/
+<span class="st">✔</span> <span class="kw">npx</span> <span class="fl">devkeel@latest</span> doctor  验证配置 → openspec 已内置
+<span class="st">✔</span> <span class="kw">/domain-init</span>  扫描项目 → 量身定制规范
+<span class="st">✔</span> <span class="kw">/verify-init</span>  检测已有框架 → 补齐测试基建
+<span class="st">✔</span> <span class="kw">symlink</span>       分发到 .claude/ .agents/ .cursor/
+      </div>
+      <div>
+        <div class="card reveal" style="border-top:2px solid var(--accent)">
+          <h4>为什么用 npx 而不是全局安装？</h4>
+          <p>始终使用最新版本，无需维护全局包。团队成员不需要关心"装了没有"——<code>npx devkeel@latest</code> 就行。</p>
+        </div>
+        <div class="card reveal mt-s" style="border-top:2px solid var(--green)">
+          <h4>install.md — Agent 友好的安装文档</h4>
+          <p>专为 Coding Agent 编写的安装指引。给 Agent 一个 URL + 你用什么平台，它自动推断参数并完成初始化。</p>
+        </div>
+        <div class="hbox hbox-blue mt-m reveal">
+          <strong>前置条件：</strong>Node.js ≥ 20 + git。无其他依赖。
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="slide-counter">06 / 20</div>
+</section>
+
+<!-- ===== 6. DOMAIN INIT ===== -->
+<section class="slide bg-mesh bg-grid">
+  <div class="glow-orb" style="width:300px;height:300px;background:var(--accent);bottom:-100px;left:50%;opacity:0.07"></div>
+  <div class="slide-content">
+    <p class="eyebrow reveal">// 怎么开始 · step 2</p>
+    <h2 class="h2 reveal"><span class="mono accent">/domain-init</span> 为你的项目量身定制</h2>
+    <p class="lede reveal">扫描你的代码，提炼你的规范——不生搬硬套，只量身定制</p>
+    <div class="grid g2 mt-l">
+      <div>
+        <div class="feat-row reveal"><span class="feat-num accent">①</span><div><b>扫描你的代码</b><p>多 Agent 并行分析：编码风格、命名约定、架构模式、错误处理</p></div></div>
+        <div class="feat-row reveal"><span class="feat-num green">②</span><div><b>提炼你的规范</b><p>从实际代码中提取约定，不是套用通用模板——每条 rule 都有代码出处</p></div></div>
+        <div class="feat-row reveal"><span class="feat-num purple">③</span><div><b>对比业界标杆</b><p>先采样你的代码，再对比开源标杆项目，标记内部不一致的地方并推荐统一方向</p></div></div>
+        <div class="feat-row reveal"><span class="feat-num orange">④</span><div><b>交互式增强</b><p>自动 baseline 生成后，头脑风暴补充团队特有规范——先扩散后收拢</p></div></div>
+      </div>
+      <div>
+        <div class="card reveal" style="border:2px solid var(--green);background:rgba(158,206,106,.03)">
+          <h4 style="color:var(--green)">为什么只有量身定制才是高质量？</h4>
+          <p style="margin-bottom:clamp(0.3rem,0.6vw,0.4rem)">通用模板说"用 camelCase"——但你的项目可能文件名用 kebab-case、函数用 camelCase、常量用 UPPER_SNAKE。</p>
+          <p style="margin-bottom:clamp(0.3rem,0.6vw,0.4rem)">domain-init 扫描后的 rule 会精确到："<em>文件名用 kebab-case，模块级常量用 UPPER_SNAKE_CASE，函数内局部常量用 camelCase</em>"。</p>
+          <p>这种精度，Agent 才能真正遵守。</p>
+        </div>
+        <div class="hbox hbox-purple mt-m reveal">
+          <strong>所有产出必须经 review 确认后才写入 .harness/</strong>——代码即规范，但人类把关。
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="slide-counter">07 / 20</div>
+</section>
+
+<!-- ===== VERIFY INIT ===== -->
+<section class="slide bg-mesh bg-grid">
+  <div class="glow-orb" style="width:300px;height:300px;background:var(--green);bottom:-100px;left:50%;opacity:0.07"></div>
+  <div class="slide-content">
+    <p class="eyebrow reveal">// 怎么开始 · step 3</p>
+    <h2 class="h2 reveal"><span class="mono green">/verify-init</span> 搭建可执行测试基建</h2>
+    <p class="lede reveal">扫描已有框架 → 增量补齐脚手架 → 生成验证 agent，让 Agent 能自主验证代码输出</p>
+    <div class="grid g2 mt-l">
+      <div>
+        <div class="feat-row reveal"><span class="feat-num green">①</span><div><b>检测优先</b><p>扫描依赖/配置/锁文件/目录，输出就绪清单——已有框架标记「已就绪」不重复装</p></div></div>
+        <div class="feat-row reveal"><span class="feat-num accent">②</span><div><b>增量补齐 + 幂等</b><p>缺失项经用户勾选后安装，照官方文档产出 config/示例/scripts，已存在不覆盖</p></div></div>
+        <div class="feat-row reveal"><span class="feat-num purple">③</span><div><b>生成验证 agent</b><p>test-verifier：确认目标 → 识别变更范围 → 收窄 scope 跑测试 → blocker-first 回报</p></div></div>
+        <div class="feat-row reveal"><span class="feat-num orange">④</span><div><b>fetch 失败降级不阻塞</b><p>文档获取失败时跳过精确 config，仍产出通用 testing 规范 + agent，不凭记忆编造</p></div></div>
+      </div>
+      <div>
+        <div class="card reveal" style="border:2px solid var(--green);background:rgba(158,206,106,.03)">
+          <h4 style="color:var(--green)">搭台子 · 写剧本 · 当演员</h4>
+          <p style="margin-bottom:clamp(0.3rem,0.6vw,0.4rem)"><strong style="color:var(--green)">verify-init</strong> 搭台子——框架 + 通用规范 + 执行 agent</p>
+          <p style="margin-bottom:clamp(0.3rem,0.6vw,0.4rem)"><strong style="color:var(--accent)">test-case-designer</strong> 写剧本——从需求/spec 产出用例文档</p>
+          <p><strong style="color:var(--accent-2)">验证 agent</strong> 当演员——执行测试 + 判定 + 回报</p>
+        </div>
+        <div class="hbox hbox-green mt-m reveal">
+          <strong>与 domain-init 互补</strong>——R4 管项目特有的软约定（mock 策略/覆盖模式），verify-init 管可执行的结构化基建。
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="slide-counter">08 / 20</div>
+</section>
+
+<!-- ===== 7. OUTPUT OVERVIEW ===== -->
+<section class="slide bg-mesh">
+  <div class="glow-line"></div>
+  <div class="slide-content">
+    <p class="eyebrow reveal">// 怎么开始 · step 4</p>
+    <h2 class="h2 reveal">产物概览：<span class="accent">两个核心目录</span></h2>
+    <div class="grid g2 mt-l">
+      <div class="tree reveal">
+<span class="d">.harness/</span>                    <span class="n">← 能力配置</span>
+├── <span class="d">rules/</span>              <span class="n">← 编码规范、架构约束</span>
+├── <span class="d">skills/</span>             <span class="n">← 可复用的工程方法论</span>
+├── <span class="d">agents/</span>             <span class="n">← Agent 角色定义</span>
+├── <span class="d">commands/</span>           <span class="n">← 自定义斜杠命令</span>
+└── config.yml          <span class="n">← 项目配置</span>
+
+<span class="d">openspec/</span>                    <span class="n">← 知识与流程</span>
+├── config.yaml          <span class="n">← openspec 配置</span>
+├── <span class="d">schemas/</span>             <span class="n">← 流程编排源码 ⭐</span>
+│   └── <span class="d">superpowers-lite/</span>
+│       └── schema.yaml  <span class="n">← lite 版 artifact 流程链</span>
+├── <span class="d">specs/</span>               <span class="n">← 正式行为契约</span>
+├── <span class="d">changes/</span>             <span class="n">← 进行中的变更</span>
+└── <span class="d">archive/</span>             <span class="n">← 归档的历史变更</span>
+      </div>
+      <div>
+        <div class="card reveal mt-s" style="border-left:2px solid var(--green);border-top:none">
+          <h4>.harness/ = 能力配置</h4>
+          <p>rules 约束行为边界、skills 提供方法论、agents 定义角色——Agent 进入项目时自动加载。</p>
+        </div>
+        <div class="card reveal mt-s" style="border-left:2px solid var(--accent-2);border-top:none">
+          <h4>openspec/schemas/ = 流程编排源码</h4>
+          <p>schema.yaml 定义整条 artifact 链的顺序、依赖、执行器路由——<strong style="color:var(--text-primary)">这就是我们定制的工作流引擎代码</strong>。修改 schema 就是修改流程。</p>
+        </div>
+        <div class="card reveal mt-s" style="border-left:2px solid var(--accent-3);border-top:none">
+          <h4>openspec/archive/ = 知识沉淀</h4>
+          <p>每次变更的 brainstorm、design、spec、retrospective 完整归档，形成可检索的项目知识库。</p>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="slide-counter">09 / 20</div>
+</section>
+
+<!-- ===== 8. OPSX NEW ===== -->
+<section class="slide bg-mesh bg-grid">
+  <div class="glow-orb" style="width:250px;height:250px;background:var(--accent-2);top:-80px;right:25%"></div>
+  <div class="slide-content">
+    <p class="eyebrow reveal">// feature 旅程 · step 1</p>
+    <h2 class="h2 reveal"><span class="accent">/opsx:xxx</span> — OpenSpec 的操作入口</h2>
+    <p class="lede reveal">所有有意义的变更——新功能、架构调整、流程优化——都通过 /opsx 系列命令驱动</p>
+    <div class="grid g2 mt-l">
+      <div>
+        <div class="card reveal" style="border-top:2px solid var(--accent-2);margin-bottom:clamp(0.4rem,0.8vw,0.6rem)">
+          <h4>什么是 /opsx？</h4>
+          <p>OpenSpec 的斜杠命令系列。每个命令对应工作流的一个阶段——创建、推进、执行、验证、归档。schema.yaml 定义了完整的 artifact 链和依赖关系。</p>
+        </div>
+        <div class="feat-row reveal"><span class="feat-num accent" style="font-size:var(--body-size);width:auto;min-width:clamp(2rem,5vw,4.5rem)">new</span><div><b>/opsx:new</b><p>创建一个新的 change 脚手架</p></div></div>
+        <div class="feat-row reveal"><span class="feat-num green" style="font-size:var(--body-size);width:auto;min-width:clamp(2rem,5vw,4.5rem)">continue</span><div><b>/opsx:continue</b><p>逐步推进到下一个 artifact</p></div></div>
+        <div class="feat-row reveal"><span class="feat-num purple" style="font-size:var(--body-size);width:auto;min-width:clamp(2rem,5vw,4.5rem)">ff</span><div><b>/opsx:ff</b><p>快进——一次生成所有规划 artifact</p></div></div>
+        <div class="feat-row reveal"><span class="feat-num orange" style="font-size:var(--body-size);width:auto;min-width:clamp(2rem,5vw,4.5rem)">apply</span><div><b>/opsx:apply</b><p>进入实现阶段</p></div></div>
+        <div class="feat-row reveal"><span class="feat-num dim" style="font-size:var(--body-size);width:auto;min-width:clamp(2rem,5vw,4.5rem)">...</span><div><b>verify / archive / update / explore</b><p>验证、归档、修订决定、源码调查...</p></div></div>
+      </div>
+      <div class="code-block reveal">
+<span class="cm"># 创建一个新的 change</span>
+<span class="kw">/opsx:new</span>
+
+<span class="st">◆</span> Change 名称？
+<span class="fl">  add-telemetry</span>
+<span class="st">◆</span> 一句话描述？
+<span class="fl">  为 CLI 增加远程遥测</span>
+
+<span class="cm"># 自动生成脚手架</span>
+<span class="st">openspec/changes/add-telemetry/</span>
+  ├── brainstorm.md
+  ├── design.md        <span class="cm">(可选)</span>
+  ├── specs/           <span class="cm">(可选)</span>
+  ├── tasks.md
+  ├── human-review.html <span class="cm">(可选)</span>
+  └── ...
+
+<span class="cm"># 快照确认后可显式快速投影</span>
+<span class="kw">/opsx:ff</span> <span class="fl">add-telemetry</span>
+<span class="cm">  → 不跳过设计确认，投影所有 Apply 前置 artifact</span>
+      </div>
+    </div>
+  </div>
+  <div class="slide-counter">10 / 20</div>
+</section>
+
+<!-- ===== 9. BRAINSTORM ===== -->
+<section class="slide bg-mesh">
+  <div class="slide-content">
+    <p class="eyebrow reveal">// feature 旅程 · step 2</p>
+    <h2 class="h2 reveal">头脑风暴：<span class="accent">想清楚再动手</span></h2>
+    <div class="grid g2 mt-l">
+      <div>
+        <div class="card reveal mt-s" style="border-top:2px solid var(--accent-2)">
+          <h4>苏格拉底式提问</h4>
+          <p>一次一个问题，选择题优先，发散需求空间。</p>
+        </div>
+        <div class="card reveal mt-s" style="border-top:2px solid var(--green)">
+          <h4>5W1H + SCAMPER + MECE</h4>
+          <p>SuperPowers 的 <code style="font-size:var(--small-size)">requirement-analysis</code> 提供结构化发散框架。</p>
+        </div>
+        <div class="card reveal mt-s" style="border-top:2px solid var(--accent-3)">
+          <h4 class="cyan">源码调查（内置）</h4>
+          <p>分析受影响模块、调用链、测试覆盖——brainstorm 阶段就完成，不需要单独的 explore 阶段。</p>
+        </div>
+        <div class="card reveal mt-s" style="border-top:2px solid var(--warn)">
+          <h4>5 条收敛标准</h4>
+          <p>范围锁定 · 分歧解决 · 依赖映射 · 验收可陈述 · 对话收敛——全满足才进入下一步。</p>
+        </div>
+      </div>
+      <div class="code-block reveal" style="font-size:var(--small-size)">
+<span class="cm">## brainstorm.md — add-telemetry</span>
+
+<span class="kw">## TL;DR</span>
+<span class="st">为 DevKeel CLI 增加远程遥测，记录哪些</span>
+<span class="st">项目在用、调用了什么命令和 skill。</span>
+
+<span class="kw">## 现有架构</span>
+<span class="fl">CLI 框架：Commander + @clack/prompts</span>
+<span class="fl">配置管理：.harness/config.yml</span>
+<span class="fl">模板分发：symlink + junction</span>
+<span class="fl">受影响模块：init, update, doctor</span>
+
+<span class="kw">## 关键决策</span>
+<span class="fl">Q: 遥测数据发到哪里？</span>
+   → 内部 Grafana，走 HTTP POST
+<span class="fl">Q: 用户能否 opt-out？</span>
+   → 必须能，config.yml 加开关
+<span class="fl">Q: 收集哪些数据？</span>
+   → 命令名 + skill 名 + 项目 hash
+   → 不收集代码内容和文件路径
+
+<span class="kw">## 验收标准</span>
+<span class="st">1. init/update/doctor 触发遥测</span>
+<span class="st">2. telemetry: false 可关闭</span>
+<span class="st">3. pnpm test 通过</span>
+      </div>
+    </div>
+  </div>
+  <div class="slide-counter">11 / 20</div>
+</section>
+
+<!-- ===== 10. CONDITIONAL PLANNING ===== -->
+<section class="slide bg-mesh bg-grid">
+  <div class="glow-orb" style="width:300px;height:300px;background:var(--accent-2);top:-100px;left:60%;opacity:0.06"></div>
+  <div class="slide-content">
+    <p class="eyebrow reveal">// feature 旅程 · step 3</p>
+    <h2 class="h2 reveal"><span class="accent">按需规划</span> — 流程仪式感与风险成正比</h2>
+    <p class="lede reveal">brainstorm 之后，根据变更规模走不同路径</p>
+    <div class="grid g3 mt-l">
+      <div class="card reveal" style="border-top:2px solid var(--green)">
+        <h4 class="green">轻量路径</h4>
+        <p style="margin-bottom:clamp(0.3rem,0.6vw,0.4rem)"><code style="font-size:var(--small-size)">brainstorm → tasks → apply</code></p>
+        <p>日常迭代、bug fix、单模块改动。不需要 design 和 specs，直接从需求到任务拆解。</p>
+      </div>
+      <div class="card reveal" style="border-top:2px solid var(--accent)">
+        <h4 class="accent">架构路径</h4>
+        <p style="margin-bottom:clamp(0.3rem,0.6vw,0.4rem)"><code style="font-size:var(--small-size)">brainstorm → design → tasks</code></p>
+        <p>新模块、重构、多方案对比。用 technical-design（C4/ATAM/STRIDE）产出架构决策。</p>
+      </div>
+      <div class="card reveal" style="border-top:2px solid var(--accent-2)">
+        <h4 class="purple">完整路径</h4>
+        <p style="margin-bottom:clamp(0.3rem,0.6vw,0.4rem)"><code style="font-size:var(--small-size)">brainstorm → design → specs → tasks</code></p>
+        <p>API 契约、跨系统集成。用 WHEN/THEN 定义精确的行为约定。</p>
+      </div>
+    </div>
+    <div class="hbox hbox-purple mt-m reveal tc">
+      <strong>design 和 specs 不阻塞 tasks</strong> —— 即使跳过，tasks 也能从 brainstorm 中的源码调查和验收标准获取足够信息。
+    </div>
+  </div>
+  <div class="slide-counter">12 / 20</div>
+</section>
+
+<!-- ===== 11. TASKS + HUMAN REVIEW ===== -->
+<section class="slide bg-mesh">
+  <div class="slide-content">
+    <p class="eyebrow reveal">// feature 旅程 · step 4</p>
+    <h2 class="h2 reveal"><span class="accent">任务拆解</span> 与 <span class="accent">人工审阅</span></h2>
+    <div class="grid g2 mt-l">
+      <div>
+        <div class="card reveal" style="border-top:2px solid var(--accent)">
+          <h4 class="accent">tasks.md — 任务拆解</h4>
+          <p style="margin-bottom:clamp(0.3rem,0.6vw,0.4rem)">使用 <code style="font-size:var(--small-size)">writing-plans</code> skill 拆解实现任务。</p>
+          <p>粗粒度 checkbox + 缩进微步骤 + commit 点。条件读取上游 artifact：brainstorm 必读，design/specs 存在则读。</p>
+        </div>
+        <div class="feat-row reveal"><span class="feat-num accent">①</span><div><b>条件读取</b><p>brainstorm 必读；design.md 存在则读架构决策；specs 存在则读 WHEN/THEN 场景</p></div></div>
+        <div class="feat-row reveal"><span class="feat-num green">②</span><div><b>微任务粒度</b><p>每个粗粒度任务拆解为可独立执行的微步骤，附带 commit 点</p></div></div>
+        <div class="feat-row reveal"><span class="feat-num purple">③</span><div><b>TDD 输入</b><p>specs 的 WHEN/THEN 场景直接成为 TDD 的 RED 步骤输入</p></div></div>
+      </div>
+      <div>
+        <div class="card reveal" style="border:2px solid var(--warn);background:rgba(224,175,104,.04)">
+          <h4 style="color:var(--warn)">⚡ human-review — 可选门禁</h4>
+          <p style="margin-bottom:clamp(0.3rem,0.6vw,0.5rem)"><strong style="color:var(--warn)">可选</strong> artifact：适用于大变更、多人审阅、需要向非技术成员展示方案。</p>
+          <p>生成 HTML 验收文档 → 人工 approve → 进入 apply。</p>
+        </div>
+        <div class="card reveal mt-s" style="border-top:2px solid var(--accent)">
+          <h4>Token 节省设计</h4>
+          <p style="margin-bottom:clamp(0.3rem,0.6vw,0.4rem)"><strong style="color:var(--text-primary)">Agent 只生成可变内容</strong>——Dashboard SVG、风险卡片、任务概览。</p>
+          <p><strong style="color:var(--text-primary)">脚本注入不可变内容</strong>——CSS 样式、交互 JS、artifact 原文。通过 <code style="font-size:var(--small-size)">inject-review</code> 命令自动完成。</p>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="slide-counter">13 / 20</div>
+</section>
+
+<!-- ===== 12. APPLY ===== -->
+<section class="slide bg-mesh bg-grid">
+  <div class="glow-line"></div>
+  <div class="slide-content">
+    <p class="eyebrow reveal">// feature 旅程 · step 5</p>
+    <h2 class="h2 reveal"><span class="mono accent">/opsx:apply</span> 执行实现</h2>
+    <p class="lede reveal">git worktree 隔离（可选）+ subagent-driven-development 逐任务派发，内置双重审查</p>
+    <div class="hbox hbox-cyan mt-m reveal">
+      <strong>apply 前置：</strong>git worktree 创建隔离分支（<strong>可选</strong>，推荐多模块/多人协作时使用）+ 子模块初始化（若有 .gitmodules）
+    </div>
+    <div class="grid g3 mt-m">
+      <div class="card reveal" style="border-top:2px solid var(--accent-3)">
+        <h4 class="cyan">独立 subagent</h4>
+        <p style="margin-bottom:clamp(0.3rem,0.5vw,0.4rem)">每个任务由独立 agent 执行，上下文隔离互不干扰。</p>
+        <p class="dim" style="font-size:var(--small-size)">避免上下文膨胀导致质量下降</p>
+      </div>
+      <div class="card reveal" style="border-top:2px solid var(--accent)">
+        <h4 class="accent">双重审查</h4>
+        <p style="margin-bottom:clamp(0.3rem,0.5vw,0.4rem)">每个任务完成后：spec 合规审查 + 代码质量审查。</p>
+        <p class="dim" style="font-size:var(--small-size)">两道门禁确保质量</p>
+      </div>
+      <div class="card reveal" style="border-top:2px solid var(--accent-2)">
+        <h4 class="purple">零外部依赖</h4>
+        <p style="margin-bottom:clamp(0.3rem,0.5vw,0.4rem)">纯原生 Agent 能力，无需安装额外工具。</p>
+        <p class="dim" style="font-size:var(--small-size)">Claude Code 和 Codex CLI 统一行为</p>
+      </div>
+    </div>
+    <div class="code-block mt-m reveal" style="font-size:var(--small-size)">
+<span class="cm"># 执行器完整流程</span>
+<span class="kw">1.</span> <span class="fn">git worktree</span> 创建隔离分支 <span class="cm">（可选，推荐多模块/多人协作时使用）</span>
+<span class="kw">2.</span> <span class="fn">submodule 初始化</span>（若有 .gitmodules）
+<span class="kw">3.</span> <span class="fn">subagent-driven-development</span> 逐任务派发
+   每个任务内部强制：
+   <span class="st">✔</span> TDD（RED → GREEN → REFACTOR）
+   <span class="st">✔</span> code-review（每个任务完成后审查）
+    </div>
+  </div>
+  <div class="slide-counter">14 / 20</div>
+</section>
+
+<!-- ===== 13. VERIFY ===== -->
+<section class="slide bg-mesh">
+  <div class="glow-orb" style="width:280px;height:280px;background:var(--green);top:-80px;left:15%;opacity:0.06"></div>
+  <div class="slide-content">
+    <p class="eyebrow reveal">// feature 旅程 · step 6</p>
+    <h2 class="h2 reveal"><span class="mono accent">/opsx:verify</span> 对照验证</h2>
+    <div class="grid g2 mt-l">
+      <div>
+        <div class="card reveal" style="border:2px solid var(--green);background:rgba(158,206,106,.03)">
+          <h4 style="color:var(--green)">⚡ 7 项系统化验证</h4>
+          <p>不是跑一下测试就完事。verify 按 schema 定义的 7 个维度逐项对照——任何一项 FAIL 都阻塞归档。</p>
+        </div>
+        <div class="feat-row reveal"><span class="feat-num green">①</span><div><b>结构验证</b><p><code>openspec validate --all</code> 确认 artifact 格式正确</p></div></div>
+        <div class="feat-row reveal"><span class="feat-num green">②</span><div><b>任务完成度</b><p>tasks.md 所有 checkbox 为 [x]，剩余 [ ] 需标注原因</p></div></div>
+        <div class="feat-row reveal"><span class="feat-num green">③</span><div><b>增量 spec 同步</b><p>change/specs/ 是否已同步到 openspec/specs/</p></div></div>
+        <div class="feat-row reveal"><span class="feat-num green">④</span><div><b>Design 一致性</b><p>实现是否符合 design.md 的架构决策</p></div></div>
+        <div class="feat-row reveal"><span class="feat-num green">⑤</span><div><b>实现信号</b><p>测试全通过 + 无未暂存文件 + 引用提交范围</p></div></div>
+        <div class="feat-row reveal"><span class="feat-num orange">⑥</span><div><b>路由泄漏检测 <span class="dim">⚠️ 警告不阻塞</span></b><p>确认设计产出未落入错误目录</p></div></div>
+        <div class="feat-row reveal"><span class="feat-num dim">⑦</span><div><b>覆盖缺口检查 <span class="dim">仅有 [~] 任务时</span></b><p>延迟验证的测试项是否有等价自动化测试覆盖</p></div></div>
+      </div>
+      <div class="code-block reveal" style="font-size:var(--small-size)">
+<span class="cm"># /opsx:verify 输出</span>
+
+<span class="kw">Verifying change: add-telemetry</span>
+
+<span class="st">✔</span> §1 结构验证        all valid
+<span class="st">✔</span> §2 任务完成度      5/5 [x]
+<span class="st">✔</span> §3 spec 同步       2/2 已同步
+<span class="st">✔</span> §4 design 一致性   无偏差
+<span class="st">✔</span> §5 实现信号
+    tests:  12 passed, 0 failed
+    staged: 无未暂存文件
+    commits: 4 (abc1234..def5678)
+<span class="fl">⚠</span> §6 路由泄漏        未检测到
+    <span class="cm">(警告不阻塞)</span>
+<span class="st">✔</span> §7 覆盖缺口        无延迟项
+
+<span class="kw" style="color:var(--green)">Overall Decision: ✅ PASS</span>
+      </div>
+    </div>
+  </div>
+  <div class="slide-counter">15 / 20</div>
+</section>
+
+<!-- ===== 14. CODE REVIEW ===== -->
+<section class="slide bg-mesh bg-grid">
+  <div class="slide-content">
+    <p class="eyebrow reveal">// feature 旅程 · step 7</p>
+    <h2 class="h2 reveal">代码审查：<span class="accent">requesting-code-review</span></h2>
+    <div class="grid g2 mt-l">
+      <div>
+        <p class="dim reveal" style="font-size:var(--body-size);line-height:1.7;margin-bottom:clamp(0.5rem,1vw,0.8rem)">SuperPowers 的 <code>requesting-code-review</code> 在每个任务完成后自动触发，apply 结束时执行最终整体审查。</p>
+        <div class="feat-row reveal"><span class="feat-num accent">①</span><div><b>任务级审查</b><p>每个 task 完成后，调度 code-reviewer subagent 检查 spec 合规性和代码质量</p></div></div>
+        <div class="feat-row reveal"><span class="feat-num green">②</span><div><b>整体审查</b><p>所有任务完成后，对整体实现执行最终 review</p></div></div>
+        <div class="feat-row reveal"><span class="feat-num purple">③</span><div><b>Spec 合规性</b><p>对照 specs/ 中的 WHEN/THEN 验证行为是否正确实现</p></div></div>
+        <div class="feat-row reveal"><span class="feat-num orange">④</span><div><b>阻断优先</b><p>blocker / regression 排最前，不输出样式级 nit</p></div></div>
+      </div>
+      <div class="code-block reveal" style="font-size:var(--small-size)">
+<span class="cm"># schema 中的审查编排</span>
+
+<span class="kw">apply 阶段强制 skills：</span>
+  <span class="fn">test-driven-development</span>
+    → 每个任务 RED-GREEN-REFACTOR
+  <span class="fn">requesting-code-review</span>
+    → 每个任务完成后审查
+    → apply 结束前最终审查
+
+<span class="cm"># 审查关注点</span>
+  <span class="st">✔</span> spec 合规性（行为是否匹配 WHEN/THEN）
+  <span class="st">✔</span> 代码质量（架构约束、命名规范）
+  <span class="st">✔</span> 测试覆盖（test-points 是否全覆盖）
+  <span class="st">✔</span> 安全性（无硬编码密钥、无注入风险）
+
+<span class="cm"># 发现问题时</span>
+<span class="fl">→ 执行器自动修复并重新审查</span>
+<span class="fl">→ 无法自动修复时暂停，等待人工决策</span>
+      </div>
+    </div>
+  </div>
+  <div class="slide-counter">16 / 20</div>
+</section>
+
+<!-- ===== 15. ARCHIVE + RETROSPECTIVE ===== -->
+<section class="slide bg-mesh">
+  <div class="glow-orb" style="width:280px;height:280px;background:var(--accent-3);bottom:-100px;right:20%;opacity:0.07"></div>
+  <div class="slide-content">
+    <p class="eyebrow reveal">// feature 旅程 · step 8</p>
+    <h2 class="h2 reveal"><span class="accent">归档</span> 与 <span class="accent">证据化回顾</span></h2>
+    <div class="grid g2 mt-l">
+      <div>
+        <div class="card reveal mt-s" style="border-top:2px solid var(--accent-3)">
+          <h4 class="cyan">知识越用越厚</h4>
+          <p>每完成一个 change，archive 就多一份完整记录。半年后 30+ archived changes = 项目知识库。</p>
+        </div>
+        <div class="card reveal mt-s" style="border-top:2px solid var(--green)">
+          <h4>经验回流到 Rules</h4>
+          <p>反复出现的问题提炼成新 rule——Agent 从此自动遵守。</p>
+        </div>
+        <div class="card reveal mt-s" style="border-top:2px solid var(--accent-2)">
+          <h4>新人 Onboarding</h4>
+          <p>让 Agent 读一遍 archive/——比看代码注释快 10 倍理解设计决策。</p>
+        </div>
+      </div>
+      <div>
+        <div class="card reveal" style="border-top:2px solid var(--warn)">
+          <h4 style="color:var(--warn)">retrospective — 证据化回顾</h4>
+          <p style="font-size:var(--small-size);margin-bottom:clamp(0.3rem,0.6vw,0.4rem)">每个论断都引用 commit hash、文件路径或测试名称：</p>
+          <p style="font-size:var(--small-size)"><strong style="color:var(--text-primary)">§0 证据</strong> — 提交数、diff 规模、任务完成率、subagent 调度次数</p>
+          <p style="font-size:var(--small-size)"><strong style="color:var(--text-primary)">§1 收获</strong> / <strong style="color:var(--text-primary)">§2 不足</strong>（🔴 阻塞 / 🟡 痛点 / 📌 小问题）</p>
+          <p style="font-size:var(--small-size)"><strong style="color:var(--text-primary)">§3 计划偏差</strong> / <strong style="color:var(--text-primary)">§4 Skill 合规性</strong> / <strong style="color:var(--text-primary)">§5 意外</strong></p>
+          <p style="font-size:var(--small-size)"><strong style="color:var(--text-primary)">§6 晋升候选</strong> — 经验提炼为长期学习（memory / CLAUDE.md / schema）</p>
+        </div>
+        <div class="hbox hbox-purple mt-m reveal">
+          <strong>回顾不是走过场</strong>——§4 跳过的 skill 必须回答"跳过了什么、为什么、如何防止再次发生"。
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="slide-counter">17 / 20</div>
+</section>
+
+<!-- ===== 16. FULL FLOW ===== -->
+<section class="slide bg-mesh bg-grid">
+  <div class="glow-line"></div>
+  <div class="slide-content">
+    <p class="eyebrow reveal">// feature 旅程 · 全景</p>
+    <h2 class="h2 reveal">Spec → Code → Growth <span class="gradient-text">完整闭环</span></h2>
+    <div class="grid g3 mt-l" style="gap:clamp(0.5rem,1.5vw,1rem)">
+      <div class="reveal">
+        <h4 class="purple" style="font-size:var(--body-size);margin-bottom:clamp(0.4rem,0.8vw,0.6rem)">Phase 1 · Spec</h4>
+        <div class="timeline">
+          <div class="tl-item"><h4>/opsx:new</h4><span class="role-desc"><span class="h">👤 输入意图</span> → <span class="a">🤖 生成结构</span></span></div>
+          <div class="tl-item"><h4><span class="accent">⭐</span> brainstorm <span class="tl-badge tl-spec">requirement-analysis</span></h4><span class="role-desc"><span class="a">🤖 提问发散、源码分析</span> → <span class="h">👤 收敛决策</span></span></div>
+          <div class="tl-item"><h4>[design] <span class="tl-badge tl-spec">technical-design</span> <span class="dim" style="font-size:var(--small-size)">（可选）</span></h4><span class="role-desc"><span class="a">🤖 分析架构、生成方案</span> → <span class="h">👤 拍板选型</span></span></div>
+          <div class="tl-item"><h4>[specs] <span class="dim" style="font-size:var(--small-size)">（可选）</span></h4><span class="role-desc"><span class="a">🤖 生成 WHEN/THEN</span> → <span class="h">👤 审阅契约</span></span></div>
+          <div class="tl-item"><h4><span class="accent">⭐</span> tasks <span class="tl-badge tl-spec">writing-plans</span></h4><span class="role-desc"><span class="a">🤖 拆解任务、规划步骤</span> → <span class="h">👤 审阅拆解</span></span></div>
+          <div class="tl-item"><h4 style="color:var(--warn)">[human-review] <span class="dim" style="font-size:var(--small-size)">（可选）</span></h4><span class="role-desc"><span class="a">🤖 生成验收文档</span> → <span class="h">👤 审阅、批准门禁</span></span></div>
+        </div>
+        <div class="hbox hbox-orange mt-m" style="font-size:var(--small-size)">
+          <strong>快捷方式：</strong>完整 D/A 快照确认后，<code>/opsx:ff</code> 可一次投影所有 Apply 前置 artifact
+        </div>
+      </div>
+      <div class="reveal">
+        <h4 class="accent" style="font-size:var(--body-size);margin-bottom:clamp(0.4rem,0.8vw,0.6rem)">Phase 2 · Code</h4>
+        <div class="timeline">
+          <div class="tl-item"><h4><span class="accent">⭐</span> /opsx:apply</h4><span class="role-desc"><span class="h">👤 发起执行</span> → <span class="a">🤖 逐任务派发</span></span></div>
+          <div class="tl-item"><h4>git worktree 隔离 <span class="dim" style="font-size:var(--small-size)">（可选）</span></h4><span class="role-desc"><span class="h">👤 决定是否隔离</span> → <span class="a">🤖 创建分支、初始化</span></span></div>
+          <div class="tl-item"><h4><span class="accent">⭐</span> TDD + Code Review <span class="tl-badge tl-code">subagent</span></h4><span class="role-desc"><span class="a">🤖 写测试、实现、审查</span> → <span class="h">👤 审阅结果</span></span></div>
+          <div class="tl-item"><h4>/opsx:verify</h4><span class="role-desc"><span class="h">👤 发起验证</span> → <span class="a">🤖 运行 7 项检查</span></span></div>
+        </div>
+      </div>
+      <div class="reveal">
+        <h4 class="cyan" style="font-size:var(--body-size);margin-bottom:clamp(0.4rem,0.8vw,0.6rem)">Phase 3 · Growth</h4>
+        <div class="timeline">
+          <div class="tl-item"><h4>/opsx:archive</h4><span class="role-desc"><span class="h">👤 发起归档</span> → <span class="a">🤖 执行归档流程</span></span></div>
+          <div class="tl-item"><h4>retrospective</h4><span class="role-desc"><span class="a">🤖 采集证据、生成报告</span> → <span class="h">👤 审阅提炼</span></span></div>
+          <div class="tl-item"><h4>经验回流 <span class="tl-badge tl-grow">DevKeel</span></h4><span class="role-desc"><span class="a">🤖 识别模式、推荐候选</span> → <span class="h">👤 决定是否采纳</span></span></div>
+          <div class="tl-item"><h4>知识累积</h4><span class="role-desc"><span class="a">🤖 自动归档，越用越厚</span></span></div>
+        </div>
+      </div>
+    </div>
+    <div style="margin-top:clamp(0.3rem,0.6vw,0.5rem)">
+      <div class="hbox hbox-blue mt-s" style="font-size:var(--small-size)">
+        <strong>💡 Tips：</strong>每个 Phase 交付物独立，建议切换新会话避免上下文膨胀
+      </div>
+      <span class="dim" style="font-size:clamp(0.55rem,0.8vw,0.7rem);line-height:1.6;display:block;margin-top:clamp(0.2rem,0.4vw,0.3rem)"><span class="accent">⭐</span> 关键环节，建议使用高级模型<br><span class="h">👤</span> 人类<br><span class="a">🤖</span> Agent</span>
+    </div>
+  </div>
+  <div class="slide-counter">18 / 20</div>
+</section>
+
+<!-- ===== 17. PRINCIPLES ===== -->
+<section class="slide bg-mesh">
+  <div class="glow-orb" style="width:350px;height:350px;background:var(--accent);top:50%;left:50%;transform:translate(-50%,-50%);opacity:0.05"></div>
+  <div class="slide-content tc">
+    <p class="eyebrow reveal">// 总结</p>
+    <h2 class="h2 reveal">三个<span class="accent">核心理念</span></h2>
+    <div class="grid g3 mt-l">
+      <div class="card reveal tc" style="border-top:2px solid var(--accent-2);padding:clamp(1.2rem,2.5vw,2rem)">
+        <div class="purple" style="font-size:clamp(1.5rem,3vw,2.5rem);font-weight:800;margin-bottom:clamp(0.3rem,0.8vw,0.6rem)">①</div>
+        <h4 style="font-size:var(--h3-size)">流程 × 方法论<br>深度结合</h4>
+        <p class="mt-s">OpenSpec 管"走哪步"，SuperPowers 管"怎么做好"——DevKeel 编排到一起。</p>
+      </div>
+      <div class="card reveal tc" style="border-top:2px solid var(--warn);padding:clamp(1.2rem,2.5vw,2rem)">
+        <div class="orange" style="font-size:clamp(1.5rem,3vw,2.5rem);font-weight:800;margin-bottom:clamp(0.3rem,0.8vw,0.6rem)">②</div>
+        <h4 style="font-size:var(--h3-size)">流程仪式感<br>与风险成正比</h4>
+        <p class="mt-s">design / specs / human-review 按需裁剪，不强制全量。</p>
+      </div>
+      <div class="card reveal tc" style="border-top:2px solid var(--accent-3);padding:clamp(1.2rem,2.5vw,2rem)">
+        <div class="cyan" style="font-size:clamp(1.5rem,3vw,2.5rem);font-weight:800;margin-bottom:clamp(0.3rem,0.8vw,0.6rem)">③</div>
+        <h4 style="font-size:var(--h3-size)">知识越用越厚</h4>
+        <p class="mt-s">每次协作经验自动归档，Agent 越来越了解你的项目。</p>
+      </div>
+    </div>
+    <div class="hbox hbox-blue mt-l reveal tc" style="font-size:var(--h3-size);padding:clamp(0.8rem,1.5vw,1.2rem)">
+      <strong>编排 · 规范 · 沉淀</strong> — 让 Agent 进入项目就知道该怎么做
+    </div>
+  </div>
+  <div class="slide-counter">19 / 20</div>
+</section>
+
+<!-- ===== 18. Q&A ===== -->
+<section class="slide bg-mesh bg-grid">
+  <div class="glow-line"></div>
+  <div class="glow-orb" style="width:400px;height:400px;background:var(--accent-2);top:50%;left:50%;transform:translate(-50%,-50%);opacity:0.06"></div>
+  <div class="slide-content">
+    <div class="tc" style="margin-bottom:clamp(0.6rem,1.2vw,1rem)">
+      <p class="eyebrow reveal">// thanks</p>
+      <h1 class="reveal">Q & <span class="gradient-text">A</span></h1>
+      <p class="lede mx-auto mt-s reveal">感谢聆听，欢迎提问</p>
+    </div>
+    <div class="grid g2 reveal" style="align-items:center;gap:clamp(1rem,3vw,3rem)">
+      <div>
+        <div class="card" style="border-top:2px solid var(--accent);margin-bottom:clamp(0.4rem,0.8vw,0.6rem)">
+          <h4 style="font-size:var(--body-size)">📦 安装</h4>
+          <p style="font-size:var(--small-size)"><code>npx devkeel@latest init</code></p>
+        </div>
+        <div class="card" style="border-top:2px solid var(--accent-2);margin-bottom:clamp(0.4rem,0.8vw,0.6rem)">
+          <h4 style="font-size:var(--body-size)">📖 文档站</h4>
+          <p style="font-size:var(--small-size)"><a href="https://github.com/MinLeeV5/devkeel" style="color:var(--accent);text-decoration:none">https://github.com/MinLeeV5/devkeel</a></p>
+        </div>
+        <div class="card" style="border-top:2px solid var(--accent-3);margin-bottom:clamp(0.4rem,0.8vw,0.6rem)">
+          <h4 style="font-size:var(--body-size)"><a href="https://github.com/MinLeeV5/devkeel" style="color:var(--text-primary);text-decoration:none"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" style="vertical-align:middle;margin-right:3px" aria-hidden="true"><path d="M9 19c-4.3 1.3-4.3-2.5-6-3m12 6v-3.4a3 3 0 0 0-.8-2.3c2.7-.3 5.5-1.3 5.5-6A4.7 4.7 0 0 0 18.4 7a4.3 4.3 0 0 0-.1-3.3S17.3 3.4 15 5a11.5 11.5 0 0 0-6 0C6.7 3.4 5.7 3.7 5.7 3.7A4.3 4.3 0 0 0 5.6 7a4.7 4.7 0 0 0-1.3 3.3c0 4.7 2.8 5.7 5.5 6A3 3 0 0 0 9 18.6V22"/></svg>GitHub</a></h4>
+          <p style="font-size:var(--small-size)"><a href="https://github.com/MinLeeV5/devkeel" style="color:var(--accent);text-decoration:none">MinLeeV5/devkeel</a></p>
+        </div>
+        <div class="speaker mt-m" style="justify-content:center">
+          <img class="speaker-av" src="../assets/head.jpg" alt="head">
+          <div style="text-align:left"><b>@MinLee</b></div>
+        </div>
+      </div>
+      <div class="tc" style="display:flex;flex-direction:column;align-items:center;gap:clamp(0.5rem,1vw,0.8rem)">
+        <a href="https://github.com/MinLeeV5/devkeel/issues" target="_blank" rel="noopener">GitHub Issues</a>
+        <p style="font-size:var(--body-size);color:var(--text-secondary);margin:0">参与<strong style="color:var(--accent)">开源社区</strong></p>
+      </div>
+    </div>
+  </div>
+  <div class="slide-counter">20 / 20</div>
+</section>
+
+<!-- JS: scroll observer + navigation + progress -->
+<script>
+(function(){
+  const slides = document.querySelectorAll('.slide');
+  const bar = document.getElementById('progressBar');
+  const dotsNav = document.getElementById('navDots');
+  const total = slides.length;
+  let activeSlide = 0;
+
+  slides.forEach((_, i) => {
+    const d = document.createElement('button');
+    d.type = 'button';
+    d.className = 'nav-dot' + (i === 0 ? ' active' : '');
+    d.setAttribute('aria-label', `跳转到第 ${i + 1} 页`);
+    d.onclick = () => showSlide(i);
+    dotsNav.appendChild(d);
+  });
+  const dots = dotsNav.querySelectorAll('.nav-dot');
+
+  function setActiveSlide(index) {
+    activeSlide = index;
+    slides[index].classList.add('visible');
+    bar.style.width = ((index + 1) / total * 100) + '%';
+    dots.forEach((d, i) => {
+      d.classList.toggle('active', i === index);
+      if (i === index) d.setAttribute('aria-current', 'step');
+      else d.removeAttribute('aria-current');
+    });
+  }
+
+  function showSlide(index) {
+    if (index < 0 || index >= total) return;
+    setActiveSlide(index);
+    slides[index].scrollIntoView({ behavior: 'smooth' });
+  }
+
+  const obs = new IntersectionObserver(entries => {
+    entries.forEach(e => {
+      if (e.isIntersecting) {
+        const idx = [...slides].indexOf(e.target);
+        setActiveSlide(idx);
+      }
+    });
+  }, { threshold: 0.45 });
+  slides.forEach(s => obs.observe(s));
+  setActiveSlide(0);
+
+  document.addEventListener('keydown', e => {
+    if ((e.key === 'ArrowDown' || e.key === 'ArrowRight' || e.key === ' ') && activeSlide < total - 1) {
+      e.preventDefault(); showSlide(activeSlide + 1);
+    }
+    if ((e.key === 'ArrowUp' || e.key === 'ArrowLeft') && activeSlide > 0) {
+      e.preventDefault(); showSlide(activeSlide - 1);
+    }
+  });
+})();
+</script>
+</body>
+</html>

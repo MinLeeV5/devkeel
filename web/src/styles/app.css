@@ -1,0 +1,67 @@
+@import "tailwindcss";
+
+#root {
+  min-height: 100vh;
+}
+
+.react-page[data-page='home'],
+.react-page[data-page='changelog'] {
+  color-scheme: dark;
+}
+
+.react-page[data-page='home'][data-theme='light'],
+.react-page[data-page='changelog'][data-theme='light'] {
+  color-scheme: light;
+}
+
+:root[data-theme='dark'] body {
+  background: #09090b;
+  color: #fafafa;
+}
+
+:root[data-theme='light'] body {
+  background: #f7f8fc;
+  color: #182033;
+}
+
+.react-page[data-page='changelog'] {
+  background: var(--bg);
+  color: var(--text);
+}
+
+.react-page[data-page='changelog'][data-theme='light'] {
+  --bg: #f7f8fc;
+  --bg-r: #ffffff;
+  --bg-s: #eef1f8;
+  --bg-in: #f1f3f8;
+  --border: rgba(154, 164, 183, .55);
+  --border-d: rgba(195, 202, 220, .72);
+  --text: #182033;
+  --text-2: #445066;
+  --text-3: #657083;
+  --text-4: #7d8799;
+  --accent-h: #07986a;
+  --cyan: #137f91;
+  --purple: #7656c8;
+  --yellow: #a96f00;
+  --red: #d34f4f;
+  --blue: #3563e9;
+}
+
+.legacy-page {
+  min-height: 100vh;
+}
+
+.community-qr-frame {
+  display: flex;
+  justify-content: center;
+  margin-top: 24px;
+  width: 100%;
+}
+
+.community-qr-image {
+  display: block;
+  width: min(300px, 82vw);
+  height: auto;
+  border-radius: 12px;
+}

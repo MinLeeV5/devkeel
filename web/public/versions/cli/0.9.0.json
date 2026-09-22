@@ -1,0 +1,22 @@
+{
+  "versions": ["0.9.0"],
+  "releasedAt": { "from": "2026-07-14T13:09:00+08:00" },
+  "title": "Evidence 支持 worktree 实现证据",
+  "archived": false,
+  "groups": [
+    {
+      "type": "feat",
+      "label": "新能力",
+      "items": [
+        {
+          "name": "工作区变更证据",
+          "description": "`devkeel evidence` 会统计 staged、unstaged 和 untracked 变更，并输出当前分支与 worktree 根目录，便于在 linked worktree 中验证实现"
+        },
+        {
+          "name": "统一实现证据判断",
+          "description": "JSON 新增 `hasImplementationEvidence` 与工作区计数字段，可同时汇总主仓库和可访问 submodule，并排除当前 change 的规划 artifact"
+        }
+      ]
+    }
+  ]
+}

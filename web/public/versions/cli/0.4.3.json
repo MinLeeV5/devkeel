@@ -1,0 +1,43 @@
+{
+  "versions": ["0.4.1", "0.4.2", "0.4.3"],
+  "releasedAt": {
+    "from": "2026-05-20T11:29:00+08:00",
+    "to": "2026-05-20T11:54:00+08:00"
+  },
+  "title": "Doctor 深度校验、Schema 更新修复与评审页面优化",
+  "archived": true,
+  "groups": [
+    {
+      "type": "feat",
+      "label": "新能力",
+      "items": [
+        {
+          "name": "Doctor 配置校验",
+          "description": "`devkeel doctor` 新增 openspec config 和 schema 引用的完整性检查"
+        },
+        {
+          "name": "领域路由表",
+          "description": "`devkeel init` 生成的领域 AGENTS.md 自动包含 rules/skills/agents 路由索引"
+        },
+        {
+          "name": "安装指南优化",
+          "description": "init 完成后立即引导执行 `/setup` 安装工具链"
+        }
+      ]
+    },
+    {
+      "type": "fix",
+      "label": "修正",
+      "items": [
+        {
+          "name": "Schema 更新修复",
+          "description": "修复 `devkeel update` 不会同步更新 openspec schema 目录的问题"
+        },
+        {
+          "name": "评审页面复制按钮",
+          "description": "修复 human-review 页面复制按钮重复点击时复制到错误文本的问题"
+        }
+      ]
+    }
+  ]
+}

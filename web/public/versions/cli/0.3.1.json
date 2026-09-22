@@ -1,0 +1,68 @@
+{
+  "versions": ["0.3.1"],
+  "releasedAt": { "from": "2026-05-18T18:14:00+08:00" },
+  "title": "评审流程大幅优化 + Schema v5 + Agent 快速开始模式",
+  "archived": true,
+  "groups": [
+    {
+      "type": "feat",
+      "label": "新能力",
+      "items": [
+        {
+          "name": "非交互模式",
+          "description": "`devkeel init` 支持通过 CLI 参数直接传入项目名和类型，跳过交互问答"
+        },
+        {
+          "name": "快速开始 Agent 模式",
+          "description": "新增 Agent 自动执行的安装方式，一条命令完成项目初始化"
+        },
+        {
+          "name": "human-review 流程重构",
+          "description": "评审页面全面优化 token 消耗，移除外部 CDN 依赖改为离线注入"
+        },
+        {
+          "name": "apply 下一步提示",
+          "description": "执行实现任务完成后，自动提示可用的后续操作"
+        }
+      ]
+    },
+    {
+      "type": "feat",
+      "label": "模板更新",
+      "items": [
+        {
+          "name": "Schema 升级至 v5",
+          "description": "artifact 模板全面精简，去除仪式性章节改为按需取用"
+        },
+        {
+          "name": "需求分析 / 方案设计 skill 升级",
+          "description": "将独立 rules 合并到对应 skill 中"
+        }
+      ]
+    },
+    {
+      "type": "fix",
+      "label": "修正",
+      "items": [
+        {
+          "name": "openspec 配置全量覆盖",
+          "description": "`devkeel update` 时 openspec 根配置文件改为全量覆盖"
+        }
+      ]
+    },
+    {
+      "type": "docs",
+      "label": "文档",
+      "items": [
+        {
+          "name": "领域包文档",
+          "description": "新增领域包的使用说明与配置指南（[查看](./architecture.html#domain-packages)）"
+        },
+        {
+          "name": "最佳实践：Worktree + Setup",
+          "description": "新增基于 git worktree 的隔离开发环境搭建最佳实践（[查看](./best-practices.html#worktree)）"
+        }
+      ]
+    }
+  ]
+}

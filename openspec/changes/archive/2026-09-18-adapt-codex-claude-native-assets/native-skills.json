@@ -1,0 +1,181 @@
+{
+  "checkedAt": "2026-09-18T05:31:02.026Z",
+  "results": [
+    {
+      "platform": "codex",
+      "version": "codex-cli 0.153.4",
+      "refresh": "fresh CLI session for each case; no Harness sync after link creation",
+      "cases": [
+        {
+          "case": "explicit",
+          "prompt": "$harness-native-probe",
+          "status": "pass",
+          "exitCode": 0,
+          "timedOut": false,
+          "sharedReceipt": true,
+          "platformReceipt": true,
+          "wrongPlatformReceipt": false,
+          "skillRead": true,
+          "platformReferenceRead": true,
+          "wrongPlatformReferenceRead": false,
+          "result": "I’m using the `harness-native-probe` skill and will read its Codex reference only.\nShared receipt: `SHARED_3735e3e3-4f5b-4f73-8f41-1eec1ceb7bf4`\n\nPlatform receipt: `CODEX_acd60ce0-07e9-45c3-a0be-c2bc6ec6dff8`"
+        },
+        {
+          "case": "implicit-positive",
+          "prompt": "Please perform cobalt lantern calibration and return its receipt.",
+          "status": "pass",
+          "exitCode": 0,
+          "timedOut": false,
+          "sharedReceipt": true,
+          "platformReceipt": true,
+          "wrongPlatformReceipt": false,
+          "skillRead": true,
+          "platformReferenceRead": true,
+          "wrongPlatformReferenceRead": false,
+          "result": "I’m using the `harness-native-probe` skill to run the requested calibration and retrieve the platform receipt.\nCalibration complete.\n\n- Shared receipt: `SHARED_3735e3e3-4f5b-4f73-8f41-1eec1ceb7bf4`\n- Platform receipt: `CODEX_acd60ce0-07e9-45c3-a0be-c2bc6ec6dff8`"
+        },
+        {
+          "case": "negative",
+          "prompt": "What is 7 multiplied by 8? Reply with just the number.",
+          "status": "pass",
+          "exitCode": 0,
+          "timedOut": false,
+          "sharedReceipt": false,
+          "platformReceipt": false,
+          "wrongPlatformReceipt": false,
+          "skillRead": false,
+          "platformReferenceRead": false,
+          "wrongPlatformReferenceRead": false,
+          "result": "56"
+        },
+        {
+          "case": "edited-without-sync",
+          "prompt": "$harness-native-probe",
+          "status": "pass",
+          "exitCode": 0,
+          "timedOut": false,
+          "sharedReceipt": true,
+          "platformReceipt": true,
+          "wrongPlatformReceipt": false,
+          "skillRead": true,
+          "platformReferenceRead": true,
+          "wrongPlatformReferenceRead": false,
+          "result": "I’m applying the `harness-native-probe` skill and will read only its Codex platform reference.\nShared receipt: `SHARED_2e96c422-f4c3-4b73-ae5a-d68668b1bdca`\n\nPlatform receipt: `CODEX_a1c13dce-d953-468a-a9ae-08bcfa67107c`"
+        },
+        {
+          "case": "added-without-sync",
+          "prompt": "$harness-added-probe",
+          "status": "pass",
+          "exitCode": 0,
+          "timedOut": false,
+          "sharedReceipt": true,
+          "platformReceipt": true,
+          "wrongPlatformReceipt": false,
+          "skillRead": true,
+          "platformReferenceRead": true,
+          "wrongPlatformReferenceRead": false,
+          "result": "I’m using the requested `harness-added-probe` skill and will read its Codex reference only.\nShared receipt: `SHARED_ebe4bb19-9ab1-4331-9231-aacb2ca24945`\n\nPlatform receipt: `CODEX_09b8a706-7210-4050-9a9b-f7fa483ce5d7`"
+        },
+        {
+          "case": "production-verify-init",
+          "prompt": "$verify-init 本次仅做只读评估：按当前平台读取相应参考文件，说明所有文档获取途径均不可用时如何处理。不要安装、创建或修改文件，也不要调度子代理。",
+          "status": "pass",
+          "exitCode": 0,
+          "timedOut": false,
+          "skillRead": true,
+          "platformReferenceRead": true,
+          "wrongPlatformReferenceRead": false,
+          "result": "我会按 verify-init 的只读流程读取参考文件；本次仅评估文档获取的降级路径，不扫描安装、不写文件，也不调度子代理。\n已按当前平台读取：\n\n- `references/frameworks-index.md`\n- `references/codex.md`\n- `references/detection-signals.md`\n\n当所有文档获取途径均不可用时，应按以下方式降级：\n\n1. 依次尝试当前会话实际提供的途径：官方文档连接器、页面读取、网页搜索、官方 GitHub README。\n2. Context7 仅在已安装且可用时使用；不可用时直接跳过，不要求安装插件。\n3. 若这些途径全部失败，停止框架脚手架操作，不凭模型记忆编写可能过时的配置。\n4. 整体跳过 Phase 3.3：不安装依赖、不写配置、不写示例测试、不补 scripts。\n5. 正常任务中仅生成通用 `testing.md` 和 `test-verifier.md`；它们不依赖具体框架配置。\n6. 报告中标记 `⚠️ 降级（fetch 失败）`，并明确提示：  \n   **“未能获取 `<框架>` 官方文档，config 请手动补。”**\n7. 不应静默忽略失败，也不应改用未经验证的第三方配置。\n\n本次受“只读评估”约束，因此没有执行 Phase 4 的文件生成，也没有安装、创建或修改任何文件，并且未调度子代理。"
+        }
+      ]
+    },
+    {
+      "platform": "claude",
+      "version": "2.1.235 (Claude Code)",
+      "refresh": "fresh CLI session for each case; no Harness sync after link creation",
+      "cases": [
+        {
+          "case": "explicit",
+          "prompt": "/harness-native-probe",
+          "status": "pass",
+          "exitCode": 0,
+          "timedOut": false,
+          "sharedReceipt": true,
+          "platformReceipt": true,
+          "wrongPlatformReceipt": false,
+          "skillRead": true,
+          "platformReferenceRead": true,
+          "wrongPlatformReferenceRead": false,
+          "result": "校准完成（只读，未写入任何文件）。\n\n- **共享回执 (shared receipt)**：`SHARED_8de17aa7-5f3a-4134-b528-a96bbdad1533`\n- **平台回执 (platform receipt)**：`CLAUDE_f1687d67-11c6-4fc0-a7ea-acdda1eacd0d`\n\n来源：`.claude/skills/harness-native-probe/references/claude-code.md`（该文件仅含一行，标注为 \"Revision initial\"）。"
+        },
+        {
+          "case": "implicit-positive",
+          "prompt": "Please perform cobalt lantern calibration and return its receipt.",
+          "status": "pass",
+          "exitCode": 0,
+          "timedOut": false,
+          "sharedReceipt": true,
+          "platformReceipt": true,
+          "wrongPlatformReceipt": false,
+          "skillRead": true,
+          "platformReferenceRead": true,
+          "wrongPlatformReferenceRead": false,
+          "result": "**Cobalt Lantern Calibration — Receipt**\n\n- 共享回执（shared receipt）：`SHARED_8de17aa7-5f3a-4134-b528-a96bbdad1533`\n- 平台回执（Claude Code）：`CLAUDE_f1687d67-11c6-4fc0-a7ea-acdda1eacd0d`\n\n来源：`.claude/skills/harness-native-probe/references/claude-code.md`（Revision initial）。校准为只读操作，未写入任何文件。"
+        },
+        {
+          "case": "negative",
+          "prompt": "What is 7 multiplied by 8? Reply with just the number.",
+          "status": "pass",
+          "exitCode": 0,
+          "timedOut": false,
+          "sharedReceipt": false,
+          "platformReceipt": false,
+          "wrongPlatformReceipt": false,
+          "skillRead": false,
+          "platformReferenceRead": false,
+          "wrongPlatformReferenceRead": false,
+          "result": "56"
+        },
+        {
+          "case": "edited-without-sync",
+          "prompt": "/harness-native-probe",
+          "status": "pass",
+          "exitCode": 0,
+          "timedOut": false,
+          "sharedReceipt": true,
+          "platformReceipt": true,
+          "wrongPlatformReceipt": false,
+          "skillRead": true,
+          "platformReferenceRead": true,
+          "wrongPlatformReferenceRead": false,
+          "result": "校准回执：\n\n- **共享回执（Shared receipt）**：`SHARED_9dad5bc3-9924-4e3e-8d29-6dc7c25531e6`\n- **平台回执（Platform receipt，Claude Code）**：`CLAUDE_750fe2fc-0211-4abe-b09a-cfd48cc46d9b`\n\n来源：`.claude/skills/harness-native-probe/references/claude-code.md`，该文件另带一行标记 `Revision edited-without-sync.`（原文如此）。未写入任何文件，也未运行其他工作流。"
+        },
+        {
+          "case": "added-without-sync",
+          "prompt": "/harness-added-probe",
+          "status": "pass",
+          "exitCode": 0,
+          "timedOut": false,
+          "sharedReceipt": true,
+          "platformReceipt": true,
+          "wrongPlatformReceipt": false,
+          "skillRead": true,
+          "platformReferenceRead": true,
+          "wrongPlatformReferenceRead": false,
+          "result": "校准回执如下:\n\n- **Shared receipt**: `SHARED_fa4e53c6-8bc4-44a2-aded-bac4e659c262`\n- **Platform receipt** (claude-code): `CLAUDE_2004d161-2e8b-4027-8f9b-10cb57cbd0c1`\n\n来源文件 `references/claude-code.md` 中附有一行标注:`Revision added-without-sync.`(即该平台回执未经同步加入)。这是文件中的原始说明,我照原样转述,未做额外推断。"
+        },
+        {
+          "case": "production-verify-init",
+          "prompt": "/verify-init 本次仅做只读评估：按当前平台读取相应参考文件，说明所有文档获取途径均不可用时如何处理。不要安装、创建或修改文件，也不要调度子代理。",
+          "status": "pass",
+          "exitCode": 0,
+          "timedOut": false,
+          "skillRead": true,
+          "platformReferenceRead": true,
+          "wrongPlatformReferenceRead": false,
+          "result": "已按当前平台（Claude Code）读取对应参考文件，未执行任何 Phase、未写入文件。\n\n## 1. 平台参考文件的选取\n\n`frameworks-index.md` 的平台工具差异指向技能入口的按需参考。当前是 Claude Code，因此只读 `references/claude-code.md`（Codex 才读 `codex.md`）。该文件的规定是：\n\n> 使用当前会话实际可用的 `WebFetch` 读取官方页面，必要时用 `WebSearch` 定位来源；已提供的文档连接器也可使用。工具被禁用、需要额外权限或无法联网时，遵循会话约束和技能的文档读取失败降级流程，**不假定内置工具总是可调用**。\n\n即：平台参考本身不承诺工具一定存在，降级路径是它的组成部分，不是异常分支。\n\n## 2. fetch 链（`frameworks-index.md`）\n\n定位官方文档的 4 级链路，任一级成功即提取 5 类要素（安装命令 / config schema / 最小示例 / scripts / 覆盖率与超时最佳实践），无需走完全部：\n\n| 级 | 途径 | 可用性 |\n|----|------|--------|\n| 1 | context7 MCP（`resolve-library-id` → `query-docs`） | 可选，未装则**直接跳过、不报错** |\n| 2 | 页面读取（WebFetch）官方 docs 站 / 仓库 README / registry | 依会话能力与权限 |\n| 3 | 网页搜索（WebSearch）定位官方 URL 后再读 | 依会话能力与权限 |\n| 4 | GitHub README 兜底 | 页面读取可达时 |\n\n## 3. 所有途径均不可用时的处理（核心）\n\n依据 `frameworks-index.md` 的「全失败降级」+ SKILL.md Hard Rule 4，触发条件为**离线 / 网络受限 / 站点变更导致 1–4 全部失败（含 GitHub README 兜底不可达）**：\n\n1. **不凭训练记忆编造 config** — 记忆中的配置项可能对应旧版本、无法校验，编造比诚实跳过更危险。这是降级的核心理由。\n2. **整段跳过 Phase 3.3 的四步** — 安装依赖、写配置文件、写示例测试、补 scripts 全部不做（不是做一半）。\n3. **只产出 Phase 4** — `.harness/rules/testing.md` 通用规范 + `.harness/agents/test-verifier.md` 验证 agent，二者不依赖具体框架 config，正常产出。\n4. **向用户显式提示** — 输出「未能获取 `<框架>` 官方文档，config 请手动补」，把不"
+        }
+      ]
+    }
+  ]
+}

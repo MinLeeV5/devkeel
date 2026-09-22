@@ -1,0 +1,728 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Human Review — refactor-architecture-domain-section</title>
+  <!-- BEGIN:css -->
+<style>
+/* human-review.css — Slate Indigo 评审页面通用样式 */
+/* 由 devkeel inject-review 注入或通过 CDN 链接引用 */
+
+:root {
+  --bg: #f8fafc; --surface: #ffffff; --text: #0f172a; --text-secondary: #475569;
+  --text-muted: #94a3b8; --accent: #4f46e5; --accent-light: #eef2ff;
+  --accent-border: #c7d2fe; --accent-text: #3730a3; --border: #e2e8f0;
+  --code-bg: #f1f5f9; --success: #059669; --warning: #d97706; --danger: #dc2626;
+  --shadow-sm: 0 1px 3px rgba(0,0,0,.04), 0 1px 2px rgba(0,0,0,.02);
+  --shadow-md: 0 4px 12px rgba(0,0,0,.06), 0 2px 4px rgba(0,0,0,.03);
+  --radius: 10px;
+  --font-sans: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Noto Sans SC', 'PingFang SC', 'Microsoft YaHei', sans-serif;
+  --font-mono: 'SF Mono', 'Cascadia Code', 'JetBrains Mono', Consolas, monospace;
+}
+@media (prefers-color-scheme: dark) { :root {
+  --bg: #0f172a; --surface: #1e293b; --text: #f1f5f9; --text-secondary: #94a3b8;
+  --text-muted: #64748b; --accent: #818cf8; --accent-light: rgba(99,102,241,.12);
+  --accent-border: rgba(99,102,241,.25); --accent-text: #c7d2fe; --border: #334155;
+  --code-bg: #0f172a; --success: #34d399; --warning: #fbbf24; --danger: #f87171;
+  --shadow-sm: 0 1px 3px rgba(0,0,0,.3); --shadow-md: 0 4px 12px rgba(0,0,0,.4);
+}}
+
+*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box }
+html { scroll-behavior: smooth }
+body { font-family: var(--font-sans); background: var(--bg); color: var(--text); line-height: 1.8; font-size: 15px; -webkit-font-smoothing: antialiased }
+::selection { background: rgba(79,70,229,.2) }
+.wrapper { max-width: 780px; margin: 0 auto; padding: 0 3rem }
+a { color: var(--accent); text-decoration: none }
+a:hover { text-decoration: underline }
+
+/* Scrollbar */
+::-webkit-scrollbar { width: 6px; height: 6px }
+::-webkit-scrollbar-track { background: transparent }
+::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px }
+::-webkit-scrollbar-thumb:hover { background: var(--text-muted) }
+@media (prefers-color-scheme: dark) { ::-webkit-scrollbar-thumb { background: #334155 } ::-webkit-scrollbar-thumb:hover { background: #475569 } }
+
+/* Header */
+.page-header { background: linear-gradient(135deg, #eef2ff, #f8fafc, #f0f9ff); border-bottom: 1px solid var(--border); padding: 3.5rem 0 3rem }
+@media (prefers-color-scheme: dark) { .page-header { background: linear-gradient(135deg, rgba(30,41,59,.8), var(--bg), rgba(15,23,42,.9)) } }
+.badge-review { display: inline-flex; align-items: center; gap: 8px; font-size: 11px; font-weight: 600; letter-spacing: .05em; text-transform: uppercase; padding: 6px 14px; border-radius: 999px; background: rgba(217,119,6,.1); color: var(--warning); border: 1px solid rgba(217,119,6,.2); margin-bottom: 1.25rem }
+.badge-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--warning); animation: pulse 2s infinite }
+@keyframes pulse { 0%,100% { opacity: 1 } 50% { opacity: .4 } }
+.page-header h1 { font-size: 32px; font-weight: 800; letter-spacing: -.02em; margin-bottom: .5rem }
+.page-header .summary { font-size: 15px; color: var(--text-secondary); margin-bottom: 1rem; line-height: 1.7 }
+.page-header .meta { font-size: 13px; color: var(--text-muted) }
+.progress-bar { display: flex; gap: 4px; margin-top: 1.25rem }
+.progress-seg { height: 5px; flex: 1; border-radius: 3px; background: var(--border) }
+.progress-done { background: var(--success) }
+.progress-current { background: var(--accent) }
+
+/* Dashboard */
+.dashboard { background: var(--surface); border: 1px solid var(--border); border-radius: 14px; padding: 2rem 2.25rem; margin: 2.5rem 0; box-shadow: var(--shadow-sm) }
+.dashboard-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1.25rem; margin-top: 1.5rem }
+@media (max-width: 768px) { .dashboard-grid { grid-template-columns: 1fr } }
+.dash-card { background: var(--bg); border: 1px solid var(--border); border-radius: var(--radius); padding: 1.25rem 1.5rem }
+.dash-card h4 { font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: .05em; color: var(--text-muted); margin-bottom: .75rem }
+.risk-badge { display: inline-flex; align-items: center; gap: 6px; padding: 4px 10px; border-radius: 6px; font-size: 12px; font-weight: 600 }
+.risk-low { background: rgba(5,150,105,.1); color: var(--success); border: 1px solid rgba(5,150,105,.2) }
+.risk-mid { background: rgba(217,119,6,.1); color: var(--warning); border: 1px solid rgba(217,119,6,.2) }
+.risk-high { background: rgba(220,38,38,.1); color: var(--danger); border: 1px solid rgba(220,38,38,.2) }
+.tag { display: inline-block; padding: 2px 8px; border-radius: 4px; font-size: 11px; font-weight: 600; background: var(--accent-light); color: var(--accent); border: 1px solid var(--accent-border) }
+
+/* Sections */
+.section { padding: 2.5rem 0; border-top: 1px solid var(--border) }
+.section-head { display: flex; align-items: center; cursor: pointer; user-select: none; margin-bottom: 1.5rem }
+.section-head:hover { opacity: .8 }
+.section-num { font-size: 26px; font-weight: 800; color: var(--accent); margin-right: 12px; opacity: .6 }
+.section-head h2 { font-size: 24px; font-weight: 700; flex: 1 }
+.collapse-icon { width: 22px; height: 22px; transition: transform .2s; opacity: .5 }
+.section.collapsed .section-body { display: none }
+.section.collapsed .collapse-icon { transform: rotate(-90deg) }
+h3 { font-size: 18px; font-weight: 600; margin: 2rem 0 .75rem; padding-bottom: .5rem; border-bottom: 1px solid var(--border) }
+h4 { font-size: 16px; font-weight: 600; margin: 1.5rem 0 .5rem }
+
+/* Summary block */
+.summary-block { background: var(--accent-light); border: 1px solid var(--accent-border); border-radius: var(--radius); padding: 1.25rem 1.5rem; margin-bottom: 1.5rem; color: var(--accent-text); font-size: 14px; line-height: 1.8 }
+
+/* Tables */
+table { width: 100%; border-collapse: collapse; margin: 1rem 0 1.5rem; font-size: 13px }
+th { text-align: left; padding: .7rem 1rem; font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: .05em; color: var(--text-muted); background: var(--accent-light); border-bottom: 2px solid var(--border) }
+td { padding: .7rem 1rem; border-bottom: 1px solid var(--border); color: var(--text-secondary) }
+tr:hover td { background: var(--accent-light) }
+td strong { color: var(--text); font-weight: 600 }
+
+/* Code */
+code { font-family: var(--font-mono); font-size: .88em; background: var(--code-bg); padding: 2px 6px; border-radius: 4px }
+pre { background: var(--code-bg); border: 1px solid var(--border); border-radius: 8px; padding: 1.25rem 1.5rem; overflow-x: auto; margin: 1rem 0 }
+pre code { background: none; padding: 0; font-size: 13px }
+.diff-add { background: rgba(34,197,94,.1) }
+.diff-remove { background: rgba(239,68,68,.1) }
+@media (prefers-color-scheme: dark) { .diff-add { background: rgba(34,197,94,.15) } .diff-remove { background: rgba(239,68,68,.15) } }
+
+/* Task list */
+.task-group { margin: 1.5rem 0 }
+.task-group h4 { font-weight: 600; border: none; padding: 0 }
+.task-item { display: flex; align-items: flex-start; gap: 10px; padding: .5rem 0; font-size: 14px; color: var(--text-secondary) }
+.task-cb { width: 18px; height: 18px; border: 2px solid var(--border); border-radius: 4px; flex-shrink: 0; margin-top: 2px }
+.task-cb.done { background: var(--success); border-color: var(--success) }
+.task-commit { font-size: 12px; color: var(--accent); margin-top: 4px; font-family: var(--font-mono) }
+
+/* Mermaid */
+.mermaid-container { padding: 1.5rem; border-radius: var(--radius); margin: 1.5rem 0; overflow-x: auto }
+@media (prefers-color-scheme: dark) { .mermaid-container { background: rgba(15,23,42,.5) } }
+
+/* Architecture diagram */
+.architecture-diagram-container { background: #020617; border-radius: var(--radius); padding: 1.5rem; border: 1px solid var(--border); overflow-x: auto; margin: 1.5rem 0 }
+@media (prefers-color-scheme: dark) { .architecture-diagram-container { border-color: #334155 } }
+
+/* Artifact Viewer — visually distinct panel */
+.artifact-viewer { margin: 3rem 0; border: 1px solid var(--accent-border); border-radius: 14px; overflow: hidden; box-shadow: var(--shadow-md); background: var(--surface) }
+.artifact-tabs { display: flex; overflow-x: auto; background: var(--accent-light); border-bottom: 1px solid var(--accent-border); padding: 0 .25rem }
+.artifact-tab { padding: .75rem 1.25rem; font-size: 13px; font-weight: 500; color: var(--text-muted); cursor: pointer; border: none; background: none; white-space: nowrap; border-bottom: 2px solid transparent; transition: all .15s; margin-bottom: -1px }
+.artifact-tab:hover { color: var(--accent-text); background: rgba(79,70,229,.06) }
+.artifact-tab.active { color: var(--accent); border-bottom-color: var(--accent); font-weight: 600; background: var(--surface) }
+.artifact-panel { display: none; padding: 2rem 2.5rem; max-height: 520px; overflow-y: auto; font-size: 14px; line-height: 1.8 }
+.artifact-panel.active { display: block }
+.artifact-panel h1, .artifact-panel h2, .artifact-panel h3 { margin-top: 1.5rem; margin-bottom: .5rem }
+.artifact-panel h2 { font-size: 17px; border-bottom: 1px solid var(--border); padding-bottom: .5rem }
+.artifact-panel ul, .artifact-panel ol { margin: .5rem 0 1rem 1.25rem }
+.artifact-panel table { font-size: 13px }
+.artifact-panel::-webkit-scrollbar { width: 5px }
+.artifact-panel::-webkit-scrollbar-thumb { background: var(--accent-border); border-radius: 3px }
+
+/* Acceptance */
+.acceptance { border-top: 2px solid var(--accent); padding-top: 2.5rem; margin-top: 3.5rem }
+.acceptance h2 { display: flex; align-items: center; gap: 10px; font-size: 22px; font-weight: 700 }
+.acceptance ol { margin: 1rem 0 1.5rem 1.25rem; color: var(--text-secondary); font-size: 14px }
+.acceptance ol li { margin: .5rem 0 }
+.next-cmd { display: block; padding: 1rem 1.25rem; border-radius: 8px; border: 2px dashed var(--accent-border); font-family: var(--font-mono); font-size: 14px; color: var(--accent); cursor: pointer; transition: background .15s; margin: 1rem 0; text-align: center }
+.next-cmd:hover { background: var(--accent-light); text-decoration: none }
+
+/* Footer */
+.page-footer { text-align: center; padding: 2.5rem 0; font-size: 13px; color: var(--text-muted) }
+
+/* Lists */
+ul, ol { margin: .5rem 0 1rem 1.25rem; color: var(--text-secondary) }
+li { margin: .25rem 0; font-size: 14px }
+li strong { color: var(--text) }
+
+/* Responsive */
+@media (max-width: 768px) { .wrapper { padding: 0 1.5rem } .page-header h1 { font-size: 26px } .section-num { font-size: 22px } .section-head h2 { font-size: 22px } .artifact-panel { padding: 1.5rem } }
+@media (max-width: 480px) { .wrapper { padding: 0 1.25rem } .page-header h1 { font-size: 22px } }
+
+/* Print */
+@media print { body { background: #fff; color: #000 } .page-header { background: #fff !important; border: none } .badge-review { display: none } .artifact-viewer { display: none } .architecture-diagram-container { background: #fff !important } }
+
+/* Upgrade banner */
+.upgrade-banner { display: flex; align-items: center; gap: 8px; padding: 10px 16px; margin-bottom: 1rem; border-radius: 8px; font-size: 13px; background: rgba(217,119,6,.08); color: var(--warning); border: 1px solid rgba(217,119,6,.2) }
+.upgrade-banner code { background: rgba(217,119,6,.1); padding: 2px 8px; border-radius: 4px; font-size: 12px; font-family: var(--font-mono) }
+.upgrade-banner .upgrade-icon { font-size: 16px }
+@media (prefers-color-scheme: dark) { .upgrade-banner { background: rgba(251,191,36,.06); border-color: rgba(251,191,36,.2) } }
+
+</style>
+<!-- END:css -->
+  <link rel="stylesheet" href="https://cdn.jsdmirror.com/npm/@highlightjs/cdn-assets@11.11.1/styles/github.min.css">
+  <link rel="stylesheet" href="https://cdn.jsdmirror.com/npm/@highlightjs/cdn-assets@11.11.1/styles/github-dark.min.css" media="(prefers-color-scheme: dark)">
+  <script src="https://cdn.jsdmirror.com/npm/@highlightjs/cdn-assets@11.11.1/highlight.min.js"></script>
+  <script src="https://cdn.jsdmirror.com/npm/mermaid@11/dist/mermaid.min.js"></script>
+  <script src="https://cdn.jsdmirror.com/npm/marked/marked.min.js"></script>
+</head>
+<body>
+  <header class="review-header">
+    <h1>refactor-architecture-domain-section</h1>
+    <p class="summary">重构架构页领域包章节，将焦点从静态示例列表转向 domain-init 的动态生成能力，突出"扫描 → 识别 → 生成"的智能流程。</p>
+    <div class="progress-bar"><div class="progress-fill" style="width:100%"></div></div>
+    <p class="progress-text">规划完成 — 等待验收</p>
+  </header>
+
+  <div class="dashboard">
+    <div class="dashboard-grid">
+      <div class="dashboard-card">
+        <h3>风险评估</h3>
+        <span class="risk-badge risk-low">低</span>
+        <p>纯 HTML 内容重构，无逻辑变更、无新依赖、非破坏性</p>
+      </div>
+      <div class="dashboard-card">
+        <h3>任务概览</h3>
+        <p><strong>1 组 / 5 个任务</strong></p>
+        <ul><li>重写领域包章节（标题、流程图、对比、卡片、底部说明）</li></ul>
+      </div>
+      <div class="dashboard-card">
+        <h3>影响范围</h3>
+        <ul>
+          <li><span class="badge badge-modify">修改</span> web/architecture.html</li>
+        </ul>
+      </div>
+      <div class="dashboard-card">
+        <h3>新增依赖</h3>
+        <p>无</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="section" id="s1">
+    <div class="section-head" onclick="toggleSection(this)">
+      <span class="section-num">01</span>
+      <h2>需求与设计</h2>
+      <svg class="collapse-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+    </div>
+    <div class="section-body">
+      <h3>需求背景</h3>
+      <p>当前领域包章节以固定的前端/后端示例列表为主，给读者"预置模板"的印象。实际 harness 已有 domain-init skill，能自动扫描生成专属领域能力。需要在架构页准确展示这一核心能力。</p>
+
+      <h3>设计方案</h3>
+      <table>
+        <thead><tr><th>质量属性</th><th>A: 原地重写</th><th>B: 拆独立页</th></tr></thead>
+        <tbody>
+          <tr><td>可维护性</td><td>高</td><td>中</td></tr>
+          <tr><td>信息密度</td><td>高</td><td>低</td></tr>
+          <tr><td>工作量</td><td>小</td><td>大</td></tr>
+        </tbody>
+      </table>
+      <p><strong>选定：方案 A</strong> — 原地重写，保持架构页一页完整。</p>
+
+      <h3>新章节结构</h3>
+      <pre class="mermaid">
+graph TD
+  A[标题区: 智能扫描生成] --> B[domain-init 四阶段流程图]
+  B --> C[核心能力说明]
+  C --> D[产出示例: 前端/后端卡片]
+  D --> E[review-orchestrator 路由]
+  E --> F[底部说明: 代码驱动 + review 门禁]
+      </pre>
+
+      <h3>变更前后对比</h3>
+      <pre><code class="language-diff">- &lt;h2 class="stitle"&gt;每个子项目，一套专属知识&lt;/h2&gt;
+- &lt;p class="sdesc"&gt;通用基线包解决"所有项目都需要"的问题...&lt;/p&gt;
++ &lt;h2 class="stitle"&gt;智能扫描，按需生成&lt;/h2&gt;
++ &lt;p class="sdesc"&gt;domain-init 扫描项目代码，识别技术栈和编码习惯，自动生成专属的 rules、skills 和 agents。&lt;/p&gt;</code></pre>
+    </div>
+  </div>
+
+  <div class="section" id="s2">
+    <div class="section-head" onclick="toggleSection(this)">
+      <span class="section-num">02</span>
+      <h2>实现任务</h2>
+      <svg class="collapse-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+    </div>
+    <div class="section-body">
+      <ul class="task-list">
+        <li><input type="checkbox" disabled> <strong>1.1</strong> 重写标题区和描述</li>
+        <li><input type="checkbox" disabled> <strong>1.2</strong> 新增 domain-init 四阶段流程图</li>
+        <li><input type="checkbox" disabled> <strong>1.3</strong> 新增核心能力说明</li>
+        <li><input type="checkbox" disabled> <strong>1.4</strong> 调整前端/后端卡片为产出示例</li>
+        <li><input type="checkbox" disabled> <strong>1.5</strong> 改写底部提示</li>
+      </ul>
+      <p>Commit: <code>feat(web): 重构架构页领域包章节突出 domain-init 能力</code></p>
+    </div>
+  </div>
+
+  <div class="artifact-viewer">
+    <div class="artifact-tabs">
+      <button class="artifact-tab active" data-tab="brainstorm" onclick="switchArtifactTab('brainstorm')">brainstorm</button>
+      <button class="artifact-tab" data-tab="explore" onclick="switchArtifactTab('explore')">explore</button>
+      <button class="artifact-tab" data-tab="design" onclick="switchArtifactTab('design')">design</button>
+      <button class="artifact-tab" data-tab="proposal" onclick="switchArtifactTab('proposal')">proposal</button>
+      <button class="artifact-tab" data-tab="tasks" onclick="switchArtifactTab('tasks')">tasks</button>
+    </div>
+    <div class="artifact-panel active" data-panel="brainstorm"></div>
+    <div class="artifact-panel" data-panel="explore"></div>
+    <div class="artifact-panel" data-panel="design"></div>
+    <div class="artifact-panel" data-panel="proposal"></div>
+    <div class="artifact-panel" data-panel="tasks"></div>
+  </div>
+  <!-- BEGIN:artifacts -->
+<script type="text/markdown" data-artifact="brainstorm">
+## TL;DR
+
+重构 `web/architecture.html` 的「领域包」章节，将焦点从静态的"前端包/后端包"示例列表转向 `domain-init` 的动态生成能力，突出"扫描 → 识别 → 生成"的智能流程。
+
+## 需求背景
+
+当前领域包章节展示的是两个固定示例（前端领域包、后端领域包），给读者的印象是"预置模板"。但实际上 harness 已有 `domain-init` skill，能对任意项目自动扫描并生成专属 rules/skills/agents。架构页面需要反映这个核心能力。
+
+## 目标用户与角色
+
+- **新用户** — 了解 harness 如何为项目生成领域能力
+- **已有用户** — 理解 domain-init 与 devkeel init 的分工
+
+## 核心功能用例
+
+1. 展示 domain-init 的四阶段流程（识别 → baseline → 增强 → 收尾）
+2. 保留前端/后端示例作为"产出样本"但弱化为辅助说明
+3. 突出"自动检测 + 用户确认"的交互模式
+4. 展示 subAgent 并行扫描的机制
+5. 保留 review-orchestrator 跨域路由流程图
+
+## 需求边界
+
+**In Scope:**
+- 重写领域包章节的文案和结构
+- 新增 domain-init 流程可视化
+- 调整前端/后端示例的展示层级
+
+**Out of Scope:**
+- 不改动其他章节
+- 不改动 CSS 全局样式（可新增该章节专用样式）
+- 不改动 domain-init skill 本身的逻辑
+
+## 探索过的替代方向
+
+- 完全删除前端/后端示例 → 放弃，因为具体示例有助于理解产出物
+- 新增独立页面介绍 domain-init → 过重，一个章节足够
+
+## 待确认项
+
+无，需求明确。
+
+---
+## 下一步
+
+在新会话中粘贴以下命令：
+
+/opsx:continue refactor-architecture-domain-section
+</script>
+
+<script type="text/markdown" data-artifact="explore">
+## 调查范围
+
+基于 brainstorm.md，聚焦调查 `web/architecture.html` 中领域包章节（L464-L529）的结构和样式依赖。
+
+## 当前结构分析
+
+领域包章节位于 `web/architecture.html:464-529`，结构：
+
+```
+<section> "领域包"
+├── .tag + h2 + p.sdesc（标题区）
+├── .dp-layout（两列卡片）
+│   ├── .dp-card.dp-card-fe（前端领域包 — 9 条 li）
+│   └── .dp-card.dp-card-be（后端领域包 — 10 条 li）
+├── .dp-flow（review-orchestrator 路由流程图）
+└── .dp-note（"构建你自己的领域包"提示）
+```
+
+## CSS 依赖
+
+领域包专用样式定义在 `web/assets/styles.css` 中（`.dp-*` 前缀类），包括：
+- `.dp-layout` — 两列布局
+- `.dp-card` / `.dp-card-fe` / `.dp-card-be` — 卡片样式
+- `.dp-list` / `.dp-type` / `.dp-type-rule` / `.dp-type-skill` — 列表样式
+- `.dp-flow` / `.dp-flow-steps` / `.dp-flow-step` / `.dp-flow-arrow` — 流程图
+- `.dp-note` — 底部提示框
+
+## 改造方向
+
+1. **新增顶部流程图** — 展示 domain-init 四阶段（识别 → baseline → 增强 → 收尾）
+2. **重写标题和描述** — 从"每个子项目一套专属知识"转为强调"智能扫描生成"
+3. **保留 dp-card 但调整为"产出示例"** — 缩小卡片比重，作为 domain-init 产出的具体示例
+4. **保留 dp-flow** — review-orchestrator 路由仍然有价值
+5. **改写 dp-note** — 从"构建你自己的领域包"改为介绍 domain-init 与 devkeel init 的分工
+
+## 技术约束
+
+- 可复用现有 `.dp-*` CSS 类，按需新增
+- 新增的流程图可复用页面上方 `.route-*` 样式模式
+- 无 JS 依赖，纯 HTML+CSS
+
+## 风险点
+
+无显著风险，纯前端静态页面内容重构。
+
+---
+## 下一步
+
+在新会话中粘贴以下命令：
+
+/opsx:continue refactor-architecture-domain-section
+</script>
+
+<script type="text/markdown" data-artifact="design">
+## TL;DR
+
+重构 `web/architecture.html` L464-529 的领域包章节，新增 domain-init 四阶段流程可视化，将前端/后端示例降级为"产出样本"。交付物：修改后的 HTML 章节。
+
+## 需求引用
+
+brainstorm.md: 将焦点从静态示例列表转向 domain-init 的动态生成能力。
+
+## 方案设计
+
+### 架构概览
+
+纯 HTML+CSS 内容重构，无架构变更。
+
+### ATAM 方案对比
+
+| 质量属性 | A: 原地重写章节 | B: 拆为独立页面 | 权重 |
+|----------|----------------|----------------|------|
+| 可维护性 | 高（单文件） | 中（多文件） | 高 |
+| 信息密度 | 高（一页总览） | 低（需跳转） | 高 |
+| 工作量 | 小 | 大 | 中 |
+
+**选定方案：** A — 原地重写，保持架构页一页完整的设计。
+
+### 模块设计
+
+章节新结构：
+
+```
+<section> "领域包"
+├── 标题区（重写：强调智能生成）
+├── ★ 新增：domain-init 工作原理流程图（四阶段）
+│   Phase 1: 领域识别（扫描信号表 → 推断技术栈）
+│   Phase 2: Baseline 生成（多 subAgent 并行扫描代码 → 提取约定）
+│   Phase 3: 交互式增强（头脑风暴扩散 → 收拢 → 并行生成）
+│   Phase 4: 收尾（配置更新 + 链接检查 + 生成报告）
+├── ★ 新增：核心能力说明（做了什么 + 怎么做的）
+│   - 自动检测领域和技术栈
+│   - 基于真实代码采样提取约定（非通用模板）
+│   - subAgent 并行 + 用户 review 门禁
+│   - 产出：rules + skills + agents
+├── 产出示例（原 dp-card 保留但标注为"示例产出"）
+├── review-orchestrator 路由（保留原样）
+└── 底部说明（改写：强调代码驱动 + review 门禁）
+```
+
+### 代码设计预览
+
+#### 变更前后对比
+
+```diff
+- <h2 class="stitle">每个子项目，一套专属知识</h2>
+- <p class="sdesc">通用基线包解决"所有项目都需要"的问题，领域包解决"这个项目的技术栈怎么用"。</p>
++ <h2 class="stitle">智能扫描，按需生成</h2>
++ <p class="sdesc">domain-init 扫描项目代码，识别技术栈和编码习惯，自动生成专属的 rules、skills 和 agents。</p>
+```
+
+新增流程图使用已有 `.route-*` 样式模式（四步流程，每步带编号圆圈和描述）。
+
+### 数据设计
+
+不涉及。
+
+## 质量设计
+
+### SLO 指标
+
+不涉及（静态页面）。
+
+### 安全（STRIDE 简表）
+
+不涉及（纯展示型 HTML，无用户输入、无后端交互）。
+
+### 旁路隔离
+
+不涉及。
+
+## 决策追溯
+
+| 决策 | 追溯 |
+|------|------|
+| 保留前端/后端卡片作为示例 | brainstorm: "保留具体示例有助于理解产出物" |
+| 复用 .route-* 样式 | explore: 已有流程图样式可复用 |
+| 聚焦 domain-init 能力和工作方式 | 用户反馈: 不需要与 devkeel init 对比 |
+
+## 风险与未决
+
+无显著风险。
+
+---
+## 下一步
+
+在新会话中粘贴以下命令：
+
+/opsx:continue refactor-architecture-domain-section
+</script>
+
+<script type="text/markdown" data-artifact="proposal">
+## Why
+
+当前 architecture.html 的「领域包」章节以静态的前端/后端示例列表为主，给读者留下"预置模板"的印象。但 harness 已具备 `domain-init` skill，能对任意项目自动扫描并生成专属领域能力。架构页面需要准确反映这一核心差异化能力，帮助用户理解 harness 不只是分发模板，而是智能生成定制规范。
+
+## What Changes
+
+**领域包章节内容**
+- From: 以"前端领域包"和"后端领域包"两个固定示例列表为核心展示
+- To: 以 domain-init 四阶段流程为核心，前端/后端示例降级为"产出样本"
+- Reason: 突出产品核心能力——智能扫描生成
+- Impact: 非破坏性，仅影响文档展示页面
+
+## Capabilities
+
+### 新增能力
+
+- `web-architecture-page`: architecture.html 领域包章节展示 domain-init 流程
+
+### 修改能力
+
+无
+
+## Impact
+
+- `web/architecture.html` — 领域包章节 HTML 内容重写
+- 可能新增少量 `<style>` 块中的 CSS（流程图样式）
+</script>
+
+<script type="text/markdown" data-artifact="specs">
+# web-architecture-page
+
+## ADDED Requirements
+
+### Requirement: Domain-init flow visualization SHALL be the primary content of the domain pack section
+
+The architecture page's domain pack section SHALL prominently display the domain-init four-phase workflow (识别 → Baseline → 增强 → 收尾) as its primary visual element.
+
+#### Scenario: User views domain pack section
+- **WHEN** a user scrolls to the domain pack section
+- **THEN** the first visual element after the title MUST be the domain-init flow diagram showing four phases
+
+### Requirement: Frontend/backend examples SHALL be presented as output samples
+
+The existing frontend and backend domain pack cards SHALL be retained but repositioned as "产出示例" (output samples) of what domain-init generates.
+
+#### Scenario: User sees domain pack cards
+- **WHEN** a user views the frontend/backend cards
+- **THEN** they MUST be labeled as example outputs of domain-init, not as standalone "domain packs"
+
+### Requirement: Section SHALL explain domain-init vs harness-init distinction
+
+The section MUST include a brief explanation of how `domain-init` (project-specific scanning) differs from `devkeel init` (generic template distribution).
+
+#### Scenario: User reads the section
+- **WHEN** a user reads the domain pack section
+- **THEN** they MUST find a clear comparison between devkeel init and domain-init
+</script>
+
+<script type="text/markdown" data-artifact="tasks">
+# 重构架构页领域包章节
+
+> **给 agentic 执行器：** 单任务，直接实现即可。
+
+**目标：** 重写 architecture.html 领域包章节，突出 domain-init 智能生成能力
+
+**架构：** 纯 HTML+CSS 内容变更，修改 `web/architecture.html` L464-529 区域
+
+**技术栈：** HTML, CSS
+
+---
+
+## 1. 重写领域包章节
+
+- [ ] **1.1 重写标题区和描述**
+  1. 修改 h2 从"每个子项目，一套专属知识"改为突出智能生成
+  2. 修改 p.sdesc 描述 domain-init 的核心价值
+  > commit: style(web): 重构领域包章节标题突出 domain-init
+
+- [ ] **1.2 新增 domain-init 四阶段流程图**
+  1. 在标题区下方新增流程可视化，复用 `.route-*` 样式模式
+  2. 四阶段：领域识别 → Baseline 生成 → 交互式增强 → 收尾
+  3. 每阶段带简短说明：做了什么、怎么做的
+
+- [ ] **1.3 新增核心能力说明**
+  1. 自动检测：扫描信号表推断领域和技术栈
+  2. 代码驱动：采样真实代码提取约定，非通用模板话术
+  3. 并行生成：多 subAgent 并行扫描不同维度
+  4. review 门禁：所有产出经用户确认后才写入
+
+- [ ] **1.4 调整前端/后端卡片为产出示例**
+  1. 在 dp-layout 上方加"产出示例"小标签
+  2. 保留卡片内容不变
+
+- [ ] **1.5 改写底部提示**
+  1. 重写 dp-note：介绍 subAgent 并行扫描 + 用户 review 门禁机制
+  > commit: feat(web): 重构架构页领域包章节突出 domain-init 能力
+</script>
+<!-- END:artifacts -->
+
+  <div class="acceptance">
+    <h2>验收指引</h2>
+    <ol>
+      <li>确认需求范围和设计方案是否合理</li>
+      <li>确认任务拆分粒度是否合适</li>
+      <li>验收通过后，开启新会话执行：<code class="copy-cmd" onclick="navigator.clipboard.writeText('/opsx:apply refactor-architecture-domain-section')">/opsx:apply refactor-architecture-domain-section</code></li>
+    </ol>
+  </div>
+
+  <footer class="review-footer">
+    <p>Generated by OpenSpec | refactor-architecture-domain-section</p>
+  </footer>
+
+  <!-- BEGIN:js -->
+<script>
+// human-review.js — 评审页面交互逻辑
+// 由 devkeel inject-review 注入
+
+// 折叠/展开
+function toggleSection(head) {
+  const section = head.parentElement;
+  section.classList.toggle('collapsed');
+  localStorage.setItem(section.id, section.classList.contains('collapsed'));
+}
+document.querySelectorAll('.section').forEach(function(s) {
+  if (localStorage.getItem(s.id) === 'true') s.classList.add('collapsed');
+});
+
+function buildArtifactViewer() {
+  var viewer = document.querySelector('.artifact-viewer');
+  if (!viewer) return;
+
+  var tabs = viewer.querySelector('.artifact-tabs');
+  if (!tabs) return;
+
+  var knownTabs = {};
+  viewer.querySelectorAll('.artifact-tab').forEach(function(tab) {
+    knownTabs[tab.dataset.tab] = true;
+  });
+
+  var knownPanels = {};
+  viewer.querySelectorAll('.artifact-panel').forEach(function(panel) {
+    knownPanels[panel.dataset.panel] = true;
+  });
+
+  document.querySelectorAll('script[data-artifact]').forEach(function(script) {
+    var name = script.dataset.artifact;
+    if (!name) return;
+
+    if (!knownTabs[name]) {
+      var tab = document.createElement('button');
+      tab.className = 'artifact-tab';
+      tab.dataset.tab = name;
+      tab.textContent = name;
+      tab.onclick = function() { switchArtifactTab(name); };
+      tabs.appendChild(tab);
+      knownTabs[name] = true;
+    }
+
+    if (!knownPanels[name]) {
+      var panel = document.createElement('div');
+      panel.className = 'artifact-panel';
+      panel.dataset.panel = name;
+      viewer.appendChild(panel);
+      knownPanels[name] = true;
+    }
+  });
+}
+
+// Artifact 标签页切换
+function switchArtifactTab(name) {
+  document.querySelectorAll('.artifact-tab').forEach(function(t) { t.classList.remove('active'); });
+  document.querySelectorAll('.artifact-panel').forEach(function(p) { p.classList.remove('active'); });
+  var tab = document.querySelector('[data-tab="' + name + '"]');
+  if (tab) tab.classList.add('active');
+  var panel = document.querySelector('[data-panel="' + name + '"]');
+  if (!panel) return;
+  panel.classList.add('active');
+  if (!panel.dataset.rendered) {
+    var script = document.querySelector('script[data-artifact="' + name + '"]');
+    if (script) {
+      var md = script.textContent;
+      panel.innerHTML = typeof marked !== 'undefined' ? marked.parse(md) : '<pre>' + md + '</pre>';
+      panel.dataset.rendered = 'true';
+      panel.querySelectorAll('pre code').forEach(function(b) { hljs.highlightElement(b); });
+    }
+  }
+}
+
+window.addEventListener('DOMContentLoaded', function() {
+  buildArtifactViewer();
+});
+
+// 代码高亮
+hljs.highlightAll();
+
+// Mermaid 初始化
+var isDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+mermaid.initialize({
+  startOnLoad: true,
+  theme: 'base',
+  themeVariables: isDark ? {
+    background: '#0f172a',
+    primaryColor: 'rgba(99,102,241,0.25)',
+    primaryTextColor: '#f1f5f9',
+    primaryBorderColor: '#818cf8',
+    secondaryColor: 'rgba(6,78,59,0.4)',
+    secondaryTextColor: '#f1f5f9',
+    secondaryBorderColor: '#34d399',
+    tertiaryColor: 'rgba(76,29,149,0.4)',
+    tertiaryTextColor: '#f1f5f9',
+    tertiaryBorderColor: '#a78bfa',
+    lineColor: '#94a3b8',
+    textColor: '#f1f5f9',
+    mainBkg: 'rgba(99,102,241,0.15)',
+    nodeBorder: '#818cf8',
+    clusterBkg: 'rgba(30,41,59,0.6)',
+    clusterBorder: '#475569',
+    edgeLabelBackground: '#1e293b',
+    fontSize: '14px'
+  } : {
+    background: '#ffffff',
+    primaryColor: '#eef2ff',
+    primaryTextColor: '#1e293b',
+    primaryBorderColor: '#4f46e5',
+    secondaryColor: '#f0fdf4',
+    secondaryTextColor: '#1e293b',
+    secondaryBorderColor: '#059669',
+    tertiaryColor: '#faf5ff',
+    tertiaryTextColor: '#1e293b',
+    tertiaryBorderColor: '#7c3aed',
+    lineColor: '#475569',
+    textColor: '#1e293b',
+    mainBkg: '#eef2ff',
+    nodeBorder: '#4f46e5',
+    clusterBkg: '#f8fafc',
+    clusterBorder: '#e2e8f0',
+    edgeLabelBackground: '#ffffff',
+    fontSize: '14px'
+  }
+});
+
+</script>
+<!-- END:js -->
+  <script>
+    hljs.highlightAll();
+    const isDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+    mermaid.initialize({ startOnLoad: true, theme: 'base', themeVariables: isDark ? { background:'#0f172a', primaryColor:'rgba(99,102,241,0.25)', primaryTextColor:'#f1f5f9', primaryBorderColor:'#818cf8', lineColor:'#94a3b8', textColor:'#f1f5f9', mainBkg:'rgba(99,102,241,0.15)', nodeBorder:'#818cf8', fontSize:'14px' } : { background:'#ffffff', primaryColor:'#eef2ff', primaryTextColor:'#1e293b', primaryBorderColor:'#4f46e5', lineColor:'#475569', textColor:'#1e293b', mainBkg:'#eef2ff', nodeBorder:'#4f46e5', fontSize:'14px' } });
+  </script>
+</body>
+</html>

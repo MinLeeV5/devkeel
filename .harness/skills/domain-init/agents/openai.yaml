@@ -1,0 +1,4 @@
+interface:
+  display_name: "领域初始化"
+  short_description: "扫描项目代码识别领域，按需生成项目专属的规则、技能和角色定义"
+  default_prompt: "使用 $domain-init 扫描当前项目并提出领域能力补齐方案。"

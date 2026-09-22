@@ -1,0 +1,4 @@
+interface:
+  display_name: "代码审查"
+  short_description: "审查实际代码改动，按风险和领域选择审查方式并汇总可定位的问题"
+  default_prompt: "使用 $review-orchestrator 审查当前改动。"

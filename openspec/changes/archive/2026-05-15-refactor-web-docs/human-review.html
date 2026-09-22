@@ -1,0 +1,692 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Human Review — refactor-web-docs</title>
+  <link rel="stylesheet" href="https://cdn.jsdmirror.com/npm/@highlightjs/cdn-assets@11.11.1/styles/github.min.css">
+  <link rel="stylesheet" href="https://cdn.jsdmirror.com/npm/@highlightjs/cdn-assets@11.11.1/styles/github-dark.min.css" media="(prefers-color-scheme: dark)">
+  <script src="https://cdn.jsdmirror.com/npm/@highlightjs/cdn-assets@11.11.1/highlight.min.js"></script>
+  <script src="https://cdn.jsdmirror.com/npm/mermaid@11/dist/mermaid.min.js"></script>
+  <style>
+    :root {
+      --bg: #f8fafc; --surface: #ffffff; --text: #0f172a; --text-secondary: #475569;
+      --text-muted: #94a3b8; --accent: #4f46e5; --accent-light: #eef2ff;
+      --accent-border: #c7d2fe; --accent-text: #3730a3; --border: #e2e8f0;
+      --code-bg: #f1f5f9; --success: #059669; --warning: #d97706;
+      --font-sans: -apple-system,BlinkMacSystemFont,'Segoe UI','Noto Sans SC','PingFang SC','Microsoft YaHei',sans-serif;
+      --font-mono: 'SF Mono','Cascadia Code','JetBrains Mono',Consolas,monospace;
+    }
+    @media(prefers-color-scheme:dark){:root{
+      --bg:#0f172a;--surface:#1e293b;--text:#f1f5f9;--text-secondary:#94a3b8;
+      --text-muted:#64748b;--accent:#818cf8;--accent-light:rgba(99,102,241,0.12);
+      --accent-border:rgba(99,102,241,0.25);--accent-text:#c7d2fe;--border:#334155;
+      --code-bg:#0f172a;--success:#34d399;--warning:#fbbf24;
+    }}
+    *,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+    html{scroll-behavior:smooth}
+    body{font-family:var(--font-sans);background:var(--bg);color:var(--text);line-height:1.8;font-size:15px}
+    ::selection{background:rgba(79,70,229,.2)}
+    .wrapper{max-width:860px;margin:0 auto;padding:0 2.5rem}
+    a{color:var(--accent);text-decoration:none}
+    a:hover{text-decoration:underline}
+
+    /* Header */
+    .page-header{
+      background:linear-gradient(135deg,#eef2ff,#f8fafc,#f0f9ff);
+      border-bottom:1px solid var(--border);padding:3rem 0 2.5rem;
+    }
+    @media(prefers-color-scheme:dark){.page-header{background:linear-gradient(135deg,rgba(30,41,59,.8),var(--bg),rgba(15,23,42,.9))}}
+    .badge-review{
+      display:inline-flex;align-items:center;gap:8px;
+      font-size:11px;font-weight:600;letter-spacing:.05em;text-transform:uppercase;
+      padding:6px 14px;border-radius:999px;
+      background:rgba(217,119,6,.1);color:var(--warning);border:1px solid rgba(217,119,6,.2);
+      margin-bottom:1rem;
+    }
+    .badge-dot{width:8px;height:8px;border-radius:50%;background:var(--warning);animation:pulse 2s infinite}
+    @keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
+    .page-header h1{font-size:34px;font-weight:800;letter-spacing:-.02em;margin-bottom:.5rem}
+    .page-header .summary{font-size:15px;color:var(--text-secondary);margin-bottom:1rem}
+    .page-header .meta{font-size:13px;color:var(--text-muted)}
+    .progress-bar{display:flex;gap:4px;margin-top:1.25rem}
+    .progress-seg{height:6px;flex:1;border-radius:3px}
+    .progress-done{background:var(--success)}
+    .progress-current{background:var(--accent)}
+
+    /* TOC */
+    .toc{
+      background:var(--surface);border:1px solid var(--border);border-radius:10px;
+      padding:1.5rem 2rem;margin:2.5rem 0;
+    }
+    .toc h2{font-size:13px;font-weight:600;text-transform:uppercase;letter-spacing:.05em;color:var(--text-muted);margin-bottom:1rem}
+    .toc-list{list-style:none;counter-reset:toc}
+    .toc-list li{counter-increment:toc}
+    .toc-list li a{
+      display:flex;align-items:center;gap:12px;padding:8px 12px;border-radius:6px;
+      font-size:14px;font-weight:500;color:var(--text);transition:background .15s;
+    }
+    .toc-list li a:hover{background:var(--accent-light);text-decoration:none}
+    .toc-list li a::before{
+      content:counter(toc,decimal-leading-zero);
+      font-size:12px;font-weight:700;color:var(--accent);min-width:24px;
+    }
+
+    /* Sections */
+    .section{padding:3.5rem 0;border-top:1px solid var(--border)}
+    .section:first-of-type{border-top:none}
+    .section-num{font-size:28px;font-weight:800;color:var(--accent);margin-right:12px}
+    .section-head{display:flex;align-items:center;margin-bottom:1.5rem}
+    .section-head h2{font-size:26px;font-weight:700}
+    h3{font-size:20px;font-weight:600;margin:1.5rem 0 .75rem;padding-bottom:.5rem;border-bottom:1px solid var(--border)}
+    h4{font-size:17px;font-weight:600;margin:1.25rem 0 .5rem}
+
+    /* Summary block */
+    .summary-block{
+      background:var(--accent-light);border:1px solid var(--accent-border);
+      border-radius:10px;padding:1.25rem 1.5rem;margin-bottom:1.5rem;
+      color:var(--accent-text);font-size:15px;line-height:1.7;
+    }
+
+    /* Tables */
+    table{width:100%;border-collapse:collapse;margin:1rem 0 1.5rem;font-size:14px}
+    th{text-align:left;padding:.75rem 1rem;font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.05em;color:var(--text-muted);background:var(--accent-light);border-bottom:2px solid var(--border)}
+    td{padding:.75rem 1rem;border-bottom:1px solid var(--border);color:var(--text-secondary)}
+    tr:hover td{background:var(--accent-light)}
+    td strong{color:var(--text);font-weight:600}
+
+    /* Requirement card */
+    .req-card{
+      background:var(--surface);border:1px solid var(--border);border-left:3px solid var(--accent);
+      border-radius:10px;padding:1.5rem 2rem;margin:1rem 0;
+    }
+    .req-label{font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.05em;color:var(--accent);margin-bottom:.25rem}
+    .req-card h4{margin-top:.25rem;border:none;padding:0}
+    .req-card p{color:var(--text-secondary);font-size:14px;margin:.5rem 0}
+
+    /* Scenario block */
+    .scenario{
+      background:var(--accent-light);border:1px solid var(--accent-border);
+      border-radius:8px;padding:1rem 1.25rem;margin:.75rem 0;
+    }
+    .scenario-label{font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.05em;color:var(--accent);margin-bottom:.5rem}
+    .scenario .kw{font-weight:700;color:var(--accent);text-transform:uppercase;margin-right:4px}
+    .scenario p{font-size:13px;color:var(--text-secondary);margin:.25rem 0;line-height:1.6}
+
+    /* Task list */
+    .task-group{margin:1.5rem 0}
+    .task-group h4{font-weight:600;border:none;padding:0}
+    .task-item{display:flex;align-items:flex-start;gap:10px;padding:.5rem 0;font-size:14px;color:var(--text-secondary)}
+    .task-cb{width:18px;height:18px;border:2px solid var(--border);border-radius:4px;flex-shrink:0;margin-top:2px}
+    .task-steps{margin-left:28px;font-size:13px;color:var(--text-muted);line-height:1.7}
+    .task-commit{font-size:12px;color:var(--accent);margin-top:4px;font-family:var(--font-mono)}
+
+    /* Code */
+    code{font-family:var(--font-mono);font-size:.88em;background:var(--code-bg);padding:2px 6px;border-radius:4px}
+    pre{background:var(--code-bg);border:1px solid var(--border);border-radius:8px;padding:1rem 1.25rem;overflow-x:auto;margin:1rem 0}
+    pre code{background:none;padding:0;font-size:13px}
+
+    /* Mermaid */
+    .mermaid-container{padding:1.5rem;border-radius:10px;margin:1.5rem 0;overflow-x:auto}
+    @media(prefers-color-scheme:dark){.mermaid-container{background:rgba(15,23,42,.5)}}
+
+    /* Acceptance */
+    .acceptance{border-top:2px solid var(--accent);padding-top:2.5rem;margin-top:3.5rem}
+    .acceptance h2{display:flex;align-items:center;gap:10px;font-size:22px;font-weight:700}
+    .acceptance ol{margin:1rem 0 1.5rem 1.25rem;color:var(--text-secondary);font-size:14px}
+    .acceptance ol li{margin:.5rem 0}
+    .next-cmd{
+      display:block;padding:1rem 1.25rem;border-radius:8px;
+      border:2px dashed var(--accent-border);font-family:var(--font-mono);
+      font-size:14px;color:var(--accent);cursor:pointer;transition:background .15s;
+      margin:1rem 0;text-align:center;
+    }
+    .next-cmd:hover{background:var(--accent-light);text-decoration:none}
+
+    /* Footer */
+    .page-footer{text-align:center;padding:2.5rem 0;font-size:13px;color:var(--text-muted)}
+
+    /* Responsive */
+    @media(max-width:768px){
+      .wrapper{padding:0 1.25rem}
+      .page-header h1{font-size:26px}
+      .section-num{font-size:22px}
+      .section-head h2{font-size:22px}
+      .req-card{padding:1rem 1.25rem}
+    }
+    @media(max-width:480px){
+      .wrapper{padding:0 1rem}
+      .page-header h1{font-size:22px}
+    }
+
+    /* Print */
+    @media print{
+      body{background:#fff;color:#000}
+      .page-header{background:#fff!important;border:none}
+      .badge-review{display:none}
+      a::after{content:" (" attr(href) ")";font-size:11px;color:#666}
+      .toc{page-break-after:always}
+      .acceptance{page-break-before:always}
+      .mermaid-container{background:#fff!important}
+    }
+
+    /* Lists */
+    ul,ol{margin:.5rem 0 1rem 1.25rem;color:var(--text-secondary)}
+    li{margin:.25rem 0;font-size:14px}
+    li strong{color:var(--text)}
+  </style>
+</head>
+<body>
+
+<!-- Header -->
+<header class="page-header">
+  <div class="wrapper">
+    <div class="badge-review"><span class="badge-dot"></span>Pending Review</div>
+    <h1>refactor-web-docs</h1>
+    <p class="summary">将 web/index.html 拆分为三份文档（首页 + 架构设计 + 最佳实践），抽取共享 CSS，统一导航。</p>
+    <p class="meta">superpowers-bridge &middot; 2026-05-15</p>
+    <div class="progress-bar">
+      <div class="progress-seg progress-done"></div>
+      <div class="progress-seg progress-done"></div>
+      <div class="progress-seg progress-done"></div>
+      <div class="progress-seg progress-done"></div>
+      <div class="progress-seg progress-done"></div>
+      <div class="progress-seg progress-done"></div>
+      <div class="progress-seg progress-current"></div>
+    </div>
+  </div>
+</header>
+
+<main class="wrapper">
+
+  <!-- TOC -->
+  <nav class="toc">
+    <h2>目录</h2>
+    <ol class="toc-list">
+      <li><a href="#s1">需求背景</a></li>
+      <li><a href="#s2">现状调查</a></li>
+      <li><a href="#s3">技术设计</a></li>
+      <li><a href="#s4">变更提案</a></li>
+      <li><a href="#s5">规格清单</a></li>
+      <li><a href="#s6">实现任务</a></li>
+    </ol>
+  </nav>
+
+  <!-- 01 需求背景 -->
+  <div class="section" id="s1">
+    <div class="section-head"><span class="section-num">01</span><h2>需求背景</h2></div>
+
+    <div class="summary-block">
+      将当前单页 index.html 拆分为三份文档（首页 + 架构设计 + 最佳实践），首页聚焦"是什么 → 快速开始 → 工作流演示"，架构演进内容统一收入变更日志。
+    </div>
+
+    <h3>痛点</h3>
+    <ol>
+      <li><strong>首页信息过载</strong> — 开发者第一次访问时，最想知道的是"这是什么、怎么用、效果如何"，但需要滚过大量架构细节才能找到快速开始</li>
+      <li><strong>内容定位模糊</strong> — 架构设计（核心架构、路由机制）与使用指南（快速开始、工作流）混在一起，不同阶段的读者找不到对应内容</li>
+      <li><strong>架构演进占据首页空间</strong> — V1→V2 的演进历史对新用户无价值，应归入变更日志</li>
+    </ol>
+
+    <h3>目标用户</h3>
+    <table>
+      <thead><tr><th>角色</th><th>关注点</th><th>对应文档</th></tr></thead>
+      <tbody>
+        <tr><td><strong>首次接触的开发者</strong></td><td>是什么？能干嘛？怎么开始？</td><td>首页</td></tr>
+        <tr><td><strong>正在使用的开发者</strong></td><td>工作流怎么用？遇到问题查什么？</td><td>首页 + 最佳实践</td></tr>
+        <tr><td><strong>深度用户 / 贡献者</strong></td><td>架构如何运作？选型理由？</td><td>架构设计文档</td></tr>
+        <tr><td><strong>关注版本变化的用户</strong></td><td>版本间有什么变化？</td><td>变更日志</td></tr>
+      </tbody>
+    </table>
+
+    <h3>需求边界</h3>
+    <table>
+      <thead><tr><th>In Scope</th><th>Out of Scope</th></tr></thead>
+      <tbody>
+        <tr><td>拆分 index.html 到三份文档</td><td>不重新设计视觉风格</td></tr>
+        <tr><td>导航栏统一 + 当前页高亮</td><td>不新增内容（Worktree 仅占位）</td></tr>
+        <tr><td>CSS 抽取为共享 styles.css</td><td>不改变工作流 tab 交互逻辑</td></tr>
+        <tr><td>V1→V2 从首页删除</td><td>不涉及 web/v1/ 和 capability-inventory.html</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- 02 现状调查 -->
+  <div class="section" id="s2">
+    <div class="section-head"><span class="section-num">02</span><h2>现状调查</h2></div>
+
+    <h3>文件现状</h3>
+    <table>
+      <thead><tr><th>文件</th><th>行数</th><th>大小</th><th>说明</th></tr></thead>
+      <tbody>
+        <tr><td><strong>index.html</strong></td><td>1493</td><td>77.4KB</td><td>主页（全部内容集中于此）</td></tr>
+        <tr><td><strong>changelog.html</strong></td><td>591</td><td>29KB</td><td>变更日志（独立页面，已有 V1→V2）</td></tr>
+        <tr><td><strong>capability-inventory.html</strong></td><td>690</td><td>55.2KB</td><td>能力清单（无导航栏，不在范围内）</td></tr>
+      </tbody>
+    </table>
+
+    <h3>内容板块映射</h3>
+    <table>
+      <thead><tr><th>#</th><th>板块</th><th>行范围</th><th>目标文档</th></tr></thead>
+      <tbody>
+        <tr><td>1</td><td><strong>Hero</strong></td><td>470-492</td><td>首页</td></tr>
+        <tr><td>2</td><td><strong>是什么</strong></td><td>495-522</td><td>首页</td></tr>
+        <tr><td>3</td><td><strong>核心架构</strong></td><td>525-598</td><td>architecture</td></tr>
+        <tr><td>4</td><td><strong>路由机制</strong></td><td>601-707</td><td>architecture</td></tr>
+        <tr><td>5</td><td><strong>工作流演示</strong></td><td>710-1028</td><td>首页</td></tr>
+        <tr><td>6</td><td><strong>快速开始</strong></td><td>1031-1060</td><td>首页</td></tr>
+        <tr><td>7</td><td><strong>CLI 命令</strong></td><td>1063-1077</td><td>architecture</td></tr>
+        <tr><td>8</td><td><strong>通用基线包</strong></td><td>1080-1115</td><td>architecture</td></tr>
+        <tr><td>9</td><td><strong>领域包</strong></td><td>1118-1182</td><td>architecture</td></tr>
+        <tr><td>10</td><td><strong>多平台</strong></td><td>1184-1233</td><td>architecture</td></tr>
+        <tr><td>11</td><td><strong>选型理由</strong></td><td>1237-1265</td><td>architecture</td></tr>
+        <tr><td>12</td><td><strong>场景速查表</strong></td><td>1266-1327</td><td>best-practices</td></tr>
+        <tr><td>13</td><td><strong>最佳实践</strong></td><td>1328-1353</td><td>best-practices</td></tr>
+        <tr><td>14</td><td><strong>设计原则</strong></td><td>1356-1376</td><td>architecture</td></tr>
+        <tr><td>15</td><td><strong>V1→V2</strong></td><td>1379-1460</td><td>删除（changelog 已有）</td></tr>
+      </tbody>
+    </table>
+
+    <h3>关键发现</h3>
+    <ul>
+      <li><strong>CSS 重复</strong> — 无共享 CSS 文件，每个 HTML 内联全部样式，:root 变量定义完全相同</li>
+      <li><strong>V1→V2 重复</strong> — index.html 和 changelog.html 各有一份，changelog 是超集（6 个收益 vs 4 个）</li>
+      <li><strong><code>--max-w</code> 差异</strong> — index.html 用 1120px，changelog 用 960px</li>
+      <li><strong>唯一 JS</strong> — <code>switchTab()</code> 函数仅用于工作流 tab，随首页保留</li>
+      <li><strong><code>.pillar*</code> 共用</strong> — 被核心架构和最佳实践两个板块使用，迁移时两个文档都需要</li>
+    </ul>
+  </div>
+
+  <!-- 03 技术设计 -->
+  <div class="section" id="s3">
+    <div class="section-head"><span class="section-num">03</span><h2>技术设计</h2></div>
+
+    <h3>目标文件结构</h3>
+    <div class="mermaid-container">
+      <pre class="mermaid">
+graph LR
+    subgraph 共享层
+        CSS["assets/styles.css"]
+    end
+    IDX["index.html\n首页"] --> ARCH["architecture.html\n架构设计"]
+    IDX --> BP["best-practices.html\n最佳实践"]
+    IDX --> CL["changelog.html\n变更日志"]
+    ARCH --> IDX
+    ARCH --> BP
+    ARCH --> CL
+    BP --> IDX
+    BP --> ARCH
+    BP --> CL
+    CL --> IDX
+    CSS -.-> IDX
+    CSS -.-> ARCH
+    CSS -.-> BP
+    CSS -.-> CL
+      </pre>
+    </div>
+
+    <h3>ATAM 方案对比</h3>
+    <table>
+      <thead><tr><th>质量属性</th><th>A: 抽取共享 styles.css</th><th>B: 保持内联 CSS</th><th>权重</th></tr></thead>
+      <tbody>
+        <tr><td><strong>可维护性</strong></td><td style="color:var(--success)">高 — 一处修改</td><td>低 — 4 处修改</td><td>40%</td></tr>
+        <tr><td><strong>一致性</strong></td><td style="color:var(--success)">高 — 必然一致</td><td>中 — 人工同步</td><td>30%</td></tr>
+        <tr><td><strong>部署简单度</strong></td><td style="color:var(--success)">高</td><td style="color:var(--success)">高</td><td>15%</td></tr>
+        <tr><td><strong>首次加载</strong></td><td>中 — 多一个请求</td><td style="color:var(--success)">高</td><td>15%</td></tr>
+      </tbody>
+    </table>
+    <p><strong>选定方案 A</strong> — 用户已确认。4 页共享大量样式，一致性是核心诉求。</p>
+
+    <h3>关键决策追溯</h3>
+    <table>
+      <thead><tr><th>决策</th><th>追溯到</th></tr></thead>
+      <tbody>
+        <tr><td>抽取 <code>assets/styles.css</code></td><td>brainstorm 待确认项 #3</td></tr>
+        <tr><td>文件名 <code>architecture.html</code> / <code>best-practices.html</code></td><td>brainstorm 待确认项 #1/#2</td></tr>
+        <tr><td>导航高亮当前页</td><td>brainstorm 待确认项 #5</td></tr>
+        <tr><td>通用基线包完全移走</td><td>brainstorm 待确认项 #4</td></tr>
+        <tr><td>V1→V2 直接删除</td><td>explore — changelog 已有完整版本</td></tr>
+        <tr><td>首页顺序 Hero→是什么→快速开始→工作流</td><td>brainstorm UC-1</td></tr>
+      </tbody>
+    </table>
+
+    <h3>页面内容编排</h3>
+    <table>
+      <thead><tr><th>页面</th><th>内容顺序</th></tr></thead>
+      <tbody>
+        <tr><td><strong>index.html</strong></td><td>Nav → Hero → 是什么 → 快速开始 → 工作流演示 → Version Banner → Footer</td></tr>
+        <tr><td><strong>architecture.html</strong></td><td>Nav → Hero(简) → 核心架构 → 路由机制 → 设计原则 → 基线包 → 领域包 → 多平台 → CLI → 选型说明 → Footer</td></tr>
+        <tr><td><strong>best-practices.html</strong></td><td>Nav → Hero(简) → 最佳实践 → 场景速查表 → Worktree(占位) → Footer</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- 04 变更提案 -->
+  <div class="section" id="s4">
+    <div class="section-head"><span class="section-num">04</span><h2>变更提案</h2></div>
+
+    <h3>Why</h3>
+    <p>当前 <code>web/index.html</code> 是一份 1493 行的单页文档，混合了产品介绍、架构设计、CLI 参考、最佳实践和版本演进等内容。按读者角色拆分为三份独立文档，让每类读者直达所需内容。</p>
+
+    <h3>What Changes</h3>
+    <table>
+      <thead><tr><th>变更</th><th>From</th><th>To</th><th>影响</th></tr></thead>
+      <tbody>
+        <tr><td><strong>首页内容范围</strong></td><td>15 个板块的大而全单页</td><td>4 个板块（Hero+是什么、快速开始、工作流、版本横幅）</td><td>非破坏性</td></tr>
+        <tr><td><strong>CSS 架构</strong></td><td>每个 HTML 内联全部 CSS</td><td>公共样式抽到 styles.css，专属样式保留内联</td><td>非破坏性</td></tr>
+        <tr><td><strong>导航结构</strong></td><td>各页面独立维护导航</td><td>统一四入口 + 当前页高亮</td><td>changelog 需更新</td></tr>
+        <tr><td><strong>V1→V2</strong></td><td>index + changelog 各一份</td><td>仅保留 changelog 版本</td><td>非破坏性</td></tr>
+      </tbody>
+    </table>
+
+    <h3>Capabilities</h3>
+    <ul>
+      <li><strong><code>shared-styles</code></strong> — CSS 抽取、公共/专属分界、导航高亮样式</li>
+      <li><strong><code>page-split</code></strong> — 页面拆分、导航统一、V1→V2 清理</li>
+    </ul>
+
+    <h3>Impact</h3>
+    <table>
+      <thead><tr><th>文件</th><th>变更类型</th></tr></thead>
+      <tbody>
+        <tr><td><code>web/assets/styles.css</code></td><td>新建</td></tr>
+        <tr><td><code>web/index.html</code></td><td>大幅修改</td></tr>
+        <tr><td><code>web/architecture.html</code></td><td>新建</td></tr>
+        <tr><td><code>web/best-practices.html</code></td><td>新建</td></tr>
+        <tr><td><code>web/changelog.html</code></td><td>小幅修改（导航 + CSS 引用）</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- 05 规格清单 -->
+  <div class="section" id="s5">
+    <div class="section-head"><span class="section-num">05</span><h2>规格清单</h2></div>
+
+    <h3>shared-styles</h3>
+
+    <div class="req-card">
+      <div class="req-label">Requirement</div>
+      <h4>CSS 变量与基础重置 SHALL 定义在共享样式文件中</h4>
+      <p><code>:root</code> 变量定义和全局重置样式统一放置在 <code>web/assets/styles.css</code> 中。</p>
+      <div class="scenario">
+        <div class="scenario-label">Scenario: 所有页面通过外部引用加载共享样式</div>
+        <p><span class="kw">WHEN</span> 打开任意一个页面</p>
+        <p><span class="kw">THEN</span> <code>&lt;head&gt;</code> 中包含 <code>&lt;link rel="stylesheet" href="./assets/styles.css"&gt;</code></p>
+      </div>
+      <div class="scenario">
+        <div class="scenario-label">Scenario: CSS 变量值在所有页面一致</div>
+        <p><span class="kw">WHEN</span> 分别检查 4 个页面的计算样式</p>
+        <p><span class="kw">THEN</span> <code>--accent</code>、<code>--bg</code>、<code>--text</code> 等变量值完全一致</p>
+      </div>
+    </div>
+
+    <div class="req-card">
+      <div class="req-label">Requirement</div>
+      <h4>共享布局样式 SHALL 包含导航、容器、卡片、表格和页脚</h4>
+      <p><code>styles.css</code> 包含导航栏、布局、按钮、卡片、表格、代码窗口、页脚、响应式断点。</p>
+      <div class="scenario">
+        <div class="scenario-label">Scenario: 共享样式覆盖所有公共组件</div>
+        <p><span class="kw">WHEN</span> architecture.html 使用 <code>.what-card</code> 和 <code>table</code></p>
+        <p><span class="kw">THEN</span> 样式仅来自 styles.css，无需内联补充</p>
+      </div>
+    </div>
+
+    <div class="req-card">
+      <div class="req-label">Requirement</div>
+      <h4>页面专属样式 SHALL 保留为内联 style 标签</h4>
+      <div class="scenario">
+        <div class="scenario-label">Scenario: index.html 专属样式内联</div>
+        <p><span class="kw">WHEN</span> 检查 index.html 的 <code>&lt;style&gt;</code></p>
+        <p><span class="kw">THEN</span> 包含 <code>.hero-*</code> 和 <code>.wf-*</code>，且这些不存在于 styles.css</p>
+      </div>
+      <div class="scenario">
+        <div class="scenario-label">Scenario: architecture.html 专属样式内联</div>
+        <p><span class="kw">WHEN</span> 检查 architecture.html 的 <code>&lt;style&gt;</code></p>
+        <p><span class="kw">THEN</span> 包含 <code>.tree-*</code>、<code>.route-*</code>、<code>.mono-*</code>、<code>.cli-*</code>、<code>.dp-*</code>、<code>.plat-*</code></p>
+      </div>
+    </div>
+
+    <div class="req-card">
+      <div class="req-label">Requirement</div>
+      <h4>导航高亮 SHALL 通过 active class 标识当前页</h4>
+      <div class="scenario">
+        <div class="scenario-label">Scenario: 首页导航高亮</div>
+        <p><span class="kw">WHEN</span> 打开 index.html</p>
+        <p><span class="kw">THEN</span> "首页"链接带 <code>class="active"</code>，显示绿色</p>
+      </div>
+      <div class="scenario">
+        <div class="scenario-label">Scenario: 架构设计页导航高亮</div>
+        <p><span class="kw">WHEN</span> 打开 architecture.html</p>
+        <p><span class="kw">THEN</span> "架构设计"链接带 <code>class="active"</code></p>
+      </div>
+    </div>
+
+    <h3>page-split</h3>
+
+    <div class="req-card">
+      <div class="req-label">Requirement</div>
+      <h4>index.html SHALL 仅包含首页核心板块</h4>
+      <p>Hero + 是什么 + 快速开始 + 工作流演示 + Version Banner + Footer</p>
+      <div class="scenario">
+        <div class="scenario-label">Scenario: 首页不包含已迁移内容</div>
+        <p><span class="kw">WHEN</span> 检查重构后的 index.html</p>
+        <p><span class="kw">THEN</span> 不包含核心架构、路由、CLI、基线包、领域包、多平台、选型、最佳实践、速查表、设计原则、V1→V2</p>
+      </div>
+      <div class="scenario">
+        <div class="scenario-label">Scenario: 工作流 tab 切换保留</div>
+        <p><span class="kw">WHEN</span> 点击工作流演示的 tab</p>
+        <p><span class="kw">THEN</span> 对应面板正确显示，<code>switchTab()</code> 正常工作</p>
+      </div>
+    </div>
+
+    <div class="req-card">
+      <div class="req-label">Requirement</div>
+      <h4>architecture.html SHALL 包含完整的架构设计内容</h4>
+      <p>核心架构 + 路由机制 + 设计原则 + 基线包 + 领域包 + 多平台 + CLI + 选型说明</p>
+      <div class="scenario">
+        <div class="scenario-label">Scenario: 内容与原首页一致</div>
+        <p><span class="kw">WHEN</span> 对比 architecture.html 与原 index.html</p>
+        <p><span class="kw">THEN</span> 文字内容、目录树、SVG 图表完全一致</p>
+      </div>
+    </div>
+
+    <div class="req-card">
+      <div class="req-label">Requirement</div>
+      <h4>best-practices.html SHALL 包含最佳实践和速查表</h4>
+      <p>最佳实践（4 卡片）+ 场景速查表（9 行）+ Worktree 占位</p>
+      <div class="scenario">
+        <div class="scenario-label">Scenario: 场景速查表完整</div>
+        <p><span class="kw">WHEN</span> 检查场景速查表</p>
+        <p><span class="kw">THEN</span> 包含原 index.html 全部 9 行数据</p>
+      </div>
+    </div>
+
+    <div class="req-card">
+      <div class="req-label">Requirement</div>
+      <h4>所有页面 SHALL 使用统一的四入口导航栏</h4>
+      <div class="scenario">
+        <div class="scenario-label">Scenario: 导航互通</div>
+        <p><span class="kw">WHEN</span> 在任意页面点击导航链接</p>
+        <p><span class="kw">THEN</span> 正确跳转，目标页面导航结构一致</p>
+      </div>
+    </div>
+
+    <div class="req-card">
+      <div class="req-label">Requirement</div>
+      <h4>V1→V2 架构演进 SHALL 从首页移除</h4>
+      <div class="scenario">
+        <div class="scenario-label">Scenario: 首页无 V1→V2</div>
+        <p><span class="kw">WHEN</span> 搜索 index.html 中 "evolution"</p>
+        <p><span class="kw">THEN</span> 不存在相关 HTML</p>
+      </div>
+      <div class="scenario">
+        <div class="scenario-label">Scenario: changelog 保留完整</div>
+        <p><span class="kw">WHEN</span> 打开 changelog.html #migration</p>
+        <p><span class="kw">THEN</span> 对比表和 6 个收益完整保留</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- 06 实现任务 -->
+  <div class="section" id="s6">
+    <div class="section-head"><span class="section-num">06</span><h2>实现任务</h2></div>
+
+    <div class="task-group">
+      <h4>1. 共享样式抽取</h4>
+      <div class="task-item">
+        <div class="task-cb"></div>
+        <div>
+          <strong>1.1 创建 <code>web/assets/styles.css</code></strong>
+          <div class="task-steps">从 index.html 提取 :root 变量、全局重置、导航、布局、卡片、表格、代码窗口、页脚、响应式规则。新增 <code>.nav-links a.active</code> 高亮。</div>
+          <div class="task-commit">commit: refactor(web): extract shared CSS to assets/styles.css</div>
+        </div>
+      </div>
+      <div class="task-item">
+        <div class="task-cb"></div>
+        <div>
+          <strong>1.2 更新 index.html 引用外部 CSS</strong>
+          <div class="task-steps">添加 <code>&lt;link&gt;</code> 引用，删除已抽取的内联样式，保留 .hero-* 和 .wf-* 专属样式。</div>
+          <div class="task-commit">commit: refactor(web): update index.html to use shared CSS</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="task-group">
+      <h4>2. architecture.html</h4>
+      <div class="task-item">
+        <div class="task-cb"></div>
+        <div>
+          <strong>2.1 创建基础结构</strong>
+          <div class="task-steps">HTML 骨架 + head + 页面专属 <code>&lt;style&gt;</code>（tree/route/mono/cli/dp/plat 样式）+ 统一导航 + 简化 Hero。</div>
+          <div class="task-commit">commit: feat(web): create architecture.html scaffold</div>
+        </div>
+      </div>
+      <div class="task-item">
+        <div class="task-cb"></div>
+        <div>
+          <strong>2.2 迁移内容</strong>
+          <div class="task-steps">从 index.html 复制 8 个板块（核心架构、路由、设计原则、基线包、领域包、多平台、CLI、选型）+ Footer。</div>
+          <div class="task-commit">commit: feat(web): populate architecture.html with migrated content</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="task-group">
+      <h4>3. best-practices.html</h4>
+      <div class="task-item">
+        <div class="task-cb"></div>
+        <div>
+          <strong>3.1 创建并迁移内容</strong>
+          <div class="task-steps">HTML 骨架 + 统一导航 + 简化 Hero + 最佳实践（4 卡片）+ 场景速查表（9 行）+ Worktree 占位 + Footer。</div>
+          <div class="task-commit">commit: feat(web): create best-practices.html with migrated content</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="task-group">
+      <h4>4. 首页精简 + 导航统一</h4>
+      <div class="task-item">
+        <div class="task-cb"></div>
+        <div>
+          <strong>4.1 精简 index.html</strong>
+          <div class="task-steps">删除 11 个已迁移板块，保留 Hero → 是什么 → 快速开始 → 工作流 → Version Banner → Footer。</div>
+          <div class="task-commit">commit: refactor(web): slim down index.html to core sections</div>
+        </div>
+      </div>
+      <div class="task-item">
+        <div class="task-cb"></div>
+        <div>
+          <strong>4.2 更新所有页面导航栏</strong>
+          <div class="task-steps">4 个页面统一四入口导航。changelog.html 也改为引用 styles.css + 保留专属样式内联。</div>
+          <div class="task-commit">commit: refactor(web): unify navigation across all pages</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="task-group">
+      <h4>5. 最终验证</h4>
+      <div class="task-item">
+        <div class="task-cb"></div>
+        <div>
+          <strong>5.1 全面验收</strong>
+          <div class="task-steps">浏览器逐页验证深色主题、导航互通、内容完整性、工作流 tab、SVG 图表、响应式（768px/480px）。</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Acceptance -->
+  <div class="acceptance">
+    <h2>
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+      验收指引
+    </h2>
+    <ol>
+      <li>通读以上 6 个章节，确认需求范围、技术方案、规格定义和任务拆分符合预期</li>
+      <li>重点关注：内容板块到目标文档的映射是否完整、CSS 公共/专属分界是否合理</li>
+      <li>如有修改意见，直接编辑 <code>openspec/changes/refactor-web-docs/</code> 下的对应文件</li>
+      <li>确认无误后，开启新会话执行实现</li>
+    </ol>
+
+    <p style="margin-top:1.5rem;font-weight:600">下一步：</p>
+    <a class="next-cmd" onclick="navigator.clipboard.writeText('/opsx:apply refactor-web-docs')">
+      /opsx:apply refactor-web-docs
+      <br><span style="font-size:12px;color:var(--text-muted);font-family:var(--font-sans)">点击复制</span>
+    </a>
+  </div>
+
+</main>
+
+<footer class="page-footer">
+  由 OpenSpec superpowers-bridge 生成 &middot; 2026-05-15
+</footer>
+
+<script>
+hljs.highlightAll();
+const isDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+mermaid.initialize({
+  startOnLoad: true,
+  theme: 'base',
+  themeVariables: isDark ? {
+    background: '#0f172a',
+    primaryColor: 'rgba(99,102,241,0.25)',
+    primaryTextColor: '#f1f5f9',
+    primaryBorderColor: '#818cf8',
+    secondaryColor: 'rgba(6,78,59,0.4)',
+    secondaryTextColor: '#f1f5f9',
+    secondaryBorderColor: '#34d399',
+    tertiaryColor: 'rgba(76,29,149,0.4)',
+    tertiaryTextColor: '#f1f5f9',
+    tertiaryBorderColor: '#a78bfa',
+    lineColor: '#94a3b8',
+    textColor: '#f1f5f9',
+    mainBkg: 'rgba(99,102,241,0.15)',
+    nodeBorder: '#818cf8',
+    clusterBkg: 'rgba(30,41,59,0.6)',
+    clusterBorder: '#475569',
+    edgeLabelBackground: '#1e293b',
+    fontSize: '14px'
+  } : {
+    background: '#ffffff',
+    primaryColor: '#eef2ff',
+    primaryTextColor: '#1e293b',
+    primaryBorderColor: '#4f46e5',
+    secondaryColor: '#f0fdf4',
+    secondaryTextColor: '#1e293b',
+    secondaryBorderColor: '#059669',
+    tertiaryColor: '#faf5ff',
+    tertiaryTextColor: '#1e293b',
+    tertiaryBorderColor: '#7c3aed',
+    lineColor: '#475569',
+    textColor: '#1e293b',
+    mainBkg: '#eef2ff',
+    nodeBorder: '#4f46e5',
+    clusterBkg: '#f8fafc',
+    clusterBorder: '#e2e8f0',
+    edgeLabelBackground: '#ffffff',
+    fontSize: '14px'
+  }
+});
+</script>
+
+</body>
+</html>

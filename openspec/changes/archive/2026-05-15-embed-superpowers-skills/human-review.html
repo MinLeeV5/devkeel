@@ -1,0 +1,538 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Change Review: embed-superpowers-skills</title>
+<link rel="stylesheet" href="https://cdn.jsdmirror.com/npm/@highlightjs/cdn-assets@11.11.1/styles/github.min.css">
+<link rel="stylesheet" href="https://cdn.jsdmirror.com/npm/@highlightjs/cdn-assets@11.11.1/styles/github-dark.min.css" media="(prefers-color-scheme: dark)">
+<script src="https://cdn.jsdmirror.com/npm/@highlightjs/cdn-assets@11.11.1/highlight.min.js"></script>
+<script src="https://cdn.jsdmirror.com/npm/mermaid@11/dist/mermaid.min.js"></script>
+<style>
+:root {
+  --bg: #f8fafc;
+  --surface: #ffffff;
+  --text: #0f172a;
+  --text-secondary: #475569;
+  --text-muted: #94a3b8;
+  --accent: #4f46e5;
+  --accent-light: #eef2ff;
+  --accent-border: #c7d2fe;
+  --accent-text: #3730a3;
+  --border: #e2e8f0;
+  --code-bg: #f1f5f9;
+  --success: #059669;
+  --warning: #d97706;
+  --font-sans: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Noto Sans SC', 'PingFang SC', 'Microsoft YaHei', sans-serif;
+  --font-mono: 'SF Mono', 'Cascadia Code', 'JetBrains Mono', Consolas, monospace;
+}
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #0f172a;
+    --surface: #1e293b;
+    --text: #f1f5f9;
+    --text-secondary: #94a3b8;
+    --text-muted: #64748b;
+    --accent: #818cf8;
+    --accent-light: rgba(99,102,241,0.12);
+    --accent-border: rgba(99,102,241,0.25);
+    --accent-text: #c7d2fe;
+    --border: #334155;
+    --code-bg: #0f172a;
+    --success: #34d399;
+    --warning: #fbbf24;
+  }
+}
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body {
+  font-family: var(--font-sans);
+  background: var(--bg);
+  color: var(--text);
+  font-size: 15px;
+  line-height: 1.8;
+}
+.container { max-width: 860px; margin: 0 auto; padding: 0 2.5rem; }
+@media (max-width: 768px) { .container { padding: 0 1.25rem; } }
+@media (max-width: 480px) { .container { padding: 0 1rem; } }
+
+/* Header */
+.page-header {
+  background: linear-gradient(135deg, #eef2ff, #f8fafc, #f0f9ff);
+  border-bottom: 1px solid var(--border);
+  padding: 3rem 0 2.5rem;
+}
+@media (prefers-color-scheme: dark) {
+  .page-header { background: linear-gradient(135deg, rgba(99,102,241,0.08), #0f172a, rgba(6,78,59,0.05)); }
+}
+.badge {
+  display: inline-flex; align-items: center; gap: 6px;
+  background: #fef3c7; color: #92400e; border: 1px solid #fde68a;
+  font-size: 11px; font-weight: 600; text-transform: uppercase;
+  letter-spacing: 0.05em; padding: 4px 12px; border-radius: 999px;
+  margin-bottom: 1rem;
+}
+@media (prefers-color-scheme: dark) {
+  .badge { background: rgba(251,191,36,0.15); color: #fbbf24; border-color: rgba(251,191,36,0.3); }
+}
+.badge::before {
+  content: ''; width: 8px; height: 8px; border-radius: 50%;
+  background: #f59e0b; animation: pulse 2s infinite;
+}
+@keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.4; } }
+h1 { font-size: 34px; font-weight: 800; letter-spacing: -0.02em; margin-bottom: 0.5rem; }
+.subtitle { color: var(--text-secondary); font-size: 17px; margin-bottom: 1rem; }
+.meta { color: var(--text-muted); font-size: 13px; }
+.progress-bar { display: flex; gap: 4px; margin-top: 1.5rem; }
+.progress-bar .step { flex: 1; height: 4px; border-radius: 2px; background: var(--border); }
+.progress-bar .step.done { background: var(--success); }
+.progress-bar .step.current { background: var(--accent); }
+
+/* TOC */
+.toc {
+  background: var(--surface); border: 1px solid var(--border);
+  border-radius: 10px; padding: 1.5rem 2rem; margin: 2.5rem 0;
+  counter-reset: toc-counter;
+}
+.toc-title { font-size: 13px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; color: var(--text-muted); margin-bottom: 1rem; }
+.toc-list { list-style: none; }
+.toc-list li { counter-increment: toc-counter; padding: 0.5rem 0.75rem; border-radius: 6px; cursor: pointer; transition: background 0.15s; }
+.toc-list li:hover { background: var(--accent-light); }
+.toc-list li::before { content: counter(toc-counter, decimal-leading-zero); color: var(--accent); font-weight: 700; font-size: 13px; margin-right: 0.75rem; }
+.toc-list li a { color: var(--text); text-decoration: none; font-weight: 500; }
+
+/* Sections */
+section { padding: 3.5rem 0; border-bottom: 1px solid var(--border); }
+section:last-of-type { border-bottom: none; }
+.section-header { display: flex; align-items: baseline; gap: 1rem; margin-bottom: 2rem; }
+.section-num { font-size: 34px; font-weight: 800; color: var(--accent); letter-spacing: -0.02em; }
+.section-title { font-size: 26px; font-weight: 700; }
+h3 { font-size: 20px; font-weight: 600; margin: 2rem 0 1rem; padding-bottom: 0.5rem; border-bottom: 1px solid var(--border); }
+h4 { font-size: 17px; font-weight: 600; margin: 1.5rem 0 0.75rem; }
+
+/* Summary block */
+.summary {
+  background: var(--accent-light); border: 1px solid var(--accent-border);
+  border-radius: 10px; padding: 1.25rem 1.5rem; margin: 1.5rem 0;
+  color: var(--accent-text); font-weight: 500;
+}
+
+/* Requirement card */
+.req-card {
+  background: var(--surface); border: 1px solid var(--border);
+  border-left: 3px solid var(--accent); border-radius: 10px;
+  padding: 1.5rem 2rem; margin: 1.5rem 0;
+}
+.req-label { font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; color: var(--accent); margin-bottom: 0.5rem; }
+.req-title { font-size: 17px; font-weight: 600; margin-bottom: 0.75rem; }
+.req-desc { color: var(--text-secondary); }
+
+/* Scenario */
+.scenario {
+  background: var(--accent-light); border: 1px solid var(--accent-border);
+  border-radius: 8px; padding: 1rem 1.25rem; margin: 1rem 0;
+}
+.scenario-label { font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; color: var(--accent); margin-bottom: 0.5rem; }
+.scenario .kw { font-weight: 700; color: var(--accent); text-transform: uppercase; }
+
+/* Tables */
+table { width: 100%; border-collapse: collapse; margin: 1rem 0; font-size: 14px; }
+th { background: var(--code-bg); font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; text-align: left; padding: 0.75rem 1rem; border-bottom: 2px solid var(--border); }
+td { padding: 0.75rem 1rem; border-bottom: 1px solid var(--border); }
+tr:hover td { background: var(--accent-light); }
+
+/* Task list */
+.task-group-title { font-weight: 600; font-size: 17px; margin: 1.5rem 0 0.75rem; }
+.task-item { display: flex; align-items: flex-start; gap: 0.75rem; padding: 0.5rem 0; }
+.task-checkbox { width: 18px; height: 18px; border: 2px solid var(--border); border-radius: 4px; flex-shrink: 0; margin-top: 3px; }
+.task-text { color: var(--text-secondary); }
+.task-commit { font-family: var(--font-mono); font-size: 12px; color: var(--text-muted); margin-top: 2px; }
+
+/* Code */
+pre { background: var(--code-bg); border: 1px solid var(--border); border-radius: 8px; padding: 1.25rem; overflow-x: auto; margin: 1rem 0; }
+code { font-family: var(--font-mono); font-size: 13px; }
+p code, li code { background: var(--code-bg); padding: 2px 6px; border-radius: 4px; font-size: 13px; }
+
+/* Mermaid */
+.mermaid-container { padding: 1.5rem; border-radius: 10px; margin: 1.5rem 0; border: 1px solid var(--border); }
+@media (prefers-color-scheme: dark) { .mermaid-container { background: rgba(15,23,42,0.5); } }
+
+/* Footer */
+.acceptance { border-top: 2px solid var(--accent); padding-top: 2.5rem; margin-top: 3.5rem; }
+.acceptance-title { display: flex; align-items: center; gap: 0.75rem; font-size: 20px; font-weight: 600; margin-bottom: 1rem; }
+.next-step { background: var(--surface); border: 2px dashed var(--accent-border); border-radius: 10px; padding: 1.25rem 1.5rem; margin-top: 1.5rem; cursor: pointer; transition: background 0.15s; }
+.next-step:hover { background: var(--accent-light); }
+.next-step code { font-size: 15px; font-weight: 500; }
+footer { text-align: center; padding: 2.5rem 0; color: var(--text-muted); font-size: 13px; }
+</style>
+</head>
+<body>
+
+<header class="page-header">
+<div class="container">
+  <div class="badge">Pending Review</div>
+  <h1>嵌入 SuperPowers Skills</h1>
+  <p class="subtitle">将 SuperPowers v5.1.0 中 8 个 workflow skill 嵌入 harness 模板，init 后直接可用</p>
+  <p class="meta">embed-superpowers-skills · 2026-05-15</p>
+  <div class="progress-bar">
+    <div class="step done"></div>
+    <div class="step done"></div>
+    <div class="step done"></div>
+    <div class="step done"></div>
+    <div class="step done"></div>
+    <div class="step done"></div>
+    <div class="step current"></div>
+  </div>
+</div>
+</header>
+
+<nav class="container">
+<div class="toc">
+  <div class="toc-title">目录</div>
+  <ol class="toc-list">
+    <li><a href="#s1">需求背景</a></li>
+    <li><a href="#s2">现状调查</a></li>
+    <li><a href="#s3">技术设计</a></li>
+    <li><a href="#s4">变更提案</a></li>
+    <li><a href="#s5">规格清单</a></li>
+    <li><a href="#s6">实现任务</a></li>
+  </ol>
+</div>
+</nav>
+
+<main class="container">
+
+<!-- 01 需求背景 -->
+<section id="s1">
+<div class="section-header">
+  <span class="section-num">01</span>
+  <span class="section-title">需求背景</span>
+</div>
+<div class="summary">将 SuperPowers v5.1.0 中 opsx 流程依赖的 8 个 skill 嵌入 harness 模板，使项目 init 后即可直接使用完整工作流，无需额外安装 SuperPowers 插件。</div>
+
+<h3>痛点</h3>
+<table>
+<tr><th>问题</th><th>影响</th></tr>
+<tr><td>必须安装 SuperPowers 插件</td><td>使用门槛高，多平台适配复杂</td></tr>
+<tr><td>插件强制注入 hook + meta skill</td><td>每次会话消耗 ~1,350 tokens</td></tr>
+<tr><td>加载全部 14 个 skill 元数据</td><td>只用到 8 个，浪费 context</td></tr>
+</table>
+
+<h3>目标用户</h3>
+<table>
+<tr><th>角色</th><th>关注点</th></tr>
+<tr><td>项目开发者</td><td>init 后直接可用，零额外安装</td></tr>
+<tr><td>多平台用户</td><td>Claude Code / Codex / Cursor / Gemini CLI 统一体验</td></tr>
+<tr><td>已装 SuperPowers 的用户</td><td>不冲突，项目本地 skill 优先</td></tr>
+</table>
+
+<h3>需求边界</h3>
+<h4>In Scope</h4>
+<ul>
+<li>嵌入 8 个 skill（brainstorming、writing-plans、subagent-driven-development、executing-plans、using-git-worktrees、test-driven-development、requesting-code-review、finishing-a-development-branch）</li>
+<li>从 brainstorming 移除 visual-companion</li>
+<li>所有 <code>superpowers:</code> 前缀引用改为裸名</li>
+<li>metadata 标注 <code>author: "superpowers"</code>, <code>version: "5.1.0"</code></li>
+</ul>
+<h4>Out of Scope</h4>
+<ul>
+<li>不嵌入 <code>using-superpowers</code> meta skill</li>
+<li>不修改分发逻辑（现有机制已覆盖）</li>
+<li>不实现自动化上游同步</li>
+</ul>
+</section>
+
+<!-- 02 现状调查 -->
+<section id="s2">
+<div class="section-header">
+  <span class="section-num">02</span>
+  <span class="section-title">现状调查</span>
+</div>
+
+<h3>模板分发架构</h3>
+<div class="mermaid-container">
+<pre class="mermaid">
+graph TD
+    subgraph "templates/ 构建时"
+        SK[skills/]
+        AM[agents-md.md]
+        SB[openspec/schemas/]
+    end
+    subgraph "devkeel init/update"
+        COPY[copyTemplateSkills]
+        LINK[createPlatformLinks]
+    end
+    subgraph "用户项目"
+        HS[.harness/skills/]
+        CS[.claude/skills/ symlink]
+        AS[.agents/skills/ symlink]
+    end
+    SK --> COPY --> HS
+    HS --> LINK --> CS
+    HS --> LINK --> AS
+</pre>
+</div>
+
+<h3>平台支持矩阵</h3>
+<table>
+<tr><th>平台</th><th>Skills 路径</th><th>链接方式</th></tr>
+<tr><td>Claude Code</td><td><code>.claude/skills/</code></td><td>symlink</td></tr>
+<tr><td>Codex</td><td><code>.agents/skills/</code></td><td>symlink</td></tr>
+<tr><td>Cursor</td><td><code>.cursor/rules/</code></td><td>symlink（仅 rules）</td></tr>
+<tr><td>Copilot / Gemini</td><td><code>@AGENTS.md</code> 引用</td><td>文件引用</td></tr>
+</table>
+
+<h3>关键发现</h3>
+<div class="req-card">
+<div class="req-label">发现</div>
+<div class="req-title">isHarnessGenerated 不识别 superpowers 标记</div>
+<p class="req-desc"><code>src/lib/templates.ts:242</code> — 当前只检查 <code>devkeel</code>。嵌入 skill 用 <code>author: "superpowers"</code> 后，移除时不会被自动检测为废弃资产。需扩展检测逻辑。</p>
+</div>
+</section>
+
+<!-- 03 技术设计 -->
+<section id="s3">
+<div class="section-header">
+  <span class="section-num">03</span>
+  <span class="section-title">技术设计</span>
+</div>
+
+<h3>架构概览</h3>
+<div class="mermaid-container">
+<pre class="mermaid">
+graph TD
+    subgraph "templates/skills/ +8 个目录"
+        B[brainstorming]
+        WP[writing-plans]
+        SDD[subagent-driven-development]
+        EP[executing-plans]
+        UGW[using-git-worktrees]
+        TDD[test-driven-development]
+        RCR[requesting-code-review]
+        FDB[finishing-a-development-branch]
+    end
+    subgraph "引用层"
+        AGM[agents-md.md]
+        SCH[schema.yaml]
+        TPL[templates/*.md]
+    end
+    subgraph "检测逻辑层"
+        IHG["isHarnessGenerated()"]
+    end
+    B & WP & SDD & EP & UGW & TDD & RCR & FDB -->|裸名引用| AGM & SCH & TPL
+    IHG -->|识别 author: superpowers| B & WP & SDD & EP & UGW & TDD & RCR & FDB
+</pre>
+</div>
+
+<h3>模块设计</h3>
+<p>无新模块。变更集中在三层：</p>
+<table>
+<tr><th>层</th><th>变更</th><th>文件</th></tr>
+<tr><td>模板资产</td><td>+8 个 skill 目录</td><td><code>templates/skills/</code></td></tr>
+<tr><td>引用</td><td><code>superpowers:</code> → 裸名</td><td>agents-md.md, schema.yaml, templates/*.md</td></tr>
+<tr><td>检测逻辑</td><td>增加 superpowers 识别</td><td><code>src/lib/templates.ts</code></td></tr>
+</table>
+
+<h3>关键决策</h3>
+<table>
+<tr><th>决策</th><th>追溯</th></tr>
+<tr><td>8 个 skill 全部嵌入</td><td>形成完整调用链，缺一个会断</td></tr>
+<tr><td>去掉 visual-companion</td><td>依赖插件 scripts，非纯文本</td></tr>
+<tr><td>裸名（无前缀）</td><td>项目本地优先级高于插件</td></tr>
+<tr><td>metadata: author superpowers</td><td>标注来源，参考 openspec 写法</td></tr>
+<tr><td>扩展 isHarnessGenerated</td><td>explore 发现检测盲区</td></tr>
+</table>
+</section>
+
+<!-- 04 变更提案 -->
+<section id="s4">
+<div class="section-header">
+  <span class="section-num">04</span>
+  <span class="section-title">变更提案</span>
+</div>
+
+<h3>Why</h3>
+<p>消除外部插件依赖，降低使用门槛。用户 init 后即可使用完整 opsx 工作流，零额外依赖、零平台差异。每次会话节省 ~1,350 tokens 的强制注入开销。</p>
+
+<h3>What Changes</h3>
+<table>
+<tr><th>变更</th><th>From</th><th>To</th><th>Impact</th></tr>
+<tr><td>Skill 来源</td><td>依赖 SuperPowers 插件</td><td>模板直接包含</td><td>非破坏性</td></tr>
+<tr><td>引用前缀</td><td><code>superpowers:brainstorming</code></td><td><code>brainstorming</code></td><td>需 devkeel update</td></tr>
+<tr><td>废弃检测</td><td>仅识别 <code>devkeel</code></td><td>同时识别 <code>superpowers</code></td><td>非破坏性</td></tr>
+<tr><td>brainstorming</td><td>含 visual-companion</td><td>移除</td><td>非破坏性</td></tr>
+</table>
+
+<h3>Impact</h3>
+<table>
+<tr><th>范围</th><th>内容</th></tr>
+<tr><td>模板资产</td><td>+8 个 skill 目录（~83 KB）</td></tr>
+<tr><td>npm 包体积</td><td>+83 KB 文本（压缩后 ~20 KB）</td></tr>
+<tr><td>源码</td><td><code>isHarnessGenerated</code> +1 条件</td></tr>
+<tr><td>已 init 项目</td><td>需 <code>devkeel update</code></td></tr>
+</table>
+</section>
+
+<!-- 05 规格清单 -->
+<section id="s5">
+<div class="section-header">
+  <span class="section-num">05</span>
+  <span class="section-title">规格清单</span>
+</div>
+
+<div class="req-card">
+<div class="req-label">Requirement</div>
+<div class="req-title">Skills SHALL be embedded in templates</div>
+<p class="req-desc">harness 模板 MUST 包含 8 个 SuperPowers skill 目录，每个含完整 SKILL.md 及附属文件。</p>
+<div class="scenario">
+<div class="scenario-label">Scenario: devkeel init copies all embedded skills</div>
+<p><span class="kw">WHEN</span> 用户执行 <code>devkeel init</code></p>
+<p><span class="kw">THEN</span> <code>.harness/skills/</code> 中包含 8 个 skill 目录</p>
+</div>
+</div>
+
+<div class="req-card">
+<div class="req-label">Requirement</div>
+<div class="req-title">Skill metadata SHALL identify source and version</div>
+<p class="req-desc">每个嵌入 skill 的 SKILL.md frontmatter MUST 包含 <code>author: "superpowers"</code> 和 <code>version: "5.1.0"</code>。</p>
+<div class="scenario">
+<div class="scenario-label">Scenario: metadata present</div>
+<p><span class="kw">WHEN</span> 检查任意嵌入 skill 的 SKILL.md</p>
+<p><span class="kw">THEN</span> frontmatter 中存在 author 和 version 标注</p>
+</div>
+</div>
+
+<div class="req-card">
+<div class="req-label">Requirement</div>
+<div class="req-title">References SHALL use bare skill names</div>
+<p class="req-desc">所有模板文件中对嵌入 skill 的引用 MUST 使用裸名，不得使用 <code>superpowers:</code> 前缀。</p>
+<div class="scenario">
+<div class="scenario-label">Scenario: zero superpowers: prefix in templates</div>
+<p><span class="kw">WHEN</span> grep 全部模板文件</p>
+<p><span class="kw">THEN</span> <code>superpowers:</code> 匹配数为 0</p>
+</div>
+</div>
+
+<div class="req-card">
+<div class="req-label">Requirement</div>
+<div class="req-title">brainstorming SHALL exclude visual-companion</div>
+<p class="req-desc">嵌入的 brainstorming skill MUST NOT 包含 visual-companion.md 和 scripts/ 目录。</p>
+<div class="scenario">
+<div class="scenario-label">Scenario: files absent</div>
+<p><span class="kw">WHEN</span> 检查 <code>templates/skills/brainstorming/</code></p>
+<p><span class="kw">THEN</span> 不存在 visual-companion.md 和 scripts/</p>
+</div>
+</div>
+
+<div class="req-card">
+<div class="req-label">Requirement</div>
+<div class="req-title">Deprecated detection SHALL recognize superpowers author</div>
+<p class="req-desc"><code>isHarnessGenerated</code> MUST 将 <code>author: "superpowers"</code> 识别为 harness 管理资产。</p>
+<div class="scenario">
+<div class="scenario-label">Scenario: detected as harness-generated</div>
+<p><span class="kw">WHEN</span> SKILL.md 包含 <code>author: "superpowers"</code></p>
+<p><span class="kw">THEN</span> <code>isHarnessGenerated</code> 返回 true</p>
+</div>
+</div>
+</section>
+
+<!-- 06 实现任务 -->
+<section id="s6">
+<div class="section-header">
+  <span class="section-num">06</span>
+  <span class="section-title">实现任务</span>
+</div>
+
+<p class="task-group-title">1. 嵌入 Skill 文件</p>
+<div class="task-item"><div class="task-checkbox"></div><div><div class="task-text">1.1 复制 brainstorming skill（含裁剪 visual-companion）</div><div class="task-commit">feat(templates): embed brainstorming skill</div></div></div>
+<div class="task-item"><div class="task-checkbox"></div><div><div class="task-text">1.2 复制 writing-plans skill</div><div class="task-commit">feat(templates): embed writing-plans skill</div></div></div>
+<div class="task-item"><div class="task-checkbox"></div><div><div class="task-text">1.3 复制 subagent-driven-development skill（4 文件）</div><div class="task-commit">feat(templates): embed subagent-driven-development skill</div></div></div>
+<div class="task-item"><div class="task-checkbox"></div><div><div class="task-text">1.4 复制 executing-plans skill</div><div class="task-commit">feat(templates): embed executing-plans skill</div></div></div>
+<div class="task-item"><div class="task-checkbox"></div><div><div class="task-text">1.5 复制 using-git-worktrees skill</div><div class="task-commit">feat(templates): embed using-git-worktrees skill</div></div></div>
+<div class="task-item"><div class="task-checkbox"></div><div><div class="task-text">1.6 复制 test-driven-development skill（2 文件）</div><div class="task-commit">feat(templates): embed test-driven-development skill</div></div></div>
+<div class="task-item"><div class="task-checkbox"></div><div><div class="task-text">1.7 复制 requesting-code-review skill（2 文件）</div><div class="task-commit">feat(templates): embed requesting-code-review skill</div></div></div>
+<div class="task-item"><div class="task-checkbox"></div><div><div class="task-text">1.8 复制 finishing-a-development-branch skill</div><div class="task-commit">feat(templates): embed finishing-a-development-branch skill</div></div></div>
+
+<p class="task-group-title">2. 更新模板引用</p>
+<div class="task-item"><div class="task-checkbox"></div><div><div class="task-text">2.1 更新 agents-md.md — 移除 superpowers: 前缀</div><div class="task-commit">refactor(templates): remove superpowers prefix from agents-md</div></div></div>
+<div class="task-item"><div class="task-checkbox"></div><div><div class="task-text">2.2 更新 schema.yaml — 移除全部 superpowers: 前缀（~17 处）</div><div class="task-commit">refactor(templates): remove superpowers prefix from schema</div></div></div>
+<div class="task-item"><div class="task-checkbox"></div><div><div class="task-text">2.3 更新 sub-templates（tasks.md, retrospective.md）</div><div class="task-commit">refactor(templates): remove superpowers prefix from sub-templates</div></div></div>
+
+<p class="task-group-title">3. 扩展检测逻辑</p>
+<div class="task-item"><div class="task-checkbox"></div><div><div class="task-text">3.1 修改 isHarnessGenerated — 增加 superpowers 识别</div><div class="task-commit">feat(detect): recognize superpowers-authored skills</div></div></div>
+
+<p class="task-group-title">4. 全量验证</p>
+<div class="task-item"><div class="task-checkbox"></div><div><div class="task-text">4.1 pnpm build + lint + test 通过；grep 确认零残留</div></div></div>
+</section>
+
+<!-- Acceptance -->
+<div class="acceptance">
+<div class="acceptance-title">
+  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 12l2 2 4-4"/><circle cx="12" cy="12" r="10"/></svg>
+  验收指引
+</div>
+<ol>
+<li>审阅以上 6 个章节，确认需求、设计、规格、任务无遗漏</li>
+<li>如有修改意见，反馈后重新生成对应 artifact</li>
+<li>确认无误后，执行下一步命令开始实现</li>
+</ol>
+<div class="next-step" onclick="navigator.clipboard.writeText('/opsx:apply embed-superpowers-skills')">
+  <p>下一步（点击复制）：</p>
+  <code>/opsx:apply embed-superpowers-skills</code>
+</div>
+</div>
+
+</main>
+
+<footer>
+<p>由 OpenSpec superpowers-bridge 生成 · 2026-05-15</p>
+</footer>
+
+<script>
+hljs.highlightAll();
+const isDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+mermaid.initialize({
+  startOnLoad: true,
+  theme: 'base',
+  themeVariables: isDark ? {
+    background: '#0f172a',
+    primaryColor: 'rgba(99,102,241,0.25)',
+    primaryTextColor: '#f1f5f9',
+    primaryBorderColor: '#818cf8',
+    secondaryColor: 'rgba(6,78,59,0.4)',
+    secondaryTextColor: '#f1f5f9',
+    secondaryBorderColor: '#34d399',
+    tertiaryColor: 'rgba(76,29,149,0.4)',
+    tertiaryTextColor: '#f1f5f9',
+    tertiaryBorderColor: '#a78bfa',
+    lineColor: '#94a3b8',
+    textColor: '#f1f5f9',
+    mainBkg: 'rgba(99,102,241,0.15)',
+    nodeBorder: '#818cf8',
+    clusterBkg: 'rgba(30,41,59,0.6)',
+    clusterBorder: '#475569',
+    edgeLabelBackground: '#1e293b',
+    fontSize: '14px'
+  } : {
+    background: '#ffffff',
+    primaryColor: '#eef2ff',
+    primaryTextColor: '#1e293b',
+    primaryBorderColor: '#4f46e5',
+    secondaryColor: '#f0fdf4',
+    secondaryTextColor: '#1e293b',
+    secondaryBorderColor: '#059669',
+    tertiaryColor: '#faf5ff',
+    tertiaryTextColor: '#1e293b',
+    tertiaryBorderColor: '#7c3aed',
+    lineColor: '#475569',
+    textColor: '#1e293b',
+    mainBkg: '#eef2ff',
+    nodeBorder: '#4f46e5',
+    clusterBkg: '#f8fafc',
+    clusterBorder: '#e2e8f0',
+    edgeLabelBackground: '#ffffff',
+    fontSize: '14px'
+  }
+});
+</script>
+</body>
+</html>

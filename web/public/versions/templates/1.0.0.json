@@ -1,0 +1,22 @@
+{
+  "versions": ["1.0.0"],
+  "releasedAt": { "from": "2026-06-15T15:48:00+08:00" },
+  "title": "模板独立 npm 包初始发布",
+  "archived": false,
+  "groups": [
+    {
+      "type": "feat",
+      "label": "初始发布",
+      "items": [
+        {
+          "name": "devkeel-templates 独立发版",
+          "description": "模板资产从 CLI 包中拆分，作为独立 npm 包发布，模板变更不再需要 CLI 升版即可生效"
+        },
+        {
+          "name": "完整资产包",
+          "description": "包含 9 个工作流 skills、执行规则集、AGENTS.md 模板、superpowers-lite schema"
+        }
+      ]
+    }
+  ]
+}

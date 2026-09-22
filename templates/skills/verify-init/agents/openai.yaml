@@ -1,0 +1,4 @@
+interface:
+  display_name: "验证初始化"
+  short_description: "检测项目测试能力与缺口，经确认补齐测试脚手架和可执行的验证约定"
+  default_prompt: "使用 $verify-init 检查当前项目的测试能力并列出待补齐项。"

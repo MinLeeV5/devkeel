@@ -1,0 +1,1255 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`migrated changelog data > matches the approved full-field and ordered snapshot for every historical group and item 1`] = `
+{
+  "cli": {
+    "entries": [
+      {
+        "archived": false,
+        "groups": [
+          {
+            "items": [
+              {
+                "description": "\`devkeel update 1.2.4\` 或 \`devkeel update --template-version 1.2.4\` 可更新到指定稳定版本，方便复现环境或临时回退",
+                "name": "指定模板版本",
+              },
+              {
+                "description": "\`devkeel update --beta\` 会自动选择最新 beta 版本，无需手动查询完整版本号",
+                "name": "体验 beta 模板",
+              },
+              {
+                "description": "模板拉取完成后会显示实际使用的版本，便于确认更新结果",
+                "name": "版本结果可见",
+              },
+              {
+                "description": "评审页生成后通过 \`npx devkeel@latest open-review <html-path>\` 在 macOS、Windows 或 Linux 的浏览器中打开；失败时会提示文件路径，方便手动查看",
+                "name": "跨平台打开 human-review",
+              },
+            ],
+            "label": "新能力",
+            "type": "feat",
+          },
+          {
+            "items": [
+              {
+                "description": "不合法版本号、同时指定不同版本或将 \`--beta\` 与固定版本混用时会直接提示，避免拉取错误模板",
+                "name": "版本输入校验",
+              },
+            ],
+            "label": "修复",
+            "type": "fix",
+          },
+        ],
+        "releasedAt": {
+          "from": "2026-07-06T10:05:00+08:00",
+        },
+        "title": "模板版本可选，评审页支持跨平台打开",
+        "versions": [
+          "0.8.10",
+        ],
+      },
+      {
+        "archived": false,
+        "groups": [
+          {
+            "items": [
+              {
+                "description": "新增顶层命令，用于记录 apply 前的主仓库与子模块基线，并在 verify 阶段输出提交数、任务完成数等 JSON 证据",
+                "name": "devkeel evidence",
+              },
+            ],
+            "label": "新能力",
+            "type": "feat",
+          },
+        ],
+        "releasedAt": {
+          "from": "2026-07-03T12:14:00+08:00",
+        },
+        "title": "新增实现证据收集命令",
+        "versions": [
+          "0.8.9",
+        ],
+      },
+      {
+        "archived": false,
+        "groups": [
+          {
+            "items": [
+              {
+                "description": "执行更新时除了「全部更新」外，新增「逐个确认」选项：每个组件单独问一句更不更，本地改过的会提示有多少文件冲突，可以选「覆盖」或「跳过」，不想更新的组件就保留原样",
+                "name": "update 支持逐个确认",
+              },
+            ],
+            "label": "新能力",
+            "type": "feat",
+          },
+        ],
+        "releasedAt": {
+          "from": "2026-06-24T01:32:25+08:00",
+        },
+        "title": "update 可逐个确认更新，每个组件自由选更不更",
+        "versions": [
+          "0.8.8",
+        ],
+      },
+      {
+        "archived": false,
+        "groups": [
+          {
+            "items": [
+              {
+                "description": "修复非交互环境下检查结果被静默吞掉、且仓库无 origin 远程时报错污染输出的问题，现在所有检查项均可见",
+                "name": "doctor 在管道与 Agent 环境正常输出",
+              },
+              {
+                "description": "在子模块内执行 init 时自动识别并跳过 openspec 初始化，变更统一在主仓库管理，避免 change 写入子项目与主项目冲突",
+                "name": "子仓库不再创建 openspec",
+              },
+            ],
+            "label": "修复",
+            "type": "fix",
+          },
+        ],
+        "releasedAt": {
+          "from": "2026-06-23T19:13:39+08:00",
+        },
+        "title": "doctor 非交互环境正常输出，子仓库不再创建 openspec",
+        "versions": [
+          "0.8.7",
+        ],
+      },
+      {
+        "archived": false,
+        "groups": [
+          {
+            "items": [
+              {
+                "description": "执行 \`devkeel update\` 后的自动提交原本会把整个 \`openspec\` 目录一并暂存，现在只提交脚手架实际同步的基础配置与 schema，用户正在编写的需求构思、方案、任务等文件保留在工作区由用户自行提交",
+                "name": "update 自动提交不再误提交用户工作区",
+              },
+            ],
+            "label": "修复",
+            "type": "fix",
+          },
+          {
+            "items": [
+              {
+                "description": "版本检测缓存从 1 天延长到 3 天，减少重复拉取新版本的网络请求与通知打扰频率",
+                "name": "更新通知缓存延长",
+              },
+            ],
+            "label": "优化",
+            "type": "refactor",
+          },
+          {
+            "items": [
+              {
+                "description": "安装指南与分享页补充测试基建初始化流程说明，引导在项目初始化后搭建可执行测试基建与自主验证闭环",
+                "name": "测试基建初始化指引",
+              },
+            ],
+            "label": "文档",
+            "type": "docs",
+          },
+        ],
+        "releasedAt": {
+          "from": "2026-06-22T10:36:00+08:00",
+          "to": "2026-06-22T15:20:00+08:00",
+        },
+        "title": "update 自动提交保护用户工作区，更新检测降频",
+        "versions": [
+          "0.8.5",
+          "0.8.6",
+        ],
+      },
+      {
+        "archived": false,
+        "groups": [
+          {
+            "items": [
+              {
+                "description": "新增 \`devkeel openspec\` 子命令，所有参数、子命令、输出和退出码完全透传到 openspec CLI，体验与直接调用一致",
+                "name": "devkeel openspec 代理命令",
+              },
+              {
+                "description": "openspec 作为 harness 依赖内置（版本 1.4.1），无需全局安装，通过 \`npx devkeel@latest openspec\` 即可使用",
+                "name": "零配置使用",
+              },
+              {
+                "description": "所有 openspec 相关 skill 中的命令已更新为 \`npx devkeel@latest openspec\`",
+                "name": "Skill 命令统一",
+              },
+              {
+                "description": "新增可视化统计页面，包含命令分布、每日趋势、Skill 热度、版本分布等 8 个图表，以及项目列表和最近事件表格",
+                "name": "遥测统计报表",
+              },
+            ],
+            "label": "新能力",
+            "type": "feat",
+          },
+        ],
+        "releasedAt": {
+          "from": "2026-06-16T23:27:00+08:00",
+          "to": "2026-06-17T02:12:00+08:00",
+        },
+        "title": "openspec 代理：零配置透传调用",
+        "versions": [
+          "0.8.0",
+          "0.8.1",
+          "0.8.2",
+          "0.8.3",
+          "0.8.4",
+        ],
+      },
+      {
+        "archived": false,
+        "groups": [
+          {
+            "items": [
+              {
+                "description": "执行 \`inject-review\` 或 \`doctor\` 时自动检测模板新版本，显示版本对比提示并引导升级",
+                "name": "更新通知",
+              },
+              {
+                "description": "首次发现新版本时自动打开 changelog 页面展示变更详情，后续仅显示 CLI 提示",
+                "name": "浏览器自动打开更新页",
+              },
+              {
+                "description": "从 CLI 通知打开 changelog 时，页面顶部醒目显示版本升级引导",
+                "name": "更新页版本提示",
+              },
+            ],
+            "label": "新能力",
+            "type": "feat",
+          },
+        ],
+        "releasedAt": {
+          "from": "2026-06-16T16:43:00+08:00",
+        },
+        "title": "更新通知：自动检测新版本并提示升级",
+        "versions": [
+          "0.7.1",
+        ],
+      },
+      {
+        "archived": false,
+        "groups": [
+          {
+            "items": [
+              {
+                "description": "\`devkeel update\` 和 \`devkeel init\` 自动从内部 npm 源下载最新版模板，每次执行都能拿到最新 skills / rules / schemas",
+                "name": "实时拉取最新模板",
+              },
+              {
+                "description": "支持版本比对与 tarball 增量下载，缓存在 \`~/.harness/cache/\`，网络不可达时自动降级为本地缓存",
+                "name": "模板缓存机制",
+              },
+              {
+                "description": "apply 阶段不再强制使用 git worktree，会主动询问是否启用隔离开发环境",
+                "name": "worktree 改为可选",
+              },
+              {
+                "description": "\`devkeel --version\` 同时显示 CLI 版本和模板包版本",
+                "name": "版本显示增强",
+              },
+            ],
+            "label": "新能力",
+            "type": "feat",
+          },
+          {
+            "items": [
+              {
+                "description": "升级后 \`devkeel update\` / \`devkeel init\` 需要网络访问公共 npm registry，请确保 \`~/.npmrc\` 包含：
+\`registry=https://registry.npmjs.org/\`",
+                "name": "CLI 不再内置模板",
+              },
+            ],
+            "label": "破坏性变更",
+            "type": "breaking",
+          },
+        ],
+        "releasedAt": {
+          "from": "2026-06-15T18:16:00+08:00",
+        },
+        "title": "模板实时拉取，缓存机制，worktree 可选",
+        "versions": [
+          "0.7.0",
+        ],
+      },
+      {
+        "archived": true,
+        "groups": [
+          {
+            "items": [
+              {
+                "description": "流程从完整模式切换为：\`brainstorm → [design] → [specs] → tasks → [human-review] → apply → verify → retrospective\`，方括号表示可选阶段，需求明确时可跳过直达任务拆分",
+                "name": "⭐ 默认工作流切换为精简模式",
+              },
+              {
+                "description": "移除 OMC/OMX 相关编排配置，改为通用规则，配置体积减少约 60%",
+                "name": "全局配置精简",
+              },
+              {
+                "description": "大幅精简 skill 调用指令、全局 context rule 等话术，减少每次 artifact 生成时的 token 开销",
+                "name": "上下文消耗优化",
+              },
+              {
+                "description": "需求分析 skill 新增可选能力支持，按项目复杂度自适应分析深度",
+                "name": "需求分析增强",
+              },
+              {
+                "description": "可以随时增加支持的平台配置",
+                "name": "增加 sync 命令",
+              },
+            ],
+            "label": "新能力",
+            "type": "feat",
+          },
+          {
+            "items": [
+              {
+                "description": "修正工作流中阶段名称不一致的问题，统一为用户可理解的中文描述",
+                "name": "工作流阶段命名",
+              },
+            ],
+            "label": "修复",
+            "type": "fix",
+          },
+        ],
+        "releasedAt": {
+          "from": "2026-06-01T14:39:00+08:00",
+        },
+        "title": "精简工作流模式，降低小变更流程开销",
+        "versions": [
+          "0.6.0",
+          "0.6.1",
+        ],
+      },
+      {
+        "archived": true,
+        "groups": [
+          {
+            "items": [
+              {
+                "description": "脚本化调用（如 \`npx devkeel init\` 管道场景）不再因缺少终端交互而报错，自动降级为静默输出",
+                "name": "非 TTY 环境兼容",
+              },
+              {
+                "description": "human-review 页面集成 architecture-diagram skill，自动从设计文档提取组件和数据流生成 SVG 架构图",
+                "name": "评审架构图生成",
+              },
+              {
+                "description": "提交规范 skill 增强差异分析和拆分策略，支持更精细的原子化提交",
+                "name": "commit skill 升级",
+              },
+            ],
+            "label": "新能力",
+            "type": "feat",
+          },
+          {
+            "items": [
+              {
+                "description": "修复非交互式终端执行 init 时因 @clack/prompts 未降级导致的崩溃",
+                "name": "init TTY 报错",
+              },
+            ],
+            "label": "修复",
+            "type": "fix",
+          },
+        ],
+        "releasedAt": {
+          "from": "2026-05-25T20:50:00+08:00",
+          "to": "2026-05-26T18:13:00+08:00",
+        },
+        "title": "非 TTY 兼容、架构图增强与 commit skill 升级",
+        "versions": [
+          "0.5.6",
+          "0.5.7",
+          "0.5.8",
+          "0.5.9",
+        ],
+      },
+      {
+        "archived": true,
+        "groups": [
+          {
+            "items": [
+              {
+                "description": "human-review 模板要求 agentic 执行器生成架构图时节点标签、分组标题等尽可能使用中文",
+                "name": "架构图中文描述",
+              },
+              {
+                "description": "tasks 模板中的 commit 示例统一为中文描述格式",
+                "name": "任务模板 commit 规范",
+              },
+            ],
+            "label": "新能力",
+            "type": "feat",
+          },
+          {
+            "items": [
+              {
+                "description": "明确禁止 AI 生成自定义 \`<style>\` 块和自创 CSS 类名，防止覆盖 CSS 变量导致暗色主题崩溃",
+                "name": "human-review 硬性禁止规则",
+              },
+              {
+                "description": "移除冗余 HTML 骨架，只保留 AI 易出错的关键结构，减少约 55% 的模板内容",
+                "name": "human-review 模板精简",
+              },
+            ],
+            "label": "修复",
+            "type": "fix",
+          },
+        ],
+        "releasedAt": {
+          "from": "2026-05-22T12:19:00+08:00",
+          "to": "2026-05-25T18:42:00+08:00",
+        },
+        "title": "human-review 模板稳定性与中文描述规范",
+        "versions": [
+          "0.5.3",
+          "0.5.4",
+          "0.5.5",
+        ],
+      },
+      {
+        "archived": true,
+        "groups": [
+          {
+            "items": [
+              {
+                "description": "测试设计贯穿设计、评审、实施、验收四个阶段",
+                "name": "Schema 升级至 v8",
+              },
+              {
+                "description": "技术方案设计时自动并行产出测试点",
+                "name": "设计阶段：测试用例设计",
+              },
+              {
+                "description": "human-review 页面新增测试覆盖率仪表盘卡片",
+                "name": "评审阶段：测试覆盖卡片",
+              },
+              {
+                "description": "有测试点时，任务自动分为测试用例落地和功能实现两阶段",
+                "name": "实施阶段：测试用例落地",
+              },
+              {
+                "description": "verify 阶段新增测试报告（TP 覆盖映射 + 执行摘要）",
+                "name": "验收阶段：测试报告输出",
+              },
+              {
+                "description": "自动检测项目类型，按领域矩阵启用对应测试维度",
+                "name": "领域自适应维度矩阵",
+              },
+            ],
+            "label": "新能力",
+            "type": "feat",
+          },
+        ],
+        "releasedAt": {
+          "from": "2026-05-21T17:00:00+08:00",
+        },
+        "title": "Schema v8 — 测试设计贯穿全流程",
+        "versions": [
+          "0.5.2",
+        ],
+      },
+      {
+        "archived": true,
+        "groups": [
+          {
+            "items": [
+              {
+                "description": "原 defect-orchestrator 升级为 jira-defect-orchestrator，新增状态机、确认门禁、评论模板、缺陷剧本等参考文档",
+                "name": "缺陷处理编排器",
+              },
+              {
+                "description": "支持更精细的执行器路由策略",
+                "name": "Schema v6.1",
+              },
+            ],
+            "label": "新能力",
+            "type": "feat",
+          },
+        ],
+        "releasedAt": {
+          "from": "2026-05-20T17:40:00+08:00",
+          "to": "2026-05-20T17:42:00+08:00",
+        },
+        "title": "缺陷处理 Skill 全面升级",
+        "versions": [
+          "0.4.4",
+          "0.4.5",
+        ],
+      },
+      {
+        "archived": true,
+        "groups": [
+          {
+            "items": [
+              {
+                "description": "\`devkeel doctor\` 新增 openspec config 和 schema 引用的完整性检查",
+                "name": "Doctor 配置校验",
+              },
+              {
+                "description": "\`devkeel init\` 生成的领域 AGENTS.md 自动包含 rules/skills/agents 路由索引",
+                "name": "领域路由表",
+              },
+              {
+                "description": "init 完成后立即引导执行 \`/setup\` 安装工具链",
+                "name": "安装指南优化",
+              },
+            ],
+            "label": "新能力",
+            "type": "feat",
+          },
+          {
+            "items": [
+              {
+                "description": "修复 \`devkeel update\` 不会同步更新 openspec schema 目录的问题",
+                "name": "Schema 更新修复",
+              },
+              {
+                "description": "修复 human-review 页面复制按钮重复点击时复制到错误文本的问题",
+                "name": "评审页面复制按钮",
+              },
+            ],
+            "label": "修正",
+            "type": "fix",
+          },
+        ],
+        "releasedAt": {
+          "from": "2026-05-20T11:29:00+08:00",
+          "to": "2026-05-20T11:54:00+08:00",
+        },
+        "title": "Doctor 深度校验、Schema 更新修复与评审页面优化",
+        "versions": [
+          "0.4.1",
+          "0.4.2",
+          "0.4.3",
+        ],
+      },
+      {
+        "archived": true,
+        "groups": [
+          {
+            "items": [
+              {
+                "description": "human-review 评审页面新增「代码设计预览」和「待确认项」汇总章节",
+                "name": "Schema 升级至 v6",
+              },
+              {
+                "description": "verify 阶段要求执行项目标准测试命令并记录输出摘要",
+                "name": "验证流程强化",
+              },
+              {
+                "description": "覆盖缺口检查描述精简，去除冗余概念解释",
+                "name": "延迟验证精简",
+              },
+            ],
+            "label": "模板更新",
+            "type": "feat",
+          },
+        ],
+        "releasedAt": {
+          "from": "2026-05-19T15:39:00+08:00",
+        },
+        "title": "Schema v6 — 评审页面增强与验证流程优化",
+        "versions": [
+          "0.4.0",
+        ],
+      },
+      {
+        "archived": true,
+        "groups": [
+          {
+            "items": [
+              {
+                "description": "\`devkeel init\` 和 \`devkeel update\` 新增对 OpenCode 编辑器的平台链接支持",
+                "name": "OpenCode 平台支持",
+              },
+              {
+                "description": "\`devkeel update\` 现在会同步 openspec 基础配置文件",
+                "name": "openspec 配置同步",
+              },
+            ],
+            "label": "新能力",
+            "type": "feat",
+          },
+          {
+            "items": [
+              {
+                "description": "修复版本号一致但目录实际缺失时不触发更新的问题",
+                "name": "目录缺失检测",
+              },
+              {
+                "description": "领域仓库执行 update 时智能跳过通用 skills/agents/rules",
+                "name": "领域仓库更新策略",
+              },
+            ],
+            "label": "修正",
+            "type": "fix",
+          },
+        ],
+        "releasedAt": {
+          "from": "2026-05-18T19:24:00+08:00",
+          "to": "2026-05-19T13:18:00+08:00",
+        },
+        "title": "更新机制修正与新平台支持",
+        "versions": [
+          "0.3.2",
+          "0.3.3",
+          "0.3.4",
+          "0.3.5",
+          "0.3.6",
+        ],
+      },
+      {
+        "archived": true,
+        "groups": [
+          {
+            "items": [
+              {
+                "description": "\`devkeel init\` 支持通过 CLI 参数直接传入项目名和类型，跳过交互问答",
+                "name": "非交互模式",
+              },
+              {
+                "description": "新增 Agent 自动执行的安装方式，一条命令完成项目初始化",
+                "name": "快速开始 Agent 模式",
+              },
+              {
+                "description": "评审页面全面优化 token 消耗，移除外部 CDN 依赖改为离线注入",
+                "name": "human-review 流程重构",
+              },
+              {
+                "description": "执行实现任务完成后，自动提示可用的后续操作",
+                "name": "apply 下一步提示",
+              },
+            ],
+            "label": "新能力",
+            "type": "feat",
+          },
+          {
+            "items": [
+              {
+                "description": "artifact 模板全面精简，去除仪式性章节改为按需取用",
+                "name": "Schema 升级至 v5",
+              },
+              {
+                "description": "将独立 rules 合并到对应 skill 中",
+                "name": "需求分析 / 方案设计 skill 升级",
+              },
+            ],
+            "label": "模板更新",
+            "type": "feat",
+          },
+          {
+            "items": [
+              {
+                "description": "\`devkeel update\` 时 openspec 根配置文件改为全量覆盖",
+                "name": "openspec 配置全量覆盖",
+              },
+            ],
+            "label": "修正",
+            "type": "fix",
+          },
+          {
+            "items": [
+              {
+                "description": "新增领域包的使用说明与配置指南（[查看](./architecture.html#domain-packages)）",
+                "name": "领域包文档",
+              },
+              {
+                "description": "新增基于 git worktree 的隔离开发环境搭建最佳实践（[查看](./best-practices.html#worktree)）",
+                "name": "最佳实践：Worktree + Setup",
+              },
+            ],
+            "label": "文档",
+            "type": "docs",
+          },
+        ],
+        "releasedAt": {
+          "from": "2026-05-18T18:14:00+08:00",
+        },
+        "title": "评审流程大幅优化 + Schema v5 + Agent 快速开始模式",
+        "versions": [
+          "0.3.1",
+        ],
+      },
+      {
+        "archived": true,
+        "groups": [
+          {
+            "items": [
+              {
+                "description": "\`devkeel update\` 时 AGENTS.md 的框架区域跟随模板更新，用户定制内容完整保留",
+                "name": "框架内容自动升级",
+              },
+              {
+                "description": "AGENTS.md 模板新增 apply 执行器路由规则",
+                "name": "执行器路由内置",
+              },
+            ],
+            "label": "AGENTS.md 智能分区更新",
+            "type": "feat",
+          },
+          {
+            "items": [
+              {
+                "description": "新增领域初始化 skill，对项目全盘扫描后自动生成专属 rules、skills 和 agents",
+                "name": "domain-init",
+              },
+              {
+                "description": "setup skill 改为推荐工具自动配置器",
+                "name": "setup 重写",
+              },
+            ],
+            "label": "新增 Skills",
+            "type": "feat",
+          },
+          {
+            "items": [
+              {
+                "description": "commands 目录改为全量覆盖",
+                "name": "Commands 全量同步",
+              },
+              {
+                "description": "修复 schema 更新时旧文件残留的问题",
+                "name": "Schemas 更新修复",
+              },
+            ],
+            "label": "更新机制修正",
+            "type": "fix",
+          },
+        ],
+        "releasedAt": {
+          "from": "2026-05-18T10:14:00+08:00",
+        },
+        "title": "AGENTS.md 分区更新 + 领域初始化能力",
+        "versions": [
+          "0.3.0",
+        ],
+      },
+      {
+        "archived": true,
+        "groups": [
+          {
+            "items": [
+              {
+                "description": "init / update 后直接获得 9 个工作流 skill",
+                "name": "开箱即用的工作流能力",
+              },
+              {
+                "description": "brainstorming、writing-plans、TDD、executing-plans、requesting-code-review、finishing-a-development-branch、subagent-driven-development、using-git-worktrees、architecture-diagram",
+                "name": "覆盖完整开发周期",
+              },
+            ],
+            "label": "9 个工作流 Skills 内置",
+            "type": "feat",
+          },
+          {
+            "items": [
+              {
+                "description": "检测到损坏的平台目录 symlink 时可一键修复",
+                "name": "\`devkeel doctor --fix\`",
+              },
+            ],
+            "label": "Doctor 自动修复",
+            "type": "feat",
+          },
+        ],
+        "releasedAt": {
+          "from": "2026-05-15T17:50:00+08:00",
+        },
+        "title": "内置 9 个工作流 Skills + Doctor 修复能力",
+        "versions": [
+          "0.2.7",
+        ],
+      },
+      {
+        "archived": true,
+        "groups": [],
+        "releasedAt": {
+          "from": "2026-05-15T14:46:00+08:00",
+        },
+        "title": "Init 交互增强 + 废弃检测精准化",
+        "versions": [
+          "0.2.6",
+        ],
+      },
+      {
+        "archived": true,
+        "groups": [],
+        "releasedAt": {
+          "from": "2026-05-15T14:42:00+08:00",
+        },
+        "title": "版本感知增量更新 + superpowers-bridge v4",
+        "versions": [
+          "0.2.5",
+        ],
+      },
+      {
+        "archived": true,
+        "groups": [],
+        "releasedAt": {
+          "from": "2026-05-15T12:29:00+08:00",
+        },
+        "title": "两层路由分流 + superpowers-bridge v4 + 7 个新 opsx 命令",
+        "versions": [
+          "0.2.4",
+        ],
+      },
+      {
+        "archived": true,
+        "groups": [],
+        "releasedAt": {
+          "from": "2026-05-15T10:21:00+08:00",
+        },
+        "title": "Human-Review 模板增强 + 废弃资产检测",
+        "versions": [
+          "0.2.3",
+        ],
+      },
+      {
+        "archived": true,
+        "groups": [],
+        "releasedAt": {
+          "from": "2026-05-14T23:34:00+08:00",
+        },
+        "title": "Human-Review Gate + OpenSpec 增强 + Init 智能化",
+        "versions": [
+          "0.2.2",
+        ],
+      },
+      {
+        "archived": true,
+        "groups": [],
+        "releasedAt": {
+          "from": "2026-05-14T14:58:00+08:00",
+        },
+        "title": "V2 架构稳定化 + 废弃产物清理",
+        "versions": [
+          "0.2.1",
+        ],
+      },
+      {
+        "archived": true,
+        "groups": [],
+        "releasedAt": {
+          "from": "2026-05-14T02:38:00+08:00",
+        },
+        "title": "V2 重构 — 从编排器到知识框架",
+        "versions": [
+          "0.2.0",
+        ],
+      },
+      {
+        "archived": true,
+        "groups": [],
+        "releasedAt": {
+          "from": "2026-05-09T20:54:00+08:00",
+        },
+        "title": "AI Agent 开发生命周期编排器",
+        "versions": [
+          "0.1",
+        ],
+      },
+    ],
+  },
+  "templates": {
+    "entries": [
+      {
+        "archived": false,
+        "groups": [
+          {
+            "items": [
+              {
+                "description": "生成技术方案前会识别前端、后端、CLI、移动端、桌面端、SDK、DevOps、本地系统服务等项目领域，只展开与本次变更相关的设计内容",
+                "name": "领域感知方案设计",
+              },
+              {
+                "description": "从范围、架构、接口、数据、UI、性能、安全、兼容、验证等 14 个维度按需选择重点，关键设计充分展开，次要内容只做检查，不相关内容直接跳过",
+                "name": "按风险选择设计维度",
+              },
+            ],
+            "label": "新能力",
+            "type": "feat",
+          },
+          {
+            "items": [
+              {
+                "description": "方案开头用简短摘要说明重点覆盖和跳过的维度，减少大而全的表格与无关方法论，让文档更容易阅读和落地",
+                "name": "设计关注点精简",
+              },
+              {
+                "description": "评审页中的时序、状态、数据流和模块依赖图默认使用 Mermaid，仅在系统、基础设施、云、网络或安全拓扑等复杂场景加载架构图能力，减少普通评审的上下文与 token 消耗",
+                "name": "human-review 图表按需生成",
+              },
+            ],
+            "label": "优化",
+            "type": "refactor",
+          },
+        ],
+        "releasedAt": {
+          "from": "2026-07-06T10:14:00+08:00",
+        },
+        "title": "技术方案按领域聚焦，评审图表按需生成",
+        "versions": [
+          "1.2.5",
+        ],
+      },
+      {
+        "archived": false,
+        "groups": [
+          {
+            "items": [
+              {
+                "description": "apply 阶段会记录主仓库和子模块的基线快照，verify 阶段用统一命令统计提交证据，全部提交发生在子模块时也能正常通过验证门禁",
+                "name": "实现证据收集",
+              },
+            ],
+            "label": "新能力",
+            "type": "feat",
+          },
+          {
+            "items": [
+              {
+                "description": "verify 不再依赖 bash 管道、grep 或固定 main/master 分支名，Windows 和非标准分支工作流下也能按 apply 前记录的基线计算增量",
+                "name": "跨平台验证",
+              },
+            ],
+            "label": "修复",
+            "type": "fix",
+          },
+        ],
+        "releasedAt": {
+          "from": "2026-07-03T12:14:00+08:00",
+        },
+        "title": "验证证据跨平台收集，支持子模块提交",
+        "versions": [
+          "1.2.4",
+        ],
+      },
+      {
+        "archived": false,
+        "groups": [
+          {
+            "items": [
+              {
+                "description": "初始化或更新后的 AGENTS.md 模板会要求 Agent 先索引再加载、按任务匹配规则和技能，避免一次性读取无关历史文档、规则目录或大段代码，减少无效上下文与 token 消耗",
+                "name": "上下文 token 优化",
+              },
+              {
+                "description": "模板补充搜索范围、读取片段和测试日志摘要要求，让 Agent 在查看代码和验证输出时更克制、更聚焦",
+                "name": "代码与输出读取协议",
+              },
+              {
+                "description": "commit skill 明确提交信息使用 \`type(scope): 中文 subject\`，示例和检查清单同步改为中文描述，提交历史更符合项目约定",
+                "name": "提交描述统一中文",
+              },
+            ],
+            "label": "文档",
+            "type": "docs",
+          },
+        ],
+        "releasedAt": {
+          "from": "2026-06-30T10:58:00+08:00",
+          "to": "2026-06-30T10:59:00+08:00",
+        },
+        "title": "优化上下文 token 消耗，提交描述统一使用中文",
+        "versions": [
+          "1.2.2",
+          "1.2.3",
+        ],
+      },
+      {
+        "archived": false,
+        "groups": [
+          {
+            "items": [
+              {
+                "description": "以前不管任务大小都走 TDD + 代码审查 + 全量审查，又慢又费 token；现在任务清单标注 inline / batch / isolated 三档，小改动走 inline 快速完成、只有复杂任务才走完整审查，apply 整体快很多、token 消耗明显下降",
+                "name": "apply 按任务轻重分档执行",
+              },
+              {
+                "description": "每组任务在清单里标明走哪一档，由拆任务的人按轻重决定、apply 照着执行；标注时附了分组阈值和慢测试判断标准，有据可依",
+                "name": "任务清单标注执行模式",
+              },
+              {
+                "description": "apply 启动时同时记录主仓库和子模块的基线版本，确保后续审查和验收能正确计算包含子模块修改在内的完整变更范围",
+                "name": "base SHA 记录含子模块",
+              },
+            ],
+            "label": "新能力",
+            "type": "feat",
+          },
+          {
+            "items": [
+              {
+                "description": "batch 模式下一组任务在组尾统一跑一次测试、做一次代码质量审查，不再每个任务都跑一遍，省掉重复劳动",
+                "name": "batch 档审查与测试不重复",
+              },
+            ],
+            "label": "修正",
+            "type": "fix",
+          },
+        ],
+        "releasedAt": {
+          "from": "2026-06-24T00:28:00+08:00",
+          "to": "2026-06-24T16:55:00+08:00",
+        },
+        "title": "apply 三档分档执行，小变更不再走重型审查",
+        "versions": [
+          "1.2.0",
+          "1.2.1",
+        ],
+      },
+      {
+        "archived": false,
+        "groups": [
+          {
+            "items": [
+              {
+                "description": "每个任务由独立 implementer 实现后，统一交由 task reviewer 做 spec + 代码质量合并审查，全部任务完成后再做一次 whole-branch 全量审查；dispatch subagent 强制显式声明 model，机械任务用廉价模型、复杂判断任务用强模型，避免默认继承最贵模型",
+                "name": "subagent 驱动开发 v6",
+              },
+              {
+                "description": "工作区 scratch 文件统一写入 \`.superpowers/sdd/\`（已自动 gitignore），apply 启动时先读 progress ledger 跳过已完成 task，每完成一个 task 追加一行，支持中断后续跑",
+                "name": "审查断点续跑与进度台账",
+              },
+              {
+                "description": "新增接收代码审查反馈的 skill，要求技术严谨地核实反馈而非盲目照做，对拿不准的反馈先验证再决策",
+                "name": "receiving-code-review skill",
+              },
+              {
+                "description": "新增完成前验证 skill，要求在声称完成 / 修复 / 通过前先跑验证命令并确认输出，坚持证据先于断言",
+                "name": "verification-before-completion skill",
+              },
+              {
+                "description": "调用 subagent 工作流前先检索项目日志约定（AGENTS.md、\`.harness/rules/\`），无则按"关键决策点必须可观察"兜底，作为全局约束随实现任务传递，实现关键位置即按规范补日志",
+                "name": "apply 阶段日志规范前置",
+              },
+              {
+                "description": "全量代码审查明确聚焦架构 / 规范层（分层越界、CLI 接口与文件系统安全、工具链一致性），与 subagent 工作流的代码质量层正交不重复",
+                "name": "全量审查分层互补",
+              },
+            ],
+            "label": "新能力",
+            "type": "feat",
+          },
+          {
+            "items": [
+              {
+                "description": "OpenSpec 已作为 \`devkeel\` 依赖内置，通过 \`devkeel openspec\` 调用；oh-my-claudecode / oh-my-codex 不再内置，需要时由用户自行安装，不再由 harness 引导",
+                "name": "移除 setup skill",
+              },
+              {
+                "description": "原 spec-reviewer 与 code-quality-reviewer 两个模板合并为单一 task-reviewer 模板，task reviewer 只读工作区、不修改代码、不触碰分支，杜绝 orphan 后续 commit",
+                "name": "reviewer 模板合并",
+              },
+              {
+                "description": "审查用的 diff 不再粘贴进 context，改由 \`scripts/review-package\` 写入文件供 reviewer 一次性读取，节省 context",
+                "name": "diff 文件化传递",
+              },
+              {
+                "description": "移除内置的 PR 创建命令模板，worktree 清理路径收敛到 \`.worktrees/\` 与 \`worktrees/\` 两类",
+                "name": "finishing-a-development-branch 精简",
+              },
+            ],
+            "label": "重构",
+            "type": "refactor",
+          },
+          {
+            "items": [
+              {
+                "description": "subagent 工作流的工作区目录默认忽略，避免 scratch 文件污染 \`git status\`",
+                "name": ".superpowers 纳入 gitignore",
+              },
+            ],
+            "label": "修正",
+            "type": "fix",
+          },
+        ],
+        "releasedAt": {
+          "from": "2026-06-22T12:26:00+08:00",
+          "to": "2026-06-23T19:20:07+08:00",
+        },
+        "title": "subagent 工作流 v6 升级，新增代码审查接收与完成前验证 skill",
+        "versions": [
+          "1.1.0",
+          "1.1.1",
+        ],
+      },
+      {
+        "archived": false,
+        "groups": [
+          {
+            "items": [
+              {
+                "description": "扫描项目领域与技术栈、自动检测已有测试框架，为测试用例设计 skill 产出的用例提供可执行落点与自主验证闭环",
+                "name": "verify-init 验证层初始化器",
+              },
+              {
+                "description": "新增按设计意图（设计稿 / 截图 / 线框）高保真实现 UI 的 skill，指导先对齐结构与交互、再打磨细节，避免常见还原失真并在提交前自验",
+                "name": "ui-fidelity-playbook UI 高保真方法论",
+              },
+              {
+                "description": "需求构思、方案设计、规格、任务拆分、验收五个阶段新增 UI 用例与约束、UI 设计可选章节、能力覆盖度自检、UI 还原度验证等支持，覆盖从需求到验收的 UI 全链路",
+                "name": "工作流模板补 UI 维度",
+              },
+            ],
+            "label": "新能力",
+            "type": "feat",
+          },
+        ],
+        "releasedAt": {
+          "from": "2026-06-18T19:56:00+08:00",
+          "to": "2026-06-22T10:48:00+08:00",
+        },
+        "title": "新增验证层与 UI 高保真 skill，工作流全链路补 UI 维度",
+        "versions": [
+          "1.0.5",
+        ],
+      },
+      {
+        "archived": false,
+        "groups": [
+          {
+            "items": [
+              {
+                "description": "移除流程图辅助与未被调用的 spec 审查 subagent 模板，skill 内容更聚焦",
+                "name": "brainstorming 精简",
+              },
+            ],
+            "label": "重构",
+            "type": "refactor",
+          },
+        ],
+        "releasedAt": {
+          "from": "2026-06-18T16:27:00+08:00",
+        },
+        "title": "brainstorming 精简，移除流程图与冗余审查模板",
+        "versions": [
+          "1.0.4",
+        ],
+      },
+      {
+        "archived": false,
+        "groups": [
+          {
+            "items": [
+              {
+                "description": "apply 阶段每个 subagent 只执行当前 task 指定的测试命令，不再跑全量测试，全量测试延迟到代码审查阶段统一执行",
+                "name": "task 级 scoped testing",
+              },
+            ],
+            "label": "新能力",
+            "type": "feat",
+          },
+          {
+            "items": [
+              {
+                "description": "所有 skill 和 schema 中的 openspec 命令改为 \`npx devkeel@latest openspec\`，配合 CLI v0.8.0 的代理机制",
+                "name": "命令引用统一",
+              },
+              {
+                "description": "移除 openspec 安装步骤，openspec 已作为 harness 依赖内置",
+                "name": "/setup 精简",
+              },
+            ],
+            "label": "重构",
+            "type": "refactor",
+          },
+        ],
+        "releasedAt": {
+          "from": "2026-06-17T01:22:00+08:00",
+        },
+        "title": "apply 阶段 task 级测试隔离，命令引用统一",
+        "versions": [
+          "1.0.3",
+        ],
+      },
+      {
+        "archived": false,
+        "groups": [
+          {
+            "items": [
+              {
+                "description": "frontend / backend 领域专属 skills、rules、agents 全部移除，不再通过 \`devkeel init\` 分发领域模板，改为由 \`domain-init\` skill 按需生成",
+                "name": "移除 domain 模板体系",
+              },
+            ],
+            "label": "破坏性变更",
+            "type": "breaking",
+          },
+          {
+            "items": [
+              {
+                "description": "新增系统化调试 skill，引导结构化排查流程",
+                "name": "systematic-debugging skill",
+              },
+            ],
+            "label": "新能力",
+            "type": "feat",
+          },
+        ],
+        "releasedAt": {
+          "from": "2026-06-16T15:50:00+08:00",
+        },
+        "title": "移除 domain 模板体系，新增 systematic-debugging skill",
+        "versions": [
+          "1.0.2",
+        ],
+      },
+      {
+        "archived": false,
+        "groups": [
+          {
+            "items": [
+              {
+                "description": "apply 阶段新增全量代码审查闭环，实现完成后自动触发代码审查",
+                "name": "superpowers-lite schema 升级",
+              },
+            ],
+            "label": "新能力",
+            "type": "feat",
+          },
+        ],
+        "releasedAt": {
+          "from": "2026-06-15T17:30:00+08:00",
+        },
+        "title": "Schema 升级，apply 阶段新增代码审查闭环",
+        "versions": [
+          "1.0.1",
+        ],
+      },
+      {
+        "archived": false,
+        "groups": [
+          {
+            "items": [
+              {
+                "description": "模板资产从 CLI 包中拆分，作为独立 npm 包发布，模板变更不再需要 CLI 升版即可生效",
+                "name": "devkeel-templates 独立发版",
+              },
+              {
+                "description": "包含 9 个工作流 skills、执行规则集、AGENTS.md 模板、superpowers-lite schema",
+                "name": "完整资产包",
+              },
+            ],
+            "label": "初始发布",
+            "type": "feat",
+          },
+        ],
+        "releasedAt": {
+          "from": "2026-06-15T15:48:00+08:00",
+        },
+        "title": "模板独立 npm 包初始发布",
+        "versions": [
+          "1.0.0",
+        ],
+      },
+    ],
+  },
+}
+`;

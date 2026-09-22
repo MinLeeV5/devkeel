@@ -1,0 +1,40 @@
+{
+  "versions": [
+    "0.12.0"
+  ],
+  "releasedAt": {
+    "from": "2026-09-18T16:01:23+08:00"
+  },
+  "title": "技能同步增加冲突保护与自动备份",
+  "archived": false,
+  "groups": [
+    {
+      "type": "feat",
+      "label": "新能力",
+      "items": [
+        {
+          "name": "技能入口冲突预检",
+          "description": "Codex 与 Claude Code 的 skills 入口在同步前整批检查归属，遇到自有目录、未知链接或被改向的链接时保留原件并停止，避免配置已更新而入口只处理了一部分。"
+        },
+        {
+          "name": "强制替换前自动备份",
+          "description": "`devkeel init --force` 与 `devkeel sync --force` 可在备份全部冲突内容后替换本次 skills 入口，并输出备份位置；备份失败时停止覆盖。"
+        },
+        {
+          "name": "技能包健康检查",
+          "description": "`devkeel doctor` 检查共享链接目标、技能 frontmatter 和 Codex 元数据，`--fix` 可补齐缺失入口，遇到用户内容冲突时保留原件。"
+        }
+      ]
+    },
+    {
+      "type": "fix",
+      "label": "修复",
+      "items": [
+        {
+          "name": "保留平台自有配置",
+          "description": "初始化和同步不再清空整个平台目录，Codex 与 Claude Code 中已有的设置、非 skills 文件、目录及断链继续保留。"
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,75 @@
+{
+  "versions": ["0.9.1", "0.10.0"],
+  "releasedAt": {
+    "from": "2026-07-22T17:53:39+08:00",
+    "to": "2026-07-29T12:40:51+08:00"
+  },
+  "title": "V2 安全升级与新官网、统计上线",
+  "archived": false,
+  "groups": [
+    {
+      "type": "breaking",
+      "label": "升级行为变化",
+      "items": [
+        {
+          "name": "V2 受管资产迁移",
+          "description": "`devkeel update` 会将 V1 的 `superpowers-lite` 与已退休受管 Skill 迁移到 `lite`、`full` 和新版专项 Skill，并在新目标校验通过后清理旧资产。"
+        }
+      ]
+    },
+    {
+      "type": "feat",
+      "label": "新能力",
+      "items": [
+        {
+          "name": "稳定版与 Beta 双渠道",
+          "description": "`devkeel update --beta` 可获取 beta 渠道模板，`devkeel --version --beta` 可查看对应 CLI 与 Templates 版本，默认命令继续使用稳定渠道。"
+        },
+        {
+          "name": "子项目智能初始化",
+          "description": "`devkeel init` 可为选中的 Git 子模块生成领域级 `AGENTS.md`、平台链接和独立配置，同时将 OpenSpec change 统一保留在主仓库管理。"
+        },
+        {
+          "name": "AGENTS.md 合并保护",
+          "description": "初始化或更新遇到已有 `AGENTS.md` 时会提示确认并保留用户定制区与原有约定，非交互 `-y` 模式不会擅自覆盖现有文件。"
+        },
+        {
+          "name": "V2 Change 遥测",
+          "description": "`devkeel openspec` 会在不改变命令输出与退出码的前提下记录 change、当前 Schema 和 Lite→Full 升级信息，统计页可按 change 查看采用情况。"
+        },
+        {
+          "name": "V2 统计看板",
+          "description": "公开统计页新增 Change 数、Schema 分布、Lite→Full 次数、周活跃用户、模板版本和可分页事件明细，并保留独立的 V1 数据入口。"
+        },
+        {
+          "name": "V2 官网与 V1 归档",
+          "description": "官网重写为面向现有项目的 V2 指南，补充渐进路径、项目架构、方案对比和案例说明；原 V1 首页、工作流与最佳实践仍可从归档入口访问。"
+        }
+      ]
+    },
+    {
+      "type": "refactor",
+      "label": "优化",
+      "items": [
+        {
+          "name": "遥测不再阻塞命令",
+          "description": "遥测上报改为后台发送，网络缓慢或服务不可用时不再拖慢 `init`、`update` 和 `openspec` 的命令收尾。"
+        }
+      ]
+    },
+    {
+      "type": "fix",
+      "label": "修复",
+      "items": [
+        {
+          "name": "讨论能力迁移可恢复",
+          "description": "brainstorming 迁移会先暂存并校验新版 Skill 与兼容命令，再通过恢复日志完成切换；执行中断时，下次 `init` 或 `update` 可恢复，避免新旧讨论入口混用。"
+        },
+        {
+          "name": "统计口径一致",
+          "description": "项目统计改为按仓库去重并采用最新记录的模板版本，修复同一项目多条事件导致版本展示和活跃项目数量不准确的问题。"
+        }
+      ]
+    }
+  ]
+}

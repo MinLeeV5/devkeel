@@ -1,0 +1,37 @@
+{
+  "name": "devkeel-templates",
+  "version": "2.2.0",
+  "description": "DevKeel CLI 的模板资产（skills/rules/agents/schemas）",
+  "scripts": {
+    "release": "npm publish",
+    "release:beta": "npm publish --tag beta"
+  },
+  "files": [
+    "skills",
+    "rules",
+    "commands",
+    "domain",
+    "openspec",
+    "versions-yml.yml",
+    "agents-md.md",
+    "agents-domain-md.md",
+    "claude-md.md",
+    "config-yml.yml",
+    "gemini-md.md",
+    "gitignore"
+  ],
+  "publishConfig": {
+    "registry": "https://registry.npmjs.org/",
+    "access": "public"
+  },
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/MinLeeV5/devkeel.git",
+    "directory": "templates"
+  },
+  "homepage": "https://github.com/MinLeeV5/devkeel#readme",
+  "bugs": {
+    "url": "https://github.com/MinLeeV5/devkeel/issues"
+  }
+}

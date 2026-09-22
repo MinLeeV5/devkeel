@@ -1,0 +1,73 @@
+{
+  "versions": ["1.1.0", "1.1.1"],
+  "releasedAt": {
+    "from": "2026-06-22T12:26:00+08:00",
+    "to": "2026-06-23T19:20:07+08:00"
+  },
+  "title": "subagent 工作流 v6 升级，新增代码审查接收与完成前验证 skill",
+  "archived": false,
+  "groups": [
+    {
+      "type": "feat",
+      "label": "新能力",
+      "items": [
+        {
+          "name": "subagent 驱动开发 v6",
+          "description": "每个任务由独立 implementer 实现后，统一交由 task reviewer 做 spec + 代码质量合并审查，全部任务完成后再做一次 whole-branch 全量审查；dispatch subagent 强制显式声明 model，机械任务用廉价模型、复杂判断任务用强模型，避免默认继承最贵模型"
+        },
+        {
+          "name": "审查断点续跑与进度台账",
+          "description": "工作区 scratch 文件统一写入 `.superpowers/sdd/`（已自动 gitignore），apply 启动时先读 progress ledger 跳过已完成 task，每完成一个 task 追加一行，支持中断后续跑"
+        },
+        {
+          "name": "receiving-code-review skill",
+          "description": "新增接收代码审查反馈的 skill，要求技术严谨地核实反馈而非盲目照做，对拿不准的反馈先验证再决策"
+        },
+        {
+          "name": "verification-before-completion skill",
+          "description": "新增完成前验证 skill，要求在声称完成 / 修复 / 通过前先跑验证命令并确认输出，坚持证据先于断言"
+        },
+        {
+          "name": "apply 阶段日志规范前置",
+          "description": "调用 subagent 工作流前先检索项目日志约定（AGENTS.md、`.harness/rules/`），无则按\"关键决策点必须可观察\"兜底，作为全局约束随实现任务传递，实现关键位置即按规范补日志"
+        },
+        {
+          "name": "全量审查分层互补",
+          "description": "全量代码审查明确聚焦架构 / 规范层（分层越界、CLI 接口与文件系统安全、工具链一致性），与 subagent 工作流的代码质量层正交不重复"
+        }
+      ]
+    },
+    {
+      "type": "refactor",
+      "label": "重构",
+      "items": [
+        {
+          "name": "移除 setup skill",
+          "description": "OpenSpec 已作为 `devkeel` 依赖内置，通过 `devkeel openspec` 调用；oh-my-claudecode / oh-my-codex 不再内置，需要时由用户自行安装，不再由 harness 引导"
+        },
+        {
+          "name": "reviewer 模板合并",
+          "description": "原 spec-reviewer 与 code-quality-reviewer 两个模板合并为单一 task-reviewer 模板，task reviewer 只读工作区、不修改代码、不触碰分支，杜绝 orphan 后续 commit"
+        },
+        {
+          "name": "diff 文件化传递",
+          "description": "审查用的 diff 不再粘贴进 context，改由 `scripts/review-package` 写入文件供 reviewer 一次性读取，节省 context"
+        },
+        {
+          "name": "finishing-a-development-branch 精简",
+          "description": "移除内置的 PR 创建命令模板，worktree 清理路径收敛到 `.worktrees/` 与 `worktrees/` 两类"
+        }
+      ]
+    },
+    {
+      "type": "fix",
+      "label": "修正",
+      "items": [
+        {
+          "name": ".superpowers 纳入 gitignore",
+          "description": "subagent 工作流的工作区目录默认忽略，避免 scratch 文件污染 `git status`"
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,29 @@
+{
+  "versions": ["1.2.2", "1.2.3"],
+  "releasedAt": {
+    "from": "2026-06-30T10:58:00+08:00",
+    "to": "2026-06-30T10:59:00+08:00"
+  },
+  "title": "优化上下文 token 消耗，提交描述统一使用中文",
+  "archived": false,
+  "groups": [
+    {
+      "type": "docs",
+      "label": "文档",
+      "items": [
+        {
+          "name": "上下文 token 优化",
+          "description": "初始化或更新后的 AGENTS.md 模板会要求 Agent 先索引再加载、按任务匹配规则和技能，避免一次性读取无关历史文档、规则目录或大段代码，减少无效上下文与 token 消耗"
+        },
+        {
+          "name": "代码与输出读取协议",
+          "description": "模板补充搜索范围、读取片段和测试日志摘要要求，让 Agent 在查看代码和验证输出时更克制、更聚焦"
+        },
+        {
+          "name": "提交描述统一中文",
+          "description": "commit skill 明确提交信息使用 `type(scope): 中文 subject`，示例和检查清单同步改为中文描述，提交历史更符合项目约定"
+        }
+      ]
+    }
+  ]
+}

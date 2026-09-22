@@ -1,0 +1,22 @@
+{
+  "versions": ["0.8.7"],
+  "releasedAt": { "from": "2026-06-23T19:13:39+08:00" },
+  "title": "doctor 非交互环境正常输出，子仓库不再创建 openspec",
+  "archived": false,
+  "groups": [
+    {
+      "type": "fix",
+      "label": "修复",
+      "items": [
+        {
+          "name": "doctor 在管道与 Agent 环境正常输出",
+          "description": "修复非交互环境下检查结果被静默吞掉、且仓库无 origin 远程时报错污染输出的问题，现在所有检查项均可见"
+        },
+        {
+          "name": "子仓库不再创建 openspec",
+          "description": "在子模块内执行 init 时自动识别并跳过 openspec 初始化，变更统一在主仓库管理，避免 change 写入子项目与主项目冲突"
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,18 @@
+{
+  "versions": ["1.0.1"],
+  "releasedAt": { "from": "2026-06-15T17:30:00+08:00" },
+  "title": "Schema 升级，apply 阶段新增代码审查闭环",
+  "archived": false,
+  "groups": [
+    {
+      "type": "feat",
+      "label": "新能力",
+      "items": [
+        {
+          "name": "superpowers-lite schema 升级",
+          "description": "apply 阶段新增全量代码审查闭环，实现完成后自动触发代码审查"
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,38 @@
+{
+  "versions": ["0.5.2"],
+  "releasedAt": { "from": "2026-05-21T17:00:00+08:00" },
+  "title": "Schema v8 — 测试设计贯穿全流程",
+  "archived": true,
+  "groups": [
+    {
+      "type": "feat",
+      "label": "新能力",
+      "items": [
+        {
+          "name": "Schema 升级至 v8",
+          "description": "测试设计贯穿设计、评审、实施、验收四个阶段"
+        },
+        {
+          "name": "设计阶段：测试用例设计",
+          "description": "技术方案设计时自动并行产出测试点"
+        },
+        {
+          "name": "评审阶段：测试覆盖卡片",
+          "description": "human-review 页面新增测试覆盖率仪表盘卡片"
+        },
+        {
+          "name": "实施阶段：测试用例落地",
+          "description": "有测试点时，任务自动分为测试用例落地和功能实现两阶段"
+        },
+        {
+          "name": "验收阶段：测试报告输出",
+          "description": "verify 阶段新增测试报告（TP 覆盖映射 + 执行摘要）"
+        },
+        {
+          "name": "领域自适应维度矩阵",
+          "description": "自动检测项目类型，按领域矩阵启用对应测试维度"
+        }
+      ]
+    }
+  ]
+}
