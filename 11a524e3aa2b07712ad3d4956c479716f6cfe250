@@ -1,0 +1,92 @@
+web/src/pages/home/QuickStartSection.tsx
+  7a8162769ad8f0f9 42
+web/public/diagrams/sharing-v2-verify-init-summary.svg
+  7a8162769ad8f0f9 3,35-37
+web/tests/react-pages.test.ts
+  7a8162769ad8f0f9 133-134,306,321,373-375
+web/public/diagrams/progressive-path.svg
+  7a8162769ad8f0f9 133
+web/public/diagrams/sharing-v2-harness-architecture.svg
+  7a8162769ad8f0f9 3,96-97
+web/public/diagrams/sharing-v2-routing.svg
+  7a8162769ad8f0f9 125,133
+web/src/pages/changelog.tsx
+  7a8162769ad8f0f9 293,295,298-300,303,306,310,314
+web/public/install.md
+  7a8162769ad8f0f9 1,3-4,6,8-12,14,16-17,19-20,22,28-29,31-32,34-35,37,39,42,45,49-50,52,54-55,57-59,61-62,64,66-68,71,74-76,78-80,82,84,86-93,95-96,98-100,102,108,110,112-117,119-120,126,128,130-132,135-136,139-140,142-144,146,148-150,152-153,155,157-158,160-164,166,168-171,173-174,176,178-179,181,183-187,189-191,193,195,197,199-204,206-208,210-211,213,215,217-221,223,225,228-229,231-232,235-236,238-240,242-243
+web/public/sharing.html
+  7a8162769ad8f0f9 482-483,488,492,534-535,544,556,559
+web/src/pages/home/HowItWorksSection.tsx
+  7a8162769ad8f0f9 10,15
+web/install.md
+  7a8162769ad8f0f9 1,3-4,6,8-12,14,16-17,19-20,22,28-29,31-32,34-35,37,39,42,45,49-50,52,54-55,57-59,61-62,64,66-68,71,74-76,78-80,82,84,86-93,95-96,98-100,102,108,110,112-117,119-120,126,128,130-132,135-136,139-140,142-144,146,148-150,152-153,155,157-158,160-164,166,168-171,173-174,176,178-179,181,183-187,189-191,193,195,197,199-204,206-208,210-211,213,215,217-221,223,225,228-229,231-232,235-236,238-240,242-243
+web/public/diagrams/onboarding-flow-dark.svg
+  7a8162769ad8f0f9 30-31,69,87
+web/public/diagrams/onboarding-flow.svg
+  7a8162769ad8f0f9 30-31,69,87
+web/public/diagrams/sharing-v2-domain-init-summary.svg
+  7a8162769ad8f0f9 3,36-40
+web/tests/workflow-docs.test.ts
+  7a8162769ad8f0f9 18,56-69
+web/src/pages/home/ExistingProjectSection.tsx
+  7a8162769ad8f0f9 25,37,60
+web/tests/home-page.test.tsx
+  7a8162769ad8f0f9 271-272
+web/public/diagrams/project-architecture.svg
+  7a8162769ad8f0f9 3,96-97
+README.md
+  7a8162769ad8f0f9 1,3,5-7,9,11-14,16,18,20,22-24,27-28,30,32-33,36,38-43,45-47,49,52-54,57-58,60,62,64-67,69-70,72-73,75-76,78,80-81,83-87,89-90,92,94-101,103-106,108,110,112-125,128-129,131-138,140-142,144-146,148,150-161,164,166-168,171-172,174-177,179,181,183-185,187-189,191-193,195-197,200-202,205-206,210,212-216,218-219,221,224-226,229-233,237
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.9",
+  "base_commit_sha": "11a524e3aa2b07712ad3d4956c479716f6cfe250",
+  "prompts": {
+    "4ba93f24e5186724": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "01a0c877-d61f-78b1-9c8a-557dea8017ef",
+        "model": "gpt-6-astra"
+      },
+      "human_author": "MinLeeV5 <dicklwm@163.com>",
+      "messages": [],
+      "total_additions": 0,
+      "total_deletions": 0,
+      "accepted_lines": 497,
+      "overriden_lines": 0,
+      "messages_url": "https://gitai.gz.cvte.cn/cas/ebea2c6de7218f1acbf7879d69c2139e94ef6b42468683d2c56361234a9258b0"
+    },
+    "7a8162769ad8f0f9": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "01a0cbe7-5a56-7aa2-9959-1538cf5d2858",
+        "model": "gpt-6-astra"
+      },
+      "human_author": "MinLeeV5 <dicklwm@163.com>",
+      "messages": [],
+      "total_additions": 1195,
+      "total_deletions": 2497,
+      "accepted_lines": 1187,
+      "overriden_lines": 0,
+      "messages_url": "https://gitai.gz.cvte.cn/cas/e8f3c440be4f3abe6139ba3a85f4aaaa153badaa834c7b99fb3eba631b49493a"
+    },
+    "fbd0a7434a0e56c7": {
+      "agent_id": {
+        "tool": "known_human",
+        "id": "known_human_session",
+        "model": "unknown"
+      },
+      "human_author": "MinLeeV5 <dicklwm@163.com>",
+      "messages": [],
+      "total_additions": 0,
+      "total_deletions": 1,
+      "accepted_lines": 0,
+      "overriden_lines": 0
+    }
+  },
+  "humans": {
+    "h_1a7429a562def8": {
+      "author": "MinLeeV5"
+    }
+  }
+}
