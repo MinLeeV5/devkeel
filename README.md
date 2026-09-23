@@ -27,6 +27,12 @@ npx devkeel@latest doctor
 `init` 会询问项目名称和目标平台；检测到 Git 子模块时，可选择为哪些子模块初始化。
 已有 `AGENTS.md` 会在确认后合并原内容。初始化建立协作入口，项目知识与验证能力继续按需补齐。
 
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="web/public/diagrams/onboarding-flow-dark.svg">
+  <source media="(prefers-color-scheme: light)" srcset="web/public/diagrams/onboarding-flow.svg">
+  <img src="web/public/diagrams/onboarding-flow.svg" alt="项目接入流程：安装与自检、domain-init、知识审查、verify-init，以及确认后补齐验证基建" width="960">
+</picture>
+
 也可以把下面的提示交给 Coding Agent，按[安装指南](web/public/install.md)完成接入：
 
 ```text
@@ -80,6 +86,8 @@ DevKeel 不采集或上报使用数据，内置 OpenSpec 调用也关闭了遥�
 直接描述任务即可。Agent 先调查并对齐方案，复用已有授权，再选择足够完成任务的路径。
 代码审查、调试、测试设计等明确操作直接进入对应专项 Skill。
 
+![任务分流：专项 Skill 与 Direct、Lite、Full 路径，以及 Lite 和 Full 的 OpenSpec 协作流程](web/public/diagrams/progressive-path.svg)
+
 | 路径 | 适用情况 | 协作方式 |
 |------|----------|----------|
 | **Direct** | 当前会话可完成改动与验证 | 对齐方案、实施、邻近验证与 diff 自审，不创建 OpenSpec change |
@@ -106,6 +114,10 @@ Lite / Full 的升级需要说明价值或风险并取得确认。文件数和�
 [Lite / Full schemas](templates/openspec/schemas/)维护。
 
 ## 资产分层与平台支持
+
+下图以手机登录功能交付为例，展示项目知识、专业能力与验证反馈如何共同支撑 Agent 执行任务。
+
+![项目资产架构：执行入口与协作记录、规则与专业能力、验证反馈共同构成 Agent-ready Repository](web/public/diagrams/project-architecture.svg)
 
 接入并生成项目知识后，各类资产按职责维护：
 
