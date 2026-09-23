@@ -1,0 +1,86 @@
+.harness/rules/editing-discipline.md
+  762b6b2dff41111c 29-30
+.harness/rules/documentation.md
+  fc2843bf8a58fe62 23,25,27-28
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.9",
+  "base_commit_sha": "b1bff3a6db82e79d452751bb3cd8a36033f88758",
+  "prompts": {
+    "4ba93f24e5186724": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "01a0c877-d61f-78b1-9c8a-557dea8017ef",
+        "model": "gpt-6-astra"
+      },
+      "human_author": "MinLeeV5 <dicklwm@163.com>",
+      "messages": [],
+      "total_additions": 1393,
+      "total_deletions": 4489,
+      "accepted_lines": 1342,
+      "overriden_lines": 20,
+      "messages_url": "https://gitai.gz.cvte.cn/cas/c01800a032bed7b33ae2e1cd912e091bdd5a680eddaaaaf163e50f4e8aecc69f"
+    },
+    "762b6b2dff41111c": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "01a0c7fe-8738-7e41-bdc0-d5cd29c2004a",
+        "model": "gpt-6-astra"
+      },
+      "human_author": "MinLeeV5 <dicklwm@163.com>",
+      "messages": [],
+      "total_additions": 3443,
+      "total_deletions": 1439,
+      "accepted_lines": 3077,
+      "overriden_lines": 34,
+      "messages_url": "https://gitai.gz.cvte.cn/cas/5dade0a1172ecb3364fb446e07f1115854c30cd2f660b0f5ef45bd691f0dbb06"
+    },
+    "b7afd1634b98d80e": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "01a0c881-b5c9-7f00-8456-f439e6d00b32",
+        "model": "gpt-6-astra"
+      },
+      "human_author": "MinLeeV5 <dicklwm@163.com>",
+      "messages": [],
+      "total_additions": 60,
+      "total_deletions": 624,
+      "accepted_lines": 60,
+      "overriden_lines": 0,
+      "messages_url": "https://gitai.gz.cvte.cn/cas/98cbdb9019c9feaaee6b42c3a49cef5621a80ccd8bea0d4eda1b7c4d92edcbed"
+    },
+    "fbd0a7434a0e56c7": {
+      "agent_id": {
+        "tool": "known_human",
+        "id": "known_human_session",
+        "model": "unknown"
+      },
+      "human_author": "MinLeeV5 <dicklwm@163.com>",
+      "messages": [],
+      "total_additions": 6,
+      "total_deletions": 20,
+      "accepted_lines": 0,
+      "overriden_lines": 0
+    },
+    "fc2843bf8a58fe62": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "01a0cbdd-ae78-7662-aee0-61ea0a510f02",
+        "model": "gpt-6-astra"
+      },
+      "human_author": "MinLeeV5 <dicklwm@163.com>",
+      "messages": [],
+      "total_additions": 13,
+      "total_deletions": 53,
+      "accepted_lines": 11,
+      "overriden_lines": 0,
+      "messages_url": "https://gitai.gz.cvte.cn/cas/a6d609903ec26c3c0d014516cfbdf571daa5ca2e17341d6f6b16b6aa8ac793b9"
+    }
+  },
+  "humans": {
+    "h_1a7429a562def8": {
+      "author": "MinLeeV5"
+    }
+  }
+}
