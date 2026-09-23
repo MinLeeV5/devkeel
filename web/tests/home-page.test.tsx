@@ -43,6 +43,7 @@ describe('V2 home page', () => {
     expect(sectionIds.slice(0, 3)).toEqual(['quickstart', 'comparison', 'progressive-path'])
     expect(screen.getByRole('link', { name: '第 1 章：快速开始' }).getAttribute('href')).toBe('#quickstart')
     expect(screen.getByRole('link', { name: '第 2 章：痛点、现状与解决方案' }).getAttribute('href')).toBe('#comparison')
+    expect(container.querySelector('a[href*="/v1/"]')).toBeNull()
   })
 
   it('compares named releases with contextual star scores and tradeoffs', () => {
@@ -355,15 +356,14 @@ describe('V2 home page', () => {
     delete (Element.prototype as Partial<Element>).scrollIntoView
   })
 
-  it('limits public navigation while retaining community and V1 access', () => {
+  it('keeps community links without promoting archived V1 pages', () => {
     const navigation = render(<MarketingNav activePage="home" />)
     const sharingLink = screen.getByRole('link', { name: '技术分享' })
     const changelogLink = screen.getByRole('link', { name: '变更日志' })
-    const v1Link = screen.getByRole('link', { name: 'V1' })
 
     expect(sharingLink.getAttribute('href')).toBe('./sharing.html')
     expect(sharingLink.compareDocumentPosition(changelogLink) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy()
-    expect(changelogLink.compareDocumentPosition(v1Link) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy()
+    expect(screen.queryByRole('link', { name: 'V1' })).toBeNull()
     expect(screen.getByTitle('GitHub')).toBeTruthy()
     expect(screen.queryByRole('link', { name: /工作流|架构设计|最佳实践|遥测/ })).toBeNull()
 
@@ -373,7 +373,7 @@ describe('V2 home page', () => {
 
     cleanup()
     render(<MarketingFooter />)
-    expect(screen.getByRole('link', { name: 'V1' }).getAttribute('href')).toBe('./v1/index.html')
+    expect(screen.queryByRole('link', { name: 'V1' })).toBeNull()
     expect(screen.queryByRole('link', { name: /Stats|技术分享/ })).toBeNull()
   })
 })

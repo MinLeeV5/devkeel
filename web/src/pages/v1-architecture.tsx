@@ -560,7 +560,7 @@ function ArchitectureFooter(): React.JSX.Element {
     <footer>
       <div className="container">
         <p style={{fontSize: 14, color: 'var(--text-3)', marginBottom: 8}}>
-          <a href="./index.html">首页</a> · <a href="./workflow.html">工作流</a> · <a href="./best-practices.html">最佳实践</a> · <a href="./changelog.html">变更日志</a>
+          <a href="./index.html">首页</a> · <a href="./workflow.html">工作流</a> · <a href="./best-practices.html">最佳实践</a> · <a href="../changelog.html">变更日志</a>
         </p>
         <p>DevKeel — 编排 · 规范 · 沉淀，AI 协作的项目知识框架。</p>
       </div>

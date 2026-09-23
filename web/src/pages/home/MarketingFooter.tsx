@@ -8,7 +8,6 @@ export function MarketingFooter(): React.JSX.Element {
         </div>
         <nav aria-label="页脚导航">
           <a href="./changelog.html">Changelog</a>
-          <a href="./v1/index.html">V1</a>
           <a href="https://github.com/MinLeeV5/devkeel" target="_blank" rel="noopener noreferrer">GitHub</a>
         </nav>
       </div>

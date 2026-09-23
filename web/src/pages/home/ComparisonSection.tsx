@@ -36,7 +36,6 @@ export const COMPARISON_PRODUCTS: readonly ComparisonProduct[] = [
     id: 'harnessV1',
     name: 'DevKeel V1',
     version: 'templates v1.3.0',
-    href: './v1/index.html',
     summary: '同样提供 domain-init 与 verify-init，并用 OpenSpec + Superpowers 串联完整交付流程。',
   },
   {

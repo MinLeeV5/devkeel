@@ -14,7 +14,6 @@ interface MarketingNavProps {
 const navItems: Array<{ href: string; id?: MarketingNavPage; label: string }> = [
   { href: './sharing.html', label: '技术分享' },
   { href: './changelog.html', id: 'changelog', label: '变更日志' },
-  { href: './v1/index.html', label: 'V1' },
 ]
 
 export function MarketingNav({ activePage }: MarketingNavProps): React.JSX.Element {

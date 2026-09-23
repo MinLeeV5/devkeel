@@ -117,7 +117,7 @@ function WorktreeSetupSection(): React.JSX.Element {
 function BestPracticesFooter(): React.JSX.Element {
   return (
     <footer>
-      <p>DevKeel — 项目知识框架 · <a href="./index.html">首页</a> · <a href="./workflow.html">工作流</a> · <a href="./architecture.html">架构设计</a> · <a href="./changelog.html">变更日志</a></p>
+      <p>DevKeel — 项目知识框架 · <a href="./index.html">首页</a> · <a href="./workflow.html">工作流</a> · <a href="./architecture.html">架构设计</a> · <a href="../changelog.html">变更日志</a></p>
     </footer>
   )
 }
