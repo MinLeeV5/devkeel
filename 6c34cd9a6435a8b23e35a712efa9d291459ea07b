@@ -1,0 +1,106 @@
+.harness/skills/openspec-onboard/SKILL.md
+  be09ce99d2b66749 7,40,56
+openspec/schemas/full/schema.yaml
+  be09ce99d2b66749 2
+.harness/skills/brainstorming/SKILL.md
+  be09ce99d2b66749 3,7,31,40,42-46,48-49,51-53,56,59-62,87,90,110,120,127-128,139,146-149,159
+openspec/schemas/full/templates/brainstorm.md
+  be09ce99d2b66749 3
+openspec/schemas/lite/templates/brainstorm.md
+  be09ce99d2b66749 3
+templates/skills/openspec-update-change/SKILL.md
+  be09ce99d2b66749 7,39-40
+templates/commands/opsx/new.md
+  be09ce99d2b66749 11-12
+templates/openspec/schemas/full/templates/brainstorm.md
+  be09ce99d2b66749 3
+.harness/skills/openspec-new-change/SKILL.md
+  be09ce99d2b66749 7,52
+templates/skills/brainstorming/SKILL.md
+  be09ce99d2b66749 3,7,31,40,42-46,48-49,51-53,56,59-62,87,90,110,120,127-128,139,146-149,159
+.harness/versions.yml
+  be09ce99d2b66749 10,16-19,27-28
+.harness/skills/openspec-ff-change/SKILL.md
+  be09ce99d2b66749 7,28
+templates/skills/openspec-onboard/SKILL.md
+  be09ce99d2b66749 7,40,56
+.harness/commands/opsx/new.md
+  be09ce99d2b66749 11-12
+tests/workflow-routing.test.ts
+  be09ce99d2b66749 90-91,102-105,107-111,114-122
+.harness/skills/openspec-update-change/SKILL.md
+  be09ce99d2b66749 7,39-40
+tests/init.test.ts
+  be09ce99d2b66749 200
+templates/openspec/schemas/lite/templates/brainstorm.md
+  be09ce99d2b66749 3
+tests/templates.test.ts
+  be09ce99d2b66749 305,311,316-317,522,540,716
+.harness/skills/brainstorming/scripts/planning-state.mjs
+  be09ce99d2b66749 43-44,49,68,70,72,97-98
+templates/openspec/schemas/full/schema.yaml
+  be09ce99d2b66749 2
+templates/versions-yml.yml
+  be09ce99d2b66749 10,16-19,27-28
+templates/skills/openspec-new-change/SKILL.md
+  be09ce99d2b66749 7,52
+templates/commands/opsx/explore.md
+  be09ce99d2b66749 12-14
+templates/skills/brainstorming/scripts/planning-state.mjs
+  be09ce99d2b66749 43-44,49,68,70,72,97-98
+tests/versions.test.ts
+  be09ce99d2b66749 77-78,82
+openspec/specs/workflow-routing/spec.md
+  be09ce99d2b66749 36,152
+openspec/specs/brainstorming-workflow/spec.md
+  be09ce99d2b66749 48,50-52,54-57,59-61,65-66,68,70-71,75-76,80-81,83,85-86,88,90-91,93,95-96,101,132,187-190,227,233-249
+openspec/schemas/lite/schema.yaml
+  be09ce99d2b66749 2,23-25
+openspec/specs/opsx-schema-routing/spec.md
+  be09ce99d2b66749 120
+tests/planning-state.test.ts
+  be09ce99d2b66749 37-38,45-46,48,53-88,94-102
+templates/openspec/schemas/lite/schema.yaml
+  be09ce99d2b66749 2,23-25
+.harness/commands/opsx/explore.md
+  be09ce99d2b66749 12-14
+tests/openspec-skills-upstream.test.ts
+  be09ce99d2b66749 50-54,101-102
+templates/skills/openspec-ff-change/SKILL.md
+  be09ce99d2b66749 7,28
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.9",
+  "base_commit_sha": "6c34cd9a6435a8b23e35a712efa9d291459ea07b",
+  "prompts": {
+    "aac53d4b3d2d2781": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "01a0cda6-3981-7a82-8c5e-8be07fb99df1",
+        "model": "gpt-6-luna"
+      },
+      "human_author": "MinLeeV5 <dicklwm@163.com>",
+      "messages": [],
+      "total_additions": 0,
+      "total_deletions": 0,
+      "accepted_lines": 10,
+      "overriden_lines": 0,
+      "messages_url": "https://gitai.gz.cvte.cn/cas/f05256fbaa129b0436c58def2ed55527795d8666a5dbcc0d666636ca089707f9"
+    },
+    "be09ce99d2b66749": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "01a0cdaa-c6f2-7711-89a8-66e2590a749b",
+        "model": "gpt-6-astra"
+      },
+      "human_author": "MinLeeV5 <dicklwm@163.com>",
+      "messages": [],
+      "total_additions": 1042,
+      "total_deletions": 251,
+      "accepted_lines": 1030,
+      "overriden_lines": 6,
+      "messages_url": "https://gitai.gz.cvte.cn/cas/76e7fbbf10baa5804c26b56a835ec899ae4cef507c0d6b19aaef6f021b640c2c"
+    }
+  }
+}
