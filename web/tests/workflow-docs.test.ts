@@ -15,7 +15,7 @@ describe('current V2 home documentation', () => {
     }
     expect(source).toContain('先明确结果与验收')
     expect(source).toContain('最近的反馈信号')
-    expect(progressiveDiagram).toContain('schema 接管后续编排')
+    expect(progressiveDiagram).toContain('OpenSpec 编排')
     expect(progressiveDiagram).toContain('Brainstorm + Tasks')
     expect(progressiveDiagram).toContain('Design + Specs + Tasks')
     expect(progressiveDiagram).toContain('Retrospective + Archive')
@@ -51,6 +51,22 @@ describe('current V2 home documentation', () => {
     const sourceGuide = fs.readFileSync(path.join(WEB_ROOT, 'install.md'), 'utf-8')
     const publicGuide = fs.readFileSync(path.join(WEB_ROOT, 'public', 'install.md'), 'utf-8')
     expect(publicGuide).toBe(sourceGuide)
+  })
+
+  it('keeps install commands current and protects existing project assets', () => {
+    const guide = fs.readFileSync(path.join(WEB_ROOT, 'install.md'), 'utf-8')
+    const shellBlocks = [...guide.matchAll(/```bash\n([\s\S]*?)```/g)]
+      .map((match) => match[1]).join('\n')
+
+    expect(shellBlocks).not.toMatch(/devkeel(?:@latest)?\s+(?:migrate|submodule)\b/)
+    expect(shellBlocks).not.toMatch(/rm\s+-rf|git\s+(?:checkout|reset)|mv\s+docs\b/)
+    expect(shellBlocks).not.toMatch(/git\s+(?:commit|push)\b/)
+    expect(guide).toContain('sync --targets <targets> --force')
+    expect(guide).toContain('先备份冲突的技能入口')
+    expect(guide).toContain('`docs/` 是当前项目知识的位置')
+    expect(guide).toContain('旧配置被忽略且不会被改写')
+    expect(guide).toContain('共用同一套测试文档和规则')
+    expect(guide).toContain('“全部更新”会覆盖待更新组件的本地修改')
   })
 
   it('installs from public npm without changing the user registry', () => {

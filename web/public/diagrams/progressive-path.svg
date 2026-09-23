@@ -130,6 +130,6 @@
   <g>
     <rect id="quality-baseline" data-node-id="quality-baseline" x="30" y="560" width="900" height="42" rx="11" fill="#e9f8f3" stroke="#10b981" stroke-width="1.5" data-graph-role="node" data-semantic-role="quality-gate" data-graph-bounds="30,560,930,602"/>
     <circle cx="60" cy="581" r="12" fill="#10b981"/><path d="M54 581L59 586L67 576" fill="none" stroke="#ffffff" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"/>
-    <text class="baseline-title" x="83" y="586">共同底线</text><text class="baseline-text" x="202" y="586">调查 → 实现 → 验证 → 交付</text>
+    <text class="baseline-title" x="83" y="586">共同底线</text><text class="baseline-text" x="202" y="586">调查 → 对齐方案 → 实现 → 验证</text>
   </g>
 </svg>

@@ -1,6 +1,6 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 320" role="img" aria-labelledby="title desc" data-graph-role="diagram" data-diagram-type="flowchart" data-style="glassmorphism" data-quality-profile="showcase" data-bounds="0 0 1200 320">
   <title id="title">verify-init 将测试缺口转成可复跑证据</title>
-  <desc id="desc">现有项目经过 verify-init 检测现状、确认缺口和增量补齐，形成测试脚手架、测试规则与验证角色，并在任务运行时提供可复跑的测试、构建和审查证据。</desc>
+  <desc id="desc">现有项目经过 verify-init 检测现状、确认缺口和增量补齐，形成测试脚手架、测试说明、规则与验证角色，并在任务运行时提供可复跑的测试、构建和审查证据。</desc>
   <defs>
     <linearGradient id="card-blue" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#7aa2f7" stop-opacity=".16"/><stop offset="1" stop-color="#1c2039" stop-opacity=".78"/></linearGradient>
     <linearGradient id="card-green" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#9ece6a" stop-opacity=".19"/><stop offset="1" stop-color="#1c2039" stop-opacity=".78"/></linearGradient>
@@ -32,9 +32,9 @@
   <g data-graph-role="node" data-node-id="executable-base" data-bounds="600 50 340 210">
     <rect x="600" y="50" width="340" height="210" rx="22" fill="url(#card-green)" stroke="#9ece6a" stroke-opacity=".48"/>
     <text x="626" y="82" class="mono label green">EXECUTABLE BASE</text>
-    <g><rect x="626" y="99" width="288" height="38" rx="8" fill="#7aa2f7" fill-opacity=".08"/><text x="642" y="123" class="mono small blue">TEST SCAFFOLD</text><text x="900" y="123" text-anchor="end" class="sans small muted">框架 · 配置 · 示例 · scripts</text></g>
-    <g><rect x="626" y="145" width="288" height="38" rx="8" fill="#7dcfff" fill-opacity=".08"/><text x="642" y="169" class="mono small cyan">TESTING RULE</text><text x="900" y="169" text-anchor="end" class="sans small muted">统一验证原则与命令</text></g>
-    <g><rect x="626" y="191" width="288" height="38" rx="8" fill="#9ece6a" fill-opacity=".09"/><text x="642" y="215" class="mono small green">VERIFY AGENT</text><text x="900" y="215" text-anchor="end" class="sans small muted">验证职责成为可执行角色</text></g>
+    <g><rect x="626" y="99" width="288" height="38" rx="8" fill="#7aa2f7" fill-opacity=".08"/><text x="642" y="123" class="mono small blue">TEST SCAFFOLD</text><text x="900" y="123" text-anchor="end" class="sans small muted">配置 · 示例 · scripts</text></g>
+    <g><rect x="626" y="145" width="288" height="38" rx="8" fill="#7dcfff" fill-opacity=".08"/><text x="642" y="169" class="mono small cyan">DOCS + RULES</text><text x="900" y="169" text-anchor="end" class="sans small muted">验证说明与执行约束</text></g>
+    <g><rect x="626" y="191" width="288" height="38" rx="8" fill="#9ece6a" fill-opacity=".09"/><text x="642" y="215" class="mono small green">VERIFY AGENT</text><text x="900" y="215" text-anchor="end" class="sans small muted">执行与报告验证结果</text></g>
   </g>
 
   <g data-graph-role="node" data-node-id="evidence-loop" data-bounds="1000 72 160 166">

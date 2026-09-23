@@ -290,28 +290,28 @@ function UpdateTip({ catalog }: UpdateTipProps): React.JSX.Element {
         '# 通过公共 npm 仓库直接执行',
         'npx devkeel@latest update',
       ].join('\n')}</code>
-      <p className="tip-note">无需全局安装，每次执行自动拉取最新版本。</p>
+      <p className="tip-note">无需全局安装，使用 latest 渠道的 CLI 更新当前项目模板。</p>
       <div style={{ marginTop: 20, padding: '16px 20px', borderRadius: 'var(--r)', background: 'var(--bg-in)', border: '1px solid var(--border-d)' }}>
-        <p style={{ fontSize: 13, fontWeight: 600, color: 'var(--text-2)', marginBottom: 12 }}>⚠️ 注意：本地安装的 DevKeel 不会自动升级</p>
+        <p style={{ fontSize: 13, fontWeight: 600, color: 'var(--text-2)', marginBottom: 12 }}>CLI 程序与项目模板独立升级</p>
         <div className="update-method-grid">
           <div>
-            <p style={{ fontSize: 11, fontWeight: 700, color: 'var(--red)', letterSpacing: '.5px', textTransform: 'uppercase', marginBottom: 6 }}>❌ 错误</p>
-            <code style={{ fontSize: 12, padding: '10px 12px', display: 'block', background: 'rgba(248,113,113,.06)', border: '1px solid rgba(248,113,113,.2)', color: 'var(--text-3)' }}>{[
+            <p style={{ fontSize: 11, fontWeight: 700, color: 'var(--text-2)', letterSpacing: '.5px', textTransform: 'uppercase', marginBottom: 6 }}>已全局安装</p>
+            <code style={{ fontSize: 12, padding: '10px 12px', display: 'block', background: 'var(--bg-in)', border: '1px solid var(--border-d)', color: 'var(--text-3)' }}>{[
+              'npm install -g devkeel@latest',
               'devkeel update',
-              'devkeel --version',
             ].join('\n')}</code>
-            <p style={{ fontSize: 11, color: 'var(--text-4)', marginTop: 6, lineHeight: '1.6' }}>使用的是本地已安装的旧版本，<br />不会拉取最新 CLI 和模板</p>
+            <p style={{ fontSize: 11, color: 'var(--text-4)', marginTop: 6, lineHeight: '1.6' }}>第一条升级全局 CLI；第二条拉取模板更新。<br />只更新项目模板时，直接运行 devkeel update。</p>
           </div>
           <div>
-            <p style={{ fontSize: 11, fontWeight: 700, color: 'var(--accent)', letterSpacing: '.5px', textTransform: 'uppercase', marginBottom: 6 }}>✅ 正确</p>
+            <p style={{ fontSize: 11, fontWeight: 700, color: 'var(--accent)', letterSpacing: '.5px', textTransform: 'uppercase', marginBottom: 6 }}>临时使用最新 CLI</p>
             <code style={{ fontSize: 12, padding: '10px 12px', display: 'block', background: 'rgba(16,185,129,.06)', border: '1px solid rgba(16,185,129,.2)', color: 'var(--text-3)' }}>{[
               'npx devkeel@latest update',
-              'npx devkeel@latest --version',
             ].join('\n')}</code>
-            <p style={{ fontSize: 11, color: 'var(--text-4)', marginTop: 6, lineHeight: '1.6' }}>每次强制从 registry 拉取最新版，<br />确保 CLI 和模板都是最新的</p>
+            <p style={{ fontSize: 11, color: 'var(--text-4)', marginTop: 6, lineHeight: '1.6' }}>临时使用 latest 渠道的 CLI 拉取模板更新，<br />不改变全局安装的 CLI 版本。</p>
           </div>
         </div>
       </div>
+      <p className="tip-note">模板更新选择“全部更新”会覆盖待更新组件的本地修改；需要逐项跳过时选择“逐个确认”。可先加 --dry-run 查看计划。</p>
     </div>
   )
 }

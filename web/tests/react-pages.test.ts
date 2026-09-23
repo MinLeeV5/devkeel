@@ -130,7 +130,8 @@ describe('React pages', () => {
     expect(sharingSource).toContain("const initialIndex=tabs.findIndex(tab=>tab.getAttribute('aria-selected')==='true');")
     expect(sharingSource).not.toContain('EVIDENCE')
     expect(sharingSource).toContain('REPRODUCIBLE SIGNAL')
-    expect(sharingSource).toContain('.harness/agents/test-verifier.md')
+    expect(sharingSource).toContain('<b>VERIFY AGENT</b><code>.harness/agents/</code>')
+    expect(sharingSource).toContain('docs/ · 已有测试规则')
     expect(sharingSource).toContain('DevKeel V2 · Route 深入')
     expect(sharingSource.indexOf('DevKeel V2 · Route 深入')).toBeLessThan(sharingSource.indexOf('DevKeel 展开 · Rules'))
     expect(orchestrationSource).toContain('brainstorm → design → specs → tasks → apply → verify → retrospective → archive')
@@ -302,7 +303,7 @@ describe('React pages', () => {
       expect(source).toContain('一句话需求')
       expect(source).toContain('Agent')
       expect(source).toContain('当前会话闭环')
-      expect(source).toContain('调查 → 实现 → 验证 → 交付')
+      expect(source).toContain('调查 → 对齐方案 → 实现 → 验证')
       expect(source.toLowerCase()).toContain('lite schema')
       expect(source.toLowerCase()).toContain('full schema')
       expect(source).toContain('id="full-to-schema"')
@@ -317,6 +318,7 @@ describe('React pages', () => {
     expect(darkProgressiveSource).toContain('实施 · TDD（适用时）· 反馈 · diff 自审')
     for (const source of [architectureSource, darkArchitectureSource]) {
       expect(source).toContain('AGENTS.md + openspec/')
+      expect(source).toContain('docs/ 保存项目知识')
       expect(source).toContain('rules/ + skills/ + agents/')
       expect(source).toContain('tests · build · preview · review')
       expect(source).toContain('共同构成 Agent-ready Repository')
@@ -368,8 +370,9 @@ describe('React pages', () => {
   it('renders changelog update commands on wrapping lines', () => {
     const markup = renderToStaticMarkup(createElement(ChangelogPage))
 
-    expect(markup).toContain('devkeel update\ndevkeel --version')
-    expect(markup).toContain('npx devkeel@latest update\nnpx devkeel@latest --version')
+    expect(markup).toContain('npm install -g devkeel@latest\ndevkeel update')
+    expect(markup).toContain('npx devkeel@latest update')
+    expect(markup).toContain('不改变全局安装的 CLI 版本')
     expect(markup).toContain('white-space:pre-wrap;overflow-wrap:anywhere')
     expect(markup).not.toContain('white-space:pre;overflow-x:auto')
   })

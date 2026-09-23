@@ -1,751 +1,243 @@
-# Install devkeel
+# DevKeel 项目接入指南
 
-> 给项目建立 `.harness/` 作为 AI Agent 的 single source of truth — 编排最合适的工具组合，注入领域规范与技能，持续沉淀项目知识。
+本文面向 Coding Agent：为现有项目建立统一执行入口，按需生成项目知识与专属能力，接上可执行反馈。
+终端命令负责安装和检查，`domain-init`、`verify-init` 是在 Agent 会话中调用的 Skills。
 
-本文档面向 Coding Agent。按顺序执行以下步骤，即可完成项目的 DevKeel 初始化。
+## 执行范围
 
----
+- 先读取当前作用域的 `AGENTS.md` 和已有项目文档，确认目标目录、平台与本次写入范围。
+- 复用用户在当前会话中已给出的同范围授权；新增平台、子项目或测试基建时，只确认新增部分。
+- 已有文件和未提交改动需要保留。先检查冲突再写入，不能用删除整个平台目录或恢复整个 Git 目录的方式接入。
+- 初始化不包含自动提交、推送或发布。只有用户明确选择这些动作后才执行。
+- 命令失败时保留输出并定位原因；缺少网络、权限或依赖时说明未完成项，不宣称接入成功。
 
-## Step 1: 确认目标 Agent 平台
+## 1. 确认项目与平台
 
-在执行任何初始化写入前，先确认需要为项目启用哪些 Coding Agent 平台。DevKeel 支持多选：
+需要 Node.js >= 20.19.0。项目名称优先读取 `package.json` 的 `name`，否则使用当前目录名。
+先查看 Git 状态、子模块和已有入口；检查目录是否为 symlink，避免把共享目标当成本地副本改写。
 
-| Agent 平台 | `--targets` 值 | 主要适配位置 |
-|------------|----------------|--------------|
+| 平台 | `--targets` 值 | CLI 检测线索 |
+|------|----------------|-------------|
 | Claude Code | `claude-code` | `.claude/` |
-| Codex CLI | `codex` | `.agents/` |
+| Codex CLI | `codex` | `.agents/` 或 `.codex/` |
 | Cursor | `cursor` | `.cursor/` |
 | GitHub Copilot | `copilot` | `.github/copilot-instructions.md` |
 | Gemini CLI | `gemini` | `GEMINI.md` |
 | OpenCode | `opencode` | `.opencode/` |
 
-### 检测与确认规则
+当前 Agent 平台和已有 `CLAUDE.md` 可作为额外推荐线索。向用户展示建议平台；
+已有明确选择则直接复用，否则确认后将逗号分隔的值用于 `<targets>`。未发现线索时不预设平台。
 
-1. 扫描已有平台配置，将检测结果作为推荐选项。
-2. 若能识别当前正在执行本文档的 Agent 平台，也将其加入推荐选项。
-3. 向用户展示支持列表、检测结果和推荐选项，询问最终启用哪些平台，允许多选。
-4. 将用户确认的值保存为 `<targets>`，供 Step 2 使用。已有目录只用于推荐，不得代替用户确认。
+CLI 从 Git 子模块关系和 `AGENTS.md` 顶部的 `<!-- harness:domain-agents -->` 标记识别领域子仓库，
+其余按主仓库处理。不需要项目类型、平台注册表或 `.harness/config.yml`；旧配置被忽略且不会被改写。
 
-| 信号 | 推荐平台 |
-|------|----------|
-| 存在 `.claude/` 或 `CLAUDE.md` | `claude-code` |
-| 存在 `.agents/` | `codex` |
-| 存在 `.cursor/` | `cursor` |
-| 存在 `GEMINI.md` | `gemini` |
-| 存在 `.github/copilot-instructions.md` | `copilot` |
-| 存在 `.opencode/` | `opencode` |
+主仓库提供通用 Skills、commands 和 OpenSpec。子仓库维护自己的 docs 与项目专属能力，
+初始化时只建立领域执行契约、版本记录、能力目录和平台入口，不复制主仓库通用资产。
 
-询问示例：
+## 2. 安装并初始化
 
-> DevKeel 支持 Claude Code、Codex CLI、Cursor、GitHub Copilot、Gemini CLI 和 OpenCode。
->
-> 当前检测到：Codex CLI、Cursor。需要为项目启用哪些平台？可多选。
-
-如果未检测到已有配置，也无法识别当前 Agent 平台，则不预设默认值，直接请用户选择。
-
----
-
-## Step 2: 安装并初始化
-
-前置条件：Node.js >= 20.19.0
+DevKeel 发布在公共 npm，可直接运行：
 
 ```bash
-
-# 新项目，或用户决定保留已有 AGENTS.md
+# 无 AGENTS.md，或用户选择保留已有 AGENTS.md
 npx devkeel@latest init --name <name> --targets <targets> -y
 
-# 已有 AGENTS.md 且用户同意改造时，移除 -y 进入确认与合并流程
+# 需要合并已有 AGENTS.md，或交互选择业务子模块
 npx devkeel@latest init --name <name> --targets <targets>
 ```
 
-### 参数规则
+`<name>`、`<targets>` 是占位符，执行前替换。遵循用户已有 npm 配置；
+若当前 registry 无法访问公共包，可在本次命令中显式指定公共 registry，不修改全局配置。
 
-#### --name
+### 已有 AGENTS.md
 
-Agent 应自动推断项目名称，无法确定时再向用户确认：
+初始化前完整读取原文件，说明模板与合并范围。用户同意改造时，不带 `-y` 执行，
+在 CLI 交互中确认；已有同范围授权无需在对话中重复询问。
 
-1. 读取 `package.json` 的 `name` 字段
-2. 回退到当前目录名
+- 已有可识别的 DevKeel 分区：保留用户定制区，更新框架内容。
+- 其他已有内容：由 CLI 合并保留，不静默丢弃。
+- 用户拒绝或使用 `-y`：保留原文件；如仍缺少新入口，在完成报告中说明。
 
-#### --targets
+`CLAUDE.md` 的分发模板仅引用 `@AGENTS.md`，已有用户内容保留。
+项目背景和命令说明写入 docs，再由 `AGENTS.md` 引用；不另外生成一套平台专属项目文档。
 
-使用 Step 1 中经用户确认的平台列表，以逗号分隔。不得仅根据已有目录自动增加或删除目标平台。
+### 技能入口冲突
 
-### AGENTS.md 改造门禁
-
-执行 init 前，检查当前待初始化仓库是否已有 `AGENTS.md`：
-
-1. 没有 `AGENTS.md`：直接初始化。主仓库生成完整 DevKeel 执行契约；git submodule 生成子仓库领域执行契约。
-2. 已有 `AGENTS.md`：先完整读取原文件，识别其中的业务职责、技术约束、命令、规则和验证要求。
-3. 向用户说明将使用的模板及合并策略，并询问是否改造。
-4. 用户同意：不带 `-y` 执行 init，在 CLI 二次确认后把原内容合并进新模板。
-5. 用户拒绝：保留原文件，不得添加 `@AGENTS.md`、覆盖或重排内容。
-
-合并规则：
-
-- 已有 DevKeel 分区标记时，只迁移各用户定制区，避免重复复制旧框架。
-- 无法识别为 DevKeel 模板时，完整保留原文，并放入新模板的“项目补充与原有约定”区域。
-- `-y` 模式无法取得改造确认，因此一律保留已有 `AGENTS.md` 并输出提示。
-
-### 子模块自动检测
-
-`npx devkeel@latest init` 会自动识别仓库角色，并把结果写入 `.harness/config.yml` 的 `project.repoType`：
-
-| 信号 | 行为 |
-|------|------|
-| 当前目录不是 git submodule | `repoType: main`，安装通用 skills、commands 和 OpenSpec |
-| 当前目录是 git submodule | `repoType: domain`，只建立领域承载层，不复制主仓库通用资产 |
-| 主仓库 `.gitmodules` 含条目 | 交互提示选择要配置的子模块；`-y` 模式跳过该交互 |
-
-已有配置显式声明 `repoType` 时优先使用该值；否则由 git submodule 关系自动推断。domain 子仓库只创建配置、领域 AGENTS.md、空的 rules/skills/agents 目录和平台链接，不创建 `.harness/commands/` 或 `openspec/`。
-
-### 示例
+Codex / Claude Code 的 skills 入口冲突时，CLI 默认保留原件并停止。
+先检查原目录或链接的内容，向用户说明要合并的资产和替换范围。
+确认替换后，可在原命令上加 `--force`，或对已初始化的项目执行：
 
 ```bash
-# 单仓库
-npx devkeel@latest init --name my-app --targets claude-code,cursor -y
-
-# 含子模块的主仓库（不带 -y，交互选择要配置的子模块）
-npx devkeel@latest init --name my-platform --targets claude-code,codex
-
-# 也可进入子模块单独执行；CLI 会自动使用 domain profile
-cd packages/my-domain
-npx devkeel@latest init --name my-domain --targets claude-code,codex -y
+npx devkeel@latest sync --targets <targets> --force
 ```
 
----
+CLI 会先备份冲突的技能入口，再建立链接，并输出备份位置。
+`.harness/skills-backups/` 中的 `restore.json` 记录原入口路径；`.harness/skills-state.json`
+记录受管链接。这些是本地状态，不是待提交的项目知识。
 
-## Step 2.5: 迁移已有项目
+备份不等于内容已经合并：原入口中的自定义技能仍需检查后合并进 `.harness/skills/`。
+同名技能逐项比较，不覆盖用户内容。无法判断归属时保留备份并报告待处理项。
+`--force` 的入口备份范围是 Codex / Claude skills，不是整个平台目录或所有项目文件。
 
-> 如果项目是全新的（无任何 AI 平台目录、无文档目录），跳过此步骤直接到 Step 3。
+## 3. 整理已有资产
 
-### 2.5.1 识别需要迁移的旧产物
+初始化保留的已有目录可能仍包含独立资产。只处理本次确认的平台和项目：
 
-init 完成后，扫描以下可能存在的旧目录：
+| 内容 | 处理方式 |
+|------|----------|
+| 项目背景、架构、开发与验证说明 | 在所属项目 docs 中维护；复用已有文件和链接 |
+| 平台目录中的项目 rules / skills / agents | 比较同主题内容，合并到 `.harness/` 对应目录 |
+| 平台设置、MCP 配置、凭据与其他用户文件 | 保留原位置；不作为通用知识迁移 |
+| 当前能力规范 | 维护在主仓库 `openspec/specs/` |
+| 单次任务讨论、方案、任务与验证记录 | 维护在主仓库 `openspec/changes/` |
+| 已完成的历史任务资料 | 仅在确认归档范围后复制归档，核对结果并保留来源 |
 
-**知识层目录（需迁移到 `.harness/`）**：
+`docs/` 是当前项目知识的位置，不应为安装 DevKeel 整体搬走或删除。
+已有 wiki 等知识目录先建立读取入口，按确认范围逐步整理。
 
-| 旧目录 | 来源平台 | 可能包含的内容 |
-|--------|----------|----------------|
-| `.agents/` | Codex CLI | rules、skills、agents、templates、mcp.json |
-| `.claude/` | Claude Code | rules、skills、agents、settings.json |
-| `.codex/` | Codex（旧版） | instructions、rules |
-| `.cursor/` | Cursor | rules |
-| `.opencode/` | OpenCode | rules、skills、agents |
+CLI 保留的既有 rules / agents 目录不一定已成为受管链接。完成内容合并后，再处理具体入口，
+保留原目录作为备份，并运行 `sync --targets <targets>`。不要直接删除整个 `.agents/`、`.claude/`
+或其他平台目录，也不要通过 `git checkout` 丢弃未提交内容。
 
-**文档目录（需迁移到 `openspec/`）**：
-
-| 旧目录 | 典型内容 |
-|--------|----------|
-| `docs/` | 设计文档、测试文档、架构分析、计划等 |
-| `wiki/` | 项目 wiki 知识库 |
-| `knowledge/` | 知识沉淀 |
-
-**判断迁移动作**：
-
-| 状况 | 需要的动作 |
-|------|-----------|
-| 旧目录内有实际内容（rules、skills 等） | 内容迁移到 `.harness/` 对应子目录 |
-| 旧目录被 init 替换为空 symlink | 从 git 恢复后再迁移 |
-| 存在文档目录 | `npx devkeel@latest migrate <dir>` 或手动分类迁移到 `openspec/` |
-| 原有 `AGENTS.md` | 按 Step 2 的改造门禁读取并询问；同意后合并，拒绝或 `-y` 模式保持原文件不变 |
-| 原有 `CLAUDE.md` | 保留项目上下文，并确保平台 bootstrap 正确引用 `AGENTS.md` |
-
-### 2.5.2 迁移知识层目录 → `.harness/`
-
-**问题**：init 会把检测到的平台目录（`.agents/`、`.claude/`、`.cursor/` 等）子目录替换为指向 `.harness/` 的 symlink，但**不会自动复制已有内容**到 `.harness/`。
-
-**通用修复步骤**：
-
-```bash
-# 1. 确认哪些旧目录有实际内容（被替换为 symlink 前）
-#    如果已被替换，从 git 恢复
-git status --short | grep "^ D"  # 查看被删除的旧文件
-
-# 2. 恢复被替换的内容（以 .agents/ 为例）
-rm -f .agents/rules .agents/skills .agents/agents  # 删除空 symlink
-git checkout HEAD -- .agents/
-
-# 3. 对每个有实际内容的旧目录，将项目特有内容复制到 .harness/
-```
-
-**按来源目录分别处理**：
-
-#### `.agents/`（Codex 项目最常见）
-
-```bash
-# 复制 rules（直接合并，DevKeel 通用 rules 和项目 rules 可以共存）
-cp -r .agents/rules/* .harness/rules/ 2>/dev/null
-
-# 复制项目专属 skills（逐个复制，不覆盖 DevKeel 内置 skills）
-for skill in .agents/skills/*/; do
-  skill_name=$(basename "$skill")
-  if [ ! -d ".harness/skills/$skill_name" ]; then
-    cp -r "$skill" .harness/skills/
-  fi
-done
-
-# 复制 agents 定义
-cp -r .agents/agents/* .harness/agents/ 2>/dev/null
-
-# 复制其他资产
-cp -r .agents/templates .harness/ 2>/dev/null
-cp -r .agents/examples .harness/ 2>/dev/null
-cp .agents/mcp.json .harness/ 2>/dev/null
-```
-
-#### `.claude/`（Claude Code 项目）
-
-```bash
-# .claude/ 可能包含 rules、skills、agents（与 .agents/ 结构相同）
-# 也可能包含 settings.json（平台配置，不迁移到 .harness/）
-cp -r .claude/rules/* .harness/rules/ 2>/dev/null
-cp -r .claude/agents/* .harness/agents/ 2>/dev/null
-
-for skill in .claude/skills/*/; do
-  skill_name=$(basename "$skill")
-  if [ ! -d ".harness/skills/$skill_name" ]; then
-    cp -r "$skill" .harness/skills/
-  fi
-done
-
-# settings.json / settings.local.json 保留在 .claude/ 中，不迁移
-```
-
-#### `.codex/`、`.cursor/`
-
-```bash
-# .codex/ 可能有 instructions.md 或 rules/
-cp -r .codex/rules/* .harness/rules/ 2>/dev/null
-# instructions.md 内容应合并到 AGENTS.md
-
-# .cursor/ 可能有 rules/
-cp -r .cursor/rules/* .harness/rules/ 2>/dev/null
-
-```
-
-**最后：重建所有平台目录为 symlink**
-
-```bash
-# 清理并重建（init 已处理大部分，但需确认状态正确）
-rm -rf .agents && mkdir .agents && cd .agents && \
-  ln -s ../.harness/rules rules && \
-  ln -s ../.harness/skills skills && \
-  ln -s ../.harness/agents agents && cd ..
-
-# .claude/ 和 .cursor/ 通常由 init 正确创建为目录+symlink，验证即可
-ls -la .claude/rules  # 应为 symlink -> ../.harness/rules
-ls -la .cursor/rules  # 应为 symlink -> ../.harness/rules
-```
-
-**注意事项**：
-- 主仓库中，devkeel init 生成的通用 skills（`commit`、`brainstorming`、`openspec-*` 等）不要覆盖
-- domain 子仓库只迁移该项目专属的 rules、skills 和 agents；不要从主仓库复制通用 skills、commands 或 OpenSpec
-- 遇到同名冲突时，项目专属内容优先（合并而非覆盖）
-- `.claude/settings.json` 和 `.claude/settings.local.json` 是平台配置，不迁移到 `.harness/`，但是要保留在原目录
-
-### 2.5.3 迁移文档目录 → `openspec/`
-
-**适用的源目录**：`docs/`、`wiki/`、`knowledge/` 或任何自定义文档目录。
-
-**方式 A：使用 CLI 批量迁移（推荐）**
-
-```bash
-# 支持多个源目录
-npx devkeel@latest migrate docs wiki knowledge
-```
-
-这会将指定目录整体移动到 `openspec/archive/<dir-name>/`。
-
-**方式 B：手动按语义分类迁移**
-
-根据文档性质分类放置：
-
-| 文档类型 | 目标位置 | 判断标准 |
-|----------|----------|----------|
-| 测试用例 | `openspec/tests/` | 测试设计、用例矩阵、测试报告 |
-| 有效规格 | `openspec/specs/` | 仍在被引用的设计文档、API 文档、流程文档 |
-| 历史归档 | `openspec/archive/` | 已完成的计划、旧版本分析、过期文档 |
-
-分类原则：
-- **`openspec/specs/`** — 仍然有效、会被引用的规格文档（设计文档、API、业务流程、接入文档）
-- **`openspec/tests/`** — 测试用例
-- **`openspec/changes/`** — 进行中的变更（由 openspec 工作流产生，不要手动放文件）
-- **`openspec/archive/`** — 历史归档，不再活跃但保留参考价值
-
-```bash
-# 示例：手动迁移
-mkdir -p openspec/specs openspec/tests openspec/archive openspec/changes
-
-# 测试文档
-mv docs/测试文档/* openspec/tests/ 2>/dev/null
-mv docs/test* openspec/tests/ 2>/dev/null
-
-# 有效设计文档
-mv docs/设计文档 openspec/specs/design 2>/dev/null
-mv docs/接入文档 openspec/specs/ 2>/dev/null
-mv docs/业务流程 openspec/specs/ 2>/dev/null
-
-# 历史归档
-mv docs/plans openspec/archive/plans 2>/dev/null
-mv docs/v1* docs/v2* openspec/archive/ 2>/dev/null
-
-# wiki 内容
-mv wiki/* openspec/archive/wiki/ 2>/dev/null
-
-# 确认无遗漏后删除空目录
-rmdir docs wiki 2>/dev/null
-```
-
-### 2.5.4 合并 AGENTS.md / CLAUDE.md
-
-init 会在改造前读取并询问用户；只有用户同意才合并。主仓库使用完整执行契约模板，子仓库使用领域执行契约模板。
-
-**AGENTS.md 合并要点**：
-1. 主仓库保留全局执行基线、任务分流、OpenSpec 路由和子仓库索引。
-2. 子仓库重点保留业务职责、技术栈、模块边界、领域 Rules/Skills 路由和本地验证命令，不重复完整 DevKeel 路由。
-3. 将所有 `.agents/rules/`、`.claude/rules/` 的引用路径统一为 `.harness/rules/`（或保留旧路径，因为 symlink 兼容）。
-4. 主仓库文档引用更新为 `openspec/`；子仓库说明 OpenSpec change 和知识产出统一归属主仓库。
-5. 原文件内容必须进入相应 `<!-- harness:user:* -->` 定制区，不得静默丢弃。
-
-**CLAUDE.md 合并要点**：
-1. 确保首行是 `@AGENTS.md`
-2. 保留项目概览、技术栈、常用命令等上下文信息
-3. 将文档和规则路径引用更新为新结构
-
----
-
-## Step 3: 验证
+## 4. 检查入口
 
 ```bash
 npx devkeel@latest doctor
 ```
 
-所有检查项应通过。如有失败，执行 `npx devkeel@latest doctor --fix` 自动修复。
+根据实际结果处理问题：
 
-> main 仓库会检查 OpenSpec、commands 和子模块路由；domain 子仓库只检查领域承载层，不要求存在这些主仓库资产。OpenSpec 已作为 DevKeel 的依赖内置，无需单独安装。
-
-### 常见 doctor 问题与修复
-
-| 问题 | 原因 | 修复 |
-|------|------|------|
-| `.harness/rules/` 目录为空 | 迁移时未复制项目 rules | 从 git 恢复并复制 |
-| symlink 断裂 | 目标目录不存在 | 确保 `.harness/` 下对应目录存在 |
-| `CLAUDE.md` 缺少 `@AGENTS.md` 引用 | init 未正确写入或被覆盖 | 手动在首行添加 `@AGENTS.md` |
-| submodule 未配置 | 未运行 `npx devkeel@latest submodule add` | 执行提示的命令（可选） |
-
----
-
-## Step 4: 定制项目信息
-
-init 只生成框架，需要补充项目特有信息才能让 Agent 真正有效工作。
-
-### 4.1 编辑根仓库 AGENTS.md 第 9 节
-
-找到 `<!-- harness:user:project -->` 标记，在其中补充：
-
-```markdown
-## 9. 项目补充
-
-<!-- harness:user:project -->
-
-### 命令
-
-| 命令 | 用途 |
+| 问题 | 处理 |
 |------|------|
-| `pnpm dev` | 启动开发服务器 |
-| `pnpm test` | 运行测试 |
-| `pnpm lint` | 代码检查 |
-| `pnpm build` | 构建产物 |
+| 缺失受管链接 | 保留现有文件，尝试 `doctor --fix` |
+| 同名 skills 目录或错误链接 | 按第 2 节检查、确认并备份处理，不反复运行 `doctor --fix` |
+| 整个平台入口已删除 | 用 `sync --targets <targets>` 重新建立 |
+| rules / agents 目录缺失 | 核对资产来源；可先建立空目录，再按需生成领域内容，不编造通用规则填充 |
+| CLAUDE.md 缺少引用 | 保留已有内容，补齐已授权的 `@AGENTS.md` 入口 |
+| 子模块未接入 | 按第 5 节在 init 中选择或进入该子模块初始化 |
 
-### 架构
-
-简述项目目录结构和关键模块职责（从实际代码推断）。
-
-### 约束
-
-- 项目特有的技术约束
-- 团队规范
-- 外部依赖说明
-
-<!-- /harness:user:project -->
-```
-
-Agent 应从 `package.json` scripts、项目目录结构、README 等现有信息自动推断填充。
-
-### 4.2 编辑子仓库 AGENTS.md 领域区
-
-子仓库使用 `agents-domain-md.md`，应重点补充：
-
-- `harness:user:domain`：业务职责、技术栈、模块边界和上下游关系
-- `harness:user:routing`：任务信号到领域 Rules/Skills 的触发矩阵
-- `harness:user:verification`：开发、构建、测试、lint 命令和 Definition of Done
-- `harness:user:project`：原项目 AGENTS.md 中迁移保留的业务约定
-
-子仓库不复制完整的 Direct/Lite/Full 和 OpenSpec 路由；这些由主仓库 AGENTS.md 统一负责。
-
-### 4.3 编辑 CLAUDE.md
-
-默认内容为 `@AGENTS.md` + 项目标题。建议补充为：
-
-```markdown
-@AGENTS.md
-
-# 项目名称
-
-项目一句话描述。
-
-## Commands
-
-常用命令表（与 AGENTS.md 第 9 节一致）。
-
-## Architecture
-
-关键目录和模块说明。
-
-## Tech Stack
-
-技术栈列表。
-```
-
----
-
-## Step 5: 提交到 Git
-
-以下命令适用于 main 仓库：
-
-```bash
-git add .harness/ AGENTS.md openspec/ .gitignore
-# 查看并提交本次实际生成的平台入口文件和链接目录
-git status --short
-```
-
-根据所选平台，将实际存在的 `CLAUDE.md`、`GEMINI.md`、`.agents/`、`.claude/`、`.cursor/`、`.opencode/` 以及旧 `docs/` 的删除等变更一并 add，然后提交：
-
-```bash
-git commit -m "chore(devkeel): 初始化 DevKeel 知识框架"
-```
-
-domain 子仓库只提交自己的 `.harness/config.yml`、`.harness/versions.yml`、领域 AGENTS.md、项目专属 rules/skills/agents 和平台链接，不应提交通用 commands 或 `openspec/`。
-
-**迁移项目的提交策略**：
-- 如果是从已有 `.agents/` 迁移，建议单个 commit 包含所有迁移变更
-- commit message 建议：`chore(devkeel): 迁移至 DevKeel V2 + openspec 结构`
-
----
-
-## Step 6: 确认 OpenSpec 可用
-
-本步骤只在 main 仓库执行。domain 子仓库的变更管理统一使用 main 仓库的 OpenSpec。
-
-OpenSpec 已内置为 DevKeel 依赖，验证调用正常：
+`doctor` 检查静态资产和配置，不会证明业务测试通过，也不会自动完成领域扫描。
+主仓库还应确认内置 OpenSpec 可用：
 
 ```bash
 npx devkeel@latest openspec list
 ```
 
-> 若该命令正常输出，说明 OpenSpec 工具链已就绪。后续变更管理（`/opsx:*` 系列 skill）依赖此能力。
+OpenSpec 已内置，无需单独安装。检查失败时报告具体缺口；子仓库不创建自己的 OpenSpec。
 
-OpenSpec 不是每个任务的必经步骤。Agent 会按最小必要流程选择：
+## 5. 子项目接入（按需）
 
-- **Direct**：当前会话可以完成调查、实现和验证，不创建 change
-- **Lite**：需要跨会话恢复或轻量协作，主链为 `brainstorm → tasks → apply → 快速归档`
-- **Full**：用户显式选择，或外部消费者、可观察契约变化、协调成本三项风险同时成立并经用户确认后启用
-
-`/opsx:new` 会创建 change 并进入一次一题的 Living brainstorm；`/opsx:continue` 在确认前继续访谈、确认后每次投影一个 artifact；只有用户显式调用 `/opsx:ff` 才会快速投影全部 Apply 前置 artifacts，而且不会替用户确认设计。入口默认使用 `lite`，也可以显式指定 `full`。Direct / Lite 默认不强制 worktree、subagent、TDD、独立 code review 或自动 commit；这些能力由 full schema、实际风险或用户显式要求按需启用。
-
----
-
-## Step 7: 子仓库初始化
-
-> 仅当项目含 git submodules（`.gitmodules` 有条目）时执行。单仓库项目跳过本步，直接到 Step 8。
-
-**核心原则：主仓库框架全部就绪后，再处理子仓库。** 子仓库使用 `repoType: domain`，只承载业务、技术、验证约束和项目专属能力。通用 skills、commands 与 OpenSpec 由主仓库统一提供。
-
-### 7.1 为每个业务子模块执行 init
+根项目与子项目使用相同的知识分类，分别维护自己的 docs、约束、能力和验证说明。
+Git 子模块可以在主仓库交互式 `init` 中选择；`-y` 跳过该选择。
+也可以在明确的业务子模块目录执行：
 
 ```bash
-# 获取子模块列表
-git submodule status
+npx devkeel@latest init --name <submodule-name> --targets <targets>
+npx devkeel@latest doctor
 ```
 
-推荐在主仓库执行不带 `-y` 的 init，并在交互列表中选择业务子模块。CLI 会为所选子模块写入 domain 配置、领域 AGENTS.md、空的 rules/skills/agents 目录和平台链接。
+空子模块先确认需要拉取的范围，再初始化 Git 子模块。只为已授权的业务子项目接入，
+不递归改写所有子目录。普通子项目的知识生成也需指定目标，不能把主包技术栈套到所有子项目。
 
-如果主仓库 init 使用了 `-y`，或只需补一个子模块，也可以进入子模块单独执行：
+通用 `domain-init`、`verify-init` 与 OpenSpec Skills 留在主仓库；从主仓库会话调用，
+将扫描和写入目标指向子项目。代码修改与测试在子项目目录执行，任务过程在主仓库 OpenSpec 协调。
+子仓库独立检出时可由已有领域 AGENTS 标记识别；无法定位主仓库时先确认任务文档位置。
+
+### 已有共享知识子模块或平台根目录链接
+
+如果 `.harness/`、`openspec/` 自身是 Git 子模块，或平台根目录链接到其他仓库，
+先检查链接目标、子模块状态和未提交内容，说明实际写入的仓库与范围。
+确认前不把它当成普通本地目录覆盖，也不自动将 `.agents/` 整体重指向 `.harness/`。
+
+需要恢复时，以当前 diff 和具体备份为依据逐项恢复，保留与本次接入无关的改动。
+用户选择提交时，在实际所属仓库提交，再更新父仓库的子模块指针；推送仍需明确授权。
+
+## 6. 生成项目知识与专属能力（按需）
+
+已有代码的项目可调用 `domain-init`。先说明扫描目标与产出范围，用户选择后按 Skill 流程执行；
+空项目或本轮只建立入口时可暂缓。
+
+| Agent | 调用方式 |
+|-------|----------|
+| Claude Code | `/domain-init` |
+| Codex | `$domain-init` |
+| 其他平台 | 使用当前平台的 Skill 入口调用 `domain-init` |
+
+Skill 从真实代码、配置和已确认约定提取事实，经用户 Review 后分类维护：
+
+- 当前项目 `docs/`：背景、架构、开发、验证与必要解释。
+- `.harness/rules/`：简短执行约束；观察到的惯例不自动成为硬要求。
+- `.harness/skills/`、`.harness/agents/`：项目专属方法与专业角色。
+- `AGENTS.md`：维护路由和实际存在的文档读取入口。
+
+已有同主题内容合并增强，不机械创建重复文档。根项目维护自身和跨项目知识，
+子项目维护所属领域知识，专属能力由实际技术栈与代码决定。
+
+## 7. 补齐验证反馈（按需）
+
+需要建立或补齐测试能力时调用 `verify-init`；已有完整反馈的项目无需重复安装框架。
+Claude Code 使用 `/verify-init`，Codex 使用 `$verify-init`，其他平台使用对应 Skill 入口。
+
+按 Skill 流程执行：
+
+1. 检测实际依赖、配置、scripts、锁文件与 CI，核对已有框架是否可用。
+2. 列出缺口，由用户确认本轮补齐项后再安装或写配置。
+3. 按框架官方文档增量补齐配置、示例与脚本，依赖写入实际所属项目。
+4. 在项目 docs 维护测试说明，复用已有测试规则和验证角色，由 AGENTS 建立读取入口。
+5. 运行最接近的验证，记录命令、工作目录、结果与未覆盖部分。
+
+`domain-init` 与 `verify-init` 共用同一套测试文档和规则。已有 `testing-strategy.md` 等文件继续复用，
+不另建一份固定名称的 `testing.md`，也不套用未经确认的覆盖率门槛。
+`test-case-designer` 负责用例设计，验证 Agent 执行已有验证并报告覆盖缺口。
+
+不能获取框架官方依据时，不凭记忆安装或生成配置；仅维护有本地证据的知识并报告未完成项。
+
+## 8. 开始日常协作
+
+描述任务后，Agent 默认从最轻的充分路径开始：
+
+| 路径 | 场景 |
+|------|------|
+| 专项 Skill | 审查、调试、测试设计、提交等明确操作 |
+| Direct | 当前会话可完成调查、方案对齐、实施与验证 |
+| Lite | 需要跨会话恢复、交接或审计，确认后用 OpenSpec 保存共同设计与任务 |
+| Full | 用户选择，或外部契约协调、严重且难回退的风险成立，经确认后使用完整编排 |
+
+OpenSpec 用于需要持久化的协作。`/opsx:new` 默认创建 Lite，`/opsx:continue` 继续讨论或逐步生成产物，
+`/opsx:ff` 是用户显式选择的快速入口，仍需确认关键设计。具体流程加载已安装的 Skill 与 schema，
+不在安装时创建示范 change。
+
+开发先调查并对齐方案，已有同范围确认直接复用。工作树、子代理、TDD 与独立审查按风险和任务要求使用。
+归档不自动授权提交、推送或 PR。
+
+## 完成报告
+
+结束前检查改动和相关链接，再报告：
+
+- 已接入的项目、平台与实际写入路径。
+- 原内容的保留、合并和备份位置，仍待处理的冲突。
+- doctor / OpenSpec 检查结果；实际执行的业务验证另列，不用静态检查替代。
+- domain-init / verify-init 已完成、跳过或待确认的部分。
+- 平台会话中的 Skills 是否可发现；必要时重开会话验证，不能仅凭链接存在宣称可用。
+
+仅在用户明确选择后提交或推送；按实际文件选择范围，排除本地备份、状态文件和无关改动。
+
+## 更新与维护
 
 ```bash
-cd <submodule-path>
-npx devkeel@latest init --name <submodule-name> --targets <targets> -y
-# ... 执行 Step 2.5 迁移（如有旧产物）...
-# ... 执行 Step 4 定制 AGENTS.md / CLAUDE.md ...
-git add . && git commit -m "chore(devkeel): 子模块初始化"
-cd ..
+# 查看模板更新计划
+npx devkeel@latest update --dry-run
+
+# 使用最新 CLI 执行项目模板更新
+npx devkeel@latest update
 ```
 
-如果子仓库已有 `AGENTS.md`，先读取并按 Step 2 的改造门禁询问用户：同意改造时移除 `-y`，让 CLI 使用领域模板合并原内容；拒绝时保留原文件并继续初始化其他资产。
+CLI 与模板独立发布。`devkeel update` 也会获取模板，但不会升级全局 CLI。
+全局 CLI 可通过 `npm install -g devkeel@latest --registry=https://registry.npmjs.org/` 单独升级。
 
-初始化后的子仓库边界应为：
+普通更新中，“全部更新”会覆盖待更新组件的本地修改；需要逐项跳过时选择“逐个确认”。
+`update --force` 强制覆盖受管组件，退役的受管 Skill 目录及其中自定义内容可能被删除。
+更新前检查计划和本地改动；技能入口冲突仍按第 2 节通过 sync 的备份流程处理。
 
-```text
-<submodule>/
-├── .harness/
-│   ├── config.yml             # project.repoType: domain
-│   ├── versions.yml           # 只跟踪 harness core；资产版本表为空
-│   ├── rules/                 # 仅项目领域 rules
-│   ├── skills/                # 仅项目领域 skills
-│   └── agents/                # 仅项目领域 agents
-├── AGENTS.md                  # 领域执行契约
-└── 无 .harness/commands/、无 openspec/
-```
-
-`domain-init`、`verify-init`、`commit` 和 `openspec-*` 等通用 skill 保留在主仓库。需要为子仓库生成领域资产时，从主仓库会话调用这些共享 skill，并把工作目录/目标指定到子仓库；不要把 skill 本体复制进子仓库。
-
-### 7.2 提交子模块指针
-
-```bash
-# 回到仓库根目录，更新子模块指针
-git add <submodule-paths>
-git commit -m "chore(devkeel): 子模块完成 DevKeel 初始化"
-```
-
----
-
-## Step 8: 领域能力生成
-
-> 询问用户：是否执行 `/domain-init` 对项目进行深度扫描，自动生成项目专属的 rules、skills 和 agents？
-
-**推荐执行的场景：**
-- 项目已有一定规模（非空项目）
-- 希望 Agent 深度理解项目编码规范和架构模式
-
-**可跳过的场景：**
-- 全新空项目，还没有代码
-- 只需要基础框架，后续再逐步补充
-- 迁移项目已有完善的 rules（Step 2.5 已迁移）
-
-如果用户同意，执行流程：
-
-### 8.1 主仓库
-
-在仓库根目录执行：
-
-```
-/domain-init
-```
-
-domain-init 会扫描项目代码，识别技术栈、框架版本、测试/构建/lint 工具链，自动生成：
-- `.harness/rules/` — 从代码中提取的编码规范
-- `.harness/skills/` — 项目专属能力
-- `.harness/agents/` — 专属 Agent 定义
-
-### 8.2 子仓库（如有）
-
-在主仓库会话调用共享的 `/domain-init`，将扫描目标指定为对应子仓库。生成的项目专属 rules、skills 和 agents 写入子仓库 `.harness/`，但 `/domain-init` skill 本体仍只保留在主仓库。
-
-### 8.3 提交领域产出
-
-```bash
-git add .harness/
-git add <submodule-paths>  # 子模块内的 .harness/ 变更
-git commit -m "chore(devkeel): 生成领域能力规范"
-```
-
----
-
-## Step 9: 测试基建初始化
-
-> 询问用户：是否执行 `/verify-init` 搭建标准化测试基建，让 Agent 能自主验证代码输出？
-
-**推荐执行的场景：**
-- 项目已有一定规模，需要单元/e2e/API 测试框架
-- 接手的项目已有部分测试框架，需要增量补齐缺失类型
-- 希望 Agent 具备「自主验证代码输出」能力（配套生成验证 agent）
-
-**可跳过的场景：**
-- 全新空项目，还没有被测代码
-- 已有完善的测试框架和验证闭环
-- 只需要写测试用例文档（直接用 `test-case-designer`）
-
-如果用户同意，执行流程：
-
-### 9.1 主仓库
-
-在仓库根目录执行：
-
-```
-/verify-init
-```
-
-verify-init 会扫描项目领域与技术栈、自动检测已有测试框架，增量补齐缺失的测试基建，并生成：
-- 项目根 — 测试框架安装 + 配置 + 示例 + scripts（如 `vitest.config.ts`、`tests/example.test.ts`、`test` 脚本）
-- `.harness/rules/testing.md` — 通用结构化 testing 规范（测试金字塔、命名、覆盖率、执行约定）
-- `.harness/agents/test-verifier.md` — 验证执行 agent，变更驱动验证闭环的执行端
-
-**流程：**
-1. 检测已有框架 → 输出就绪清单（✅ 已就绪 / ➕ 待补齐）
-2. 用户勾选要补齐的框架（门禁，补齐前需同意）
-3. 定位官方文档 → 产出 install/config/example/scripts（幂等，已存在不覆盖）
-4. 生成 testing 规范 + 验证 agent
-
-**与 domain-init / test-case-designer 的关系：**
-- `domain-init` R4 — 扫描真实代码生成项目特定软规范（mock 策略、覆盖模式）
-- `verify-init`（本步）— 搭建可执行测试基建：框架选型 + 安装 + 通用结构化规范 + 验证 agent
-- `test-case-designer` — 从需求/spec 产出测试点 + 用例文档
-- 验证 agent — 变更驱动验证闭环的执行端
-
-### 9.2 子仓库（如有）
-
-在主仓库会话调用共享的 `/verify-init`，将扫描和脚手架目标指定为对应子仓库，流程与 Step 8.2 相同。测试规范和验证 agent 属于该领域时写入子仓库；通用 `/verify-init` skill 不复制。
-
-### 9.3 验证并提交
-
-```bash
-# 运行最接近的验证命令确认脚手架可用（如 pnpm test）
-pnpm test
-
-# 提交测试基建产出
-git add .harness/rules/testing.md .harness/agents/test-verifier.md
-git add <测试配置/示例文件>  # 如 vitest.config.ts tests/ 等
-git commit -m "chore(devkeel): 初始化测试基建与验证 agent"
-```
-
----
-
-## 附录 A: 迁移速查表
-
-| 场景 | 命令 / 动作 |
-|------|-------------|
-| 项目已有 `.agents/rules/` | Step 2.5.2：恢复 → 复制到 `.harness/rules/` → 重建 symlink |
-| 项目已有 `.claude/rules/` 或 `.claude/skills/` | Step 2.5.2：同上，按 `.claude/` 小节处理 |
-| 项目已有 `.codex/` | Step 2.5.2：提取 rules/instructions 合并到 `.harness/` |
-| 项目已有 `docs/` | Step 2.5.3：`npx devkeel@latest migrate docs` 或手动分类 |
-| 项目已有 `wiki/` | Step 2.5.3：`npx devkeel@latest migrate wiki` 或手动归档到 `openspec/archive/wiki/` |
-| `.claude` / `.cursor` 原来是 symlink 到 `.agents` | init 会覆盖为目录 + 内部 symlink，如内容丢失需从 git 恢复 |
-| `.mcp.json` 原来在 `.agents/` 下 | 复制到 `.harness/mcp.json`，根目录创建 symlink |
-| init 后 `npx devkeel@latest doctor` 报 symlink 断裂 | 确保 `.harness/` 下目标目录存在 |
-| init 后 `.agents/rules/` 为空 | 需要手动完成 Step 2.5.2 |
-| 业务子模块需要各自 init | Step 7：交互选择子模块，或进入子模块执行 init；自动使用 `repoType: domain` |
-| 子模块出现 `commit`、`openspec-*` 等通用 skills | 删除这些主仓库模板副本，只保留项目专属 rules/skills/agents，并确认 `repoType: domain` |
-| 多个旧目录有重复 rules | 合并时去重，优先保留内容最完整的版本 |
-| `.harness/` 或 `openspec/` 本身是 submodule | 附录 C：在 submodule 内部提交，仓库根目录更新指针 |
-
-## 附录 B: 最终目录结构参考
-
-```
-project/
-├── .harness/                  # 知识层主目录（git tracked）
-│   ├── config.yml
-│   ├── versions.yml
-│   ├── rules/                 # 编码规范
-│   ├── skills/                # 通用 + 项目专属 skills
-│   ├── agents/                # Agent 定义
-│   ├── commands/              # 命令定义（如 opsx）
-│   ├── templates/             # 模板文件
-│   └── mcp.json               # MCP 配置
-├── .agents/                   # Codex 兼容层（symlinks）
-│   ├── rules -> ../.harness/rules
-│   ├── skills -> ../.harness/skills
-│   └── agents -> ../.harness/agents
-├── .claude/                   # Claude Code 兼容层（symlinks）
-│   ├── rules -> ../.harness/rules
-│   ├── skills -> ../.harness/skills
-│   └── agents -> ../.harness/agents
-├── .cursor/                   # Cursor 兼容层（symlink）
-│   └── rules -> ../.harness/rules
-├── .opencode/                 # OpenCode 兼容层（symlinks）
-│   ├── rules -> ../.harness/rules
-│   ├── skills -> ../.harness/skills
-│   └── agents -> ../.harness/agents
-├── .mcp.json -> .harness/mcp.json
-├── openspec/                  # 文档层
-│   ├── specs/                 # 有效规格文档
-│   ├── tests/                 # 测试用例
-│   ├── changes/               # 进行中的变更
-│   └── archive/               # 历史归档
-├── AGENTS.md                  # 执行契约
-├── CLAUDE.md                  # Claude Code bootstrap
-└── GEMINI.md                  # Gemini CLI bootstrap（如需要）
-
-submodule/                     # domain profile
-├── .harness/
-│   ├── config.yml             # project.repoType: domain
-│   ├── versions.yml           # core only
-│   ├── rules/                 # 项目领域资产
-│   ├── skills/                # 项目领域资产
-│   └── agents/                # 项目领域资产
-├── AGENTS.md                  # 领域执行契约
-└── CLAUDE.md                  # 平台 bootstrap（如需要）
-```
-
----
-
-## 附录 C: 高级配置 — 知识层作为 submodule
-
-> 非默认配置。仅当需要跨仓库共享 `.harness/` 或 `openspec/` 时阅读。
-
-`.harness/` 和 `openspec/` 可被配置为独立 git submodule（便于跨仓库共享知识层）：
-
-```gitmodules
-[submodule ".harness"]
-    path = .harness
-    url = git@gitlab.example.com:team/project-harness.git
-    branch = harness-v2
-
-[submodule "openspec"]
-    path = openspec
-    url = git@gitlab.example.com:team/project-openspec.git
-    branch = openspec-v2
-```
-
-### ⚠️ 核心风险：init 覆盖 submodule 目录
-
-如果 `.harness/` 或 `openspec/` 已是 submodule，`npx devkeel@latest init` 可能写入新文件、覆盖已有 `config.yml`/`versions.yml`、破坏 submodule git 状态。init 前必须检查：
-
-```bash
-git submodule status | grep -E "\.harness|openspec"
-git submodule update --init .harness openspec
-cd .harness && git status && cd ..
-cd openspec && git status && cd ..
-```
-
-### 迁移注意事项
-
-1. **先 init 子模块再迁移内容**：确保 submodule 已 clone 并切到正确分支
-   ```bash
-   git submodule update --init .harness openspec
-   ```
-2. **在 submodule 内部提交**：迁移到 `.harness/` 或 `openspec/` 的内容在对应 submodule 内部 commit + push，而非仓库根目录
-   ```bash
-   cd .harness && git add . && git commit -m "chore: 迁移项目知识" && git push && cd ..
-   cd openspec && git add . && git commit -m "chore: 迁移项目文档" && git push && cd ..
-   ```
-3. **仓库根目录更新 submodule 指针**：子模块提交后，仓库根目录更新指针
-   ```bash
-   git add .harness openspec
-   git commit -m "chore: 更新 .harness/openspec 子模块指针"
-   ```
-4. **避免在仓库根目录直接修改 submodule 内容**：所有对 `.harness/` 和 `openspec/` 的修改都在对应子模块工作目录内进行
-
-### init 已覆盖 submodule 的恢复
-
-```bash
-cd .harness && git status
-# 方式 A：覆盖内容是想要的（首次初始化），直接提交
-git add . && git commit -m "chore: devkeel init" && git push
-# 方式 B：覆盖了不该覆盖的内容，恢复
-git checkout -- .
-```
-
-### 已有 `.agents` 是 symlink 到 submodule
-
-某些项目已有 `.claude -> .agents` 或 `.agents -> some-submodule` 的 symlink 结构。init 时需要：
-
-1. 先记录原始 symlink 指向
-2. init 会覆盖 symlink，如果内容丢失需要从 submodule 恢复
-3. 确认最终 `.agents/` 的 symlink 指向 `.harness/` 而非旧路径
-
----
-
-## 完成
-
-至此项目已具备完整的 AI 协作基础设施。Agent 打开项目时会自动读取 AGENTS.md 执行契约和 `.harness/` 下的知识资产。
+当前知识维护在所属项目 docs，能力在 `.harness/`，任务过程在主仓库 OpenSpec。
+安装指南不替代各项目 AGENTS、Skill 与 schema 中的执行约束。

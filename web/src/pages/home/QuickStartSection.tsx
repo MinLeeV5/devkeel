@@ -39,7 +39,7 @@ export function QuickStartSection(): React.JSX.Element {
           <p>按照 <a href="https://raw.githubusercontent.com/MinLeeV5/devkeel/HEAD/web/public/install.md" target="_blank" rel="noopener noreferrer">https://raw.githubusercontent.com/MinLeeV5/devkeel/HEAD/web/public/install.md</a> 完成项目初始化</p>
         </div>
         <div className="agent-start-facts">
-          <span>自动推断项目名称与类型</span>
+          <span>识别项目名称、平台与仓库角色</span>
           <span>生成跨平台项目入口</span>
           <span>运行 doctor 检查结果</span>
           <span>写入与提交仍需明确授权</span>

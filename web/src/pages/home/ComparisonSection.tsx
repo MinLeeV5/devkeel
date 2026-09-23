@@ -68,7 +68,7 @@ export const COMPARISON_ROWS: readonly ComparisonRow[] = [
   {
     dimension: '项目知识生成',
     products: {
-      harnessV2: { score: 5, detail: 'domain-init 从代码提炼 rules、skills、agents；代价是需要人工确认结论。' },
+      harnessV2: { score: 5, detail: 'domain-init 从代码维护 docs 并提炼 rules、skills、agents；代价是需要人工确认结论。' },
       harnessV1: { score: 5, detail: 'domain-init 从真实代码提炼 rules、skills、agents；代价是需要人工确认结论。' },
       superpowers: { score: 2, detail: '提供跨项目通用纪律；代价是不生成项目专属知识层。' },
       matt: { score: 4, detail: '用 domain-modeling 与 CONTEXT/ADR 建立共同语言；代价是依赖对话式维护。' },

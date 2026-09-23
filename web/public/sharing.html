@@ -479,17 +479,17 @@ h3,.h3{font-size:var(--h3-size);line-height:1.3}.lede{font-size:clamp(.88rem,1.5
         </div>
         <div class="process-panel" id="constraint-panel-3" role="tabpanel" aria-labelledby="constraint-tab-3" hidden>
           <div class="process-detail">
-            <div class="process-detail-copy"><span class="process-kicker">domain-init · OUTPUT</span><h3>提炼项目能力</h3><p>把已经存在的工程事实转成 Agent 能发现、能加载、能执行的项目资产。</p><div class="process-done"><b>完成信号</b><code>AGENTS.md</code> 成为短地图，专项知识按任务加载。</div></div>
-            <div class="process-facts"><div class="process-fact"><b>规则</b><code>.harness/rules/</code></div><div class="process-fact"><b>方法</b><code>.harness/skills/</code></div><div class="process-fact"><b>角色</b><code>.harness/agents/</code></div></div>
+            <div class="process-detail-copy"><span class="process-kicker">domain-init · OUTPUT</span><h3>提炼项目能力</h3><p>在 docs 中维护项目事实，在 rules 中保留执行约束，并提炼专项方法与角色。</p><div class="process-done"><b>完成信号</b><code>AGENTS.md</code> 成为短地图，专项知识按任务加载。</div></div>
+            <div class="process-facts"><div class="process-fact"><b>知识与约束</b><code>docs/ · .harness/rules/</code></div><div class="process-fact"><b>方法</b><code>.harness/skills/</code></div><div class="process-fact"><b>角色</b><code>.harness/agents/</code></div></div>
           </div>
         </div>
         <div class="process-panel" id="constraint-panel-4" role="tabpanel" aria-labelledby="constraint-tab-4" hidden>
           <div class="process-detail">
-            <div class="process-detail-copy"><span class="process-kicker">STEP 04 · HUMAN GATE</span><h3>人工审查后写入</h3><p>先确认内容准确、范围清晰、命令可执行，再把约束持久化到仓库。</p><div class="process-done"><b>完成信号</b>新资产可重复生成、不会覆盖已有配置，并能在任务中命中。</div></div>
+            <div class="process-detail-copy"><span class="process-kicker">STEP 04 · HUMAN GATE</span><h3>人工审查后写入</h3><p>先确认内容准确、范围清晰、命令可执行，再把约束持久化到仓库。</p><div class="process-done"><b>完成信号</b>同主题内容增量合并、已有约定得到保留，并能在任务中按需读取。</div></div>
             <div class="process-facts"><div class="process-fact"><b>审查内容</b><span>事实准确性、ownership、适用范围与例外</span></div><div class="process-fact"><b>写入原则</b><span>只补缺口，不复制宿主层已有约束</span></div><div class="process-fact"><b>运行验证</b><span>用真实任务确认地图路由和按需加载</span></div></div>
           </div>
         </div>
-        <div class="process-panel is-summary" id="constraint-panel-5" role="tabpanel" aria-labelledby="constraint-tab-5"><img class="process-summary-image" src="./diagrams/sharing-v2-domain-init-summary.svg" alt="domain-init 总结：项目依赖、目录、配置与代码经过识别、扫描和提炼，形成 rules、skills、agents 与 AGENTS.md，并在任务运行时按需加载为执行约束"></div>
+        <div class="process-panel is-summary" id="constraint-panel-5" role="tabpanel" aria-labelledby="constraint-tab-5"><img class="process-summary-image" src="./diagrams/sharing-v2-domain-init-summary.svg" alt="domain-init 总结：项目依赖、目录、配置与代码经过识别、扫描和提炼，形成 docs、rules、skills、agents 与 AGENTS.md，按任务加载知识与约束"></div>
       </div>
     </div>
     <p class="source reveal">依据：<code>.harness/skills/domain-init/SKILL.md</code></p>
@@ -531,8 +531,8 @@ h3,.h3{font-size:var(--h3-size);line-height:1.3}.lede{font-size:clamp(.88rem,1.5
         </div>
         <div class="process-panel" id="verify-panel-4" role="tabpanel" aria-labelledby="verify-tab-4" hidden>
           <div class="process-detail">
-            <div class="process-detail-copy"><span class="process-kicker">STEP 04 · PROJECT CAPABILITY</span><h3>生成规范与验证角色</h3><p>把如何运行、如何扩大验证和何时才算完成写成项目可加载的能力。</p><div class="process-done"><b>完成信号</b>测试规范与验证职责不再依赖聊天中的临时说明。</div></div>
-            <div class="process-facts"><div class="process-fact"><b>TESTING RULE</b><code>.harness/rules/testing.md</code></div><div class="process-fact"><b>VERIFY AGENT</b><code>.harness/agents/test-verifier.md</code></div><div class="process-fact"><b>发现入口</b><span>由 AGENTS.md 指向当前任务需要的验证能力</span></div></div>
+            <div class="process-detail-copy"><span class="process-kicker">STEP 04 · PROJECT CAPABILITY</span><h3>维护验证知识与角色</h3><p>在 docs 中维护命令与说明，复用项目已有测试规则，与 domain-init 共用同一套验证知识。</p><div class="process-done"><b>完成信号</b>测试规范与验证职责不再依赖聊天中的临时说明。</div></div>
+            <div class="process-facts"><div class="process-fact"><b>知识与约束</b><code>docs/ · 已有测试规则</code></div><div class="process-fact"><b>VERIFY AGENT</b><code>.harness/agents/</code></div><div class="process-fact"><b>发现入口</b><span>由 AGENTS.md 指向当前任务需要的验证能力</span></div></div>
           </div>
         </div>
         <div class="process-panel" id="verify-panel-5" role="tabpanel" aria-labelledby="verify-tab-5" hidden>
@@ -541,7 +541,7 @@ h3,.h3{font-size:var(--h3-size);line-height:1.3}.lede{font-size:clamp(.88rem,1.5
             <div class="process-facts"><div class="process-fact"><b>邻近反馈</b><code>npm run test:unit</code></div><div class="process-fact"><b>扩大验证</b><span>build / preview / diff / review</span></div><div class="process-fact"><b>通过示意</b><code>PASS phone-login.spec.ts · ✓ build</code></div></div>
           </div>
         </div>
-        <div class="process-panel is-summary" id="verify-panel-6" role="tabpanel" aria-labelledby="verify-tab-6"><img class="process-summary-image" src="./diagrams/sharing-v2-verify-init-summary.svg" alt="verify-init 总结：现有项目经过检测现状、确认缺口和增量补齐，形成测试脚手架、测试规则与验证角色，并在任务运行时提供可复跑的测试、构建和审查证据"></div>
+        <div class="process-panel is-summary" id="verify-panel-6" role="tabpanel" aria-labelledby="verify-tab-6"><img class="process-summary-image" src="./diagrams/sharing-v2-verify-init-summary.svg" alt="verify-init 总结：现有项目经过检测现状、确认缺口和增量补齐，形成测试脚手架、测试说明、规则与验证角色，并在任务运行时提供可复跑的测试、构建和审查证据"></div>
       </div>
     </div>
     <p class="source reveal">依据：<code>.harness/skills/verify-init/SKILL.md</code> · 命令输出为完成信号示意</p>
@@ -553,10 +553,10 @@ h3,.h3{font-size:var(--h3-size);line-height:1.3}.lede{font-size:clamp(.88rem,1.5
   <div class="slide-content">
     <p class="eyebrow reveal">从系统能力到仓库载体</p>
     <h2 class="reveal">三种系统能力，如何落进<span class="gradient-text">仓库</span>？</h2>
-    <div class="diagram-frame reveal hide-mobile"><img src="./diagrams/sharing-v2-harness-architecture.svg" alt="DevKeel 能力落地映射：编排落到 AGENTS.md 与 OpenSpec，约束落到 rules、skills 与 agents，验证落到测试、构建、预览与 Review，并共同形成 Agent-ready Repository"></div>
+    <div class="diagram-frame reveal hide-mobile"><img src="./diagrams/sharing-v2-harness-architecture.svg" alt="DevKeel 能力落地映射：AGENTS.md 维护入口、docs 保存知识、OpenSpec 保存规范与变更，rules、skills 与 agents 提供能力，验证落到测试、构建、预览与 Review，并共同形成 Agent-ready Repository"></div>
     <div class="harness-mobile-map mobile-only reveal" aria-label="DevKeel 能力到仓库载体的手机端映射">
       <div class="harness-mobile-lanes">
-        <div class="harness-mobile-lane"><b>ROUTE · 编排</b><code>AGENTS.md + openspec/</code></div>
+        <div class="harness-mobile-lane"><b>ROUTE · 编排</b><code>AGENTS.md · docs/ · openspec/</code></div>
         <div class="harness-mobile-lane is-rules"><b>RULES · 约束</b><code>rules/ + skills/ + agents/</code></div>
         <div class="harness-mobile-lane is-evidence"><b>VERIFY · 验证</b><code>tests · build · preview · review</code></div>
       </div>

@@ -122,7 +122,7 @@
     <circle cx="656" cy="410" r="9" fill="#f7768e"/><text class="step-number" x="656" y="413" text-anchor="middle">02</text>
     <text class="step-title" x="680" y="407">Design + Specs + Tasks</text><text class="step-subtitle" x="680" y="422">方案 · 契约 · 最终验证计划</text>
     <circle cx="656" cy="450" r="9" fill="#f7768e"/><text class="step-number" x="656" y="453" text-anchor="middle">03</text>
-    <text class="step-title" x="680" y="447">Apply + Review + Verify</text><text class="step-subtitle" x="680" y="462">实施 · TDD · P0/P1 审查 · 同指纹复验</text>
+    <text class="step-title" x="680" y="447">Apply + Review + Verify</text><text class="step-subtitle" x="680" y="462">实施 · P0/P1 审查 · 同指纹复验</text>
     <circle cx="656" cy="490" r="9" fill="#f7768e"/><text class="step-number" x="656" y="493" text-anchor="middle">04</text>
     <text class="step-title" x="680" y="487">Retrospective + Archive</text><text class="step-subtitle" x="680" y="502">记录偏差与证据后归档</text>
   </g>
@@ -130,6 +130,6 @@
   <g>
     <rect id="quality-baseline" data-node-id="quality-baseline" x="30" y="560" width="900" height="42" rx="11" fill="#172a28" stroke="#9ece6a" stroke-width="1.5" data-graph-role="node" data-semantic-role="quality-gate" data-graph-bounds="30,560,930,602"/>
     <circle cx="60" cy="581" r="12" fill="#9ece6a"/><path d="M54 581L59 586L67 576" fill="none" stroke="#ffffff" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"/>
-    <text class="baseline-title" x="83" y="586">共同底线</text><text class="baseline-text" x="202" y="586">调查 → 实现 → 验证 → 交付</text>
+    <text class="baseline-title" x="83" y="586">共同底线</text><text class="baseline-text" x="202" y="586">调查 → 对齐方案 → 实现 → 验证</text>
   </g>
 </svg>

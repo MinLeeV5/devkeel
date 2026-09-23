@@ -27,8 +27,8 @@
   </defs>
 
   <rect width="960" height="440" rx="18" fill="#ffffff" data-graph-role="background"/>
-  <text class="title" x="50" y="36">安装之后，只需要两次关键确认</text>
-  <text class="subtitle" x="50" y="58">Agent 负责扫描与执行；你只在知识准确性和验证基建写入前做决定。</text>
+  <text class="title" x="50" y="36">建立入口，再补齐知识与验证</text>
+  <text class="subtitle" x="50" y="58">Agent 负责扫描与执行；项目知识经审查后写入，验证基建按确认的缺口补齐。</text>
 
   <path id="install-to-domain" data-graph-role="edge" data-edge-id="install-to-domain" data-source="install" data-target="domain-init" data-edge-kind="flow" data-flow="primary" data-bends="0" data-route-stretch="1"
     d="M270 160H370" fill="none" stroke="#2563eb" stroke-width="2.25" stroke-linecap="round" marker-end="url(#arrow-primary)"/>
@@ -66,7 +66,7 @@
     <rect id="knowledge-review" data-node-id="knowledge-review" x="690" y="120" width="220" height="80" rx="10" fill="#fff7ed" stroke="#fdba74" stroke-width="1.5" data-graph-role="node" data-semantic-role="user-gate" data-graph-bounds="690,120,910,200"/>
     <circle cx="718" cy="145" r="13" fill="#ea580c"/><text class="step" x="718" y="149" text-anchor="middle">03</text>
     <text class="node-title" x="741" y="149">用户 Review</text>
-    <text class="node-subtitle" x="718" y="177">确认规则、Skills 与作用域准确</text>
+    <text class="node-subtitle" x="718" y="177">确认知识、能力与作用域准确</text>
   </g>
   <g>
     <rect id="verify-init" data-node-id="verify-init" x="690" y="280" width="220" height="80" rx="10" fill="#faf5ff" stroke="#d8b4fe" stroke-width="1.5" data-graph-role="node" data-semantic-role="verification-design" data-graph-bounds="690,280,910,360"/>
@@ -84,7 +84,7 @@
     <rect id="agent-ready" data-node-id="agent-ready" x="50" y="280" width="220" height="80" rx="10" fill="#ecfdf5" stroke="#6ee7b7" stroke-width="2" data-graph-role="node" data-semantic-role="outcome" data-graph-bounds="50,280,270,360"/>
     <circle cx="78" cy="305" r="13" fill="#059669"/><path d="M72 305L77 310L85 300" fill="none" stroke="#ffffff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
     <text class="node-title" x="101" y="309">Agent-ready</text>
-    <text class="node-subtitle" x="78" y="337">规则 · Skills · 可执行反馈</text>
+    <text class="node-subtitle" x="78" y="337">知识 · 能力 · 可执行反馈</text>
   </g>
 
   <g data-graph-role="legend" transform="translate(50 406)">

@@ -1,309 +1,237 @@
-# DevKeel CLI
+# DevKeel
 
-项目知识框架 CLI —— 为项目建立统一的 AI 协作规范（`.harness/` 作为 single source of truth），通过 symlink 分发到 Claude Code / Cursor / Codex / Copilot / Gemini 等多平台目录。
+让现有项目成为 AI Agent **能读懂、会执行、可验证**的工程环境。
+
+DevKeel 将项目知识、专业能力与验证方式沉淀进仓库：通过统一入口帮助 Agent 理解项目，
+依据真实代码生成项目专属能力，并按任务需要选择 Direct、Lite 或 Full 路径。
+CLI 负责初始化、平台适配、检查与更新。
 
 ## 解决什么问题
 
-当团队同时使用多个 AI 编程工具时，面临几个现实问题：
+- **项目背景反复解释**：把架构、术语、开发方式与验证说明维护在项目文档中，让 Agent 按任务读取。
+- **通用规范与实际代码脱节**：从项目现状提取规则、Skills 和专业角色，复用已有约定并增量补齐缺口。
+- **任务大小与流程成本不匹配**：当前会话能完成的任务走 Direct，需要协作记忆或风险治理时再进入 Lite / Full。
+- **完成声明缺少证据**：连接测试、类型检查、构建和运行反馈，用可观察结果判断是否完成。
 
-- **规范碎片化**：Claude Code 的 `.claude/`、Cursor 的 `.cursor/rules/`、Codex 的 `.agents/` 各自维护一套规则，内容重复且容易不一致
-- **领域知识散落**：前端的 TypeScript 规范、后端的 Java Spring 约定等领域知识没有结构化沉淀
-- **工具配置繁琐**：每个新项目都要手动配置各平台的 rules、skills、agents
-
-DevKeel 的做法是：**用 `.harness/` 作为 single source of truth**，通过 symlink 将 rules/skills/agents 分发到各平台的约定目录，确保所有 AI 工具读取同一套规范。
-
-## 核心概念
-
-### 平台适配
-
-DevKeel 通过 symlink 将 `.harness/` 下的资产分发到各平台目录：
-
-```
-.harness/
-  skills/         ─── symlink ──→  .claude/skills/
-  rules/          ─── symlink ──→  .claude/rules/
-  agents/         ─── symlink ──→  .claude/agents/
-  commands/       ─── symlink ──→  .claude/commands/
-  rules/          ─── symlink ──→  .cursor/rules/
-  skills/         ─── symlink ──→  .agents/skills/
-  rules/          ─── symlink ──→  .agents/rules/
-  commands/       ─── symlink ──→  .agents/commands/
-```
-
-支持的目标平台：
-
-| 平台 | 链接策略 |
-|------|---------|
-| **Claude Code** | symlink skills/rules/agents/commands + 生成 CLAUDE.md |
-| **Cursor** | symlink rules |
-| **Codex CLI** | symlink skills/rules/commands 到 .agents/ |
-| **GitHub Copilot** | 生成 .github/copilot-instructions.md（引用 @AGENTS.md） |
-| **Gemini CLI** | 生成 GEMINI.md |
-
-### 领域包 (Domain)
-
-领域包是面向特定技术栈的规则集合。内置领域包：
-
-- **frontend** — TypeScript、React 等前端规范
-- **backend** — Java Spring、API 契约等后端规范
-
-`devkeel init` 时根据项目类型自动选择领域包。选择 `fullstack` 会同时安装 frontend 和 backend。
-
-### 内置 Skills
-
-初始化时复制到 `.harness/skills/` 的技能模板，涵盖需求分析、方案设计、代码审查、测试设计、调试排错、提交规范、openspec 工作流等。完整列表见 `templates/skills/` 目录。
-
-`brainstorming@8.0.0` 按输入成熟度工作：早期想法逐题探索，成熟方案只做 Gap Check，明确任务无需重复 brainstorm。每轮只解决一件事，附 Agent 猜测和证据，并以 5% 档位显示当前阶段置信度。`requirement-analysis` 与 `technical-design` 在这里作为只读 gap 探针，不另行生成第二套设计。
-
-`workflow-routing@1.0.0` 只在 Direct、Lite、Full 边界不清，或实施中出现持久化与治理升级信号时加载；明确的低风险 Direct 和已由专项 skill 接管的任务不承担这部分上下文。
-
-Brainstorming 默认在聊天中保持 topic-only。边界置信度约 80% 且存在跨会话、交接、并行或审计价值时，Agent 才询问是否持久化；用户同意或显式 `/opsx:new` 后进入 change-draft，并维护同一份 Living `brainstorm.md`。`/opsx:explore` 仍复用这个 skill；它不会修改应用代码或下游 artifacts。
-
-### Direct / Lite / Full 渐进工作流
-
-开发任务先从最轻路径开始，并按实际协调风险升级：
-
-```mermaid
-flowchart LR
-  R[开发请求] --> S{显式专项 skill<br/>或命中 L0?}
-  S -->|是| Skill[对应 skill 自身流程]
-  S -->|否| B{输入成熟度}
-  B -->|明确| D{需要持久化协调?}
-  B -->|有 gap| C[单题访谈·可见置信度]
-  C -->|继续| C
-  C -->|边界清楚| D
-  D -->|Direct| Direct[方案对齐 → 实施·邻近验证]
-  D -->|Lite| Lite[Living brainstorm → tasks → apply]
-  D -->|Full| Full[Living brainstorm → design → specs → tasks]
-  Lite --> F{外部契约或高后果风险<br/>且用户确认?}
-  F -->|否| Lite
-  F -->|是| Full
-  Full --> A[当前 Agent 顺序 Apply]
-  A --> V[一次最终 Review → Verify 报告]
-  V --> X[Retrospective → Archive]
-```
-
-- 开发默认先调查并对齐实现方案，再进入实施；专项 skill 与 Direct 同样遵守，已有有效确认直接复用。
-- 显式专项 skill 与自动命中的 L0 使用自身流程；其余请求按成熟度补齐关键 gap。Direct 不创建 OpenSpec change，边界不明确时优先 Direct。
-- OpenSpec 是持久化协调层，而不是默认开发前置。无上下文 `/opsx:new` 默认创建 `lite`，并在同一轮初始化 Living brainstorm、记录明确输入和提出下一道问题。Lite 与 Full 共用 brainstorm，已有 Lite 可在
-  同一 change 原地升级 Full，通过同一 `.openspec.yaml` 保留已验证进度；用户拒绝 Full 建议后仍可继续 Lite。
-- `brainstorm.md` 是唯一共同设计语义源，以 D/A/O 和 DRAFT/CONFIRMED 记录状态。design/specs/tasks 只能投影决定、仓库事实和机械转换；OpenSpec 的文件 `done` 不能替代语义确认。
-- `/opsx:continue` 每次最多投影一个 artifact；只有显式 `/opsx:ff` 才快速推进，但仍不能跳过单题决定和最终快照确认。旧 `/opsx:propose` 已退役。
-- Full 的 design、specs、tasks、verify、retrospective 都是必选 artifact。规划入口在 tasks 就绪后停止；Verify 只在最终实现与一次 P0/P1 阻断式 Review 之后生成测试报告。
-- Apply 默认不创建 worktree、不分派实现 subagent、不强制 TDD、不逐任务提交。Full 仅在稳定测试接缝存在时使用聚焦 TDD。
-- Lite 成功后快速归档；Full Archive 要求新鲜的 PASS 验证、生成精简回顾并默认同步 specs。归档后只询问是否另行 commit、push、创建 PR 或清理，默认停止。
-
-### 版本管理
-
-`.harness/versions.yml` 跟踪所有内置资产的版本，`devkeel update` 可将本地资产升级到最新模板版本。
-
-CLI 与模板独立发布、独立升级：
-
-```bash
-npm install -g devkeel@latest --registry=https://registry.npmjs.org/  # 升级 CLI 程序
-devkeel update                                                   # 更新当前项目的模板资产
-```
-
-更新检查比较当前项目的模板版本与 npm `latest`，仅在远端版本更高时显示终端提示，不再自动打开浏览器。
-检查结果缓存三天；预发布版本按 SemVer 顺序比较，不会把较旧的正式版提示为升级。需要 beta 模板时显式使用
-`devkeel update --beta`。`devkeel update` 不会升级全局安装的 CLI。
-
-内置 skill 退役时，Update 会按版本表差异直接删除对应的受管目录，不再保留同名自定义内容或做快照比对。讨论 skill 的合并升级例外地采用先安装并校验新 skill 与 `/opsx:explore`、再退休旧入口的事务顺序。
+这些资产保存在仓库中，可随代码版本管理，并通过平台入口供不同 Coding Agent 使用。
 
 ## 快速开始
 
-### 安装
+需要 **Node.js >= 20.19.0**。在项目根目录执行：
+
+```bash
+npx devkeel@latest init
+npx devkeel@latest doctor
+```
+
+`init` 会询问项目名称和目标平台；检测到 Git 子模块时，可选择为哪些子模块初始化。
+已有 `AGENTS.md` 会在确认后合并原内容。初始化建立协作入口，项目知识与验证能力继续按需补齐。
+
+也可以把下面的提示交给 Coding Agent，按[安装指南](web/public/install.md)完成接入：
+
+```text
+按照 https://raw.githubusercontent.com/MinLeeV5/devkeel/HEAD/web/public/install.md 完成项目初始化
+```
+
+接下来在 Agent 会话中调用 Skills：
+
+| 阶段 | 入口 | 结果 |
+|------|------|------|
+| 建立入口 | 终端运行 `devkeel init` | 执行契约、通用工作流、平台链接与主仓库 OpenSpec 骨架 |
+| 检查资产 | 终端运行 `devkeel doctor` | 检查目录、技能包、平台入口和相关配置 |
+| 理解项目 | Agent 调用 `domain-init` | 根据真实代码维护项目 docs、规则、Skills 和专业角色 |
+| 补齐反馈 | Agent 按需调用 `verify-init` | 复用已有测试框架，补齐确认的配置、示例、脚本与验证说明 |
+
+Claude Code 可使用 `/domain-init`、`/verify-init`；Codex 可使用 `$domain-init`、`$verify-init`。
+它们是 Agent Skills，不是终端子命令。生成内容和测试基建缺口按对应 Skill 的流程确认后写入。
+空项目或已有完整能力的项目可暂缓这些步骤。
+
+偏好全局安装时：
 
 ```bash
 npm install -g devkeel --registry=https://registry.npmjs.org/
-```
-
-要求 Node.js >= 20.19.0。
-
-`devkeel init` 和 `devkeel update` 从 npm 公共仓库下载 `devkeel-templates`，无需企业网络或私有源配置。
-项目协作资产保存在 `.harness/`。Schema 名称统一为 `lite` / `full`；`devkeel update` 会迁移旧 selector，保留原来的 Lite / Full 流程选择。
-DevKeel 不采集或上报使用数据，内置 OpenSpec 命令的遥测也已关闭。
-
-### 初始化项目
-
-```bash
-cd your-project
 devkeel init
+devkeel doctor
 ```
 
-交互式引导会依次询问：
-1. 项目名称（自动从 package.json 推断）
-2. 目标平台（Claude Code / Copilot / Codex / Cursor / Gemini / OpenCode，可多选，默认选中已有平台）
-3. 子模块初始化（如检测到 git submodule）
+CLI 与 `devkeel-templates` 均发布在公共 npm；初始化和更新会下载模板包。
+DevKeel 不采集或上报使用数据，内置 OpenSpec 调用也关闭了遥测。
 
-初始化完成后生成：
+## 项目知识与专属能力
 
+`domain-init` 扫描技术栈、代码结构、领域术语和团队惯例，基于证据生成或增强项目资产：
+
+- `docs/`：项目背景、架构、开发与验证说明。
+- `.harness/rules/`：简短、可执行的约束。
+- `.harness/skills/`、`.harness/agents/`：专项方法与专业角色。
+- `AGENTS.md`：维护执行入口、任务路由与文档读取条件。
+
+已有同主题内容增量合并，扫描发现的惯例需经确认才能成为约束。
+领域能力根据当前项目的技术栈与代码生成。
+
+`verify-init` 检测已有测试基础，只补齐确认的缺口。它与 `domain-init` 维护同一套测试规则与
+项目文档，复用已有文件和实际命令；测试配置与依赖写入所属项目。
+
+通用 Skills 还包括需求分析、技术设计、代码审查、测试用例设计、调试、提交与 OpenSpec 工作流。
+完整入口见 [Skills 模板](templates/skills/)。
+
+## 渐进工作流
+
+直接描述任务即可。Agent 先调查并对齐方案，复用已有授权，再选择足够完成任务的路径。
+代码审查、调试、测试设计等明确操作直接进入对应专项 Skill。
+
+| 路径 | 适用情况 | 协作方式 |
+|------|----------|----------|
+| **Direct** | 当前会话可完成改动与验证 | 对齐方案、实施、邻近验证与 diff 自审，不创建 OpenSpec change |
+| **Lite** | 跨会话恢复、交接或审计需要保存过程 | 用 OpenSpec 保存共同设计与任务，实施验证后轻量归档 |
+| **Full** | 用户选择，或已确认的外部契约协调、严重且难回退的风险 | 完整设计、规格、任务、审查、验证与回顾归档 |
+
+Lite / Full 的升级需要说明价值或风险并取得确认。文件数和技术复杂度本身不决定路径。
+工作树、实现子代理、TDD 和提交按任务需要使用，归档不自动授权 commit、push 或 PR。
+
+需要持久化协作时，常用入口为：
+
+| 入口 | 用途 |
+|------|------|
+| `/opsx:new` | 创建 change，开始共同设计；默认使用 Lite |
+| `/opsx:continue` | 继续讨论，确认后逐步生成规划产物 |
+| `/opsx:ff` | 显式选择快速生成规划产物，仍需确认关键设计 |
+| `/opsx:apply` | 根据已确认的任务实施 |
+| `/opsx:verify` | 核对实现与产物，生成验证报告 |
+| `/opsx:archive` | 满足当前 schema 的收尾条件后归档 |
+
+上表使用支持 slash commands 的平台写法；其他平台可调用对应的
+[OpenSpec Skills](templates/skills/openspec-new-change/SKILL.md)。
+共同设计保存在 `brainstorm.md`，后续产物从已确认决定生成。详细门禁由当前 Skill 和
+[Lite / Full schemas](templates/openspec/schemas/)维护。
+
+## 资产分层与平台支持
+
+接入并生成项目知识后，各类资产按职责维护：
+
+```text
+your-project/
+├── AGENTS.md                 # 执行契约、路由与读取条件
+├── docs/                     # 当前有效的项目知识
+├── .harness/
+│   ├── versions.yml          # 受管资产版本
+│   ├── rules/                # 项目约束
+│   ├── skills/               # 通用与项目专属能力
+│   ├── agents/               # 专业角色
+│   └── commands/             # 主仓库的命令入口
+└── openspec/                 # 主仓库的协作记录
+    ├── schemas/              # Lite / Full 工作流定义
+    ├── specs/                # 当前能力规范
+    └── changes/              # 讨论、设计、任务与验证过程
 ```
-.harness/
-  versions.yml            # 资产版本跟踪
-  rules/                  # 基线规则
-  skills/                 # 技能模板
-  agents/                 # 子代理模板
-  commands/               # 命令模板 (opsx-*)
-openspec/                 # 任务过程与当前规范（schemas + 目录骨架）
-AGENTS.md                 # 跨平台执行契约
-CLAUDE.md                 # Claude Code 入口（含 @AGENTS.md）
-GEMINI.md                 # Gemini CLI 入口（如选择该平台）
-.claude/ → .harness/      # symlink（如选择 Claude Code）
-.cursor/ → .harness/      # symlink（如选择 Cursor）
-.agents/ → .harness/      # symlink（如选择 Codex）
-```
 
-项目初始化后，`domain-init` 和 `verify-init` 按需在当前项目 `docs/` 维护项目知识；
-AGENTS 保留执行契约和读取入口，rules 保留简短约束。根项目与子项目使用相同分类规则。
-`openspec/changes/` 保存任务过程，`openspec/specs/` 继续保存当前能力规范。
-本仓库的开发与架构资料见 [项目文档](docs/README.md)。
+项目知识由项目维护；通用工作流由模板分发。`docs/` 与项目专属规则、角色按需生成，
+不应将目录骨架视为已经完成项目分析或测试验证。
+
+| 平台 | CLI 建立的入口 |
+|------|----------------|
+| Claude Code | `.claude/skills`、`rules`、`agents`、`commands` 链接及 `CLAUDE.md` |
+| Codex CLI | `.agents/skills`、`rules`、`agents`、`commands` 链接 |
+| Cursor | `.cursor/rules` 链接及 `CLAUDE.md` |
+| GitHub Copilot | `.github/copilot-instructions.md` 引用入口 |
+| Gemini CLI | `GEMINI.md` 引用入口 |
+| OpenCode | `.opencode/skills`、`rules`、`agents`、`commands` 链接 |
+
+链接指向 `.harness/` 的对应子目录；`commands` 仅在源目录存在时建立。
+平台的发现与加载方式各有差异，目录链接和 `doctor` 检查不能代替实际会话验证。
+新增共享技能通常无需重新同步，运行中的 Agent 可能需要重开会话刷新技能列表。
+
+根项目与子项目使用相同知识分层，各自维护 docs 和项目专属能力。
+Git 子模块初始化时不复制主仓库通用 Skills、commands 或 OpenSpec；从主仓库调用共享 Skills，
+将目标指向子项目，代码与验证在子项目执行，任务过程在主仓库协调。
 
 ## CLI 命令
 
-### `devkeel -V`
+| 命令 | 用途 | 常用选项 |
+|------|------|----------|
+| `devkeel init` | 初始化协作资产和平台入口 | `--name`、`--targets`、`-y`、`--force` |
+| `devkeel doctor` | 检查协作资产 | `--fix` |
+| `devkeel sync` | 按所选平台同步入口 | `--targets`、`--force` |
+| `devkeel update` | 更新当前项目受管模板资产 | `--dry-run`、`--force`、`--beta`、`--template-version` |
+| `devkeel evidence` | 收集 OpenSpec change 的实现证据 | `--change <name>`、`--json`、`--write-base` |
+| `devkeel openspec <命令>` | 调用内置 OpenSpec CLI | 如 `list`、`status`、`validate` |
+| `devkeel -V` | 查询 CLI 与模板的发布渠道版本 | 默认 `latest`，可加 `--beta` |
 
-显示 npm `latest` dist-tag 指向的 CLI 与模板版本；显式传入 `--beta` 时改为显示 beta 渠道版本。
-
-```bash
-devkeel -V          # 显示 latest 渠道
-devkeel -V --beta   # 显示 beta 渠道
-```
-
-### `devkeel init`
-
-初始化 `.harness/` 目录。交互式选择目标平台，复制模板、建立 symlink、生成入口文件。
-
-- 自动检测 package.json 推断项目名
-- 检测 git submodules 并提供领域配置选项
-- 从 Git 子模块关系和已有 AGENTS.md 自动识别仓库角色
-- 自动维护 .gitignore
-
-已有的 Codex / Claude Code skills 入口发生冲突时，默认保留原件并停止。确认需要替换时使用 `devkeel init --force`，覆盖前自动备份并输出备份位置。
-
-### `devkeel sync`
-
-按本次选择的目标平台建立链接，交互选择默认选中已有平台。`.claude/skills`、`.agents/skills` 整目录链接到 `.harness/skills`；新增或修改共享技能无需再次同步。平台运行中的技能列表可能需要重开会话刷新。
+`-V` 查询发布渠道，不能用来判断全局 CLI 是否已升级；网络不可用时可能回退到本地信息。
+其他参数见对应命令的 `--help`。
 
 ```bash
+devkeel init --name my-project --targets claude-code,codex -y
 devkeel sync --targets claude-code,codex
-devkeel sync --force    # 先备份，再替换冲突的 skills 入口
+devkeel doctor --fix
+devkeel evidence --change my-change --json
+devkeel openspec list
 ```
 
-默认整批检查 skills 入口，冲突时停止同步并保留原入口。强制覆盖只针对本次 skills 目标，保留平台目录中的其他内容。备份位于 `.harness/skills-backups/`，其中 `restore.json` 记录原入口路径；受管链接记录在 `.harness/skills-state.json`，两者均为本地状态。
+`init -y` 保留已有 `AGENTS.md`，并跳过子模块选择；项目名称与平台可通过参数显式提供。
+`evidence --write-base` 会写入基线快照，其余证据查询用于读取当前状态。
 
-技能公共流程写在 `SKILL.md`，Claude 原生配置按需使用 frontmatter，Codex 元数据按需使用技能包内的 `agents/openai.yaml`。有执行差异时由技能按平台读取参考文件；手动调用分别使用 Claude 的 `/skill-name`、Codex 的 `$skill-name`。
+Codex / Claude Code 的 skills 入口冲突时，默认保留原件并停止。
+确认替换后，可使用 `init --force` 或 `sync --force`，CLI 会先备份并输出位置。
+备份位于 `.harness/skills-backups/`，受管链接记录位于 `.harness/skills-state.json`，均为本地状态。
+这些选项只处理对应技能入口，不应删除整个平台目录来修复冲突。
 
-### `devkeel doctor`
+### 更新 CLI 与模板
 
-按自动识别的仓库角色和平台入口检查协作资产：
-
-| 检查项 | 说明 |
-|--------|------|
-| 目录完整性 | rules/skills/agents 目录是否存在 |
-| Codex / Claude skills | 链接目标及归属、技能 frontmatter、可选 Codex 元数据是否有效 |
-| AGENTS.md | 执行契约文件是否存在 |
-| CLAUDE.md | 是否包含 @AGENTS.md 引用（仅 claude-code 目标） |
-| openspec/ | 主仓库的任务与规范目录是否已初始化 |
-| versions.yml | 版本跟踪文件是否存在 |
-| submodule | 子模块是否完成 DevKeel 配置 |
-
-`devkeel doctor --fix` 可补齐缺失的 skills 链接；遇到同名目录或错误链接时保留原件，并提示使用 `devkeel sync --force`。静态检查通过不代表所有技能的运行行为已验证。
-
-### `devkeel update`
-
-更新内置资产到最新版本。对比 `.harness/versions.yml` 与内置版本号，列出可更新项。
+两者独立发布、独立升级：
 
 ```bash
-devkeel update            # 交互式确认
-devkeel update --force    # 强制覆盖全部受管组件
-devkeel update --dry-run  # 仅预览，不执行
-devkeel update --template-version 1.2.3      # 使用指定模板版本
-devkeel update 1.2.3-beta.1                  # 使用位置参数指定模板版本
-devkeel update --beta                        # 使用 npm beta dist-tag 指向的模板版本
-devkeel update --beta --force                # 使用 beta 渠道并强制覆盖全部受管组件
+# 升级全局 CLI 程序
+npm install -g devkeel@latest --registry=https://registry.npmjs.org/
+
+# 更新当前项目的模板资产
+devkeel update --dry-run
+devkeel update
+
+# 或临时使用最新 CLI 执行模板更新
+npx devkeel@latest update
 ```
 
-冲突处理：检测到本地修改时，提供「跳过」或「覆盖」选择。
-Codex / Claude skills 入口冲突需先通过 `devkeel sync --force` 备份处理，`update --force` 保持原有的模板资产覆盖语义。
+普通更新可选择“全部更新”或“逐个确认”。**“全部更新”会覆盖待更新组件中的本地修改；
+“逐个确认”才提供逐项跳过或覆盖选择。** `--force` 强制覆盖全部受管组件。
+模板更新可能删除已退役的受管 Skill 目录，目录内的自定义内容也会被删除；更新前应检查待更新项。
+
+```bash
+devkeel update --beta                       # beta 渠道模板
+devkeel update --template-version 1.2.3     # 指定模板版本
+devkeel update 1.2.3-beta.1                 # 也支持位置参数
+```
+
+`--beta` 与指定版本不能同时使用。`update` 不会升级全局 CLI；
+Codex / Claude skills 链接冲突应先通过 `sync` 处理，`update --force` 不替代入口备份流程。
 
 ## 自动识别，无需项目配置文件
 
-DevKeel 不再生成或读取 `.harness/config.yml`，无需维护 `targets`、`repoType` 或项目类型。
-Agent 根据项目结构、代码和 `AGENTS.md` 理解项目职责与执行范围；CLI 从实际入口和 Git 上下文识别操作范围。
+CLI 从实际平台入口、Git 子模块关系和已有 `AGENTS.md` 识别操作范围：
 
-- **平台**：从 `.claude/`、`.agents/` 或 `.codex/`、`.cursor/`、`.opencode/`、
-  `.github/copilot-instructions.md`、`GEMINI.md` 识别。`init` 和 `sync` 默认选中已有平台，
-  可交互调整，也可通过 `--targets` 指定本次操作的平台；选择不写入配置文件。
-- **仓库角色**：Git 子模块或 `AGENTS.md` 顶部带 `<!-- harness:domain-agents -->` 标记的项目按领域子仓库处理，
-  其余按主仓库处理。子仓库单独检出后仍可由已有执行契约识别，`init/update/doctor` 使用相同规则。
-- **缺失入口**：平台目录仍在时，`doctor --fix` 可补齐受管链接；整个入口都被删除且没有其他识别线索时，
-  使用 `devkeel sync --targets <平台>` 重新建立。
-- **已有项目**：旧 `.harness/config.yml` 被忽略且不会被改写，可自行删除；资产版本仍由
-  `.harness/versions.yml` 跟踪，OpenSpec 继续使用自己的 `openspec/config.yaml`。
+- `init`、`sync` 默认选中检测到的平台，可交互调整或通过 `--targets` 指定本次目标。
+- Git 子模块，或 `AGENTS.md` 顶部带 `<!-- harness:domain-agents -->` 标记的项目，按领域子仓库处理。
+- 平台目录仍在时，`doctor --fix` 可补齐缺失的受管链接；整个入口已删除时，用 `sync --targets <平台>` 重建。
+- 旧 `.harness/config.yml` 被忽略，可自行删除；资产版本由 `.harness/versions.yml` 跟踪，
+  OpenSpec 保留自己的 `openspec/config.yaml`。
 
-子模块在 `devkeel init` 中初始化、在 `devkeel doctor` 中检查，无需注册。
-`devkeel submodule` 和 `devkeel migrate` 已移除；历史任务文件可按需手动复制归档，当前项目知识维护在 `docs/`。
+子模块在 `init` 中初始化、在 `doctor` 中检查，无需注册。旧 `submodule`、`migrate` 命令已移除。
+当前项目知识继续维护在 docs，历史任务产物按需显式复制归档。
 
-## 项目结构
-
-```
-src/
-  index.ts                  # CLI 入口 (Commander)
-  commands/
-    init.ts                 # 交互式初始化
-    doctor.ts               # 协作资产检查
-    update.ts               # 内置资产更新
-    sync.ts                 # 平台入口同步
-  lib/
-    versions.ts             # 资产版本管理
-    detect.ts               # 环境、仓库角色与子模块检测
-    templates.ts            # 模板复制、symlink 创建、渲染
-    agents-md.ts            # 根/子仓库 AGENTS 模板选择与原内容合并
-    gitignore.ts            # .gitignore 条目管理
-templates/
-  skills/                   # 内置 skill 模板
-  agents/                   # 子代理模板 (code-reviewer)
-  commands/                 # opsx 命令模板
-  domain/                   # 领域包 (frontend, backend)
-  openspec/                 # openspec 目录骨架 + schemas
-  agents-md.md              # 根仓库 AGENTS.md 完整执行契约模板
-  agents-domain-md.md       # 子仓库 AGENTS.md 领域执行契约模板
-  claude-md.md              # CLAUDE.md 模板
-  gemini-md.md              # GEMINI.md 模板
-  versions-yml.yml          # versions.yml 模板
-  gitignore                 # .gitignore 模板
-tests/                      # vitest 单元测试
-```
-
-## 开发
+## 开发与文档
 
 ```bash
-pnpm install          # 安装依赖
-pnpm dev              # watch 模式开发
-pnpm build            # tsup 构建 ESM → dist/
-pnpm test             # vitest run
-pnpm test:watch       # vitest watch
-pnpm lint             # tsc --noEmit 类型检查
-node bin/devkeel.js   # 本地运行 CLI
+pnpm install
+pnpm build
+node bin/devkeel.js --help
 ```
 
-### 技术栈
-
-- **Runtime**: Node.js >= 20.19.0, TypeScript, ESM-only
-- **CLI**: Commander (命令解析) + @clack/prompts (交互式 UI)
-- **构建**: tsup
-- **测试**: vitest
-- **配置格式**: YAML (yaml 包)
-
-## License
-
-MIT
-
-## 开源协作
-
-源码与问题反馈：[MinLeeV5/devkeel](https://github.com/MinLeeV5/devkeel)。
+- [项目文档](docs/README.md)：项目概览、架构、开发与验证入口。
+- [开发指南](docs/development.md)：CLI 开发命令与约定。
+- [测试说明](docs/testing.md)：CLI、模板与 Web 的验证范围。
+- [构建与发布](docs/building.md)：构建产物与发布边界。
+- [源码与问题反馈](https://github.com/MinLeeV5/devkeel)。
 
 ## 许可证
 
-采用 [MIT](LICENSE) 许可证。第三方依赖与嵌入的 skills 保留各自的许可证和来源标注。
+采用 [MIT](LICENSE) 许可证。第三方依赖与嵌入的 Skills 保留各自的许可证和来源标注。

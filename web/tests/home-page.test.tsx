@@ -268,7 +268,8 @@ describe('V2 home page', () => {
   it('explains that built-in schemas orchestrate OpenSpec for Lite and Full', () => {
     render(<HowItWorksSection />)
 
-    expect(screen.getByText(/Lite 与 Full 借助 OpenSpec 保存 artifacts/)).toBeTruthy()
+    expect(screen.getByText(/docs\/ 保存项目知识/)).toBeTruthy()
+    expect(screen.getByText(/Lite \/ Full schema 定义相应编排/)).toBeTruthy()
     expect(screen.getByText(/Lite 与 Full 共用 OpenSpec 能力/)).toBeTruthy()
   })
 

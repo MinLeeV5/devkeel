@@ -22,7 +22,7 @@ export function ExistingProjectSection(): React.JSX.Element {
           <div className="init-engine-step">STEP 01</div>
           <code>/domain-init</code>
           <h3>让 Agent 读懂项目</h3>
-          <p>扫描技术栈、代码结构、领域术语和团队惯例，生成项目专属 rules、skills 与 reviewer agents。</p>
+          <p>扫描技术栈、代码结构、领域术语和团队惯例，在 docs 中维护项目知识，提炼专属 rules、skills 与 reviewer agents。</p>
           <ul>
             <li>依据真实代码，不套通用最佳实践</li>
             <li>先检测与采样，再由用户 Review</li>
@@ -34,7 +34,7 @@ export function ExistingProjectSection(): React.JSX.Element {
           <div className="init-engine-step">STEP 02</div>
           <code>/verify-init</code>
           <h3>让 Agent 验证产出</h3>
-          <p>检测已有测试框架，只对确认的缺口增量补齐配置、示例、testing 规范和验证 Agent。</p>
+          <p>检测已有测试框架，只对确认的缺口增量补齐配置、示例与验证 Agent，复用项目已有测试规则和 docs 中的说明。</p>
           <ul>
             <li>已有框架保持不动，缺失项才进入清单</li>
             <li>安装与写配置前必须取得用户同意</li>
@@ -57,7 +57,7 @@ export function ExistingProjectSection(): React.JSX.Element {
           <span>AFTER</span>
           <h3>仓库本身成为工作环境</h3>
           <ul>
-            <li>项目知识通过 AGENTS.md 与 .harness/ 可发现</li>
+            <li>AGENTS.md 按任务指向 docs 与 .harness/</li>
             <li>专业能力基于真实代码定制</li>
             <li>测试与 verifier 提供可观察反馈</li>
           </ul>

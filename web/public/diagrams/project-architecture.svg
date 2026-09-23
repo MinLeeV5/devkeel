@@ -1,6 +1,6 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 660" width="1200" height="660" role="img" aria-labelledby="title desc" data-generator="fireworks-tech-graph" data-schema-version="1" data-text-metrics="heuristic-v1" data-style-id="1" data-visual-theme="Flat Icon · DevKeel" data-diagram-type="architecture" data-semantic-profile="generic" data-semantic-valid="true" data-quality-profile="showcase" data-max-bends-per-edge="2" data-max-total-bends="8" data-max-route-stretch="1.35" data-max-bridged-crossings="0" data-min-node-gap="40.0" data-min-container-gutter="20.0" data-min-label-clearance="4.0" data-min-segment-length="16.0">
   <title id="title">DevKeel 系统能力到仓库载体的映射</title>
-  <desc id="desc">编排能力落到 AGENTS.md 与 OpenSpec，约束能力落到 rules、skills 与 agents，验证能力落到测试、构建、预览与 Review；这些资产共同形成 Agent-ready repository，驱动 Coding Agent 交付手机登录代码与可复跑证据。</desc>
+  <desc id="desc">AGENTS.md 维护执行入口，docs 保存项目知识，OpenSpec 保存规范与变更；rules、skills 与 agents 提供约束和能力，验证能力落到测试、构建、预览与 Review；这些资产共同形成 Agent-ready repository，驱动 Coding Agent 交付手机登录代码与可复跑证据。</desc>
   <defs>
     <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
       <stop offset="0%" stop-color="#f7f8fc"/>
@@ -93,8 +93,8 @@
     <rect x="55" y="180" width="310" height="135" rx="16" fill="#ffffff" fill-opacity="0.88" stroke="#3563e9" stroke-opacity="0.48" stroke-width="1.5"/>
     <text x="80" y="207" class="carrier-label">REPOSITORY CARRIER</text>
     <text x="80" y="245" class="carrier-title">AGENTS.md + openspec/</text>
-    <text x="80" y="273" class="carrier-sub">总控入口与项目地图</text>
-    <text x="80" y="296" class="carrier-sub">Direct / Lite / Full 工作状态</text>
+    <text x="80" y="273" class="carrier-sub">docs/ 保存项目知识</text>
+    <text x="80" y="296" class="carrier-sub">入口路由 · 规范与变更过程</text>
   </g>
   <g id="carrier-rules" data-graph-role="node" data-node-id="carrier-rules" data-semantic-role="rect" data-graph-bounds="445,180,755,315">
     <rect x="445" y="180" width="310" height="135" rx="16" fill="#ffffff" fill-opacity="0.88" stroke="#8b5cf6" stroke-opacity="0.48" stroke-width="1.5"/>
