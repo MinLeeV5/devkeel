@@ -1,0 +1,24 @@
+README.md
+  aac53d4b3d2d2781 61-65,73-77
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.9",
+  "base_commit_sha": "6b69146433224e73cb1edd33b4a4e3929e914f38",
+  "prompts": {
+    "aac53d4b3d2d2781": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "01a0cda6-3981-7a82-8c5e-8be07fb99df1",
+        "model": "gpt-6-luna"
+      },
+      "human_author": "MinLeeV5 <dicklwm@163.com>",
+      "messages": [],
+      "total_additions": 0,
+      "total_deletions": 0,
+      "accepted_lines": 28,
+      "overriden_lines": 0,
+      "messages_url": "https://gitai.gz.cvte.cn/cas/fb7aaef24f510263bed463e04d6ba2169df616dd276ece400a04f44c209b0d75"
+    }
+  }
+}
