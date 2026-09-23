@@ -1,0 +1,52 @@
+web/tests/react-pages.test.ts
+  be09ce99d2b66749 83,155-157
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.9",
+  "base_commit_sha": "01878a7ee45d1322cf40a3aacb3c82300a20617f",
+  "prompts": {
+    "0c21c2fa5ee66806": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "01a0cd95-34de-7313-b4c8-59d70952b9a1",
+        "model": "gpt-6-luna"
+      },
+      "human_author": "MinLeeV5 <dicklwm@163.com>",
+      "messages": [],
+      "total_additions": 0,
+      "total_deletions": 0,
+      "accepted_lines": 0,
+      "overriden_lines": 0,
+      "messages_url": "https://gitai.gz.cvte.cn/cas/14bba71037b146068c8711f2ac4edca071cfbbdc45476b60284c44661d2c8dcc"
+    },
+    "aac53d4b3d2d2781": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "01a0cda6-3981-7a82-8c5e-8be07fb99df1",
+        "model": "gpt-6-luna"
+      },
+      "human_author": "MinLeeV5 <dicklwm@163.com>",
+      "messages": [],
+      "total_additions": 20,
+      "total_deletions": 4,
+      "accepted_lines": 20,
+      "overriden_lines": 0,
+      "messages_url": "https://gitai.gz.cvte.cn/cas/aecf8710b712c7323204b9a4e7395208c4f7a36db927cc79b4a9a00447b2facb"
+    },
+    "be09ce99d2b66749": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "01a0cdaa-c6f2-7711-89a8-66e2590a749b",
+        "model": "gpt-6-astra"
+      },
+      "human_author": "MinLeeV5 <dicklwm@163.com>",
+      "messages": [],
+      "total_additions": 4,
+      "total_deletions": 4,
+      "accepted_lines": 4,
+      "overriden_lines": 0,
+      "messages_url": "https://gitai.gz.cvte.cn/cas/588bfdb547dd83c71d1d14ed82df63e21e9bc03b7a029562276958349cc76123"
+    }
+  }
+}
