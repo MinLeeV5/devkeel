@@ -99,6 +99,17 @@ flowchart LR
 
 `.harness/versions.yml` 跟踪所有内置资产的版本，`devkeel update` 可将本地资产升级到最新模板版本。
 
+CLI 与模板独立发布、独立升级：
+
+```bash
+npm install -g devkeel@latest --registry=https://registry.npmjs.org/  # 升级 CLI 程序
+devkeel update                                                   # 更新当前项目的模板资产
+```
+
+更新检查比较当前项目的模板版本与 npm `latest`，仅在远端版本更高时显示终端提示，不再自动打开浏览器。
+检查结果缓存三天；预发布版本按 SemVer 顺序比较，不会把较旧的正式版提示为升级。需要 beta 模板时显式使用
+`devkeel update --beta`。`devkeel update` 不会升级全局安装的 CLI。
+
 内置 skill 退役时，Update 会按版本表差异直接删除对应的受管目录，不再保留同名自定义内容或做快照比对。讨论 skill 的合并升级例外地采用先安装并校验新 skill 与 `/opsx:explore`、再退休旧入口的事务顺序。
 
 ## 快速开始

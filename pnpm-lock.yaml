@@ -17,6 +17,9 @@ importers:
       commander:
         specifier: ^13.1.0
         version: 13.1.0
+      semver:
+        specifier: ^7.8.5
+        version: 7.8.5
       tar:
         specifier: ^7.5.16
         version: 7.5.16
@@ -27,6 +30,9 @@ importers:
       '@types/node':
         specifier: ^22.15.0
         version: 22.19.18
+      '@types/semver':
+        specifier: ^7.8.0
+        version: 7.8.0
       tsup:
         specifier: ^8.4.0
         version: 8.5.1(postcss@8.5.14)(typescript@5.9.3)(yaml@2.8.4)
@@ -531,6 +537,9 @@ packages:
   '@types/node@22.19.18':
     resolution: {integrity: sha512-9v00a+dn2yWVsYDEunWC4g/TcRKVq3r8N5FuZp7u0SGrPvdN9c2yXI9bBuf5Fl0hNCb+QTIePTn5pJs2pwBOQQ==}
 
+  '@types/semver@7.8.0':
+    resolution: {integrity: sha512-1mAINjtQCXXeLkJ9ehXkwOcBpqtLxiVtKhpUf83DdRNdQKV0iXZpaHYqRr7nj+wvxuJzoAmAwXI+sCNMv1CzLQ==}
+
   '@vitest/expect@3.2.4':
     resolution: {integrity: sha512-Io0yyORnB6sikFlt8QW5K7slY4OjqNX9jmJQ02QDda8lyM6B5oNgVWoSoKPac8/kgnCUzuHQKrSLtu/uOqqrig==}
 
@@ -910,6 +919,11 @@ packages:
 
   safer-buffer@2.1.2:
     resolution: {integrity: sha512-YZo3K82SD7Riyi0E1EQPojLz7kpepnSQI9IyPbHHg1XXXevb5dJI7tpyN2ADxGcQbHG7vcyRHk0cbwqcQriUtg==}
+
+  semver@7.8.5:
+    resolution: {integrity: sha512-Y7/KDsb8LjooZpwaqGyulO6DQlksgCncchHGk+sZIY4SBvUocMBEFH5Ur1fI4dV+Jvl0w6cjvucaIi40puRioA==}
+    engines: {node: '>=10'}
+    hasBin: true
 
   shebang-command@2.0.0:
     resolution: {integrity: sha512-kHxr2zZpYtdmrN1qDjrrX/Z1rR1kG8Dx+gkpK1G4eXmvXswmcE1hTWBWYUzlraYw1/yZp6YuDY77YtvbN0dmDA==}
@@ -1493,6 +1507,8 @@ snapshots:
     dependencies:
       undici-types: 6.21.0
 
+  '@types/semver@7.8.0': {}
+
   '@vitest/expect@3.2.4':
     dependencies:
       '@types/chai': 5.2.3
@@ -1860,6 +1876,8 @@ snapshots:
       queue-microtask: 1.2.3
 
   safer-buffer@2.1.2: {}
+
+  semver@7.8.5: {}
 
   shebang-command@2.0.0:
     dependencies:

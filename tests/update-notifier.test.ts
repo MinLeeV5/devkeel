@@ -2,254 +2,157 @@ import { describe, it, expect, beforeEach, afterEach } from 'vitest'
 import fs from 'node:fs'
 import path from 'node:path'
 import os from 'node:os'
-import { __test__ } from '../src/lib/update-notifier.js'
-import { readVersions } from '../src/lib/config.js'
-
-const {
+import {
+  checkAndNotify,
   readUpdateCache,
   writeUpdateCache,
   isCacheExpired,
   compareVersions,
   formatUpdatePrompt,
-  shouldOpenBrowser,
-} = __test__!
+} from '../src/lib/update-notifier.js'
+import { writeVersions } from '../src/lib/versions.js'
 
 describe('update-notifier', () => {
-  describe('readUpdateCache', () => {
-    let originalEnvHome: string | undefined
-    let fakeHome: string
+  let projectRoot: string
+  let cachePath: string
 
-    beforeEach(() => {
-      originalEnvHome = process.env['HOME']
-      fakeHome = fs.mkdtempSync(path.join(os.tmpdir(), 'harness-update-notifier-'))
-      process.env['HOME'] = fakeHome
-    })
-
-    afterEach(() => {
-      fs.rmSync(fakeHome, { recursive: true, force: true })
-      if (originalEnvHome === undefined) {
-        delete process.env['HOME']
-      } else {
-        process.env['HOME'] = originalEnvHome
-      }
-    })
-
-    it('should return null when cache file does not exist', () => {
-      const result = readUpdateCache()
-      expect(result).toBeNull()
-    })
+  beforeEach(() => {
+    projectRoot = fs.mkdtempSync(path.join(os.tmpdir(), 'harness-update-notifier-'))
+    cachePath = path.join(projectRoot, 'cache', 'devkeel-update-check.json')
   })
 
+  afterEach(() => {
+    fs.rmSync(projectRoot, { recursive: true, force: true })
+  })
+
+  function writeProjectVersion(version: string): void {
+    writeVersions(projectRoot, { harness: version, skills: {}, agents: {}, rules: {}, schemas: {} })
+  }
+
+  function writeRawCache(content: string): void {
+    fs.mkdirSync(path.dirname(cachePath), { recursive: true })
+    fs.writeFileSync(cachePath, content)
+  }
+
   describe('writeUpdateCache / readUpdateCache', () => {
-    let tmpCacheFile: string
-    let originalEnvHome: string | undefined
-
-    beforeEach(() => {
-      originalEnvHome = process.env['HOME']
-      const fakeHome = fs.mkdtempSync(path.join(os.tmpdir(), 'harness-update-notifier-'))
-      process.env['HOME'] = fakeHome
-      tmpCacheFile = fakeHome
+    it('should return null when the cache does not exist', () => {
+      expect(readUpdateCache(cachePath)).toBeNull()
     })
 
-    afterEach(() => {
-      if (tmpCacheFile) {
-        fs.rmSync(tmpCacheFile, { recursive: true, force: true })
-      }
-      if (originalEnvHome === undefined) {
-        delete process.env['HOME']
-      } else {
-        process.env['HOME'] = originalEnvHome
-      }
+    it('should round-trip the last check and latest version', () => {
+      const cache = { lastCheck: Date.now(), latestVersion: '2.2.0' }
+      writeUpdateCache(cache, cachePath)
+      expect(readUpdateCache(cachePath)).toEqual(cache)
     })
 
-    it('should round-trip cache data', () => {
-      const cache = {
-        lastCheck: Date.now(),
-        latestVersion: '1.0.2',
-      }
-      writeUpdateCache(cache)
-      const loaded = readUpdateCache()
-      expect(loaded).not.toBeNull()
-      expect(loaded!.lastCheck).toBe(cache.lastCheck)
-      expect(loaded!.latestVersion).toBe('1.0.2')
+    it('should accept a legacy cache while ignoring browser notification state', () => {
+      const cache = { lastCheck: Date.now(), latestVersion: '2.2.0' }
+      writeRawCache(JSON.stringify({ ...cache, notifiedVersion: '2.2.0' }))
+      expect(readUpdateCache(cachePath)).toEqual(cache)
     })
 
-    it('should round-trip cache with notifiedVersion', () => {
-      const cache = {
-        lastCheck: Date.now(),
-        latestVersion: '1.0.2',
-        notifiedVersion: '1.0.1',
-      }
-      writeUpdateCache(cache)
-      const loaded = readUpdateCache()
-      expect(loaded).not.toBeNull()
-      expect(loaded!.notifiedVersion).toBe('1.0.1')
-    })
-
-    it('should return null when cache file is corrupt', () => {
-      const cachePath = path.join(process.env['HOME']!, '.harness', 'cache', 'devkeel-update-check.json')
-      fs.mkdirSync(path.dirname(cachePath), { recursive: true })
-      fs.writeFileSync(cachePath, 'not valid json', 'utf-8')
-      const result = readUpdateCache()
-      expect(result).toBeNull()
-    })
-
-    it('should return null when lastCheck is not a number', () => {
-      const cachePath = path.join(process.env['HOME']!, '.harness', 'cache', 'devkeel-update-check.json')
-      fs.mkdirSync(path.dirname(cachePath), { recursive: true })
-      fs.writeFileSync(cachePath, JSON.stringify({ lastCheck: 'abc', latestVersion: '1.0.0' }), 'utf-8')
-      const result = readUpdateCache()
-      expect(result).toBeNull()
-    })
-
-    it('should return null when latestVersion is not a string', () => {
-      const cachePath = path.join(process.env['HOME']!, '.harness', 'cache', 'devkeel-update-check.json')
-      fs.mkdirSync(path.dirname(cachePath), { recursive: true })
-      fs.writeFileSync(cachePath, JSON.stringify({ lastCheck: Date.now(), latestVersion: 123 }), 'utf-8')
-      const result = readUpdateCache()
-      expect(result).toBeNull()
-    })
-
-    it('should return null when cache file is empty', () => {
-      const cachePath = path.join(process.env['HOME']!, '.harness', 'cache', 'devkeel-update-check.json')
-      fs.mkdirSync(path.dirname(cachePath), { recursive: true })
-      fs.writeFileSync(cachePath, '', 'utf-8')
-      const result = readUpdateCache()
-      expect(result).toBeNull()
+    it.each([
+      '',
+      'not valid json',
+      'null',
+      JSON.stringify({ lastCheck: 'abc', latestVersion: '2.2.0' }),
+      JSON.stringify({ lastCheck: Date.now(), latestVersion: 123 }),
+    ])('should return null for an invalid cache: %s', content => {
+      writeRawCache(content)
+      expect(readUpdateCache(cachePath)).toBeNull()
     })
   })
 
   describe('isCacheExpired', () => {
-    it('should return false when cache is less than 3 days old', () => {
-      const cache = { lastCheck: Date.now() - 1000, latestVersion: '1.0.2' }
-      expect(isCacheExpired(cache)).toBe(false)
+    it('should reuse a recent cache', () => {
+      expect(isCacheExpired({ lastCheck: Date.now() - 1000, latestVersion: '2.2.0' })).toBe(false)
     })
 
-    it('should return true when cache is more than 3 days old', () => {
-      const cache = { lastCheck: Date.now() - 4 * 24 * 60 * 60 * 1000, latestVersion: '1.0.2' }
-      expect(isCacheExpired(cache)).toBe(true)
-    })
-
-    it('should return false for exactly 0ms age', () => {
-      const cache = { lastCheck: Date.now(), latestVersion: '1.0.2' }
-      expect(isCacheExpired(cache)).toBe(false)
+    it('should expire a cache older than three days', () => {
+      expect(isCacheExpired({
+        lastCheck: Date.now() - 4 * 24 * 60 * 60 * 1000,
+        latestVersion: '2.2.0',
+      })).toBe(true)
     })
   })
 
   describe('compareVersions', () => {
-    it('should return false when versions are the same', () => {
-      expect(compareVersions('1.0.0', '1.0.0')).toBe(false)
-    })
-
-    it('should return true when versions are different', () => {
-      expect(compareVersions('1.0.0', '1.0.1')).toBe(true)
-    })
-
-    it('should return true when current is empty', () => {
-      expect(compareVersions('', '1.0.0')).toBe(true)
+    it.each([
+      ['1.0.0', '1.0.0', false],
+      ['1.0.0', '1.0.1', true],
+      ['1.9.0', '1.10.0', true],
+      ['1.10.0', '1.9.0', false],
+      ['2.0.0', '1.99.99', false],
+      ['1.99.99', '2.0.0', true],
+      ['2.1.1-beta.0', '2.1.1', true],
+      ['2.1.1', '2.1.1-beta.9', false],
+      ['2.2.0-beta.0', '2.1.9', false],
+      ['2.1.1-beta.9', '2.1.1-beta.10', true],
+      ['2.1.1-beta.10', '2.1.1-beta.2', false],
+      ['2.1.1-rc.1', '2.1.1-beta.10', false],
+      ['2.1.1+local', '2.1.1+registry', false],
+      ['', '1.0.0', false],
+      ['1.0.0', '', false],
+      ['unknown', '1.0.0', false],
+      ['1.0.0', 'latest', false],
+    ])('should compare %s against %s as newer=%s', (current, latest, newer) => {
+      expect(compareVersions(current, latest)).toBe(newer)
     })
   })
 
   describe('formatUpdatePrompt', () => {
-    it('should contain both version strings', () => {
-      const result = formatUpdatePrompt('1.0.0', '1.0.1')
-      expect(result).toContain('1.0.0')
-      expect(result).toContain('1.0.1')
-    })
-
-    it('should contain the update command hint', () => {
-      const result = formatUpdatePrompt('1.0.0', '1.0.1')
+    it('should identify template versions and the template upgrade command', () => {
+      const result = formatUpdatePrompt('2.1.1-beta.0', '2.2.0')
+      expect(result).toContain('DevKeel 模板有新版本可用')
+      expect(result).toContain('当前模板版本: 2.1.1-beta.0')
+      expect(result).toContain('最新模板版本: 2.2.0')
       expect(result).toContain('devkeel update')
-    })
-
-    it('should contain the new version notice text', () => {
-      const result = formatUpdatePrompt('1.0.0', '1.0.1')
-      expect(result).toContain('DevKeel 有新版本可用')
-    })
-  })
-
-  describe('shouldOpenBrowser', () => {
-    it('should return true when cache is null', () => {
-      expect(shouldOpenBrowser(null, '1.0.2')).toBe(true)
-    })
-
-    it('should return false when notifiedVersion matches latestVersion', () => {
-      const cache = { lastCheck: Date.now(), latestVersion: '1.0.2', notifiedVersion: '1.0.2' }
-      expect(shouldOpenBrowser(cache, '1.0.2')).toBe(false)
-    })
-
-    it('should return true when notifiedVersion differs from latestVersion', () => {
-      const cache = { lastCheck: Date.now(), latestVersion: '1.0.2', notifiedVersion: '1.0.1' }
-      expect(shouldOpenBrowser(cache, '1.0.2')).toBe(true)
-    })
-
-    it('should return true when notifiedVersion is undefined', () => {
-      const cache = { lastCheck: Date.now(), latestVersion: '1.0.2' }
-      expect(shouldOpenBrowser(cache, '1.0.2')).toBe(true)
+      expect(result).not.toContain('https://')
     })
   })
 
   describe('checkAndNotify', () => {
-    let originalCwd: string
-    let originalEnvHome: string | undefined
-    let fakeHome: string
-    let tmpDir: string
-
-    beforeEach(() => {
-      originalCwd = process.cwd()
-      originalEnvHome = process.env['HOME']
-      tmpDir = fs.mkdtempSync(path.join(os.tmpdir(), 'harness-update-notifier-'))
-      fakeHome = fs.mkdtempSync(path.join(os.tmpdir(), 'harness-notifier-home-'))
-      process.env['HOME'] = fakeHome
+    it('should return null without project versions', async () => {
+      expect(await checkAndNotify(projectRoot, cachePath)).toBeNull()
+      expect(fs.existsSync(cachePath)).toBe(false)
     })
 
-    afterEach(() => {
-      process.chdir(originalCwd)
-      fs.rmSync(tmpDir, { recursive: true, force: true })
-      fs.rmSync(fakeHome, { recursive: true, force: true })
-      if (originalEnvHome === undefined) {
-        delete process.env['HOME']
-      } else {
-        process.env['HOME'] = originalEnvHome
-      }
+    it('should return a terminal prompt and leave a fresh cache unchanged on repeated checks', async () => {
+      writeProjectVersion('2.1.1-beta.0')
+      writeUpdateCache({ lastCheck: Date.now(), latestVersion: '2.2.0' }, cachePath)
+      const cached = fs.readFileSync(cachePath, 'utf-8')
+
+      const first = await checkAndNotify(projectRoot, cachePath)
+      const second = await checkAndNotify(projectRoot, cachePath)
+
+      expect(first).toContain('DevKeel 模板有新版本可用')
+      expect(first).toContain('2.2.0')
+      expect(first).toContain('devkeel update')
+      expect(second).toBe(first)
+      expect(fs.readFileSync(cachePath, 'utf-8')).toBe(cached)
     })
 
-    it('should return null when project is not initialized', async () => {
-      process.chdir(tmpDir)
-      const { checkAndNotify } = await import('../src/lib/update-notifier.js')
-      const result = await checkAndNotify()
-      expect(result).toBeNull()
-    })
-
-    it('should return prompt string when cache has newer version', async () => {
-      process.chdir(originalCwd)
-      const cachePath = path.join(fakeHome, '.harness', 'cache', 'devkeel-update-check.json')
-      fs.mkdirSync(path.dirname(cachePath), { recursive: true })
-      fs.writeFileSync(cachePath, JSON.stringify({
+    it('should show a terminal prompt even when an old client already opened the release page', async () => {
+      writeProjectVersion('2.1.1-beta.0')
+      writeRawCache(JSON.stringify({
         lastCheck: Date.now(),
-        latestVersion: '99.99.99',
-      }), 'utf-8')
-      const { checkAndNotify } = await import('../src/lib/update-notifier.js')
-      const result = await checkAndNotify()
-      expect(result).not.toBeNull()
-      expect(result).toContain('99.99.99')
-      expect(result).toContain('devkeel update')
+        latestVersion: '2.2.0',
+        notifiedVersion: '2.2.0',
+      }))
+      expect(await checkAndNotify(projectRoot, cachePath)).toContain('devkeel update')
     })
 
-    it('should return null when cache version matches current', async () => {
-      process.chdir(originalCwd)
-      const { readVersions } = await import('../src/lib/config.js')
-      const versions = readVersions(originalCwd)
-      if (!versions) return
-      const cachePath = path.join(fakeHome, '.harness', 'cache', 'devkeel-update-check.json')
-      fs.mkdirSync(path.dirname(cachePath), { recursive: true })
-      fs.writeFileSync(cachePath, JSON.stringify({
-        lastCheck: Date.now(),
-        latestVersion: versions.harness,
-      }), 'utf-8')
-      const { checkAndNotify } = await import('../src/lib/update-notifier.js')
-      const result = await checkAndNotify()
-      expect(result).toBeNull()
+    it.each([
+      ['2.2.0', '2.2.0'],
+      ['2.2.0', '2.1.9'],
+      ['2.2.0-beta.1', '2.1.9'],
+      ['2.2.0+local', '2.2.0+registry'],
+      ['unknown', '2.2.0'],
+      ['2.2.0', 'not-a-version'],
+    ])('should not advertise an upgrade from %s to %s', async (current, latest) => {
+      writeProjectVersion(current)
+      writeUpdateCache({ lastCheck: Date.now(), latestVersion: latest }, cachePath)
+      expect(await checkAndNotify(projectRoot, cachePath)).toBeNull()
     })
   })
 })
