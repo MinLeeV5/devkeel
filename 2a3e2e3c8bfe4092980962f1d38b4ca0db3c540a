@@ -1,0 +1,60 @@
+web/tests/react-pages.test.ts
+  4ba93f24e5186724 9,18-27
+.harness/skills/openspec-verify-change/SKILL.md
+  4ba93f24e5186724 7
+package.json
+  4ba93f24e5186724 13
+openspec/specs/harness-lite-workflow/spec.md
+  4ba93f24e5186724 21
+tests/implementation-fingerprint.test.ts
+  4ba93f24e5186724 78-81
+.harness/versions.yml
+  4ba93f24e5186724 21
+src/lib/update.ts
+  4ba93f24e5186724 81
+tests/update.test.ts
+  4ba93f24e5186724 932-935,960,984
+templates/versions-yml.yml
+  4ba93f24e5186724 21
+templates/skills/openspec-verify-change/SKILL.md
+  4ba93f24e5186724 7
+.harness/rules/web-frontend.md
+  4ba93f24e5186724 119,138
+docs/project.md
+  4ba93f24e5186724 18
+openspec/specs/code-design-preview/spec.md
+  4ba93f24e5186724 20
+.harness/rules/documentation.md
+  4ba93f24e5186724 34
+openspec/specs/workflow-page/spec.md
+  4ba93f24e5186724 41,45
+openspec/specs/embed-superpowers-skills/spec.md
+  4ba93f24e5186724 62
+tests/versions.test.ts
+  4ba93f24e5186724 87,112
+.harness/skills/changelog/SKILL.md
+  4ba93f24e5186724 94
+tests/templates.test.ts
+  4ba93f24e5186724 218,276,292-293,736,951
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.9",
+  "base_commit_sha": "2a3e2e3c8bfe4092980962f1d38b4ca0db3c540a",
+  "prompts": {
+    "4ba93f24e5186724": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "01a0c877-d61f-78b1-9c8a-557dea8017ef",
+        "model": "gpt-6-astra"
+      },
+      "human_author": "MinLeeV5 <dicklwm@163.com>",
+      "messages": [],
+      "total_additions": 0,
+      "total_deletions": 3414,
+      "accepted_lines": 770,
+      "overriden_lines": 0,
+      "messages_url": "https://gitai.gz.cvte.cn/cas/a2be5299174631a521626543d02e29611854b92b881a54b6495bd99f9f7e3cea"
+    }
+  }
+}
