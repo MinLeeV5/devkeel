@@ -1,0 +1,36 @@
+docs/development.md
+  7a8162769ad8f0f9 24-43
+docs/testing.md
+  7a8162769ad8f0f9 20-23
+.harness/skills/changelog/SKILL.md
+  7a8162769ad8f0f9 13,81-82
+.harness/rules/web-frontend.md
+  7a8162769ad8f0f9 9-10,18-19,21-22,30-32,43-44,48-49,57,82,85-86,99,103-104,106,112-114,130-132
+docs/architecture.md
+  7a8162769ad8f0f9 35,38-41
+docs/examples/web-frontend.md
+  7a8162769ad8f0f9 84
+docs/building.md
+  7a8162769ad8f0f9 19-41
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.9",
+  "base_commit_sha": "bfb811b69ac6830a658a49d20cee59e1b8dd6501",
+  "prompts": {
+    "7a8162769ad8f0f9": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "01a0cbe7-5a56-7aa2-9959-1538cf5d2858",
+        "model": "gpt-6-astra"
+      },
+      "human_author": "MinLeeV5 <dicklwm@163.com>",
+      "messages": [],
+      "total_additions": 0,
+      "total_deletions": 0,
+      "accepted_lines": 314,
+      "overriden_lines": 0,
+      "messages_url": "https://gitai.gz.cvte.cn/cas/701422c60f2f0bdd4ed50d212077cc5d9d959388b154200d57936f6840823436"
+    }
+  }
+}
