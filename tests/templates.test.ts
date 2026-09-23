@@ -215,7 +215,7 @@ describe('templates', () => {
       expect(skill).toContain('不输出设计文档')
     })
 
-    it('should make requirement analysis focused and human review explicitly optional', () => {
+    it('should keep requirement analysis focused', () => {
       const target = path.join(tmpDir, 'skills')
       copyTemplateSkills(target)
 
@@ -237,26 +237,6 @@ describe('templates', () => {
       expect(requirementDefaultTemplate).toContain('## 验收标准')
       expect(requirement).not.toContain('将其分成 200-300 字')
       expect(requirement).not.toContain('每节结束后询问')
-
-      const humanDir = path.join(target, 'human-review')
-      const human = fs.readFileSync(path.join(humanDir, 'SKILL.md'), 'utf-8')
-      const htmlContract = fs.readFileSync(path.join(humanDir, 'references', 'html-contract.md'), 'utf-8')
-      const openai = fs.readFileSync(path.join(humanDir, 'agents', 'openai.yaml'), 'utf-8')
-      expect(human).toContain('仅在用户显式调用 human-review skill')
-      expect(human).toContain('Lite、Full')
-      expect(human).toContain('inject-review')
-      expect(human).toContain('open-review')
-      expect(human).toContain('不是 artifact，不改变 status')
-      expect(human).toContain('openspec status --change "<name>" --json')
-      expect(human).toContain('`schemaName`、`changeRoot` 和 `artifactPaths`')
-      expect(human).toContain('`reviewPath` 设为 `<changeRoot>/human-review.html`')
-      expect(human).toContain('inject-review "<reviewPath>"')
-      expect(human).toContain('open-review "<reviewPath>"')
-      expect(human).not.toContain('openspec/changes/<name>/human-review.html')
-      expect(htmlContract).toContain('<!-- INJECT:css -->')
-      expect(htmlContract).toContain('<!-- INJECT:artifacts -->')
-      expect(htmlContract).toContain('<!-- INJECT:js -->')
-      expect(openai).toContain('allow_implicit_invocation: false')
     })
 
     it('should package brainstorming as the only discussion skill', () => {
@@ -293,6 +273,7 @@ describe('templates', () => {
         'test-driven-development',
         'using-git-worktrees',
         'architecture-diagram',
+        'human-review',
         'openspec-propose',
       ]
       for (const skillName of retired) {
@@ -308,6 +289,8 @@ describe('templates', () => {
       )) as { skills: Record<string, string> }
       expect(packagedVersions.skills['architecture-diagram']).toBeUndefined()
       expect(dogfoodVersions.skills['architecture-diagram']).toBeUndefined()
+      expect(packagedVersions.skills['human-review']).toBeUndefined()
+      expect(dogfoodVersions.skills['human-review']).toBeUndefined()
 
       const brainstorming = fs.readFileSync(path.join(target, 'brainstorming', 'SKILL.md'), 'utf-8')
       const openspecContext = fs.readFileSync(
@@ -750,7 +733,7 @@ describe('templates', () => {
       expect(raw).not.toContain('  - id: human-review')
     })
 
-    it('should share brainstorm across lite and full and omit the schema human-review template', () => {
+    it('should share brainstorm across lite and full', () => {
       const target = path.join(tmpDir, 'openspec')
       copyOpenspecTemplate(target)
 
@@ -965,7 +948,7 @@ describe('templates', () => {
         'openspec-archive-change': '3.2',
         'openspec-bulk-archive-change': '2.1',
         'openspec-sync-specs': '2.1',
-        'openspec-verify-change': '3.2',
+        'openspec-verify-change': '3.3',
       }
       const commandBySkill: Record<string, string> = {
         'openspec-new-change': 'new',

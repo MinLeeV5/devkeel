@@ -17,7 +17,7 @@ technical-design MUST 根据当前领域和变更触点裁剪内部设计维度�
 
 ### Requirement: Code preview MUST 按价值选用
 
-函数签名、伪代码或 diff MAY 在它们能解释关键契约或算法时出现，但 design 模板 MUST NOT 强制固定“代码设计预览”章节。可选 human-review 页面 SHALL 渲染现有 artifact 中的代码块，而不得要求 design 为页面补造内容。
+函数签名、伪代码或 diff MAY 在它们能解释关键契约或算法时出现，但 design 模板 MUST NOT 强制固定“代码设计预览”章节。
 
 #### Scenario: 关键算法需要伪代码
 

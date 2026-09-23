@@ -38,11 +38,11 @@ Hero section SHALL 以三个痛点问题开场（跳过 spec 导致产出不稳�
 
 ### Requirement: Spec 阶段内容
 
-Spec section SHALL 展示 4 个子步骤卡片：提问发散（brainstorm）、探索与设计（explore + design）、方案定稿（proposal + specs + tasks）、人工评审（human-review）。每个子步骤包含描述文字和案例片段。
+Spec section SHALL 展示 3 个子步骤卡片：提问发散（brainstorm）、探索与设计（explore + design）、方案定稿（proposal + specs + tasks）。每个子步骤包含描述文字和案例片段。
 
 #### Scenario: Spec 子步骤卡片展示
 - **WHEN** 用户查看 Spec section
-- **THEN** 展示 4 个纵向排列的子步骤卡片，每个包含序号、标题、产物标签、描述和案例片段
+- **THEN** 展示 3 个纵向排列的子步骤卡片，每个包含序号、标题、产物标签、描述和案例片段
 
 ### Requirement: Code 阶段内容
 

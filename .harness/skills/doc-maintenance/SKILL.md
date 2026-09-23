@@ -32,8 +32,6 @@ node bin/devkeel.js init --help
 node bin/devkeel.js doctor --help
 node bin/devkeel.js update --help
 node bin/devkeel.js sync --help
-node bin/devkeel.js inject-review --help
-node bin/devkeel.js open-review --help
 node bin/devkeel.js evidence --help
 ```
 

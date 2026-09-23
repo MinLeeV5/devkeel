@@ -84,7 +84,7 @@ describe('versions', () => {
       expect(versions.skills['grilling']).toBeUndefined()
       expect(versions.skills['requirement-analysis']).toBe('3.0.1')
       expect(versions.skills['technical-design']).toBe('3.0.1')
-      expect(versions.skills['human-review']).toBe('1.0.1')
+      expect(versions.skills['human-review']).toBeUndefined()
       for (const retired of [
         'writing-plans',
         'executing-plans',
@@ -109,7 +109,7 @@ describe('versions', () => {
       expect(versions.skills['openspec-archive-change']).toBe('3.2')
       expect(versions.skills['openspec-bulk-archive-change']).toBe('2.1')
       expect(versions.skills['openspec-sync-specs']).toBe('2.1')
-      expect(versions.skills['openspec-verify-change']).toBe('3.2')
+      expect(versions.skills['openspec-verify-change']).toBe('3.3')
       expect(versions.skills['receiving-code-review']).toBeUndefined()
     })
   })

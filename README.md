@@ -53,8 +53,6 @@ DevKeel 通过 symlink 将 `.harness/` 下的资产分发到各平台目录：
 
 初始化时复制到 `.harness/skills/` 的技能模板，涵盖需求分析、方案设计、代码审查、测试设计、调试排错、提交规范、openspec 工作流等。完整列表见 `templates/skills/` 目录。
 
-Human Review 是显式可选能力：用户调用 `$human-review` 时，DevKeel 会把当前 Lite 或 Full change 的已有 artifacts 渲染为 `human-review.html` 并尝试打开；它不属于 schema、不会改变 status，也不是 apply/archive 门禁。
-
 `brainstorming@8.0.0` 按输入成熟度工作：早期想法逐题探索，成熟方案只做 Gap Check，明确任务无需重复 brainstorm。每轮只解决一件事，附 Agent 猜测和证据，并以 5% 档位显示当前阶段置信度。`requirement-analysis` 与 `technical-design` 在这里作为只读 gap 探针，不另行生成第二套设计。
 
 `workflow-routing@1.0.0` 只在 Direct、Lite、Full 边界不清，或实施中出现持久化与治理升级信号时加载；明确的低风险 Direct 和已由专项 skill 接管的任务不承担这部分上下文。

@@ -67,15 +67,17 @@ describe('implementation fingerprint', () => {
     expect(first.trackedPaths).toContain('src/app.txt')
     expect(first.untracked.map(item => item.path)).toContain('src/new.txt')
     expect(first.excludedPaths).toEqual([
-      'openspec/changes/example/human-review.html',
       'openspec/changes/example/retrospective.md',
       'openspec/changes/example/verify.md',
     ])
 
-    writeFile(root, 'openspec/changes/example/human-review.html', '<!doctype html>\n')
     writeFile(root, 'openspec/changes/example/verify.md', '# Verify\n')
     writeFile(root, 'openspec/changes/example/retrospective.md', '# Retrospective\n')
     expect(fingerprint(root).fingerprint).toBe(first.fingerprint)
+
+    writeFile(root, 'openspec/changes/example/human-review.html', '<!doctype html>\n')
+    expect(fingerprint(root).fingerprint).not.toBe(first.fingerprint)
+    fs.unlinkSync(path.join(root, 'openspec/changes/example/human-review.html'))
 
     writeFile(root, 'src/new.txt', 'untracked changed\n')
     const changed = fingerprint(root)

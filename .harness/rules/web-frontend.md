@@ -100,8 +100,6 @@ pnpm build
 - `/v1/sharing.html`
 - `/v1/capability-inventory.html`
 - `/install.md`
-- `/human-review.css`
-- `/human-review.js`
 - `/assets/styles.css`
 
 ## 约定 10: UI 修改遵守现有页面的视觉系统
@@ -118,7 +116,7 @@ pnpm build
 
 ## 约定 11: 资产和静态文件位置固定
 
-构建后需要原样访问的静态资源放在 `web/public/`。根目录的 `web/install.md`、`web/human-review.css`、`web/human-review.js` 是开发期源文件；需要被 server 静态访问的副本在 `web/public/`。
+构建后需要原样访问的静态资源放在 `web/public/`。根目录的 `web/install.md` 是开发期源文件；需要被 server 静态访问的副本在 `web/public/`。
 
 新增图片、样式或下载资源时，必须确认:
 
@@ -137,5 +135,5 @@ pnpm build
 以下内容不属于本规则的本地 TypeScript module specifier，保留实际后缀:
 
 - `.js` 源文件之间由 Node.js ESM 直接解析的 import
-- `./human-review.js` 等静态资源 URL
+- `./assets/styles.css` 等静态资源 URL
 - `chart.js/auto` 等 package specifier

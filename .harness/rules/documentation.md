@@ -31,7 +31,7 @@
 
 ## 约定 4: changelog 使用双版本流 JSON 数据源
 
-版本正文唯一写入 `web/public/versions/cli/*.json` 或 `web/public/versions/templates/*.json`，两条流保持独立版本号。React 页面 `web/src/pages/changelog.tsx` 只维护布局、交互和 V1 → V2 静态迁移说明，不手工维护版本正文、latest badge 或 Update Tip。对外 URL 继续保持 `/changelog.html`；不直接编辑或提交 `web/dist/`，也不在项目根目录创建 CHANGELOG.md。JSON schema、human-review 分类和验证流程遵循 `.harness/skills/changelog/`。
+版本正文唯一写入 `web/public/versions/cli/*.json` 或 `web/public/versions/templates/*.json`，两条流保持独立版本号。React 页面 `web/src/pages/changelog.tsx` 只维护布局、交互和 V1 → V2 静态迁移说明，不手工维护版本正文、latest badge 或 Update Tip。对外 URL 继续保持 `/changelog.html`；不直接编辑或提交 `web/dist/`，也不在项目根目录创建 CHANGELOG.md。JSON schema、变更分类和验证流程遵循 `.harness/skills/changelog/`。
 
 出处: `.harness/skills/changelog/`、AGENTS.md 第 6 节资产边界
 

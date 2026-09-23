@@ -9,8 +9,6 @@ import { getPublishedHarnessVersion } from './lib/release-channel.js'
 import { runInit } from './commands/init.js'
 import { runDoctor } from './commands/doctor.js'
 import { runUpdate } from './commands/update.js'
-import { runInjectReview } from './commands/inject-review.js'
-import { runOpenReview } from './commands/open-review.js'
 import { runSync } from './commands/sync.js'
 import { runEvidence } from './commands/evidence.js'
 import { interceptOpenspec } from './commands/openspec.js'
@@ -89,16 +87,6 @@ program
   .option('--targets <targets>', '目标平台（逗号分隔：claude-code,codex,cursor,copilot,gemini,opencode）')
   .option('--force', '备份并覆盖冲突的技能入口')
   .action((opts) => runSync(opts))
-
-program
-  .command('inject-review <html-path>')
-  .description('注入 artifact 原文和 CSS 到 HTML')
-  .action((htmlPath) => runInjectReview(htmlPath))
-
-program
-  .command('open-review <html-path>')
-  .description('在浏览器中打开 human-review.html')
-  .action((htmlPath) => runOpenReview(htmlPath))
 
 program
   .command('evidence')

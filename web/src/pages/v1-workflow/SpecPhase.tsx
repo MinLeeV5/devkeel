@@ -36,18 +36,6 @@ export function SpecPhase(): React.JSX.Element {
               <strong>条件读取</strong> — brainstorm.md 始终作为需求输入；design.md 存在时提供架构参考；specs 存在时提供 WHEN/THEN 场景作为 TDD 输入。
             </div>
           </div>
-          <div className="phase-step">
-            <div className="phase-step-head">
-              <span className="phase-num phase-num-spec">4</span>
-              <h4>人工评审</h4>
-              <span className="phase-badge">human-review.html</span>
-              <span className="phase-badge" style={{ color: 'var(--text-4)', opacity: '.7' }}>可选</span>
-            </div>
-            <p>汇总所有规划产物，生成 human-review.html 验收页面，供团队在浏览器中审阅。适用于影响范围大、需要多人审阅或向非技术成员展示方案全貌的场景。个人开发或小团队可跳过，直接进入实现。</p>
-            <div className="phase-highlight">
-              <strong>🚪 Human-Review Gate</strong> — 审阅 brainstorm → [design] → [specs] → tasks 的完整链路，确认范围、方案、任务拆分无误。适用于需要显式审批的团队流程。
-            </div>
-          </div>
         </div>
       </div>
     </section>

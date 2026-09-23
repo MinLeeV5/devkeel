@@ -929,9 +929,10 @@ describe('deprecated asset detection', () => {
   })
 })
 
-describe('version-driven retired skill cleanup', () => {
-  const skill = 'architecture-diagram'
-  const version = '1.1'
+describe.each([
+  { skill: 'architecture-diagram', version: '1.1' },
+  { skill: 'human-review', version: '1.0.1' },
+])('version-driven retired skill cleanup: $skill', ({ skill, version }) => {
   let projectDir: string
 
   function writeProjectSkill(content: string, registered = true): void {
@@ -956,7 +957,7 @@ describe('version-driven retired skill cleanup', () => {
   })
 
   it('should delete a retired skill directory directly when the version table drops it', () => {
-    writeProjectSkill('---\nname: architecture-diagram\ndescription: custom\n---\n', false)
+    writeProjectSkill(`---\nname: ${skill}\ndescription: custom\n---\n`, false)
 
     const plan = planLegacyMigrations(projectDir)
     expect(plan.hasChanges).toBe(true)
@@ -980,7 +981,7 @@ describe('version-driven retired skill cleanup', () => {
   })
 
   it('should still delete a retired skill directory after versions.yml has already moved on', () => {
-    writeProjectSkill('---\nname: architecture-diagram\ndescription: managed snapshot\n---\n')
+    writeProjectSkill(`---\nname: ${skill}\ndescription: managed snapshot\n---\n`)
     writeVersions(projectDir, {
       harness: 'new', skills: {}, agents: {}, rules: {}, schemas: {},
     })

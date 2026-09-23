@@ -6,6 +6,7 @@ import { renderToStaticMarkup } from 'react-dom/server'
 import { describe, expect, it } from 'vitest'
 
 import { ChangelogPage } from '../src/pages/changelog'
+import { SpecPhase } from '../src/pages/v1-workflow/SpecPhase'
 import { PAGE_COMPONENTS } from '../src/pages/registry'
 import { PAGE_ROUTES } from '../src/routes'
 
@@ -14,6 +15,16 @@ const SRC_ROOT = path.join(WEB_ROOT, 'src')
 const DIAGRAM_ROOT = path.join(WEB_ROOT, 'public', 'diagrams')
 
 describe('React pages', () => {
+  it('keeps planning steps without the retired human-review page', () => {
+    const html = renderToStaticMarkup(createElement(SpecPhase))
+    for (const artifact of ['brainstorm.md', 'design.md', 'tasks.md']) {
+      expect(html).toContain(artifact)
+    }
+    expect(html.match(/class="phase-step"/g)).toHaveLength(3)
+    expect(html).not.toContain('human-review')
+    expect(html).not.toContain('Human-Review')
+  })
+
   it('maps every current React route to a component', () => {
     for (const route of PAGE_ROUTES) expect(PAGE_COMPONENTS[route.pageId]).toBeDefined()
   })

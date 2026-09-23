@@ -118,7 +118,6 @@ const rootResult = runGit(process.cwd(), ['rev-parse', '--show-toplevel'])
 const repoRoot = path.resolve(rootResult.stdout.trim())
 const changeDir = normalizeRelative(repoRoot, options.changeDir)
 const excludedPaths = [
-  `${changeDir}/human-review.html`,
   `${changeDir}/retrospective.md`,
   `${changeDir}/verify.md`,
 ].sort(compareText)

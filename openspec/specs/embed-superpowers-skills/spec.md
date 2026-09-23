@@ -59,7 +59,7 @@ Browser、Electron Renderer/Preload 使用 Web helper，Node.js 与 Electron Mai
 
 `requirement-analysis` 与 `technical-design` MUST 支持结果导向文档和 Brainstorming 只读探针模式；
 `brainstorming` MUST 承担 topic-only 事实梳理、方向探索、方案比较、方案检验与结论收束，并只在
-用户授权的 change-draft 中维护 Living brainstorm；`human-review` MUST 仅显式调用；
+用户授权的 change-draft 中维护 Living brainstorm；
 `review-orchestrator` MUST 承担统一代码审查；`workflow-routing` MUST 只在普通开发的
 Direct/Lite/Full 边界不清或出现持久化、治理升级信号时加载；`commit` MUST 只在用户明确选择交付
 动作时调用，且 commit、push、PR MUST 分别授权。

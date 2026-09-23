@@ -78,6 +78,7 @@ const RETIRED_MANAGED_COMMANDS = [
 
 const TEMPLATE_RETIRED_MANAGED_SKILLS = [
   'architecture-diagram',
+  'human-review',
 ] as const
 
 const SNAPSHOT_RETIRED_MANAGED_SKILLS = [

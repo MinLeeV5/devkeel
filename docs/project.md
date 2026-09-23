@@ -15,7 +15,7 @@ DevKeel 是项目知识框架 CLI，为项目建立跨平台的 AI 协作执行�
 | templates/ | 分发到真实项目的执行入口、工作流与 OpenSpec 模板 |
 | openspec/specs/ | 当前能力规范 |
 | openspec/changes/ | 单次变更的讨论、方案、任务与验证记录 |
-| web/ | 文档站、版本目录与 human-review 展示资源 |
+| web/ | 文档站与版本目录 |
 
 项目专属规则和文档由当前项目维护。分发 skill 在 templates 中维护源文件，仓库自身使用
 .harness 副本；维护时同步内容和相应版本。CLI 的平台链接实现见

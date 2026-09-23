@@ -73,19 +73,6 @@ globs:
 - 禁止原始 HTML、fenced code、`javascript:`、`data:`、`mailto:` 和未知协议。
 - 已发布能力的纯内部实现变化不重复记录；用户可感知的修复使用 `fix`。
 
-### human-review 归类
-
-human-review 是 CLI 版本流的用户可见能力：
-
-| 变化 | 记录方式 |
-|---|---|
-| 新增审查产物、展示维度或 `open-review` 使用能力 | `feat` |
-| 修复审查页面生成、打开、兼容性、可访问性或内容缺失 | `fix` |
-| 优化审查产物大小、加载速度或生成效率且用户可感知 | `refactor`，label 使用“优化” |
-| 仅调整内部实现、测试或无感知重构 | 不记录 |
-
-描述必须说明用户获得的审查体验，不写内部 schema、agent 编排或实现类名。
-
 ## 发布流程
 
 1. 读取两个 package 的当前版本，确定本次只发布 CLI、Templates 或两者分别发布。
@@ -104,7 +91,7 @@ pnpm --dir web build
 - 新文件位于正确版本流，文件名等于 `versions` 末值。
 - 版本号等于对应 package 当前版本，Git author timestamp 带时区。
 - 对应版本流的最新条目为 `archived: false`。
-- 内容属于当前发布范围，human-review 等变化已按用户感知正确归类。
+- 内容属于当前发布范围，变化已按用户感知正确归类。
 - JSON 不含原始 HTML，Markdown 链接协议符合白名单。
 - 定向校验和 `pnpm --dir web build` 均以退出码 0 完成。
 - `web/dist/versions/` 随构建生成但不提交；`web/src/pages/changelog.tsx` 未因发版改写版本正文。

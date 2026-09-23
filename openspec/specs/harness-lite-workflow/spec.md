@@ -18,7 +18,7 @@
 #### Scenario: 检查 Lite 文件集合
 
 - **WHEN** Lite change 达到 apply-ready
-- **THEN** change MUST NOT 要求 design、specs、human-review、verify 或 retrospective artifact
+- **THEN** change MUST NOT 要求 design、specs、verify 或 retrospective artifact
 
 ### Requirement: Brainstorm MUST 保留实施所需决策
 

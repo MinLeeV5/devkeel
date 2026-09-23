@@ -10,9 +10,7 @@
   "types": "./dist/index.d.ts",
   "files": [
     "bin",
-    "dist",
-    "web/human-review.css",
-    "web/human-review.js"
+    "dist"
   ],
   "scripts": {
     "build": "tsup",
