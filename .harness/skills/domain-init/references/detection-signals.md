@@ -57,10 +57,11 @@
 
 | 信号 | 检测方式 | 处理方式 |
 |------|----------|----------|
-| `pnpm-workspace.yaml` / `lerna.json` / `nx.json` | 文件存在 | 视为单一项目，正常执行 Phase 2-4 |
-| 根目录 + `packages/` / `apps/` | 目录结构 | 视为单一项目，正常执行 Phase 2-4 |
+| `pnpm-workspace.yaml` / `lerna.json` / `nx.json` | 文件存在 | 识别共享配置与子项目边界，按已确认范围执行 Phase 2-4 |
+| 根目录 + `packages/` / `apps/` | 目录结构 | 识别共享配置与子项目边界，按已确认范围执行 Phase 2-4 |
 
-Monorepo 是一个项目的多包组织方式，domain-init 在根目录运行一次即可。
+根项目维护自身与跨项目知识；子项目按各自技术栈维护领域知识。相同的分类与生成规则适用于
+两者，文档各自落入 `docs/`，跨项目通过链接引用。一次调用只修改已确认的作用域。
 
 ## Git Submodule 检测
 
@@ -70,11 +71,9 @@ Monorepo 是一个项目的多包组织方式，domain-init 在根目录运行�
 
 **检测到 git submodule 时的行为：**
 
-提示用户应在各子模块内分别运行 domain-init，而非在主仓库根目录运行：
-
-> 检测到当前项目包含 git submodule。domain-init 应在各子模块中分别运行，生成各自的领域能力。主仓库可通过 `sync-submodule-skills.mjs` 将子模块 skills 汇聚到主仓库。
-
-随后终止当前流程，不继续 Phase 2。
+继续识别当前作用域。主仓库扫描自身与跨模块关系，子模块扫描自己的代码与配置；不把子模块
+的详细知识复制到根项目。主仓库可通过 `sync-submodule-skills.mjs` 汇聚子模块 skills，docs 和
+rules 仍由各自项目维护。发现子模块不授权递归写入，目标范围在 Phase 1 确认。
 
 ## 未命中降级策略
 

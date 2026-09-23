@@ -48,14 +48,15 @@
 
 ---
 
-### Requirement: Domain sub-repo init SHALL write config.yml
+### Requirement: Domain sub-repo init SHALL preserve scope in its execution contract
 
-当 repoType 为 `domain` 时，init 流程 SHALL 写入 `.harness/config.yml`，包含 `project.repoType: domain` 和 `project.domainType`。
+领域子仓库 init SHALL 生成带顶部 `<!-- harness:domain-agents -->` 标记的 AGENTS.md 和平台入口，不生成 `.harness/config.yml`。项目领域由 Agent 从代码与项目知识中识别。
 
-#### Scenario: Config written for domain sub-repo
+#### Scenario: Domain sub-repo initialization
 
 - **WHEN** 领域子仓库 init 完成
-- **THEN** `.harness/config.yml` SHALL 包含 `version`、`project.name`、`project.types`、`project.repoType: domain`、`project.domainType`、`targets` 字段
+- **THEN** AGENTS.md SHALL 保留领域标记，平台链接 SHALL 按本次选择建立
+- **AND** 系统 SHALL 不写入 `repoType`、`domainType` 或 `targets` 配置字段
 
 ---
 
@@ -63,15 +64,15 @@
 
 主仓库 init 时批量初始化子模块 SHALL 调用领域子仓库 init 逻辑，而非创建 `.gitkeep` 存根。
 
-#### Scenario: Batch init submodules with domain type selection
+#### Scenario: Batch init selected submodules
 
-- **WHEN** 主仓库 init 选择了子模块并为每个子模块指定了领域类型
-- **THEN** 系统 SHALL 对每个子模块执行领域子仓库 init 流程（复制领域模板、写入领域版 AGENTS.md/CLAUDE.md、创建平台 symlink）
+- **WHEN** 主仓库 init 选择了子模块
+- **THEN** 系统 SHALL 对每个子模块执行领域子仓库 init 流程（准备领域能力目录、写入领域版 AGENTS.md/CLAUDE.md、创建平台 symlink）
 
-#### Scenario: Batch init prompts domain type per submodule
+#### Scenario: Batch init infers project domains
 
 - **WHEN** 主仓库 init 选择了多个子模块
-- **THEN** 系统 SHALL 为每个子模块分别提示选择领域类型（backend/frontend/other）
+- **THEN** 系统 SHALL 不收集或持久化领域类型，由 Agent 按各子项目代码和知识识别领域
 
 ---
 
@@ -82,4 +83,4 @@
 #### Scenario: Standalone init in submodule directory
 
 - **WHEN** 用户在无 `.gitmodules` 的子模块目录下运行 `devkeel init`
-- **THEN** 系统 SHALL 检测仓库类型为 `domain`，提示确认后执行领域子仓库 init 流程
+- **THEN** 系统 SHALL 从 Git 子模块关系检测仓库类型为 `domain`，执行领域子仓库 init 流程

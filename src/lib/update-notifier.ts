@@ -2,7 +2,7 @@ import fs from 'node:fs'
 import path from 'node:path'
 import os from 'node:os'
 import { execFile } from 'node:child_process'
-import { readVersions } from './config.js'
+import { readVersions } from './versions.js'
 import { openTarget } from './open-target.js'
 
 const PACKAGE_NAME = 'devkeel-templates'

@@ -17,11 +17,10 @@
 
 1. 当前作用域的 `AGENTS.md`，进入子项目时继续读取其 `AGENTS.md`；
 2. `.harness/rules/`、`.harness/skills/` 中描述或路径与任务直接匹配的内容；
-3. 直接相关的 active change、current spec、设计、PRD、API 或包内文档。
+3. 按文档入口的读取条件加载当前项目 `docs/` 中相关知识，以及关联的 active change、current spec
+   或包内文档；不全量加载文档目录。
 
-先确认任务归属并索引候选，再读取小范围片段；优先使用 `rg` / `sed` 并限制搜索路径、文件类型和日志
-输出。`CLAUDE.md`、`GEMINI.md` 仅为兼容入口，不覆盖本文件。仅在追溯历史或实现明确依赖时读取
-`openspec/changes/archive/`。
+先确认任务归属并索引候选，再读取小范围片段；优先使用 `rg` / `sed` 并限制搜索路径、文件类型和日志输出。`CLAUDE.md`、`GEMINI.md` 仅为兼容入口，不覆盖本文件。
 
 ## 3. 授权与方案对齐
 
@@ -42,6 +41,7 @@
 
 用户显式调用或任务明确命中时，加载对应 skill，不再套用普通开发路由：
 
+<!-- harness:user:l0-custom -->
 | 任务类型 | Skill |
 |----------|-------|
 | 代码审查 | `review-orchestrator` |
@@ -49,14 +49,13 @@
 | 缺陷管理 | `jira-defect-orchestrator` |
 | 调试、诊断与缺陷修复 | `systematic-debugging` |
 | 原子提交、推送或 MR/PR | `commit` |
-
-<!-- harness:user:l0-custom -->
-<!-- 项目专属原子操作请在此处补充，例如：
-| 部署 | project-deploy |
--->
 <!-- /harness:user:l0-custom -->
 
 项目专属 skill 优先于通用 skill；专项路由仍遵守第 3 节。
+
+<!-- harness:user:routing -->
+<!-- 补充任务信号到项目 rules、skills、agents 的最小触发矩阵。 -->
+<!-- /harness:user:routing -->
 
 ### L1: 普通开发请求
 
@@ -91,6 +90,10 @@
 - worktree、实现 subagent、TDD、独立 review 和 commit 不是默认门禁；TDD 仅在有稳定测试接缝或项目
   要求时使用，review 按风险触发，worktree/subagent 按用户或项目要求使用，commit 仅由用户显式选择。
 
+<!-- harness:user:verification -->
+<!-- 引用实际存在的开发与测试文档，注明读取条件；命令与环境说明维护在 docs/。 -->
+<!-- /harness:user:verification -->
+
 ## 6. 输出与资产
 
 - 面向工程师，结论前置，默认短答、按需展开；省略寒暄、重复与无关过程，不固定字数或条数，不默认估时。
@@ -98,10 +101,10 @@
 - 进展只报变化与下一动作；收尾说明结果、验证、遗留问题及必要的下一步建议，保留关键边界与不确定性。
   授权依据仅在上位指令要求或审批阻断时说明。
 - 并列用列表、步骤用编号、对比用表格；Mermaid 仅在明显有助理解时使用。
-- 获准持久化的知识文档写入 `openspec/`；配置、skills、rules 和 agents 分别位于 `.harness/` 对应目录。
+- `docs/` 保存项目知识，`openspec/` 保存任务过程。
 
-## 7. 项目补充
+## 7. 项目知识入口
 
 <!-- harness:user:project -->
-<!-- 项目特有的约束、背景、注意事项写在此处 -->
+<!-- 引用 docs/ 中实际存在的项目概览、架构及其他项目文档，并注明读取条件。 -->
 <!-- /harness:user:project -->

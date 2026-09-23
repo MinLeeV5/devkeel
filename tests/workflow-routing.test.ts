@@ -2,6 +2,7 @@ import fs from 'node:fs'
 import path from 'node:path'
 import { describe, expect, it } from 'vitest'
 import { extractFrameworkContent, readTemplateFile, renderTemplate } from '../src/lib/templates.js'
+import { restoreAgentsMdSlots } from '../src/lib/agents-md.js'
 
 describe('progressive workflow routing contract', () => {
   const template = readTemplateFile('agents-md.md')
@@ -132,7 +133,7 @@ describe('progressive workflow routing contract', () => {
     expect(template).toContain('已有 active change 按其 selector 继续')
     expect(template).toContain('先运行与改动最接近的验证')
     expect(template).toContain('commit 仅由用户显式选择')
-    expect(template).toContain('获准持久化的知识文档写入 `openspec/`')
+    expect(template).toContain('`docs/` 保存项目知识，`openspec/` 保存任务过程')
   })
 
   it('keeps persisted specifications aligned with lazy routing ownership', () => {
@@ -152,8 +153,10 @@ describe('progressive workflow routing contract', () => {
       'utf-8',
     )
     const rendered = renderTemplate(template, { SUBMODULE_SECTION: '<!-- 无子项目 -->' })
+    const restored = restoreAgentsMdSlots(dogfood, [rendered])
 
-    expect(extractFrameworkContent(dogfood)).toBe(extractFrameworkContent(rendered))
+    expect(restored).not.toBeNull()
+    expect(extractFrameworkContent(restored!)).toBe(extractFrameworkContent(rendered))
     expect(dogfoodSkill).toBe(workflowRouting)
   })
 

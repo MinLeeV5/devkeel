@@ -68,16 +68,6 @@ HTML
   local harness_dir="$tmpdir/.harness"
   mkdir -p "$harness_dir"
 
-  cat > "$harness_dir/config.yml" <<'YAML'
-version: "2.0"
-project:
-  name: todo-app
-  types:
-    - frontend
-targets:
-  - claude-code
-YAML
-
   # Copy skills, commands, and openspec from templates
   cp -r "$REPO_ROOT/templates/skills" "$harness_dir/"
   cp -r "$REPO_ROOT/templates/commands" "$harness_dir/"

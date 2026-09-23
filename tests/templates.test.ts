@@ -4,7 +4,7 @@ import path from 'node:path'
 import os from 'node:os'
 import YAML from 'yaml'
 import { copyTemplateSkills, copyOpenspecTemplate, readTemplateFile, renderTemplate, ensureGitignore, copyTemplateFile, createPlatformLinks, detectExistingPlatformDirs, cleanLegacyStageFiles, updateOpenspecIncremental, hasUserContent, writeSmartFile, extractUserSlots, fillUserSlots, extractFrameworkContent } from '../src/lib/templates.js'
-import { getBuiltinVersions, readVersions, writeVersions } from '../src/lib/config.js'
+import { getBuiltinVersions, readVersions, writeVersions } from '../src/lib/versions.js'
 
 describe('templates', () => {
   let tmpDir: string
@@ -806,7 +806,7 @@ describe('templates', () => {
       expect(content).toContain('任务分流')
       expect(content).toContain('指令优先级与加载')
       expect(content).toContain('先确认任务归属并索引候选，再读取小范围片段')
-      expect(content).toContain('openspec/changes/archive/')
+      expect(content).toContain('`docs/` 保存项目知识，`openspec/` 保存任务过程。')
       expect(content).toContain('用户显式调用 `/opsx:*` 时加载对应 skill')
       expect(content).toContain('包含 `openspec/` 的 DevKeel 根仓库执行')
       expect(content).toContain('子项目代码、构建和测试在目标')

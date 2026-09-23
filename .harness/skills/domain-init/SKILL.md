@@ -2,24 +2,25 @@
 name: domain-init
 description: >-
   对项目进行全盘扫描，识别领域类型和技术栈，通过多 subAgent 并行扫描多维度，
-  生成项目专属的 rules、skills 和 agents。使用「自动 baseline + 交互式增强」
+  生成项目知识 docs 与专属 rules、skills 和 agents。使用「自动 baseline + 交互式增强」
   的分层模式，结合头脑风暴先扩散后收拢。
   触发词：domain-init、领域初始化、生成领域规范、领域扫描
 metadata:
   author: "devkeel"
-  version: "1.2.2"
+  version: "2.0.1"
 ---
 
 # Domain Init — 项目领域能力生成器
 
-扫描当前项目 → 识别领域 → 分层生成专属 rules + skills + agents。
+扫描当前项目 → 识别领域与归属 → 分类维护 docs + rules + skills + agents。
 
 **与 devkeel init 的关系：**
 
-- `devkeel init` 分发「通用领域模板」— `templates/domain/<type>/` 里有什么给什么
+- `devkeel init` 建立执行入口与 `.harness/`，分发通用工作流资产
 - `domain-init` 生成「项目专属领域能力」— 基于当前项目代码扫描后定制
 
-**产出位置：** `.harness/rules/`、`.harness/skills/`、`.harness/agents/`
+**产出位置：** 当前项目 `docs/`、`.harness/rules/`、`.harness/skills/`、`.harness/agents/`；
+`AGENTS.md` 维护入口和读取条件。资产分层遵循当前项目执行契约。
 
 ## Read First
 
@@ -39,18 +40,24 @@ metadata:
 
 何时**不**使用：
 - 新项目应先 `devkeel init`
-- **含 git submodule 的主仓库** — 应在各子模块内分别运行，主仓库用 `sync-submodule-skills.mjs` 汇聚
+
+根项目、普通子项目和 git submodule 均可执行。根项目扫描自身及跨项目关系；子项目扫描自身
+领域。先确认目标目录与配置归属，不因存在子模块终止，也不递归改写未获授权的子项目。
 
 ## Hard Rules
 
 1. **必须先完成领域检测**（Phase 1），禁止跳过直接生成
 2. **Baseline 基于实际扫描** — 采样真实代码，不凭假设生成通用模板话术
-3. **覆盖增强策略** — 已存在的同名 rule/skill/agent 合并项目特征，不丢失已有内容
+3. **覆盖增强策略** — 已存在的同主题 docs/rule/skill/agent 合并项目特征，不丢失已有内容
 4. **用户 review 门禁** — 所有生成内容必须经用户 review 后才写入文件系统
 5. **参考项目标杆** — 每个维度的 subAgent 在生成前，先用当前可用的页面读取能力获取对应开源参考项目（见 `references/project-index.md`）
 6. **领域适用性过滤** — 不同领域生成不同维度组合（见 `references/domain-matrix.md`），不输出领域无关的内容
-7. **格式严格遵循** — rules/skills/agents 各自遵循 harness 标准格式（见 `references/output-formats.md`）
-8. **代码依据** — 每条 rule 的约定必须能在项目代码中找到实际依据
+7. **格式严格遵循** — docs/rules/skills/agents 各自遵循产出格式（见 `references/output-formats.md`）
+8. **代码依据** — 事实须有代码、配置或已确认约定支持；扫描发现的惯例不自动升级为硬约束
+9. **知识与约束分开** — rules 保留简短执行约束；背景、原理、结构说明和详细示例写入 docs。
+   按主题复用已有文档，不为每个扫描维度机械创建文件，也不按使用频率移除硬约束
+10. **测试资产共用** — R4 与 verify-init 维护同一套测试规则和文档；先定位已有文件，再增量更新。
+    已有 `testing-strategy.md` 等入口继续复用，不并列新建重复的 `testing.md`
 
 ## 流程总览
 
@@ -67,7 +74,10 @@ Phase 4: 收尾            → 配置更新 + 链接检查 + 生成报告
 
 ### 1.1 自动检测
 
-读取 `references/detection-signals.md`，按信号表扫描项目根目录，推断领域和技术栈。
+先读取目标作用域的 `AGENTS.md`、相关 rules 和文档入口，定位现有 `docs/` 与配置事实源。
+读取 `references/detection-signals.md`，按信号表扫描目标目录，推断领域和技术栈。
+根项目识别共享配置与跨项目关系；各子项目按自己的 manifest、代码和已有文档识别，不用主包
+技术栈代替所有子项目。OpenSpec 任务和当前规范继续位于主仓库。
 
 检测按优先级从高到低匹配，命中第一个即停止。覆盖：前端、后端、移动端、系统/底层、工具/库/平台、Monorepo。
 
@@ -89,16 +99,16 @@ Phase 4: 收尾            → 配置更新 + 链接检查 + 生成报告
 
 ### 2.1 Baseline 维度候选
 
-| ID | 维度 | 产出 | subAgent 职责 |
+| ID | 维度 | 候选产出 | subAgent 职责 |
 |----|------|------|--------------|
-| R1 | 编码规范 | rule | 扫描代码风格、格式化配置、lint 规则、导入习惯 |
-| R4 | 测试策略 | rule | 扫描测试框架、覆盖模式、测试文件组织、mock 策略 |
-| R5 | 错误处理 | rule | 扫描异常模式、日志使用、错误边界、重试策略 |
-| R6 | 命名规范 | rule | 扫描文件名、变量名、组件名、常量命名模式 |
-| R14 | 依赖管理 | rule | 扫描依赖策略、锁文件、版本范围、准入标准 |
-| R16 | 编码哲学 | rule | 提炼团队的 anti-pattern、YAGNI、代码密度惯例 |
-| R17 | Git 工作流 | rule | 扫描分支策略、commit 消息格式、PR/MR 流程 |
-| R20 | 编辑纪律 | rule | 基于 surgical changes 原则：只改相关代码 |
+| R1 | 编码规范 | rule / docs | 扫描代码风格、格式化配置、lint 规则、导入习惯 |
+| R4 | 测试策略 | rule / docs | 扫描测试框架、覆盖模式、测试文件组织、mock 策略 |
+| R5 | 错误处理 | rule / docs | 扫描异常模式、日志使用、错误边界、重试策略 |
+| R6 | 命名规范 | rule / docs | 扫描文件名、变量名、组件名、常量命名模式 |
+| R14 | 依赖管理 | rule / docs | 扫描依赖策略、锁文件、版本范围、准入标准 |
+| R16 | 编码哲学 | rule / docs | 提炼团队的 anti-pattern、YAGNI、代码密度惯例 |
+| R17 | Git 工作流 | rule / docs | 扫描分支策略、commit 消息格式、PR/MR 流程 |
+| R20 | 编辑纪律 | rule / docs | 基于 surgical changes 原则：只改相关代码 |
 | A1 | 领域 Code Reviewer | agent | 基于以上扫描结果生成专属审查维度和输出规则 |
 
 ### 2.2 用户选择与优先级确认
@@ -112,9 +122,11 @@ Phase 4: 收尾            → 配置更新 + 链接检查 + 生成报告
 3. **补充上下文** — 对特定维度补充说明（如「测试策略重点关注集成测试」）
 
 优先级影响：
-- **高优先** — 采样 15-20 个文件，生成 5+ 条约定，每条带详细示例
-- **正常** — 采样 10-15 个文件，生成 3-5 条约定
-- **低优先** — 采样 5-10 个文件，生成核心约定
+- **高优先** — 深入采样关键路径、边界和例外
+- **正常** — 覆盖代表性模块及其配置
+- **低优先** — 仅核对核心事实与约束
+
+优先级决定调查深度，不规定约定数量、篇幅或示例配额。
 
 用户确认后才进入扫描阶段。
 
@@ -125,9 +137,10 @@ Phase 4: 收尾            → 配置更新 + 链接检查 + 生成报告
 1. **Fetch 参考标杆** — 按 `references/project-index.md` 读取对应开源项目的关键文件
 2. **采样代码** — 从项目中选取代表性文件（数量由优先级决定）
 3. **提取模式** — 识别实际代码中的约定（不是理论最佳实践）
-4. **标记不一致** — 发现团队内部不统一的地方，在 rule 中明确推荐方向
-5. **对比已有产物** — 与 `.harness/` 已有 rules/agents 对比，标记需增强的部分
-6. **生成产物** — 按 `references/output-formats.md` 格式规范生成
+4. **标记不一致** — 将冲突和建议提交 review，不把建议写成已生效约束
+5. **对比已有产物** — 按主题定位 `docs/`、rules、skills、agents，复用已有文件与事实源
+6. **分类生成** — 执行约束进入 rules；背景与示例进入 docs；可复用流程进入 skills；
+   角色职责进入 agents。按 `references/output-formats.md` 生成，并列出目标文件、依据和引用
 
 ### 2.4 Baseline Review
 
@@ -136,7 +149,7 @@ Phase 4: 收尾            → 配置更新 + 链接检查 + 生成报告
 - **修改** — 调整约定内容后写入
 - **跳过** — 本次不生成，可在后续重新运行时生成
 
-全部 review 完成后批量写入 `.harness/`。
+全部 review 完成后，按确认范围写入 `docs/` 与 `.harness/`，再更新 AGENTS 文档入口。
 
 ---
 
@@ -174,7 +187,7 @@ Phase 4: 收尾            → 配置更新 + 链接检查 + 生成报告
 - 按确认列表并行 subAgent 生成
 - 每个 subAgent 先 fetch 参考项目 → 再扫描代码 → 最后生成
 - 每项生成后展示给用户 review
-- 确认后写入 `.harness/`
+- 确认后按内容归属写入 `docs/` 与 `.harness/`
 
 ---
 
@@ -182,7 +195,6 @@ Phase 4: 收尾            → 配置更新 + 链接检查 + 生成报告
 
 ### 4.1 更新配置
 
-- 更新 `.harness/config.yml` 中的领域信息（如有）
 - 确认 manifest 一致性
 
 ### 4.2 平台链接检查
@@ -236,67 +248,37 @@ node .harness/skills/domain-init/scripts/sync-submodule-skills.mjs --prune    # 
 
 输出本次生成的完整清单（类型、文件、状态、参考项目），标记新增 vs 增强，建议后续完善方向，提醒用户 review 后 commit。
 
-### 4.5 增强 AGENTS.md
+### 4.5 更新文档与 AGENTS 入口
 
-domain-init 完成后，检测并增强项目 AGENTS.md，确保 Agent 能发现所有可用的 rules、skills 和 agents。
+根项目和子项目执行同一流程：
 
-**检测与补建路由表：**
+1. 按主题增量维护已存在的项目文档；没有对应文档时再创建 `docs/` 下的必要文件。
+2. 将项目背景、技术栈、模块职责、开发说明写入 docs；测试知识与 verify-init 共用已有测试文档，
+   缺失时使用 `docs/testing.md`。命令、门槛和参数引用实际配置或 scripts，不维护第二份值。
+3. 更新 AGENTS 的文档链接与读取条件，规则和能力通过最小触发矩阵发现；不要求全量读取 docs。
+4. 填充完成后删除该槽位成对的 `<!-- harness:user:... -->` / `<!-- /harness:user:... -->`
+   边界注释与已用完的占位提示，保留正文及相邻框架内容。未填槽位保留占位；已有正文不重加标记。
+5. 核对相对链接、规则触发范围和事实来源。后续实施改变已验证的项目事实时，同步相关文档。
 
-1. 读取项目根目录的 `AGENTS.md`
-2. 读取 `harness:user:routing` 用户槽位，判断路由表是否已存在
-3. 如果槽位为空：
-   - 扫描 `.harness/rules/` 下所有 `.md` 文件，提取文件名和首行标题作为描述
-   - 扫描 `.harness/skills/` 下所有目录，读取 `SKILL.md` 的 `description` 字段
-   - 扫描 `.harness/agents/` 下所有 `.md` 文件
-   - 生成最小触发矩阵，写入 `harness:user:routing` 用户槽位
-4. 如果已存在：检查是否需要更新（新生成的 rules/skills 未出现在路由表中），提示用户确认更新
+| 用户槽位 | 内容 |
+|----------|------|
+| `harness:user:routing` | 任务信号到适用 rules、skills、agents 的路由 |
+| `harness:user:verification` | 开发与测试文档的链接及读取条件 |
+| `harness:user:project` | 项目概览、架构、业务边界及其他文档的链接与读取条件 |
 
-**增强项目上下文：**
-
-检查以下用户槽位，如果为空则生成内容：
-
-| 用户槽位 | 内容 | 来源 |
-|------|------|------|
-| `harness:user:domain` | 子项目职责、技术栈与边界 | Phase 1 领域检测结果 + 用户确认 |
-| `harness:user:verification` | 常用命令与验证基线 | `package.json` scripts 扫描 |
-| `harness:user:project` | 其他关键约束 | 包管理器检测、知识层位置等 |
-
-**生成格式：**
+例如，只有对应文件已存在时，才在项目知识入口添加正文：
 
 ```markdown
-<!-- harness:user:domain -->
-本子项目承载 XXX，覆盖 YYY 相关能力，技术栈以 ZZZ 为主。
-<!-- /harness:user:domain -->
+- 判断业务归属时读取 [项目概览](docs/project.md)。
+- 调整模块依赖时读取 [架构说明](docs/architecture.md)。
 ```
 
-```markdown
-<!-- harness:user:verification -->
-### 命令
-
-| 命令 | 用途 |
-|------|------|
-| `pnpm dev` | 启动开发服务器 |
-| `pnpm test` | 运行测试 |
-| `pnpm lint` | 代码检查 |
-<!-- /harness:user:verification -->
-```
-
-```markdown
-<!-- harness:user:project -->
-### 约束
-
-- 包管理器必须使用 pnpm
-- `.harness/` 是 agent 知识层
-- 所有知识产出应写入 DevKeel 主仓库的 `openspec/` 目录
-<!-- /harness:user:project -->
-```
-
-**写入策略：**
-
-- 所有增强内容生成后，统一展示给用户 review
-- 用户可逐段确认、修改或跳过
-- 确认后写入 AGENTS.md
-- 已有内容的标记区块不会被覆盖（幂等）
+写入复用 Phase 2/3 已确认的范围；新内容与迁移差异统一展示 review。已有用户内容按差异合并，
+不覆盖未知内容。项目知识入口统一使用 `project`；旧 `domain` 内容合并到 `project` 后移除旧
+槽位，不重新创建。标记已清理时按对应章节更新正文，不重复追加入口；必要入口缺失时只展示
+最小新增差异，保留执行契约。
+迁移已有正文时，先写入目标 docs 或 rules 并核对语义与链接，再将原正文替换为引用；执行约束、
+权限及失败恢复条件必须保留在可发现的执行入口。任务草案不转写为当前项目事实。
 
 ---
 
@@ -305,5 +287,5 @@ domain-init 完成后，检测并增强项目 AGENTS.md，确保 Agent 能发现
 在 Phase 3 交互中，如果发现某个生成的 rule/skill/agent 具有跨项目通用性：
 
 - 标记为「候选通用能力」
-- 建议用户后续 PR 到 devkeel 的 `templates/domain/<type>/`
+- 建议用户后续向 devkeel 提交通用模板提案
 - **不自动操作**，只做建议

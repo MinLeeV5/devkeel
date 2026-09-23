@@ -9,8 +9,6 @@ import { getPublishedHarnessVersion } from './lib/release-channel.js'
 import { runInit } from './commands/init.js'
 import { runDoctor } from './commands/doctor.js'
 import { runUpdate } from './commands/update.js'
-import { runSubmodule } from './commands/submodule.js'
-import { runMigrate } from './commands/migrate.js'
 import { runInjectReview } from './commands/inject-review.js'
 import { runOpenReview } from './commands/open-review.js'
 import { runSync } from './commands/sync.js'
@@ -59,9 +57,8 @@ program
 
 program
   .command('init')
-  .description('初始化 .harness/ 配置')
+  .description('初始化项目协作资产')
   .option('--name <name>', '项目名称')
-  .option('--types <types>', '项目类型（逗号分隔：frontend,backend,other）')
   .option('--targets <targets>', '目标平台（逗号分隔：claude-code,codex,cursor,copilot,gemini,opencode）')
   .option('-y, --yes', '跳过确认提示，使用默认行为')
   .option('--force', '备份并覆盖冲突的技能入口')
@@ -69,7 +66,7 @@ program
 
 program
   .command('doctor')
-  .description('检查配置完整性')
+  .description('检查项目协作资产完整性')
   .option('--fix', '自动修复可修复的问题')
   .action((opts) => runDoctor(opts))
 
@@ -85,16 +82,6 @@ program
     ...opts,
     positionalTemplateVersion: templateVersion,
   }))
-
-program
-  .command('submodule <action> [args...]')
-  .description('管理子模块 (status|add)')
-  .action((action, args) => runSubmodule(action, args))
-
-program
-  .command('migrate <sources...>')
-  .description('迁移旧产物到 openspec/archive/')
-  .action((sources) => runMigrate(sources))
 
 program
   .command('sync')

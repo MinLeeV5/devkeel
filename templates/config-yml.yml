@@ -1,5 +1,0 @@
-version: "2.0"
-project:
-  name: "{{PROJECT_NAME}}"
-  types: [{{PROJECT_TYPES}}]
-targets: [{{TARGETS}}]

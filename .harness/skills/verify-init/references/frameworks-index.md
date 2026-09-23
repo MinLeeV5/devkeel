@@ -58,7 +58,8 @@ Phase 3 脚手架产出前，按本方法论定位每个要补齐框架的官方
 
 - **不凭训练记忆编造 config** —— 记忆里的配置项可能对应旧版本，无法校验，编造比诚实跳过更危险
 - **跳过精确 config 产出** —— Phase 3.3 的安装/写 config/写示例/补 scripts 四步整体跳过
-- **只产 Phase 4 规范 + agent** —— testing.md 通用规范 + test-verifier agent 不依赖具体框架 config，正常产出
+- **按本地证据维护 Phase 4** —— 共用测试规则、docs 测试说明与验证 agent；标明缺失能力，
+  不写入假定存在的 config、scripts 或门槛
 - **向用户显式提示** —— 输出「未能获取 `<框架>` 官方文档，config 请手动补」，把不确定的部分明确交还用户
 
 降级语义详见 SKILL.md Hard Rule 4。

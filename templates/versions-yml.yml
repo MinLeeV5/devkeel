@@ -20,8 +20,8 @@ skills:
   openspec-onboard: "2.2"
   openspec-sync-specs: "2.1"
   openspec-verify-change: "3.2"
-  domain-init: "1.2.2"
-  verify-init: "1.0.2"
+  domain-init: "2.0.1"
+  verify-init: "2.0.0"
   ui-fidelity-playbook: "1.0.2"
 rules: {}
 schemas:

@@ -2,26 +2,22 @@ import fs from 'node:fs'
 import path from 'node:path'
 import * as p from '@clack/prompts'
 import {
-  buildDefaultConfig,
   computeOutdatedCategories,
   filterManagedVersions,
   getBuiltinVersions,
-  readConfig,
   readVersions,
-  resolveRepositoryType,
-  writeConfig,
-} from '../lib/config.js'
-import { detectEnvironment, detectIsSubmodule } from '../lib/detect.js'
+} from '../lib/versions.js'
+import { detectEnvironment, detectRepositoryType, detectSubmodules } from '../lib/detect.js'
 import { removeLegacyPlatformIgnores } from '../lib/gitignore.js'
 import { copyTemplateSkills, copyTemplateAgents, copyTemplateRules, copyTemplateCommands, createPlatformLinks, copyOpenspecTemplate, readTemplateFile, renderTemplate, ensureGitignore, detectDeprecatedAssets, removeDeprecatedAssets, updateOpenspecIncremental, writeSmartFile, getTemplatesDir, setTemplatesDir, copyDirRecursive, detectExistingPlatformTargets } from '../lib/templates.js'
 import { ensureTemplatesCache, TemplatesFetchError } from '../lib/templates-cache.js'
 import { applyDiscussionSkillMigration, applyLegacyMigrations, assertSchemaTargetsAvailable, planLegacyMigrations, writeVersionsAtomically } from '../lib/update.js'
-import { detectSubmodules } from './submodule.js'
 import { createLog } from '../lib/log.js'
 import { syncSkillLinks } from '../lib/skill-distribution.js'
 import {
   DOMAIN_AGENTS_TEMPLATE,
   ROOT_AGENTS_TEMPLATE,
+  cleanAgentsMdSlots,
   mergeAgentsMdContent,
 } from '../lib/agents-md.js'
 
@@ -51,13 +47,14 @@ async function writeManagedAgentsMd(
   managedSources: string[],
   options: { nonInteractive: boolean; templateLabel: string },
 ): Promise<AgentsWriteResult> {
+  const cleanedContent = cleanAgentsMdSlots(renderedContent, managedSources)
   if (!fs.existsSync(filePath)) {
-    fs.writeFileSync(filePath, renderedContent, 'utf-8')
+    fs.writeFileSync(filePath, cleanedContent, 'utf-8')
     return 'created'
   }
 
   const existing = fs.readFileSync(filePath, 'utf-8')
-  if (existing === renderedContent) return 'unchanged'
+  if (existing === cleanedContent) return 'unchanged'
 
   if (options.nonInteractive) {
     p.log.warn(`检测到已有 AGENTS.md，-y 模式下未改造；请移除 -y 后重新运行以确认合并`)
@@ -72,7 +69,7 @@ async function writeManagedAgentsMd(
 
   fs.writeFileSync(
     filePath,
-    mergeAgentsMdContent(renderedContent, existing, managedSources),
+    cleanAgentsMdSlots(mergeAgentsMdContent(renderedContent, existing, managedSources), managedSources),
     'utf-8',
   )
   return 'merged'
@@ -81,8 +78,7 @@ async function writeManagedAgentsMd(
 export async function runInit(opts?: InitOptions): Promise<void> {
   const projectRoot = process.cwd()
   const env = detectEnvironment(projectRoot)
-  const isSubmodule = detectIsSubmodule(projectRoot)
-  const repoType = resolveRepositoryType(readConfig(projectRoot), isSubmodule)
+  const repoType = detectRepositoryType(projectRoot)
 
   const log = createLog()
   log.intro('DevKeel v2 项目初始化')
@@ -145,16 +141,6 @@ export async function runInit(opts?: InitOptions): Promise<void> {
     return
   }
 
-  const config = buildDefaultConfig({
-    name,
-    types: [],
-    targets,
-    repoType,
-  })
-
-  writeConfig(projectRoot, config)
-  log.success('.harness/config.yml')
-
   const initialVersions = readVersions(projectRoot)
   if (repoType === 'main' && initialVersions) {
     const discussionResult = applyDiscussionSkillMigration(projectRoot, getTemplatesDir())
@@ -170,7 +156,6 @@ export async function runInit(opts?: InitOptions): Promise<void> {
 
   const templateVars = {
     PROJECT_NAME: name,
-    PROJECT_TYPES: '',
     TARGETS: targets.join(', '),
   }
 
@@ -179,7 +164,7 @@ export async function runInit(opts?: InitOptions): Promise<void> {
 
   if (repoType === 'domain') {
     ensureDomainKnowledgeDirs(projectRoot)
-    log.success('.harness/ 领域知识目录')
+    log.success('.harness/ 领域能力目录')
   } else if (existingVersions) {
     const templatesDir = getTemplatesDir()
     const skillsTarget = path.join(projectRoot, '.harness', 'skills')
@@ -317,13 +302,6 @@ export async function runInit(opts?: InitOptions): Promise<void> {
             log.warning(`${subPath}: ${subSkills.errors.join('\n')}`)
             continue
           }
-          const subConfig = buildDefaultConfig({
-            name: subName,
-            types: [],
-            targets: targetList,
-            repoType: 'domain',
-          })
-          writeConfig(subFull, subConfig)
           ensureDomainKnowledgeDirs(subFull)
           writeVersionsAtomically(
             subFull,
@@ -425,14 +403,12 @@ export async function runInit(opts?: InitOptions): Promise<void> {
   writeVersionsAtomically(projectRoot, versions)
   log.success('.harness/versions.yml')
 
-  if (repoType === 'main') {
-    const migratable = ['wiki', 'docs'].filter(d => fs.existsSync(path.join(projectRoot, d)))
-    if (migratable.length > 0) {
-      log.info(`检测到 ${migratable.join('、')}，可运行 devkeel migrate ${migratable.join(' ')} 迁移到 openspec/`)
-    }
+  const existingDocs = ['wiki', 'docs'].filter(d => fs.existsSync(path.join(projectRoot, d)))
+  if (existingDocs.length > 0) {
+    log.info(`检测到 ${existingDocs.join('、')}：当前项目知识维护在 docs/，历史任务产物可显式复制归档。`)
   }
 
   log.outro(repoType === 'domain'
-    ? '子仓库初始化完成！从主仓库共享能力中调用 /domain-init 和 /verify-init 生成领域资产。'
-    : '初始化完成！运行 /domain-init 生成领域规范，然后编辑 AGENTS.md 补充项目路由规则。')
+    ? '子仓库初始化完成！调用共享 /domain-init 和 /verify-init 维护领域能力与本地 docs 项目知识。'
+    : '初始化完成！运行 /domain-init 生成领域规则和 docs 项目知识，并维护 AGENTS.md 读取入口。')
 }

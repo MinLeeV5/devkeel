@@ -112,7 +112,7 @@ npm install -g devkeel --registry=https://registry.npmjs.org/
 要求 Node.js >= 20.19.0。
 
 `devkeel init` 和 `devkeel update` 从 npm 公共仓库下载 `devkeel-templates`，无需企业网络或私有源配置。
-现有 `.harness/` 配置目录和非遥测配置接口继续保留。Schema 名称统一为 `lite` / `full`；`devkeel update` 会迁移旧 selector，保留原来的 Lite / Full 流程选择。
+项目协作资产保存在 `.harness/`。Schema 名称统一为 `lite` / `full`；`devkeel update` 会迁移旧 selector，保留原来的 Lite / Full 流程选择。
 DevKeel 不采集或上报使用数据，内置 OpenSpec 命令的遥测也已关闭。
 
 ### 初始化项目
@@ -124,22 +124,19 @@ devkeel init
 
 交互式引导会依次询问：
 1. 项目名称（自动从 package.json 推断）
-2. 项目类型（Fullstack / Frontend / Backend，可多选）
-3. 目标平台（Claude Code / Copilot / Codex / Cursor / Gemini，可多选）
-4. 子模块领域配置（如检测到 git submodule）
+2. 目标平台（Claude Code / Copilot / Codex / Cursor / Gemini / OpenCode，可多选，默认选中已有平台）
+3. 子模块初始化（如检测到 git submodule）
 
 初始化完成后生成：
 
 ```
 .harness/
-  config.yml              # 核心配置
   versions.yml            # 资产版本跟踪
   rules/                  # 基线规则
   skills/                 # 技能模板
   agents/                 # 子代理模板
   commands/               # 命令模板 (opsx-*)
-  domain/                 # 领域包 (frontend/, backend/)
-openspec/                 # 知识结构（schemas + 目录骨架）
+openspec/                 # 任务过程与当前规范（schemas + 目录骨架）
 AGENTS.md                 # 跨平台执行契约
 CLAUDE.md                 # Claude Code 入口（含 @AGENTS.md）
 GEMINI.md                 # Gemini CLI 入口（如选择该平台）
@@ -147,6 +144,11 @@ GEMINI.md                 # Gemini CLI 入口（如选择该平台）
 .cursor/ → .harness/      # symlink（如选择 Cursor）
 .agents/ → .harness/      # symlink（如选择 Codex）
 ```
+
+项目初始化后，`domain-init` 和 `verify-init` 按需在当前项目 `docs/` 维护项目知识；
+AGENTS 保留执行契约和读取入口，rules 保留简短约束。根项目与子项目使用相同分类规则。
+`openspec/changes/` 保存任务过程，`openspec/specs/` 继续保存当前能力规范。
+本仓库的开发与架构资料见 [项目文档](docs/README.md)。
 
 ## CLI 命令
 
@@ -161,40 +163,39 @@ devkeel -V --beta   # 显示 beta 渠道
 
 ### `devkeel init`
 
-初始化 `.harness/` 目录。交互式收集项目信息，生成配置、复制模板、建立 symlink、生成入口文件。
+初始化 `.harness/` 目录。交互式选择目标平台，复制模板、建立 symlink、生成入口文件。
 
 - 自动检测 package.json 推断项目名
 - 检测 git submodules 并提供领域配置选项
-- 检测已有的 wiki/docs 目录，提示可用 `devkeel migrate` 迁移
+- 从 Git 子模块关系和已有 AGENTS.md 自动识别仓库角色
 - 自动维护 .gitignore
 
 已有的 Codex / Claude Code skills 入口发生冲突时，默认保留原件并停止。确认需要替换时使用 `devkeel init --force`，覆盖前自动备份并输出备份位置。
 
 ### `devkeel sync`
 
-按目标平台建立配置链接。`.claude/skills`、`.agents/skills` 整目录链接到 `.harness/skills`；新增或修改共享技能无需再次同步。平台运行中的技能列表可能需要重开会话刷新。
+按本次选择的目标平台建立链接，交互选择默认选中已有平台。`.claude/skills`、`.agents/skills` 整目录链接到 `.harness/skills`；新增或修改共享技能无需再次同步。平台运行中的技能列表可能需要重开会话刷新。
 
 ```bash
 devkeel sync --targets claude-code,codex
 devkeel sync --force    # 先备份，再替换冲突的 skills 入口
 ```
 
-默认整批检查 skills 入口，冲突时不写配置或替换入口。强制覆盖只针对本次 skills 目标，保留平台目录中的其他内容。备份位于 `.harness/skills-backups/`，其中 `restore.json` 记录原入口路径；受管链接记录在 `.harness/skills-state.json`，两者均为本地状态。
+默认整批检查 skills 入口，冲突时停止同步并保留原入口。强制覆盖只针对本次 skills 目标，保留平台目录中的其他内容。备份位于 `.harness/skills-backups/`，其中 `restore.json` 记录原入口路径；受管链接记录在 `.harness/skills-state.json`，两者均为本地状态。
 
 技能公共流程写在 `SKILL.md`，Claude 原生配置按需使用 frontmatter，Codex 元数据按需使用技能包内的 `agents/openai.yaml`。有执行差异时由技能按平台读取参考文件；手动调用分别使用 Claude 的 `/skill-name`、Codex 的 `$skill-name`。
 
 ### `devkeel doctor`
 
-检查配置完整性：
+按自动识别的仓库角色和平台入口检查协作资产：
 
 | 检查项 | 说明 |
 |--------|------|
-| config.yml | 文件存在且可读 |
 | 目录完整性 | rules/skills/agents 目录是否存在 |
 | Codex / Claude skills | 链接目标及归属、技能 frontmatter、可选 Codex 元数据是否有效 |
 | AGENTS.md | 执行契约文件是否存在 |
 | CLAUDE.md | 是否包含 @AGENTS.md 引用（仅 claude-code 目标） |
-| openspec/ | 知识结构是否已初始化 |
+| openspec/ | 主仓库的任务与规范目录是否已初始化 |
 | versions.yml | 版本跟踪文件是否存在 |
 | submodule | 子模块是否完成 DevKeel 配置 |
 
@@ -217,48 +218,23 @@ devkeel update --beta --force                # 使用 beta 渠道并强制覆盖
 冲突处理：检测到本地修改时，提供「跳过」或「覆盖」选择。
 Codex / Claude skills 入口冲突需先通过 `devkeel sync --force` 备份处理，`update --force` 保持原有的模板资产覆盖语义。
 
-### `devkeel submodule <action> [args...]`
+## 自动识别，无需项目配置文件
 
-管理子模块的 DevKeel 配置。
+DevKeel 不再生成或读取 `.harness/config.yml`，无需维护 `targets`、`repoType` 或项目类型。
+Agent 根据项目结构、代码和 `AGENTS.md` 理解项目职责与执行范围；CLI 从实际入口和 Git 上下文识别操作范围。
 
-```bash
-devkeel submodule status        # 查看所有 submodule 的 DevKeel 状态
-devkeel submodule add <name>    # 将 submodule 注册到 config.yml
-```
+- **平台**：从 `.claude/`、`.agents/` 或 `.codex/`、`.cursor/`、`.opencode/`、
+  `.github/copilot-instructions.md`、`GEMINI.md` 识别。`init` 和 `sync` 默认选中已有平台，
+  可交互调整，也可通过 `--targets` 指定本次操作的平台；选择不写入配置文件。
+- **仓库角色**：Git 子模块或 `AGENTS.md` 顶部带 `<!-- harness:domain-agents -->` 标记的项目按领域子仓库处理，
+  其余按主仓库处理。子仓库单独检出后仍可由已有执行契约识别，`init/update/doctor` 使用相同规则。
+- **缺失入口**：平台目录仍在时，`doctor --fix` 可补齐受管链接；整个入口都被删除且没有其他识别线索时，
+  使用 `devkeel sync --targets <平台>` 重新建立。
+- **已有项目**：旧 `.harness/config.yml` 被忽略且不会被改写，可自行删除；资产版本仍由
+  `.harness/versions.yml` 跟踪，OpenSpec 继续使用自己的 `openspec/config.yaml`。
 
-status 展示每个子模块的路径、分支、DevKeel 就绪状态和注册情况。
-
-### `devkeel migrate <sources...>`
-
-将旧产物目录迁移到 `openspec/archive/migrated/`。
-
-```bash
-devkeel migrate wiki docs
-```
-
-适用于项目中已有的 wiki/ 或 docs/ 目录，迁移后新需求通过 openspec 流程产出。
-
-## 配置文件
-
-`.harness/config.yml` 是核心配置：
-
-```yaml
-version: "2.0"
-project:
-  name: my-project
-  types:
-    - fullstack
-targets:
-  - claude-code
-  - cursor
-```
-
-| 字段 | 说明 |
-|------|------|
-| version | 配置版本，当前为 `2.0` |
-| project.name | 项目名称 |
-| project.types | 项目类型数组（fullstack / frontend / backend） |
-| targets | 目标平台数组（claude-code / copilot / codex / cursor / gemini） |
+子模块在 `devkeel init` 中初始化、在 `devkeel doctor` 中检查，无需注册。
+`devkeel submodule` 和 `devkeel migrate` 已移除；历史任务文件可按需手动复制归档，当前项目知识维护在 `docs/`。
 
 ## 项目结构
 
@@ -267,17 +243,15 @@ src/
   index.ts                  # CLI 入口 (Commander)
   commands/
     init.ts                 # 交互式初始化
-    doctor.ts               # 配置健康检查
+    doctor.ts               # 协作资产检查
     update.ts               # 内置资产更新
-    submodule.ts            # 子模块管理
-    migrate.ts              # 旧产物迁移
+    sync.ts                 # 平台入口同步
   lib/
-    config.ts               # 配置读写、校验、版本管理
-    detect.ts               # 环境检测（git、package.json、已有资产）
+    versions.ts             # 资产版本管理
+    detect.ts               # 环境、仓库角色与子模块检测
     templates.ts            # 模板复制、symlink 创建、渲染
     agents-md.ts            # 根/子仓库 AGENTS 模板选择与原内容合并
     gitignore.ts            # .gitignore 条目管理
-    migrate.ts              # 迁移逻辑
 templates/
   skills/                   # 内置 skill 模板
   agents/                   # 子代理模板 (code-reviewer)
@@ -288,7 +262,6 @@ templates/
   agents-domain-md.md       # 子仓库 AGENTS.md 领域执行契约模板
   claude-md.md              # CLAUDE.md 模板
   gemini-md.md              # GEMINI.md 模板
-  config-yml.yml            # config.yml 模板
   versions-yml.yml          # versions.yml 模板
   gitignore                 # .gitignore 模板
 tests/                      # vitest 单元测试

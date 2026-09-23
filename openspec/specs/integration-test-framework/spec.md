@@ -4,11 +4,11 @@
 TBD - created by archiving change integration-test-opsx-workflow. Update Purpose after archive.
 ## Requirements
 ### Requirement: fixture 项目初始化
-测试框架 SHALL 提供 `setup-fixture.sh` 脚本，在临时目录创建一个最小 React TODO 项目并执行 `devkeel init --yes`，返回 fixture 目录路径。
+测试框架 SHALL 提供 `setup-fixture.sh` 脚本，在临时目录创建一个最小 React TODO 项目并准备 DevKeel 模板与平台入口，返回 fixture 目录路径。
 
 #### Scenario: 正常初始化
 - **WHEN** 执行 `setup-fixture.sh`
-- **THEN** 返回一个存在 `.harness/config.yml` 和 `package.json` 的临时目录路径
+- **THEN** 返回一个存在 `.harness/skills/`、`AGENTS.md` 和 `package.json` 的临时目录路径
 
 #### Scenario: 清理
 - **WHEN** 场景执行完毕后调用 cleanup

@@ -2,11 +2,10 @@ import { describe, it, expect, beforeEach, afterEach } from 'vitest'
 import fs from 'node:fs'
 import path from 'node:path'
 import os from 'node:os'
-import { readConfig, writeConfig, buildDefaultConfig, validateConfig, readVersions, writeVersions, getBuiltinVersions, computeOutdatedCategories, filterManagedVersions, resolveRepositoryType } from '../src/lib/config.js'
-import packageJson from '../package.json'
+import { readVersions, writeVersions, getBuiltinVersions, computeOutdatedCategories, filterManagedVersions } from '../src/lib/versions.js'
 import templatesPackageJson from '../templates/package.json'
 
-describe('config', () => {
+describe('versions', () => {
   let tmpDir: string
 
   beforeEach(() => {
@@ -17,125 +16,7 @@ describe('config', () => {
     fs.rmSync(tmpDir, { recursive: true, force: true })
   })
 
-  describe('buildDefaultConfig', () => {
-    it('should create v2 config', () => {
-      const config = buildDefaultConfig({
-        name: 'test-project',
-        types: ['frontend'],
-        targets: ['claude-code'],
-        repoType: 'domain',
-      })
-
-      expect(config.version).toBe('2.0')
-      expect(config.project.name).toBe('test-project')
-      expect(config.project.types).toEqual(['frontend'])
-      expect(config.project.repoType).toBe('domain')
-      expect(config.targets).toEqual(['claude-code'])
-    })
-  })
-
-  describe('writeConfig / readConfig', () => {
-    it('should round-trip config through YAML', () => {
-      const config = buildDefaultConfig({
-        name: 'roundtrip',
-        types: ['backend'],
-        targets: ['claude-code'],
-      })
-
-      writeConfig(tmpDir, config)
-      const loaded = readConfig(tmpDir)
-
-      expect(loaded).not.toBeNull()
-      expect(loaded!.project.name).toBe('roundtrip')
-      expect(loaded!.targets).toEqual(['claude-code'])
-    })
-
-    it('should return null when config does not exist', () => {
-      expect(readConfig(tmpDir)).toBeNull()
-    })
-  })
-
-  describe('validateConfig', () => {
-    it('should pass for valid config', () => {
-      const config = buildDefaultConfig({
-        name: 'valid',
-        types: ['backend'],
-        targets: ['claude-code'],
-      })
-      expect(validateConfig(config)).toHaveLength(0)
-    })
-
-    it('should fail for null', () => {
-      const errors = validateConfig(null)
-      expect(errors.length).toBeGreaterThan(0)
-    })
-
-    it('should fail for missing version', () => {
-      const errors = validateConfig({ project: { name: 'x', types: [] }, targets: [] })
-      expect(errors.some(e => e.field === 'version')).toBe(true)
-    })
-
-    it('should fail for missing project.name', () => {
-      const errors = validateConfig({ version: '2.0', project: { types: [] }, targets: [] })
-      expect(errors.some(e => e.field === 'project.name')).toBe(true)
-    })
-
-    it('should fail for an invalid repository type', () => {
-      const errors = validateConfig({
-        version: '2.0',
-        project: { name: 'x', types: [], repoType: 'nested' },
-        targets: [],
-      })
-      expect(errors.some(e => e.field === 'project.repoType')).toBe(true)
-      expect(validateConfig({
-        version: '2.0',
-        project: { name: 'x', types: [], repoType: '' },
-        targets: [],
-      }).some(e => e.field === 'project.repoType')).toBe(true)
-    })
-  })
-
-  describe('buildDefaultConfig with options', () => {
-    it('should include repoType in config', () => {
-      const config = buildDefaultConfig({
-        name: 'test',
-        types: ['backend'],
-        targets: ['claude-code'],
-      })
-      expect(config.project.name).toBe('test')
-    })
-
-    it('should handle legacy config without extra fields', () => {
-      const config = buildDefaultConfig({
-        name: 'legacy',
-        types: ['frontend'],
-        targets: ['claude-code'],
-      })
-      expect(config.project.name).toBe('legacy')
-      writeConfig(tmpDir, config)
-      const loaded = readConfig(tmpDir)
-      expect(loaded!.project.name).toBe('legacy')
-    })
-  })
-
   describe('repository profiles', () => {
-    it('resolves an explicit repository type before git detection', () => {
-      const config = buildDefaultConfig({
-        name: 'domain-project',
-        types: [],
-        targets: ['codex'],
-        repoType: 'domain',
-      })
-
-      expect(resolveRepositoryType(config, false)).toBe('domain')
-      expect(resolveRepositoryType(null, true)).toBe('domain')
-      expect(resolveRepositoryType(null, false)).toBe('main')
-      expect(resolveRepositoryType({ project: undefined } as never, true)).toBe('domain')
-      expect(resolveRepositoryType({
-        project: { repoType: 'invalid' },
-      } as never, false)).toBe('main')
-    })
-
     it('keeps only the harness core version for domain repositories', () => {
       const builtin = getBuiltinVersions()
       const domain = filterManagedVersions(builtin, 'domain')

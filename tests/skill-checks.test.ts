@@ -4,7 +4,6 @@ import os from 'node:os'
 import path from 'node:path'
 import { checkSkillLinks, checkSkillPackages } from '../src/lib/skill-checks.js'
 import { syncSkillLinks } from '../src/lib/skill-distribution.js'
-import { buildDefaultConfig, writeConfig } from '../src/lib/config.js'
 import { runDoctor } from '../src/commands/doctor.js'
 
 vi.mock('../src/lib/update-notifier.js', () => ({ checkAndNotify: vi.fn() }))
@@ -95,27 +94,18 @@ describe.sequential('native skill diagnostics', () => {
 
   it('doctor --fix preserves a conflicting batch and exits unsuccessfully', async () => {
     process.chdir(root)
-    writeConfig(root, buildDefaultConfig({ name: 'fixture', types: [], targets: ['claude-code', 'codex'], repoType: 'domain' }))
+    write('AGENTS.md', '<!-- harness:domain-agents -->\n')
+    fs.mkdirSync(path.join(root, '.codex'))
     write('.claude/skills/personal/SKILL.md', 'personal content')
     write('.claude/settings.json', 'personal settings')
-    const config = fs.readFileSync(path.join(root, '.harness/config.yml'), 'utf8')
     const exit = vi.spyOn(process, 'exit').mockImplementation(() => { throw new Error('doctor exited') })
     await expect(runDoctor({ fix: true })).rejects.toThrow('doctor exited')
     expect(exit).toHaveBeenCalledWith(1)
     expect(fs.readFileSync(path.join(root, '.claude/skills/personal/SKILL.md'), 'utf8')).toBe('personal content')
     expect(fs.readFileSync(path.join(root, '.claude/settings.json'), 'utf8')).toBe('personal settings')
-    expect(fs.readFileSync(path.join(root, '.harness/config.yml'), 'utf8')).toBe(config)
+    expect(fs.existsSync(path.join(root, '.harness/config.yml'))).toBe(false)
     expect(fs.existsSync(path.join(root, '.agents'))).toBe(false)
     expect(fs.existsSync(path.join(root, '.harness/skills-state.json'))).toBe(false)
   })
 
-  it.each(['codex', '42'])('doctor reports invalid targets %s instead of throwing a TypeError', async targets => {
-    process.chdir(root)
-    writeConfig(root, buildDefaultConfig({ name: 'fixture', types: [], targets: [] }))
-    const file = path.join(root, '.harness/config.yml')
-    fs.writeFileSync(file, fs.readFileSync(file, 'utf8').replace('targets: []', `targets: ${targets}`))
-    const exit = vi.spyOn(process, 'exit').mockImplementation(() => { throw new Error('doctor exited') })
-    await expect(runDoctor()).rejects.toThrow('doctor exited')
-    expect(exit).toHaveBeenCalledWith(1)
-  })
 })

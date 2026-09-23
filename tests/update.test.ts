@@ -7,8 +7,9 @@ import { execFileSync } from 'node:child_process'
 import YAML from 'yaml'
 import * as prompts from '@clack/prompts'
 import { detectDeprecatedAssets, removeDeprecatedAssets, copyTemplateSkills, copyTemplateAgents, copyTemplateRules, copyTemplateCommands, copyOpenspecTemplate } from '../src/lib/templates.js'
-import { filterManagedVersions, getBuiltinVersions, readVersions, writeVersions, writeConfig } from '../src/lib/config.js'
+import { filterManagedVersions, getBuiltinVersions, readVersions, writeVersions } from '../src/lib/versions.js'
 import { setTemplatesDir } from '../src/lib/templates-dir.js'
+import { cleanAgentsMdSlots } from '../src/lib/agents-md.js'
 import {
   applyDiscussionSkillMigration,
   applyLegacyMigrations,
@@ -84,11 +85,7 @@ describe.sequential('runUpdate managed asset distribution', () => {
     copyTemplateRules(path.join(projectDir, '.harness', 'rules'))
     copyTemplateCommands(path.join(projectDir, '.harness', 'commands'))
     copyOpenspecTemplate(path.join(projectDir, 'openspec'))
-    writeConfig(projectDir, {
-      version: '2.0',
-      project: { name: 'legacy-project', types: ['cli'] },
-      targets: ['codex'],
-    })
+    fs.mkdirSync(path.join(projectDir, '.agents'))
 
     const oldVersions = getBuiltinVersions()
     delete oldVersions.skills[skillName]
@@ -340,11 +337,10 @@ describe.sequential('runUpdate managed asset distribution', () => {
   })
 
   it('should update a domain repository without redistributing root assets', async () => {
-    writeConfig(projectDir, {
-      version: '2.0',
-      project: { name: 'domain-project', types: ['frontend'], repoType: 'domain' },
-      targets: ['codex'],
-    })
+    fs.copyFileSync(
+      path.join(updateTestState.templatesDir, 'agents-domain-md.md'),
+      path.join(projectDir, 'AGENTS.md'),
+    )
     writeVersions(projectDir, getBuiltinVersions())
     const customSkill = path.join(
       projectDir,
@@ -375,12 +371,9 @@ describe.sequential('runUpdate managed asset distribution', () => {
       .toContain('<!-- harness:domain-agents -->')
   })
 
-  it('should prefer an explicit main profile over a legacy domain AGENTS marker', async () => {
-    writeConfig(projectDir, {
-      version: '2.0',
-      project: { name: 'main-project', types: ['cli'], repoType: 'main' },
-      targets: ['codex'],
-    })
+  it('should ignore legacy config and preserve a standalone domain repository', async () => {
+    const legacyConfig = 'project: { repoType: main }\ntargets: [claude-code]\n'
+    fs.writeFileSync(path.join(projectDir, '.harness', 'config.yml'), legacyConfig)
     fs.writeFileSync(
       path.join(projectDir, 'AGENTS.md'),
       fs.readFileSync(
@@ -393,8 +386,10 @@ describe.sequential('runUpdate managed asset distribution', () => {
     await runUpdate({ force: true })
 
     const agents = fs.readFileSync(path.join(projectDir, 'AGENTS.md'), 'utf-8')
-    expect(agents).toContain('# AGENTS.md — Agent 执行契约')
-    expect(agents).not.toContain('<!-- harness:domain-agents -->')
+    expect(agents).toContain('<!-- harness:domain-agents -->')
+    expect(readVersions(projectDir)?.schemas).toEqual({})
+    expect(fs.existsSync(path.join(projectDir, '.claude'))).toBe(false)
+    expect(fs.readFileSync(path.join(projectDir, '.harness', 'config.yml'), 'utf-8')).toBe(legacyConfig)
   })
 
   it('should force overwrite managed assets from the beta channel when versions match', async () => {
@@ -563,10 +558,11 @@ describe.sequential('runUpdate managed asset distribution', () => {
     copyTemplateCommands(path.join(projectDir, '.harness', 'commands'))
     writeVersions(projectDir, getBuiltinVersions())
     fs.writeFileSync(path.join(projectDir, '.gitignore'), '.claude/\nnode_modules/\n', 'utf-8')
+    const template = fs.readFileSync(path.join(updateTestState.templatesDir, 'agents-md.md'), 'utf-8')
+      .replace('{{SUBMODULE_SECTION}}', '')
     fs.writeFileSync(
       path.join(projectDir, 'AGENTS.md'),
-      fs.readFileSync(path.join(updateTestState.templatesDir, 'agents-md.md'), 'utf-8')
-        .replace('{{SUBMODULE_SECTION}}', ''),
+      cleanAgentsMdSlots(template, [template]),
       'utf-8',
     )
     execFileSync('git', ['init', '-q'], { cwd: projectDir })
@@ -788,7 +784,7 @@ describe.sequential('runUpdate managed asset distribution', () => {
 
     await runUpdate()
 
-    expect(fs.readFileSync(agentsPath, 'utf-8')).toBe(currentTemplate)
+    expect(fs.readFileSync(agentsPath, 'utf-8')).toBe(cleanAgentsMdSlots(currentTemplate, [currentTemplate]))
   })
 
   it('should treat a missing AGENTS file as retryable framework drift', async () => {
@@ -806,6 +802,37 @@ describe.sequential('runUpdate managed asset distribution', () => {
 
     expect(fs.existsSync(agentsPath)).toBe(true)
     expect(hasAgentsFrameworkDrift(projectDir)).toBe(false)
+  })
+
+  it.each(['main', 'domain'] as const)('preserves docs and every knowledge slot when updating a %s template', async repoType => {
+    const docsPath = path.join(projectDir, 'docs', 'testing.md')
+    const knowledge = '# Tests\n\nProject-owned verification notes.\n'
+    fs.mkdirSync(path.dirname(docsPath), { recursive: true })
+    fs.writeFileSync(docsPath, knowledge)
+    const templateName = repoType === 'main' ? 'agents-md.md' : 'agents-domain-md.md'
+    const template = fs.readFileSync(path.join(updateTestState.templatesDir, templateName), 'utf-8')
+      .replace('{{SUBMODULE_SECTION}}', '')
+    const slots = ['routing', 'verification', 'project']
+    let current = template
+    for (const slot of slots) {
+      current = current.replace(
+        `<!-- harness:user:${slot} -->`,
+        `<!-- harness:user:${slot} -->\n${slot}: [Tests](docs/testing.md)\n`,
+      )
+    }
+    const agentsPath = path.join(projectDir, 'AGENTS.md')
+    fs.writeFileSync(agentsPath, current.replace('# AGENTS.md', '# Legacy AGENTS.md'))
+
+    await runUpdate({ force: true })
+
+    const cleaned = cleanAgentsMdSlots(current, [template])
+    expect(fs.readFileSync(agentsPath, 'utf-8')).toBe(cleaned)
+    for (const slot of slots) expect(cleaned).not.toContain(`harness:user:${slot}`)
+    expect(fs.readFileSync(docsPath, 'utf-8')).toBe(knowledge)
+    expect(hasAgentsFrameworkDrift(projectDir)).toBe(false)
+
+    await runUpdate({ force: true })
+    expect(fs.readFileSync(agentsPath, 'utf-8')).toBe(cleaned)
   })
 })
 
@@ -1002,11 +1029,6 @@ describe('detectUpdates', () => {
     tmpDir = fs.mkdtempSync(path.join(os.tmpdir(), 'harness-detect-updates-'))
     const builtin = getBuiltinVersions()
     writeVersions(tmpDir, builtin)
-    writeConfig(tmpDir, {
-      version: '2.0',
-      project: { name: 'test', types: ['cli'] },
-      targets: ['claude-code'],
-    })
     copyTemplateSkills(path.join(tmpDir, '.harness', 'skills'))
     copyTemplateCommands(path.join(tmpDir, '.harness', 'commands'))
     fs.mkdirSync(path.join(tmpDir, '.harness', 'agents'), { recursive: true })

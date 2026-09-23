@@ -2,7 +2,7 @@ import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest'
 import fs from 'node:fs'
 import path from 'node:path'
 import os from 'node:os'
-import { getBuiltinVersions, readVersions, writeVersions } from '../src/lib/config.js'
+import { getBuiltinVersions, readVersions, writeVersions } from '../src/lib/versions.js'
 import { runInit } from '../src/commands/init.js'
 
 const testState = vi.hoisted(() => ({
@@ -26,7 +26,7 @@ vi.mock('../src/lib/detect.js', async (importOriginal) => {
   const original = await importOriginal<typeof import('../src/lib/detect.js')>()
   return {
     ...original,
-    detectIsSubmodule: vi.fn(() => testState.isSubmodule),
+    detectRepositoryType: (root: string) => testState.isSubmodule ? 'domain' : original.detectRepositoryType(root),
   }
 })
 

@@ -2,7 +2,7 @@
 name: doc-maintenance
 description: CLI 文档维护与一致性检查流程
 metadata:
-  version: "1.1.1"
+  version: "1.2.0"
   author: "devkeel"
   domain: cli-node
 triggers:
@@ -16,7 +16,7 @@ triggers:
 
 ## 何时使用
 
-- 新增/修改子命令后，同步 help 文本和 CLAUDE.md
+- 新增/修改子命令后，同步 help 文本和 docs 项目说明
 - 发版时更新 changelog
 - 检查文档与代码实现的一致性
 
@@ -24,15 +24,13 @@ triggers:
 
 ### 1. Help 文本一致性检查
 
-运行所有命令的 --help，对比 CLAUDE.md Commands 章节：
+运行所有命令的 --help，对比 README 命令说明与 docs/development.md：
 
 ```bash
 node bin/devkeel.js --help
 node bin/devkeel.js init --help
 node bin/devkeel.js doctor --help
 node bin/devkeel.js update --help
-node bin/devkeel.js submodule --help
-node bin/devkeel.js migrate --help
 node bin/devkeel.js sync --help
 node bin/devkeel.js inject-review --help
 node bin/devkeel.js open-review --help
@@ -40,15 +38,18 @@ node bin/devkeel.js evidence --help
 ```
 
 检查点：
-- CLAUDE.md 中列出的命令是否与实际一致
+- README 与 docs 中列出的命令是否与实际一致
 - 选项（--fix, --force, --dry-run）是否都有记录
 - 不得只用退出码判断命令存在；未知命令可能退回 root help，必须确认输出的 Usage/Options 属于目标子命令
 
-### 2. CLAUDE.md Architecture 同步
+### 2. 项目知识同步
 
-对比 `src/` 实际目录结构与 CLAUDE.md Architecture 章节，确认：
+对比 `src/` 实际目录结构与 `docs/architecture.md`，确认：
 - 新增的 commands/lib 文件已记录
 - 文件职责描述准确
+- 测试入口与环境变化同步 `docs/testing.md`，规则复用已有测试策略
+- AGENTS/CLAUDE 只维护文档入口与读取条件，不复制正文
+- 当前规范保留在 `openspec/specs/`，任务过程保留在 `openspec/changes/`
 
 ### 3. Changelog 维护
 
@@ -82,9 +83,9 @@ git diff --cached --name-only
 
 ## 检查清单
 
-- [ ] --help 输出与 CLAUDE.md 一致
-- [ ] 新文件已在 Architecture 中标注
+- [ ] --help 输出与 README、docs 中的说明一致
+- [ ] 相关模块职责已在 docs/architecture.md 更新
 - [ ] changelog 已更新（如有版本发布）
 - [ ] 新版本 JSON 已通过 catalog/data 测试和 web build 一致性校验
 - [ ] 暂存区仅包含实际版本流的 `web/public/versions/{cli,templates}/*.json`，不含旧静态 Changelog HTML 或 `web/dist/`
-- [ ] AGENTS.md 资产表无遗漏
+- [ ] AGENTS.md 文档入口有效，docs 与 rules 按职责分离

@@ -3,7 +3,6 @@ import fs from 'node:fs'
 import path from 'node:path'
 import os from 'node:os'
 import { createPlatformLinks, detectExistingPlatformTargets, detectExistingPlatformDirs } from '../src/lib/templates.js'
-import { readConfig, writeConfig, buildDefaultConfig } from '../src/lib/config.js'
 
 describe('sync', () => {
   let tmpDir: string
@@ -45,6 +44,27 @@ describe('sync', () => {
       expect(result).toContain('claude-code')
       expect(result).toContain('cursor')
       expect(result).toContain('codex')
+    })
+
+    it('should detect Codex settings before skill links have been created', () => {
+      fs.mkdirSync(path.join(tmpDir, '.codex'))
+      expect(detectExistingPlatformTargets(tmpDir)).toEqual(['codex'])
+      fs.mkdirSync(path.join(tmpDir, '.agents'))
+      expect(detectExistingPlatformTargets(tmpDir)).toEqual(['codex'])
+    })
+
+    it('should detect file-based platform entries and retain broken links for diagnostics', () => {
+      fs.mkdirSync(path.join(tmpDir, '.github'))
+      fs.writeFileSync(path.join(tmpDir, '.github', 'copilot-instructions.md'), '@AGENTS.md\n')
+      fs.writeFileSync(path.join(tmpDir, 'GEMINI.md'), '@AGENTS.md\n')
+      fs.symlinkSync('missing-platform', path.join(tmpDir, '.claude'))
+      expect(detectExistingPlatformTargets(tmpDir)).toEqual(['claude-code', 'copilot', 'gemini'])
+    })
+
+    it('should ignore a non-directory parent of an unrelated platform entry', () => {
+      fs.writeFileSync(path.join(tmpDir, '.github'), 'not a platform directory')
+      fs.mkdirSync(path.join(tmpDir, '.agents'))
+      expect(detectExistingPlatformTargets(tmpDir)).toEqual(['codex'])
     })
   })
 
@@ -103,21 +123,4 @@ describe('sync', () => {
     })
   })
 
-  describe('config targets update', () => {
-    it('should update targets in config', () => {
-      const config = buildDefaultConfig({
-        name: 'test',
-        types: [],
-        targets: ['claude-code'],
-      })
-      writeConfig(tmpDir, config)
-
-      const updated = readConfig(tmpDir)!
-      updated.targets = ['claude-code', 'opencode', 'cursor']
-      writeConfig(tmpDir, updated)
-
-      const result = readConfig(tmpDir)
-      expect(result!.targets).toEqual(['claude-code', 'opencode', 'cursor'])
-    })
-  })
 })

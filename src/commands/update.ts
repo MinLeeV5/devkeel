@@ -6,23 +6,22 @@ import * as p from '@clack/prompts'
 import {
   filterManagedVersions,
   getBuiltinVersions,
-  readConfig,
   readVersions,
-  resolveRepositoryType,
   type VersionsRecord,
-} from '../lib/config.js'
-import { getTemplatesDir, setTemplatesDir, copyDirRecursive, copyTemplateCommands, detectDeprecatedAssets, removeDeprecatedAssets, readTemplateFile, renderTemplate, extractUserSlots, extractFrameworkContent, updateOpenspecIncremental } from '../lib/templates.js'
+} from '../lib/versions.js'
+import { getTemplatesDir, setTemplatesDir, copyDirRecursive, copyTemplateCommands, detectDeprecatedAssets, detectExistingPlatformTargets, removeDeprecatedAssets, readTemplateFile, renderTemplate, updateOpenspecIncremental } from '../lib/templates.js'
 import { ensureTemplatesCache, TemplatesFetchError } from '../lib/templates-cache.js'
 import { applyDiscussionSkillMigration, applyLegacyMigrations, assertSchemaTargetsAvailable, assertLegacyMigrationPreflight, detectUpdates, isLegacySchema, isDiscussionSkillMigrationRequired, planLegacyMigrations, recoverDiscussionSkillMigration, resolveUpdatePaths, collectCommitStagePaths, RETIRED_MANAGED_SKILLS, writeVersionsAtomically, type LegacyMigrationPlan, type UpdateItem } from '../lib/update.js'
 import { createLog } from '../lib/log.js'
 import { applyLegacyPlatformIgnorePlan, planLegacyPlatformIgnores } from '../lib/gitignore.js'
-import { detectIsSubmodule } from '../lib/detect.js'
+import { detectRepositoryType } from '../lib/detect.js'
 import { planSkillLinks, skillLinkProblems, syncSkillLinks } from '../lib/skill-distribution.js'
 import {
-  DOMAIN_AGENTS_MARKER,
   DOMAIN_AGENTS_TEMPLATE,
   ROOT_AGENTS_TEMPLATE,
+  cleanAgentsMdSlots,
   mergeAgentsMdContent,
+  restoreAgentsMdSlots,
 } from '../lib/agents-md.js'
 
 export interface UpdateOptions {
@@ -161,25 +160,11 @@ function renderAgentsFramework(projectRoot: string): {
   rendered: string
   managedSources: string[]
 } {
-  const agentsMdPath = path.join(projectRoot, 'AGENTS.md')
-  const existing = fs.existsSync(agentsMdPath)
-    ? fs.readFileSync(agentsMdPath, 'utf-8')
-    : ''
   const rootSource = renderTemplate(readTemplateFile(ROOT_AGENTS_TEMPLATE), {
     SUBMODULE_SECTION: '',
   })
   const domainSource = readTemplateFile(DOMAIN_AGENTS_TEMPLATE)
-  const config = readConfig(projectRoot)
-  const repoType = resolveRepositoryType(
-    config,
-    detectIsSubmodule(projectRoot),
-  )
-  const configuredType = config?.project?.repoType
-  const useDomainTemplate = configuredType === 'domain'
-    || (
-      configuredType !== 'main'
-      && (existing.includes(DOMAIN_AGENTS_MARKER) || repoType === 'domain')
-    )
+  const useDomainTemplate = detectRepositoryType(projectRoot) === 'domain'
 
   return {
     rendered: useDomainTemplate ? domainSource : rootSource,
@@ -193,16 +178,13 @@ export function hasAgentsFrameworkDrift(projectRoot: string): boolean {
 
   const existing = fs.readFileSync(agentsMdPath, 'utf-8')
   const { rendered: template, managedSources } = renderAgentsFramework(projectRoot)
-  const rendered = mergeAgentsMdContent(template, existing, managedSources)
-  return extractFrameworkContent(existing) !== extractFrameworkContent(rendered)
+  const rendered = cleanAgentsMdSlots(mergeAgentsMdContent(template, existing, managedSources), managedSources)
+  return existing !== rendered
 }
 
 export async function runUpdate(options?: UpdateOptions): Promise<void> {
   const projectRoot = process.cwd()
-  const repoType = resolveRepositoryType(
-    readConfig(projectRoot),
-    detectIsSubmodule(projectRoot),
-  )
+  const repoType = detectRepositoryType(projectRoot)
   let resolvedOptions: ResolvedUpdateOptions
   try {
     resolvedOptions = resolveUpdateOptions(options)
@@ -222,7 +204,7 @@ export async function runUpdate(options?: UpdateOptions): Promise<void> {
     process.exit(1)
   }
 
-  const skillTargets = readConfig(projectRoot)?.targets ?? []
+  const skillTargets = detectExistingPlatformTargets(projectRoot)
   const skillProblems = skillLinkProblems(planSkillLinks(projectRoot, skillTargets))
   if (skillProblems.length > 0) {
     p.cancel(skillProblems.join('\n'))
@@ -598,27 +580,24 @@ async function updateAgentsMd(
       const confirm = await p.confirm({ message: 'AGENTS.md 缺失，是否用当前模板创建？' })
       if (p.isCancel(confirm) || !confirm) return 'skipped'
     }
-    fs.writeFileSync(agentsMdPath, template, 'utf-8')
+    fs.writeFileSync(agentsMdPath, cleanAgentsMdSlots(template, managedSources), 'utf-8')
     return 'updated'
   }
 
   const existing = fs.readFileSync(agentsMdPath, 'utf-8')
-  const slots = extractUserSlots(existing)
-  const rendered = mergeAgentsMdContent(template, existing, managedSources)
+  const rendered = cleanAgentsMdSlots(mergeAgentsMdContent(template, existing, managedSources), managedSources)
 
-  if (slots.size === 0) {
+  if (existing === rendered) return 'unchanged'
+
+  if (restoreAgentsMdSlots(existing, managedSources) === null) {
     if (!force) {
       const confirm = await p.confirm({
-        message: 'AGENTS.md 缺少分区标记（可能是旧版本），是否用当前模板改造并合并原有内容？',
+        message: 'AGENTS.md 无法按模板定位定制内容，是否用当前模板改造并完整保留原文？',
       })
       if (p.isCancel(confirm) || !confirm) return 'no-markers'
     }
     fs.writeFileSync(agentsMdPath, rendered, 'utf-8')
     return 'updated'
-  }
-
-  if (extractFrameworkContent(existing) === extractFrameworkContent(rendered)) {
-    return 'unchanged'
   }
 
   if (!force) {

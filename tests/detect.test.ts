@@ -3,7 +3,7 @@ import fs from 'node:fs'
 import path from 'node:path'
 import os from 'node:os'
 import { execFileSync } from 'node:child_process'
-import { detectEnvironment, countDirectoryItems, detectIsSubmodule } from '../src/lib/detect.js'
+import { detectEnvironment, countDirectoryItems, detectIsSubmodule, detectRepositoryType } from '../src/lib/detect.js'
 
 describe('detect', () => {
   let tmpDir: string
@@ -43,6 +43,24 @@ describe('detect', () => {
   it('should fallback to directory name', () => {
     const result = detectEnvironment(tmpDir)
     expect(result.projectName).toBe(path.basename(tmpDir))
+  })
+
+  it('should treat a fresh standalone repository as main without configuration', () => {
+    expect(detectRepositoryType(tmpDir)).toBe('main')
+    fs.mkdirSync(path.join(tmpDir, '.harness'))
+    fs.writeFileSync(path.join(tmpDir, '.harness', 'config.yml'), 'project: { repoType: domain }\n')
+    expect(detectRepositoryType(tmpDir)).toBe('main')
+  })
+
+  it('should preserve domain scope when a subproject is checked out on its own', () => {
+    fs.writeFileSync(path.join(tmpDir, 'AGENTS.md'), '\n<!-- harness:domain-agents -->\r\n# Domain\r\n')
+    expect(detectRepositoryType(tmpDir)).toBe('domain')
+    expect(detectRepositoryType(tmpDir)).toBe('domain')
+  })
+
+  it('should ignore a domain marker quoted in project documentation', () => {
+    fs.writeFileSync(path.join(tmpDir, 'AGENTS.md'), '# Root\n\n```md\n<!-- harness:domain-agents -->\n```\n')
+    expect(detectRepositoryType(tmpDir)).toBe('main')
   })
 
   it('should detect existing CLAUDE.md', () => {
@@ -137,5 +155,7 @@ describe('detectIsSubmodule', () => {
     )
 
     expect(detectIsSubmodule(path.join(parent, 'domain'))).toBe(true)
+    expect(detectRepositoryType(path.join(parent, 'domain'))).toBe('domain')
+    expect(detectRepositoryType(parent)).toBe('main')
   })
 })

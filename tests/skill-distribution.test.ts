@@ -3,7 +3,6 @@ import fs from 'node:fs'
 import os from 'node:os'
 import path from 'node:path'
 import { runSync } from '../src/commands/sync.js'
-import { buildDefaultConfig, writeConfig } from '../src/lib/config.js'
 import { planSkillLinks, syncSkillLinks } from '../src/lib/skill-distribution.js'
 
 vi.mock('@clack/prompts', () => ({
@@ -28,7 +27,6 @@ describe.sequential('skills distribution', () => {
     for (const dir of ['skills', 'rules', 'agents']) {
       fs.mkdirSync(path.join(root, '.harness', dir), { recursive: true })
     }
-    writeConfig(root, buildDefaultConfig({ name: 'skills-fixture', types: [], targets: [] }))
   })
 
   afterEach(() => {
@@ -52,6 +50,18 @@ describe.sequential('skills distribution', () => {
     }
     await runSync({ targets: 'claude-code,codex' })
     expect(fs.readFileSync(path.join(root, '.harness/skills/example/SKILL.md'), 'utf8')).toBe('edited version')
+    expect(fs.existsSync(path.join(root, '.harness/config.yml'))).toBe(false)
+  })
+
+  it('should ignore malformed legacy configuration when creating platform entries', async () => {
+    write('.harness/config.yml', 'targets: [broken')
+    write('package.json', '{"name":"actual-project"}')
+
+    await runSync({ targets: 'claude-code' })
+
+    expect(fs.readFileSync(path.join(root, 'CLAUDE.md'), 'utf8')).toBe('@AGENTS.md\n')
+    expect(fs.readFileSync(path.join(root, '.harness/config.yml'), 'utf8')).toBe('targets: [broken')
+    expect(fs.lstatSync(path.join(root, '.claude/skills')).isSymbolicLink()).toBe(true)
   })
 
   it('preserves platform settings, agents and unrelated files during repeated sync', async () => {
@@ -70,12 +80,11 @@ describe.sequential('skills distribution', () => {
     }
   })
 
-  it('preflights the full batch before changing configuration or either platform', async () => {
+  it('preflights the full batch before changing either platform', async () => {
     write('.agents/skills/personal/SKILL.md', 'personal skill')
-    const config = fs.readFileSync(path.join(root, '.harness/config.yml'), 'utf8')
     await runSync({ targets: 'claude-code,codex' })
     expect(process.exitCode).toBe(1)
-    expect(fs.readFileSync(path.join(root, '.harness/config.yml'), 'utf8')).toBe(config)
+    expect(fs.existsSync(path.join(root, '.harness/config.yml'))).toBe(false)
     expect(fs.existsSync(path.join(root, '.claude'))).toBe(false)
     expect(fs.existsSync(path.join(root, '.harness/skills-state.json'))).toBe(false)
     expect(fs.readFileSync(path.join(root, '.agents/skills/personal/SKILL.md'), 'utf8')).toBe('personal skill')
@@ -163,10 +172,9 @@ describe.sequential('skills distribution', () => {
     expect(fs.readFileSync(path.join(root, '.harness/skills-backups', backups[0]!, '.claude/skills'), 'utf8')).toBe('original file')
   })
 
-  it('does not replace any target or configuration if a later backup fails', async () => {
+  it('does not replace any target if a later backup fails', async () => {
     write('.claude/skills', 'first original')
     write('.agents/skills', 'second original')
-    const config = fs.readFileSync(path.join(root, '.harness/config.yml'), 'utf8')
     const copy = fs.cpSync
     let calls = 0
     vi.spyOn(fs, 'cpSync').mockImplementation((...args) => {
@@ -178,7 +186,7 @@ describe.sequential('skills distribution', () => {
     expect(process.exitCode).toBe(1)
     expect(fs.readFileSync(path.join(root, '.claude/skills'), 'utf8')).toBe('first original')
     expect(fs.readFileSync(path.join(root, '.agents/skills'), 'utf8')).toBe('second original')
-    expect(fs.readFileSync(path.join(root, '.harness/config.yml'), 'utf8')).toBe(config)
+    expect(fs.existsSync(path.join(root, '.harness/config.yml'))).toBe(false)
     expect(fs.existsSync(path.join(root, '.harness/skills-state.json'))).toBe(false)
   })
 

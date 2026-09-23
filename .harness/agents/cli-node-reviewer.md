@@ -15,7 +15,7 @@ model: sonnet
 1. 读取 `src/index.ts` 获取命令注册全景
 2. 读取变更涉及的 `src/commands/*.ts` 和 `src/lib/*.ts`
 3. 若变更涉及模板，读取 `templates/` 相关目录和 `templates/versions-yml.yml`
-4. 若变更涉及配置，读取 `.harness/config.yml` schema 定义
+4. 若变更涉及自动识别，核对 `src/lib/detect.ts` 的仓库角色与 `src/lib/templates.ts` 的平台识别规则
 5. 运行 `pnpm lint` 确认类型安全
 
 ## 审查维度

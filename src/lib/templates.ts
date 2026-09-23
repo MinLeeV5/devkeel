@@ -1,7 +1,7 @@
 import fs from 'node:fs'
 import path from 'node:path'
 import YAML from 'yaml'
-import { readVersions } from './config.js'
+import { readVersions } from './versions.js'
 import { getTemplatesDir } from './templates-dir.js'
 import { syncSkillLinks } from './skill-distribution.js'
 import {
@@ -234,19 +234,26 @@ export function detectExistingPlatformDirs(projectRoot: string, targets: string[
   return existing
 }
 
-const PLATFORM_DETECT_PATHS: Record<string, string> = {
-  'claude-code': '.claude',
-  'codex': '.agents',
-  'cursor': '.cursor',
-  'copilot': '.github/copilot-instructions.md',
-  'gemini': 'GEMINI.md',
-  'opencode': '.opencode',
+const PLATFORM_DETECT_PATHS: Record<string, string[]> = {
+  'claude-code': ['.claude'],
+  'codex': ['.agents', '.codex'],
+  'cursor': ['.cursor'],
+  'copilot': ['.github/copilot-instructions.md'],
+  'gemini': ['GEMINI.md'],
+  'opencode': ['.opencode'],
 }
 
 export function detectExistingPlatformTargets(projectRoot: string): string[] {
   const detected: string[] = []
-  for (const [target, relPath] of Object.entries(PLATFORM_DETECT_PATHS)) {
-    if (fs.existsSync(path.join(projectRoot, relPath))) {
+  for (const [target, paths] of Object.entries(PLATFORM_DETECT_PATHS)) {
+    if (paths.some(relPath => {
+      try {
+        return !!fs.lstatSync(path.join(projectRoot, relPath), { throwIfNoEntry: false })
+      } catch (error) {
+        if ((error as NodeJS.ErrnoException).code === 'ENOTDIR') return false
+        throw error
+      }
+    })) {
       detected.push(target)
     }
   }

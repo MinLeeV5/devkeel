@@ -2,7 +2,7 @@ import { describe, it, expect, beforeEach, afterEach } from 'vitest'
 import fs from 'node:fs'
 import path from 'node:path'
 import os from 'node:os'
-import { detectSubmodules } from '../src/commands/submodule.js'
+import { detectSubmodules } from '../src/lib/detect.js'
 
 describe('detectSubmodules', () => {
   let tmpDir: string

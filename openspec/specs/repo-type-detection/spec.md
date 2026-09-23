@@ -1,68 +1,47 @@
-## ADDED Requirements
+# Repository context detection
 
-### Requirement: System SHALL auto-detect repo type based on .gitmodules
+## Requirements
 
-系统在 init 流程启动时 SHALL 检查项目根目录是否存在 `.gitmodules` 文件且包含至少一个子模块条目，以此推断仓库类型。
+### Requirement: CLI SHALL infer repository scope without project configuration
 
-#### Scenario: Project has .gitmodules with submodules
+`init`、`update` 和 `doctor` SHALL 使用相同的仓库角色识别规则，不读取或生成 `.harness/config.yml`，不提示用户填写或确认 `repoType`。
 
-- **WHEN** 项目根目录存在 `.gitmodules` 且文件中包含至少一个 `[submodule "..."]` 条目
-- **THEN** 系统 SHALL 推断仓库类型为 `main`
+#### Scenario: Git submodule
 
-#### Scenario: Project has no .gitmodules
+- **WHEN** Git 确认当前项目属于 superproject
+- **THEN** 系统 SHALL 按领域子仓库处理，即使尚未创建 AGENTS.md
 
-- **WHEN** 项目根目录不存在 `.gitmodules` 文件
-- **THEN** 系统 SHALL 推断仓库类型为 `domain`
+#### Scenario: Standalone domain checkout
 
-#### Scenario: Project has empty .gitmodules
+- **WHEN** 当前项目不是 Git 子模块，但 `AGENTS.md` 顶部具有 `<!-- harness:domain-agents -->` 标记
+- **THEN** 系统 SHALL 按领域子仓库处理，保持领域模板和资产范围
 
-- **WHEN** 项目根目录存在 `.gitmodules` 但文件为空或不含子模块条目
-- **THEN** 系统 SHALL 推断仓库类型为 `domain`
+#### Scenario: Main repository
 
----
+- **WHEN** 当前项目既不是 Git 子模块，也没有 AGENTS 领域标记
+- **THEN** 系统 SHALL 按主仓库处理，不以是否存在 `.gitmodules` 作为子仓库依据
 
-### Requirement: System SHALL prompt user to confirm detected repo type
+#### Scenario: Legacy project configuration
 
-系统 SHALL 在交互提示阶段向用户展示自动检测的仓库类型，并允许用户更改。
+- **WHEN** 项目存在旧 `.harness/config.yml`，包括损坏内容或与当前上下文冲突的字段
+- **THEN** 系统 SHALL 忽略且不改写该文件，不据此改变角色或目标平台
 
-#### Scenario: User accepts detected type
+### Requirement: CLI SHALL infer platform targets from existing entries
 
-- **WHEN** 系统检测到仓库类型并提示用户确认
-- **THEN** 用户可选择接受检测结果，系统 SHALL 使用该类型继续流程
+CLI SHALL 从 `.claude/`、`.agents/` 或 `.codex/`、`.cursor/`、`.opencode/`、`.github/copilot-instructions.md` 和 `GEMINI.md` 识别平台。
 
-#### Scenario: User overrides detected type
+#### Scenario: Initialization or synchronization
 
-- **WHEN** 系统检测到仓库类型为 `domain`，但用户选择 `main`
-- **THEN** 系统 SHALL 使用用户选择的 `main` 类型继续流程
+- **WHEN** 用户运行 `init` 或 `sync`
+- **THEN** 交互选择 SHALL 默认选中已识别平台，或使用 `--targets` 指定本次操作的平台
+- **AND** 系统 SHALL 不持久化平台选择到项目配置文件
 
----
+#### Scenario: Platform repair
 
-### Requirement: Config SHALL include repoType field
+- **WHEN** 平台目录存在，但受管 skills 链接缺失
+- **THEN** `doctor --fix` SHALL 根据检测到的平台补齐链接，保留现有冲突保护
 
-`HarnessConfig` 接口和 `.harness/config.yml` 文件 SHALL 包含 `project.repoType` 字段，值为 `main` 或 `domain`。
+#### Scenario: All platform signals removed
 
-#### Scenario: New init writes repoType to config
-
-- **WHEN** init 完成仓库类型确认
-- **THEN** 系统 SHALL 将 `project.repoType` 写入 `.harness/config.yml`
-
-#### Scenario: Existing config without repoType
-
-- **WHEN** 读取已有 config.yml 且缺少 `project.repoType` 字段
-- **THEN** 系统 SHALL 正常运行不报错（向后兼容）
-
----
-
-### Requirement: Domain sub-repo SHALL specify domainType
-
-当仓库类型为 `domain` 时，系统 SHALL 提示用户选择领域类型（`backend` / `frontend` / `other`），并写入 `project.domainType` 字段。
-
-#### Scenario: User selects backend domain type
-
-- **WHEN** repoType 为 `domain` 且用户选择 `backend`
-- **THEN** 系统 SHALL 将 `project.domainType: backend` 写入 config.yml
-
-#### Scenario: Main repo does not prompt for domainType
-
-- **WHEN** repoType 为 `main`
-- **THEN** 系统 SHALL 不提示选择 domainType，config.yml 中不包含该字段
+- **WHEN** 某个平台的全部入口和目录均不存在
+- **THEN** 系统 SHALL 不从旧 config 推断该平台，用户可通过 `sync --targets` 重建入口

@@ -5,7 +5,7 @@ import path from 'node:path'
 import * as prompts from '@clack/prompts'
 import { runInit } from '../src/commands/init.js'
 import { hasAgentsFrameworkDrift } from '../src/commands/update.js'
-import { readConfig, readVersions } from '../src/lib/config.js'
+import { readVersions } from '../src/lib/versions.js'
 
 const testState = vi.hoisted(() => ({
   isSubmodule: false,
@@ -27,7 +27,7 @@ vi.mock('../src/lib/detect.js', async (importOriginal) => {
   const original = await importOriginal<typeof import('../src/lib/detect.js')>()
   return {
     ...original,
-    detectIsSubmodule: vi.fn(() => testState.isSubmodule),
+    detectRepositoryType: (root: string) => testState.isSubmodule ? 'domain' : original.detectRepositoryType(root),
   }
 })
 
@@ -78,6 +78,32 @@ describe.sequential('init AGENTS templates', () => {
     fs.writeFileSync(npmrcPath, originalSettings)
     await runInit({ name: 'public-project', targets: 'codex', yes: true })
     expect(fs.readFileSync(npmrcPath, 'utf-8')).toBe(originalSettings)
+    expect(fs.existsSync(path.join(projectDir, '.harness', 'config.yml'))).toBe(false)
+  })
+
+  it('should ignore legacy config when initializing a main repository', async () => {
+    fs.mkdirSync(path.join(projectDir, '.harness'))
+    const legacy = 'project: { repoType: domain }\ntargets: [claude-code]\n'
+    fs.writeFileSync(path.join(projectDir, '.harness', 'config.yml'), legacy)
+
+    await runInit({ name: 'main-project', targets: 'codex', yes: true })
+
+    expect(fs.existsSync(path.join(projectDir, 'openspec'))).toBe(true)
+    expect(fs.existsSync(path.join(projectDir, '.agents', 'skills'))).toBe(true)
+    expect(fs.existsSync(path.join(projectDir, '.claude'))).toBe(false)
+    expect(fs.readFileSync(path.join(projectDir, '.harness', 'config.yml'), 'utf-8')).toBe(legacy)
+  })
+
+  it('should retain domain assets during init of a standalone domain checkout', async () => {
+    fs.copyFileSync(path.join(testState.templatesDir, 'agents-domain-md.md'), path.join(projectDir, 'AGENTS.md'))
+
+    await runInit({ name: 'standalone-domain', targets: 'codex', yes: true })
+
+    expect(fs.existsSync(path.join(projectDir, 'openspec'))).toBe(false)
+    expect(fs.existsSync(path.join(projectDir, '.harness', 'commands'))).toBe(false)
+    expect(fs.existsSync(path.join(projectDir, '.harness', 'config.yml'))).toBe(false)
+    expect(readVersions(projectDir)?.skills).toEqual({})
+    expect(hasAgentsFrameworkDrift(projectDir)).toBe(false)
   })
 
   it('preserves a custom lite schema and stops before writing project configuration', async () => {
@@ -114,20 +140,21 @@ describe.sequential('init AGENTS templates', () => {
 
     const agents = fs.readFileSync(path.join(projectDir, 'AGENTS.md'), 'utf-8')
     expect(agents).toContain('<!-- harness:domain-agents -->')
-    expect(agents).toContain('子项目职责')
+    expect(agents).toContain('项目知识入口')
     expect(agents).toContain('方案获认可且实施获授权后再修改')
-    expect(agents).toContain('变更规划和知识产出写入 DevKeel 主仓库')
+    expect(agents).toContain('`docs/` 保存项目知识，`openspec/` 保存任务过程')
+    expect(agents).not.toContain('<!-- harness:user:domain -->')
     expect(agents).not.toContain('workflow-routing')
     expect(agents).not.toContain('brainstorming')
     expect(agents).not.toContain('/opsx:')
     expect(agents).not.toContain('Direct / Lite / Full')
-    for (const slot of ['domain', 'routing', 'verification', 'project']) {
+    for (const slot of ['routing', 'verification', 'project']) {
       expect(agents).toContain(`<!-- harness:user:${slot} -->`)
       expect(agents).toContain(`<!-- /harness:user:${slot} -->`)
     }
     expect(fs.readFileSync(path.join(projectDir, 'CLAUDE.md'), 'utf-8'))
       .toBe('@AGENTS.md\n')
-    expect(readConfig(projectDir)?.project.repoType).toBe('domain')
+    expect(fs.existsSync(path.join(projectDir, '.harness', 'config.yml'))).toBe(false)
     expect(readVersions(projectDir)).toEqual(expect.objectContaining({
       skills: {},
       agents: {},
@@ -218,5 +245,30 @@ describe.sequential('init AGENTS templates', () => {
     expect(agents).toContain('# AGENTS.md — Agent 执行契约')
     expect(agents).toContain('# Product Context')
     expect(agents).toContain('Owns meeting workflows.')
+  })
+
+  it.each([false, true])('preserves project docs during repeated init (submodule=%s)', async isSubmodule => {
+    testState.isSubmodule = isSubmodule
+    const docsPath = path.join(projectDir, 'docs', 'project.md')
+    const knowledge = '# Project\n\nExisting project knowledge.\n'
+    fs.mkdirSync(path.dirname(docsPath), { recursive: true })
+    fs.writeFileSync(docsPath, knowledge)
+
+    await runInit({ name: 'knowledge-project', targets: 'codex', yes: true })
+    const agentsPath = path.join(projectDir, 'AGENTS.md')
+    const agents = fs.readFileSync(agentsPath, 'utf-8')
+    for (const slot of ['routing', 'verification', 'project']) {
+      expect(agents).toContain(`<!-- harness:user:${slot} -->`)
+    }
+    const withReference = agents.replace(
+      '<!-- harness:user:project -->',
+      '<!-- harness:user:project -->\n[Project](docs/project.md)\n',
+    )
+    fs.writeFileSync(agentsPath, withReference)
+
+    await runInit({ name: 'knowledge-project', targets: 'codex', yes: true })
+
+    expect(fs.readFileSync(agentsPath, 'utf-8')).toBe(withReference)
+    expect(fs.readFileSync(docsPath, 'utf-8')).toBe(knowledge)
   })
 })

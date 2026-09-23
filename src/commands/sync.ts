@@ -1,7 +1,7 @@
 import fs from 'node:fs'
 import path from 'node:path'
 import * as p from '@clack/prompts'
-import { readConfig, writeConfig } from '../lib/config.js'
+import { detectEnvironment } from '../lib/detect.js'
 import { createPlatformLinks, detectExistingPlatformTargets, ensureGitignore, readTemplateFile, renderTemplate, writeSmartFile } from '../lib/templates.js'
 import { createLog } from '../lib/log.js'
 import { syncSkillLinks } from '../lib/skill-distribution.js'
@@ -21,19 +21,11 @@ export async function runSync(opts?: SyncOptions): Promise<void> {
     process.exit(1)
   }
 
-  const config = readConfig(projectRoot)
-  if (!config) {
-    p.cancel('无法读取 .harness/config.yml，请先执行 devkeel init')
-    process.exit(1)
-  }
-
   let targets: string[]
   if (opts?.targets) {
     targets = opts.targets.split(',').map(t => t.trim())
   } else {
     const detectedTargets = detectExistingPlatformTargets(projectRoot)
-    const currentTargets = config.targets || []
-    const initialValues = [...new Set([...currentTargets, ...detectedTargets])]
 
     const input = await p.multiselect({
       message: '目标平台？',
@@ -45,7 +37,7 @@ export async function runSync(opts?: SyncOptions): Promise<void> {
         { value: 'gemini', label: 'Gemini CLI' },
         { value: 'opencode', label: 'OpenCode' },
       ],
-      initialValues: initialValues.length > 0 ? initialValues : undefined,
+      initialValues: detectedTargets.length > 0 ? detectedTargets : undefined,
     })
     if (p.isCancel(input)) { p.cancel('已取消'); process.exit(0) }
     targets = input as string[]
@@ -60,15 +52,11 @@ export async function runSync(opts?: SyncOptions): Promise<void> {
     return
   }
 
-  config.targets = targets
-  writeConfig(projectRoot, config)
-  log.success('config.yml targets 已更新')
-
   if (targets.includes('claude-code') || targets.includes('cursor')) {
     const claudeMdPath = path.join(projectRoot, 'CLAUDE.md')
     if (!fs.existsSync(claudeMdPath)) {
       const claudeMd = renderTemplate(readTemplateFile('claude-md.md'), {
-        PROJECT_NAME: config.project.name,
+        PROJECT_NAME: detectEnvironment(projectRoot).projectName,
         TARGETS: targets.join(', '),
       })
       writeSmartFile(claudeMdPath, claudeMd, '@AGENTS.md')

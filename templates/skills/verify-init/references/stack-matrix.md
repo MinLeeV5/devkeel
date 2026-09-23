@@ -47,13 +47,15 @@ stack-matrix 是 Phase 1 推荐框架的权威来源。v1 覆盖主流四大类�
 
 ## Monorepo 处理
 
-`pnpm-workspace.yaml` / `lerna.json` / `nx.json` 命中 → 视为单一项目，根目录运行一次 verify-init。按主包/主 app 技术栈检测，子包若技术栈不同由用户在 Phase 2 补充说明。
+`pnpm-workspace.yaml` / `lerna.json` / `nx.json` 命中时，按各 manifest 和测试配置识别根项目、
+共享基建与子项目。分别使用本矩阵，不用主包技术栈代替所有子包；Phase 2 确认目标范围、
+依赖 owner 与运行目录。规则和知识按作用域维护，避免重复安装与重复文档。
 
 ## 未命中（custom）
 
 检测不到明确技术栈 → 标 `custom:<标签>`：
 
-- 只配基础结构（`tests/` 目录约定 + 通用 testing 规范）
+- 只整理已确认的基础结构、测试约束和项目知识
 - 不强制装框架，提示用户手动指定领域或框架
 - 验证 agent 仍可生成（变更驱动验证不依赖具体框架，跑用户已有的 test 命令）
 
@@ -69,4 +71,4 @@ stack-matrix 是 Phase 1 推荐框架的权威来源。v1 覆盖主流四大类�
 
 本表给出可覆盖的框架推荐，不绑定固定 config 配方。每个技术栈的具体安装/config/示例/scripts 由 Agent 凭官方文档产出（见 `frameworks-index.md` 定位方法论 + `scaffolding-principles.md` 产出清单），推荐项可被官方文档或用户在 Phase 2 推翻。
 
-custom 领域无推荐锚点，走通用基础结构路径 + 通用规范，Agent 仍可凭官方文档产出脚手架。
+custom 领域无推荐锚点，按本地证据维护共用规则与项目文档，Agent 仍可凭官方文档产出脚手架。

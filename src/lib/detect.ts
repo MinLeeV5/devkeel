@@ -2,6 +2,7 @@ import fs from 'node:fs'
 import path from 'node:path'
 import { execSync } from 'node:child_process'
 import { isDirectorySafe } from './templates.js'
+import { DOMAIN_AGENTS_MARKER } from './agents-md.js'
 
 export interface DetectResult {
   isGitRepo: boolean
@@ -101,4 +102,54 @@ export function detectIsSubmodule(projectRoot: string): boolean {
   } catch {
     return false
   }
+}
+
+export interface SubmoduleInfo {
+  name: string
+  path: string
+  url: string
+  branch?: string
+}
+
+export function detectSubmodules(projectRoot: string): SubmoduleInfo[] {
+  const gitmodulesPath = path.join(projectRoot, '.gitmodules')
+  if (!fs.existsSync(gitmodulesPath)) return []
+
+  const content = fs.readFileSync(gitmodulesPath, 'utf-8')
+  const submodules: SubmoduleInfo[] = []
+  let current: Partial<SubmoduleInfo> = {}
+
+  for (const line of content.split('\n')) {
+    const trimmed = line.trim()
+    const sectionMatch = trimmed.match(/^\[submodule "(.+)"\]$/)
+    if (sectionMatch) {
+      if (current.name) submodules.push(current as SubmoduleInfo)
+      current = { name: sectionMatch[1] }
+      continue
+    }
+    const kvMatch = trimmed.match(/^(\w+)\s*=\s*(.+)$/)
+    if (kvMatch) {
+      const [, key, value] = kvMatch
+      if (key === 'path') current.path = value
+      else if (key === 'url') current.url = value
+      else if (key === 'branch') current.branch = value
+    }
+  }
+  if (current.name) submodules.push(current as SubmoduleInfo)
+
+  return submodules
+}
+
+export type RepositoryType = 'main' | 'domain'
+
+export function detectRepositoryType(projectRoot: string): RepositoryType {
+  if (detectIsSubmodule(projectRoot)) return 'domain'
+  const agentsPath = path.join(projectRoot, 'AGENTS.md')
+  if (fs.existsSync(agentsPath) && fs.statSync(agentsPath).isFile()) {
+    const content = fs.readFileSync(agentsPath, 'utf-8')
+    if (content.trimStart().split(/\r?\n/, 1)[0]?.trimEnd() === DOMAIN_AGENTS_MARKER) {
+      return 'domain'
+    }
+  }
+  return 'main'
 }

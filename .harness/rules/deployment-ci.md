@@ -1,50 +1,19 @@
+---
+description: 修改构建或发布流程时遵守产物边界与发布门禁。
+globs:
+  - "package.json"
+  - "templates/package.json"
+  - "tsup.config.ts"
+---
+
 # 部署与 CI
 
-## 约定 1: 构建流程为 tsup 单入口 ESM
+- CLI 保持 tsup 单入口 ESM 构建；入口、产物和 target 以 `tsup.config.ts` 为准。
+- 保留 `prepublishOnly` 构建门禁，发布产物必须对应当前源码；发布前依次通过 lint、test、build，
+  再执行已授权的版本调整和发布。
+- 发布内容由所属包 `package.json` 的 `files` 白名单控制，不将源码、测试和私有配置混入包。
+- 发布使用公共 npm registry 与 `npm publish`；依赖管理仍使用 pnpm。
+- 版本遵循 semver，与对应资产的版本规则保持一致。
 
-构建命令 `pnpm build` 执行 tsup，入口 `src/index.ts`，输出 `dist/`。格式 ESM-only，target `node20`，生成 `.d.ts` 和 sourcemap。
-
-出处: `tsup.config.ts`
-
-```typescript
-defineConfig({
-  entry: ['src/index.ts'],
-  format: ['esm'],
-  dts: true,
-  target: 'node20',
-})
-```
-
-## 约定 2: prepublishOnly 门禁
-
-`npm publish` 前自动触发 `prepublishOnly` 脚本执行完整构建。确保发布产物始终是最新编译结果。
-
-出处: `package.json` — `"prepublishOnly": "npm run build"`
-
-## 约定 3: 发布到公共 npm registry
-
-包名 `devkeel`，通过 `publishConfig.registry` 指向公共 npm registry。发布使用 `npm publish`（非 pnpm publish）。
-
-出处: `.npmrc` — `registry=https://registry.npmjs.org/`
-
-## 约定 4: files 字段白名单控制发布内容
-
-`package.json` 的 `files` 仅包含 `bin`、`dist`、`templates`。源码、测试、配置文件不随包发布。
-
-出处: `package.json:11-15`
-
-## 约定 5: 发布前质量门禁顺序
-
-完整发布流程：
-
-```
-pnpm lint → pnpm test → pnpm build → version bump → npm publish
-```
-
-lint 和 test 必须在构建和发布之前通过。
-
-## 约定 6: 版本号遵循 semver
-
-`package.json` 中 `version` 使用标准三段式 semver。版本升级语义与 skill-versioning.md 一致（breaking → major，新功能 → minor，修正 → patch）。
-
-出处: `package.json:3` — `"version": "0.2.7"`
+了解构建背景与包边界时读取 [构建与发布说明](../../docs/building.md)。实际发布使用
+[release-workflow](../skills/release-workflow/SKILL.md)，不能以阅读本规则代替发布授权。

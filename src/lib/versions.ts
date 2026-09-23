@@ -3,6 +3,7 @@ import path from 'node:path'
 import YAML from 'yaml'
 import packageJson from '../../package.json'
 import { getTemplatesDir } from './templates-dir.js'
+import type { RepositoryType } from './detect.js'
 
 function readSchemaVersion(schemaName: string, base: string): string | null {
   const schemaPath = path.join(base, 'openspec', 'schemas', schemaName, 'schema.yaml')
@@ -12,18 +13,6 @@ function readSchemaVersion(schemaName: string, base: string): string | null {
   }
   return null
 }
-
-export interface HarnessConfig {
-  version: string
-  project: {
-    name: string
-    types: string[]
-    repoType?: RepositoryType
-  }
-  targets: string[]
-}
-
-export type RepositoryType = 'main' | 'domain'
 
 export interface VersionsRecord {
   harness: string
@@ -38,52 +27,6 @@ const versionsStringifyOptions = {
   defaultStringType: 'QUOTE_DOUBLE',
   defaultKeyType: 'PLAIN',
 } as const
-
-export function readConfig(projectRoot: string): HarnessConfig | null {
-  const configPath = path.join(projectRoot, '.harness', 'config.yml')
-  if (!fs.existsSync(configPath)) return null
-  try {
-    const content = fs.readFileSync(configPath, 'utf-8')
-    return YAML.parse(content) as HarnessConfig
-  } catch {
-    return null
-  }
-}
-
-export function writeConfig(projectRoot: string, config: HarnessConfig): void {
-  const configPath = path.join(projectRoot, '.harness', 'config.yml')
-  fs.mkdirSync(path.dirname(configPath), { recursive: true })
-  fs.writeFileSync(configPath, YAML.stringify(config, { lineWidth: 0 }), 'utf-8')
-}
-
-export function buildDefaultConfig(options: {
-  name: string
-  types: string[]
-  targets: string[]
-  repoType?: RepositoryType
-}): HarnessConfig {
-  const project: HarnessConfig['project'] = {
-    name: options.name,
-    types: options.types,
-  }
-  if (options.repoType) project.repoType = options.repoType
-  return {
-    version: '2.0',
-    project,
-    targets: options.targets,
-  }
-}
-
-export function resolveRepositoryType(
-  config: HarnessConfig | null,
-  isSubmodule: boolean,
-): RepositoryType {
-  const configuredType = config?.project?.repoType
-  if (configuredType === 'main' || configuredType === 'domain') {
-    return configuredType
-  }
-  return isSubmodule ? 'domain' : 'main'
-}
 
 export function filterManagedVersions(
   versions: VersionsRecord,
@@ -191,35 +134,4 @@ export function computeOutdatedCategories(
   }
 
   return { skills, agents, rules, schemas }
-}
-
-export interface ValidationError {
-  field: string
-  message: string
-}
-
-export function validateConfig(config: unknown): ValidationError[] {
-  const errors: ValidationError[] = []
-  if (!config || typeof config !== 'object') {
-    errors.push({ field: 'root', message: 'config.yml 不是有效的 YAML 对象' })
-    return errors
-  }
-
-  const c = config as Record<string, unknown>
-
-  if (!c['version']) errors.push({ field: 'version', message: '缺少 version 字段' })
-  if (!c['project'] || typeof c['project'] !== 'object') {
-    errors.push({ field: 'project', message: '缺少 project 字段' })
-  } else {
-    const p = c['project'] as Record<string, unknown>
-    if (!p['name']) errors.push({ field: 'project.name', message: '缺少 project.name' })
-    if (!Array.isArray(p['types'])) errors.push({ field: 'project.types', message: 'project.types 必须是数组' })
-    if (p['repoType'] !== undefined && !['main', 'domain'].includes(String(p['repoType']))) {
-      errors.push({ field: 'project.repoType', message: 'project.repoType 必须是 main 或 domain' })
-    }
-  }
-
-  if (!Array.isArray(c['targets'])) errors.push({ field: 'targets', message: 'targets 必须是数组' })
-
-  return errors
 }

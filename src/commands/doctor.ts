@@ -1,15 +1,8 @@
 import path from 'node:path'
 import fs from 'node:fs'
 import * as p from '@clack/prompts'
-import {
-  readConfig,
-  resolveRepositoryType,
-  validateConfig,
-  type RepositoryType,
-} from '../lib/config.js'
-import { detectIsSubmodule } from '../lib/detect.js'
-import { detectSubmodules } from './submodule.js'
-import { createPlatformLinks } from '../lib/templates.js'
+import { detectRepositoryType, detectSubmodules, type RepositoryType } from '../lib/detect.js'
+import { createPlatformLinks, detectExistingPlatformTargets } from '../lib/templates.js'
 import { validateOpenspecConfig } from '../lib/openspec.js'
 import { createLog } from '../lib/log.js'
 import { checkAndNotify } from '../lib/update-notifier.js'
@@ -31,36 +24,12 @@ export function getRequiredHarnessDirs(repoType: RepositoryType): string[] {
   return shouldValidateRootAssets(repoType) ? [...dirs, 'commands'] : dirs
 }
 
-export async function runDoctor(opts?: { fix?: boolean }): Promise<void> {
-  const projectRoot = process.cwd()
-  const fix = opts?.fix ?? false
-
+export function checkProjectAssets(projectRoot: string, fix = false): CheckResult[] {
   const log = createLog()
-  log.intro('devkeel doctor')
-
-  if (!fs.existsSync(path.join(projectRoot, '.harness'))) {
-    p.cancel('未检测到 .harness/ 目录，请先执行 devkeel init')
-    process.exit(1)
-  }
-
   const results: CheckResult[] = []
 
-  const config = readConfig(projectRoot)
-  const repoType = resolveRepositoryType(config, detectIsSubmodule(projectRoot))
-  if (!config) {
-    results.push({ name: 'config.yml', status: 'fail', detail: '文件不存在或不可读' })
-  } else {
-    const configErrors = validateConfig(config)
-    if (configErrors.length > 0) {
-      results.push({
-        name: 'config.yml',
-        status: 'fail',
-        detail: configErrors.map(error => `${error.field}: ${error.message}`).join('; '),
-      })
-    } else {
-      results.push({ name: 'config.yml', status: 'pass', detail: `schema 合法 (${repoType})` })
-    }
-  }
+  const repoType = detectRepositoryType(projectRoot)
+  const targets = detectExistingPlatformTargets(projectRoot)
 
   const requiredDirs = getRequiredHarnessDirs(repoType)
   for (const dir of requiredDirs) {
@@ -79,7 +48,7 @@ export async function runDoctor(opts?: { fix?: boolean }): Promise<void> {
     results.push({ name: 'AGENTS.md', status: 'fail', detail: '文件缺失' })
   }
 
-  if (Array.isArray(config?.targets) && config.targets.includes('claude-code')) {
+  if (targets.includes('claude-code')) {
     const claudeMd = path.join(projectRoot, 'CLAUDE.md')
     if (fs.existsSync(claudeMd)) {
       const content = fs.readFileSync(claudeMd, 'utf-8')
@@ -93,10 +62,10 @@ export async function runDoctor(opts?: { fix?: boolean }): Promise<void> {
     }
   }
 
-  if (Array.isArray(config?.targets)) {
+  if (targets.length > 0) {
     let skillsFixAllowed = true
     if (fix) {
-      const skills = syncSkillLinks(projectRoot, config.targets)
+      const skills = syncSkillLinks(projectRoot, targets)
       if (!skills.ok) {
         skillsFixAllowed = false
         results.push({ name: 'skills 修复', status: 'fail', detail: skills.errors.join('；') })
@@ -104,8 +73,8 @@ export async function runDoctor(opts?: { fix?: boolean }): Promise<void> {
         log.info('如需覆盖冲突入口，请显式运行 devkeel sync --force；覆盖前会备份')
       }
     }
-    results.push(...checkSkillLinks(projectRoot, config.targets))
-    if (config.targets.some(target => target === 'claude-code' || target === 'codex')) {
+    results.push(...checkSkillLinks(projectRoot, targets))
+    if (targets.some(target => target === 'claude-code' || target === 'codex')) {
       results.push(...checkSkillPackages(projectRoot))
     }
     const hasCommands = fs.existsSync(path.join(projectRoot, '.harness', 'commands'))
@@ -119,7 +88,7 @@ export async function runDoctor(opts?: { fix?: boolean }): Promise<void> {
     ]
     let hasBrokenLinks = false
     for (const pl of platformLinks) {
-      if (!config.targets.includes(pl.target)) continue
+      if (!targets.includes(pl.target)) continue
       for (const link of pl.links) {
         if (link === 'skills' && (pl.target === 'claude-code' || pl.target === 'codex')) continue
         const linkPath = path.join(projectRoot, pl.dir, link)
@@ -138,7 +107,7 @@ export async function runDoctor(opts?: { fix?: boolean }): Promise<void> {
       }
     }
     if (hasBrokenLinks && fix && skillsFixAllowed) {
-      createPlatformLinks(projectRoot, config.targets)
+      createPlatformLinks(projectRoot, targets)
       log.success('已处理缺失的平台链接；Codex / Claude 现有内容保持原样')
     } else if (hasBrokenLinks) {
       log.info('提示：执行 devkeel doctor --fix 自动修复链接问题')
@@ -171,11 +140,27 @@ export async function runDoctor(opts?: { fix?: boolean }): Promise<void> {
       if (hasAgentsMd || hasHarness) {
         results.push({ name: `submodule/${sub.name}`, status: 'pass', detail: '已配置' })
       } else {
-        results.push({ name: `submodule/${sub.name}`, status: 'warn', detail: '未配置，建议运行 devkeel submodule add' })
+        results.push({ name: `submodule/${sub.name}`, status: 'warn', detail: '未初始化，请进入子模块目录运行 devkeel init' })
       }
     }
   }
 
+  return results
+}
+
+export async function runDoctor(opts?: { fix?: boolean }): Promise<void> {
+  const projectRoot = process.cwd()
+  const fix = opts?.fix ?? false
+
+  const log = createLog()
+  log.intro('devkeel doctor')
+
+  if (!fs.existsSync(path.join(projectRoot, '.harness'))) {
+    p.cancel('未检测到 .harness/ 目录，请先执行 devkeel init')
+    process.exit(1)
+  }
+
+  const results = checkProjectAssets(projectRoot, fix)
   const updateMsg = await checkAndNotify()
 
   const symbols = { pass: '✔', warn: '⚠', fail: '✘' }

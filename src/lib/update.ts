@@ -2,7 +2,7 @@ import fs from 'node:fs'
 import path from 'node:path'
 import crypto from 'node:crypto'
 import YAML from 'yaml'
-import { readVersions, getBuiltinVersions, type VersionsRecord } from './config.js'
+import { readVersions, getBuiltinVersions, type VersionsRecord } from './versions.js'
 import { getTemplatesDir } from './templates-dir.js'
 
 export interface UpdateItem {

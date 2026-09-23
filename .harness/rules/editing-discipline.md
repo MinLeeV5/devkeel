@@ -32,8 +32,7 @@ globs:
 
 ## 文档产出边界
 
-| 约定 | 依据 |
-|------|------|
-| 所有知识产出写入 openspec/，不写入 docs/ | AGENTS.md 第 8 节资产位置表 |
-| brainstorm 阶段绝不写入 docs/ | AGENTS.md 第 4 节 brainstorm 收敛标准 |
-| 不主动创建 README 或文档文件，除非明确要求 | AGENTS.md 默认执行基线 |
+- 按 AGENTS 的资产分层维护：当前项目知识进入所属项目 docs，任务过程进入主仓库 OpenSpec，
+  当前能力规范保留在 openspec/specs。
+- 仅分析或 topic-only brainstorm 不写文件；获准持久化后按内容归属落盘。
+- 项目文档入口见 [文档索引](../../docs/README.md)，不将任务草案当作已验证的项目事实。

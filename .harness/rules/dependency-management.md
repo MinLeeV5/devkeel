@@ -28,19 +28,13 @@ globs:
 
 ## 约定 3: 最小依赖原则 — runtime 依赖严格精简
 
-runtime dependencies 仅保留 CLI 运行必需的包：
-
-| 包 | 职责 |
-|---|---|
-| commander | CLI 命令注册与解析 |
-| @clack/prompts | 交互式终端 UI |
-| yaml | YAML 配置读写 |
+runtime dependencies 仅保留 CLI 运行必需的包，实际清单以 `package.json` 为准。
 
 新增 runtime 依赖前须确认：(1) Node.js 内置模块无法满足；(2) 不属于构建/测试/类型工具。
 
 ## 约定 4: 构建产物不 bundle 依赖
 
-tsup 将 `dependencies` 中的包视为 external，不打入 bundle。`package.json` 的 `files` 字段仅包含 `bin`、`dist`、`templates`。
+tsup 将 `dependencies` 中的包视为 external，不打入 bundle。发布文件白名单以 `package.json` 的 `files` 为准，构建与包边界见 [构建说明](../../docs/building.md)。
 
 ## 约定 5: Node.js 最低版本 >=20.19.0
 
