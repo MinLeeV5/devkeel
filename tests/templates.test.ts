@@ -1153,8 +1153,8 @@ describe('templates', () => {
   describe('writeSmartFile', () => {
     it('should write full template when file does not exist', () => {
       const filePath = path.join(tmpDir, 'CLAUDE.md')
-      writeSmartFile(filePath, '@AGENTS.md\n\n# Test\n', '@AGENTS.md')
-      expect(fs.readFileSync(filePath, 'utf-8')).toBe('@AGENTS.md\n\n# Test\n')
+      writeSmartFile(filePath, readTemplateFile('claude-md.md'), '@AGENTS.md')
+      expect(fs.readFileSync(filePath, 'utf-8')).toBe('@AGENTS.md\n')
     })
 
     it('should overwrite when file has only comment differences', () => {
@@ -1167,7 +1167,7 @@ describe('templates', () => {
     it('should preserve user content and ensure directive exists', () => {
       const filePath = path.join(tmpDir, 'CLAUDE.md')
       fs.writeFileSync(filePath, '# My Project\n\n这是用户写的内容\n')
-      writeSmartFile(filePath, '@AGENTS.md\n\n# Template\n', '@AGENTS.md')
+      writeSmartFile(filePath, readTemplateFile('claude-md.md'), '@AGENTS.md')
       const result = fs.readFileSync(filePath, 'utf-8')
       expect(result).toContain('@AGENTS.md')
       expect(result).toContain('这是用户写的内容')
@@ -1177,7 +1177,7 @@ describe('templates', () => {
       const filePath = path.join(tmpDir, 'CLAUDE.md')
       const content = '@AGENTS.md\n\n# My Project\n\n这是用户写的内容\n'
       fs.writeFileSync(filePath, content)
-      writeSmartFile(filePath, '@AGENTS.md\n\n# Template\n', '@AGENTS.md')
+      writeSmartFile(filePath, readTemplateFile('claude-md.md'), '@AGENTS.md')
       expect(fs.readFileSync(filePath, 'utf-8')).toBe(content)
     })
   })

@@ -20,11 +20,12 @@
 
 除非 WHY 不可从代码推断，否则不添加注释。JSDoc、块注释、行尾注释均不使用。
 
-出处: `src/` 全部文件几乎无注释；CLAUDE.md 明确要求"default to writing no comments"
+出处: `src/` 现有代码风格
 
-## 约定 3: CLAUDE.md 结构保持稳定
+## 约定 3: CLAUDE.md 只引用 AGENTS.md
 
-CLAUDE.md 包含固定章节：Project、Commands、Architecture、Tech Stack。通过 `@AGENTS.md` 引用执行契约。内容变更时保持此结构。
+仓库 CLAUDE.md 与分发模板只保留一行 `@AGENTS.md`。项目知识入口由 AGENTS.md 维护。
+初始化与同步时保留已有用户自定义内容。
 
 出处: `CLAUDE.md`
 

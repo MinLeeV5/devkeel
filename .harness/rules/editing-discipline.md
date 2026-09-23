@@ -26,8 +26,8 @@ globs:
 
 | 约定 | 依据 |
 |------|------|
-| 每个命令一个文件（src/commands/），不混合命令逻辑 | CLAUDE.md Architecture + 实际目录结构 |
-| 纯逻辑模块在 src/lib/（无 I/O 副作用优先），与命令层分离 | CLAUDE.md Architecture |
+| 每个命令一个文件（src/commands/），不混合命令逻辑 | [架构约束](architecture-constraints.md) + 实际目录结构 |
+| 纯逻辑模块在 src/lib/（无 I/O 副作用优先），与命令层分离 | [架构约束](architecture-constraints.md) |
 | 涉及子模块实现时进入子项目目录处理，不把子项目细节写回主仓库 | AGENTS.md 第 4 节 L0 |
 
 ## 文档产出边界

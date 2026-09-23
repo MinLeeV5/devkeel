@@ -40,6 +40,7 @@ describe.sequential('skills distribution', () => {
 
   it('makes additions and edits visible through both native paths without another sync', async () => {
     await runSync({ targets: 'claude-code,codex' })
+    expect(fs.readFileSync(path.join(root, 'CLAUDE.md'), 'utf8')).toBe('@AGENTS.md\n')
     write('.harness/skills/example/SKILL.md', 'first version')
     for (const platform of ['.claude', '.agents']) {
       expect(fs.lstatSync(path.join(root, platform, 'skills')).isSymbolicLink()).toBe(true)

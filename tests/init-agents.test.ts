@@ -126,7 +126,7 @@ describe.sequential('init AGENTS templates', () => {
       expect(agents).toContain(`<!-- /harness:user:${slot} -->`)
     }
     expect(fs.readFileSync(path.join(projectDir, 'CLAUDE.md'), 'utf-8'))
-      .toContain('@AGENTS.md\n\n# frontend-domain')
+      .toBe('@AGENTS.md\n')
     expect(readConfig(projectDir)?.project.repoType).toBe('domain')
     expect(readVersions(projectDir)).toEqual(expect.objectContaining({
       skills: {},
