@@ -1,6 +1,6 @@
 {
   "name": "devkeel-templates",
-  "version": "2.2.0",
+  "version": "2.3.0",
   "description": "DevKeel CLI 的模板资产（skills/rules/agents/schemas）",
   "scripts": {
     "release": "npm publish",
