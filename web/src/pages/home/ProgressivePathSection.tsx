@@ -6,8 +6,8 @@ export function ProgressivePathSection(): React.JSX.Element {
     <section id="progressive-path" className="home-section">
       <SectionHeading
         eyebrow="03 / 渐进式任务路径"
-        title="只需描述任务，Agent 自动匹配充分路径"
-        summary="无需预选 Direct、Lite 或 Full。Agent 默认走最短可闭环路径，只在协作记忆或风险治理确有必要时说明原因并请求升级。"
+        title="从一句话需求开始，逐层收敛到充分路径"
+        summary="普通开发先依据代码核对缺口；有关键决定未明确时，/brainstorming 按需引用需求与技术设计维度，逐题讨论并收敛方案，再选择 Direct、Lite 或 Full。"
       />
       <ProgressivePathDiagram />
       <div className="path-legend">

@@ -1,135 +1,96 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 620" width="960" height="620" role="img" aria-labelledby="title desc"
-  data-generator="fireworks-tech-graph" data-schema-version="1" data-style-id="1"
-  data-visual-theme="Flat Icon · DevKeel Green" data-diagram-type="flowchart" data-semantic-profile="generic"
-  data-semantic-valid="true" data-quality-profile="showcase" data-max-bends-per-edge="2"
-  data-max-route-stretch="1.35" data-max-bridged-crossings="0" data-min-node-gap="40"
-  data-min-container-gutter="20" data-min-label-clearance="4" data-min-segment-length="16">
-  <title id="title">从一句话需求开始的 DevKeel V2 渐进式任务路径</title>
-  <desc id="desc">用户只需用一句话描述修复缺陷或实现需求，Agent 会自动识别任务类型。专项操作进入对应 Skill，普通任务默认从 Direct 开始；需要协作记忆时在确认后升级 Lite，高风险条件成立时在确认后原地升级 Full，再由 schema 接管后续编排。Lite 依次经过 brainstorm 和 tasks、apply 与验证、archive；Full 依次经过 brainstorm、design specs 和 tasks、apply review 和 verify、retrospective 和 archive。所有路径共享调查、实现、验证和交付底线。</desc>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 1245" width="960" height="1245" role="img" aria-labelledby="title desc" data-generator="fireworks-tech-graph" data-schema-version="1" data-style-id="1" data-visual-theme="Flat Icon · DevKeel Green" data-diagram-type="flowchart" data-semantic-profile="generic" data-semantic-valid="true" data-quality-profile="standard">
+  <title id="title">DevKeel 渐进工作流与 /brainstorming 访谈循环</title>
+  <desc id="desc">图从上到下依次展示一句话需求、Agent 识别任务、仓库事实核对、按需进入 /brainstorming、选择工作流。专项操作由对应 Skill 处理；方案已清晰时跳过访谈。需求与技术设计探针按需提供候选问题，合并去重后每轮只讨论一个关键决定，给出推荐、依据与代价，直到决定足够清晰。最后按任务需要选择 Direct、经确认的 Lite 或经确认的 Full；Lite 和 Full 使用 OpenSpec 编排。</desc>
   <style>
-    text { font-family: "Hiragino Sans GB", "PingFang SC", "Heiti SC", "Microsoft YaHei", "Helvetica Neue", Helvetica, Arial, sans-serif; }
-    .hint { fill: #657083; font-size: 13px; font-weight: 600; }
+    text { font-family: "Hiragino Sans GB", "PingFang SC", "Microsoft YaHei", "Helvetica Neue", Helvetica, Arial, sans-serif; }
+    .title { fill: #182033; font-size: 21px; font-weight: 700; }
+    .hint { fill: #526078; font-size: 12px; font-weight: 500; }
+    .section { fill: #0da97c; font-size: 20px; font-weight: 700; }
     .node-title { fill: #182033; font-size: 15px; font-weight: 700; }
-    .node-subtitle { fill: #657083; font-size: 11px; }
-    .decision { fill: #182033; font-size: 13px; font-weight: 700; }
-    .edge-label { fill: #c64f3e; font-size: 11px; font-weight: 700; }
-    .branch-label { fill: #07986a; font-size: 11px; font-weight: 700; }
-    .schema-kicker { fill: #07986a; font-size: 13px; font-weight: 700; }
-    .schema-note { fill: #657083; font-size: 11px; }
-    .schema-label { font-size: 11px; font-weight: 700; letter-spacing: .01em; }
-    .schema-label--lite { fill: #07986a; }
-    .schema-label--full { fill: #df503e; }
-    .schema-title { fill: #182033; font-size: 14px; font-weight: 700; }
-    .schema-subtitle { fill: #657083; font-size: 11px; }
-    .step-number { fill: #ffffff; font-size: 9px; font-weight: 700; }
-    .step-title { fill: #182033; font-size: 12px; font-weight: 700; }
-    .step-subtitle { fill: #657083; font-size: 11px; }
-    .baseline-title { fill: #07986a; font-size: 13px; font-weight: 700; }
-    .baseline-text { fill: #445066; font-size: 13px; font-weight: 600; }
-    .legend { fill: #657083; font-size: 10px; }
+    .node-subtitle { fill: #526078; font-size: 12px; }
+    .tiny { fill: #526078; font-size: 11px; }
+    .branch { fill: #0da97c; font-size: 12px; font-weight: 700; }
+    .feedback { fill: #e56a53; font-size: 12px; font-weight: 700; }
+    .legend { fill: #526078; font-size: 11px; }
   </style>
   <defs>
-    <marker id="arrow-primary" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto"><polygon points="0 0,10 3.5,0 7" fill="#10b981"/></marker>
-    <marker id="arrow-upgrade" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto"><polygon points="0 0,10 3.5,0 7" fill="#ff715b"/></marker>
-    <marker id="arrow-full" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto"><polygon points="0 0,10 3.5,0 7" fill="#ff715b"/></marker>
+    <marker id="arrow-primary" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto"><polygon points="0 0,10 3.5,0 7" fill="#0da97c"/></marker>
+    <marker id="arrow-candidate" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto"><polygon points="0 0,10 3.5,0 7" fill="#7958ca"/></marker>
+    <marker id="arrow-feedback" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto"><polygon points="0 0,10 3.5,0 7" fill="#e56a53"/></marker>
   </defs>
-
-  <rect width="960" height="620" rx="18" fill="#f7f8fc" data-graph-role="background"/>
-  <text class="hint" x="30" y="34">只需描述要做什么；Agent 自动匹配最短充分路径</text>
-
-  <g data-graph-role="legend" transform="translate(625 30)">
-    <line x1="0" y1="0" x2="24" y2="0" stroke="#10b981" stroke-width="2.25"/><text class="legend" x="31" y="4">自动路由</text>
-    <line x1="99" y1="0" x2="123" y2="0" stroke="#ff715b" stroke-width="2" stroke-dasharray="6 5"/><text class="legend" x="130" y="4">确认升级</text>
-    <line x1="203" y1="0" x2="227" y2="0" stroke="#ff715b" stroke-width="2.25"/><text class="legend" x="234" y="4">Full 编排</text>
-  </g>
-
-  <path id="task-to-decision" data-graph-role="edge" data-edge-id="task-to-decision" data-source="task" data-target="specialist-check" data-edge-kind="flow" data-flow="primary" data-bends="0" data-route-stretch="1" d="M160 195H200" fill="none" stroke="#10b981" stroke-width="2.25" marker-end="url(#arrow-primary)"/>
-  <path id="decision-to-skill" data-graph-role="edge" data-edge-id="decision-to-skill" data-source="specialist-check" data-target="skill" data-edge-kind="flow" data-flow="primary" data-bends="1" data-route-stretch="1.3" d="M250 145V95H340" fill="none" stroke="#10b981" stroke-width="2.25" marker-end="url(#arrow-primary)"/>
-  <path id="decision-to-direct" data-graph-role="edge" data-edge-id="decision-to-direct" data-source="specialist-check" data-target="direct" data-edge-kind="flow" data-flow="primary" data-bends="0" data-route-stretch="1" d="M300 195H340" fill="none" stroke="#10b981" stroke-width="2.25" marker-end="url(#arrow-primary)"/>
-  <path id="direct-to-lite" data-graph-role="edge" data-edge-id="direct-to-lite" data-source="direct" data-target="lite" data-edge-kind="dependency" data-flow="upgrade" data-bends="0" data-route-stretch="1" d="M500 195H570" fill="none" stroke="#ff715b" stroke-width="2" stroke-dasharray="6 5" marker-end="url(#arrow-upgrade)"/>
-  <path id="lite-to-full" data-graph-role="edge" data-edge-id="lite-to-full" data-source="lite" data-target="full" data-edge-kind="dependency" data-flow="upgrade" data-bends="0" data-route-stretch="1" d="M730 195H800" fill="none" stroke="#ff715b" stroke-width="2" stroke-dasharray="6 5" marker-end="url(#arrow-upgrade)"/>
-  <path id="lite-to-schema" data-graph-role="edge" data-edge-id="lite-to-schema" data-source="lite" data-target="lite-schema" data-edge-kind="flow" data-flow="primary" data-bends="2" data-route-stretch="1" d="M650 225V255H435V285" fill="none" stroke="#10b981" stroke-width="2.25" marker-end="url(#arrow-primary)"/>
-  <path id="full-to-schema" data-graph-role="edge" data-edge-id="full-to-schema" data-source="full" data-target="full-schema" data-edge-kind="flow" data-flow="full" data-bends="0" data-route-stretch="1" d="M865 225V285" fill="none" stroke="#ff715b" stroke-width="2.25" marker-end="url(#arrow-full)"/>
-
-  <g>
-    <rect id="task" data-node-id="task" x="30" y="165" width="130" height="60" rx="10" fill="#ffffff" stroke="#9aa4b7" stroke-width="1.5" data-graph-role="node" data-semantic-role="input" data-graph-bounds="30,165,160,225"/>
-    <text class="node-title" x="95" y="190" text-anchor="middle">一句话需求</text><text class="node-subtitle" x="95" y="210" text-anchor="middle">修复缺陷 · 实现需求</text>
-  </g>
-  <g>
-    <polygon id="specialist-check" data-node-id="specialist-check" points="250,145 300,195 250,245 200,195" fill="#fff8e8" stroke="#e3a51a" stroke-width="1.5" data-graph-role="node" data-semantic-role="decision" data-graph-bounds="200,145,300,245"/>
-    <text class="decision" x="250" y="190" text-anchor="middle">Agent</text><text class="decision" x="250" y="208" text-anchor="middle">自动识别</text>
-  </g>
-  <g>
-    <rect id="skill" data-node-id="skill" x="340" y="65" width="160" height="60" rx="10" fill="#fff8e8" stroke="#e3a51a" stroke-width="1.5" data-graph-role="node" data-semantic-role="specialist" data-graph-bounds="340,65,500,125"/>
-    <text class="node-title" x="420" y="91" text-anchor="middle">专项 Skill</text><text class="node-subtitle" x="420" y="111" text-anchor="middle">审查 · 调试 · 提交</text>
-  </g>
-  <g>
-    <rect id="direct" data-node-id="direct" x="340" y="165" width="160" height="60" rx="10" fill="#eef3ff" stroke="#3563e9" stroke-width="1.5" data-graph-role="node" data-semantic-role="direct" data-graph-bounds="340,165,500,225"/>
-    <text class="node-title" x="420" y="191" text-anchor="middle">Direct</text><text class="node-subtitle" x="420" y="211" text-anchor="middle">默认 · 当前会话闭环</text>
-  </g>
-  <g>
-    <rect id="lite" data-node-id="lite" x="570" y="165" width="160" height="60" rx="10" fill="#e9f8f3" stroke="#10b981" stroke-width="1.5" data-graph-role="node" data-semantic-role="lite" data-graph-bounds="570,165,730,225"/>
-    <text class="node-title" x="650" y="191" text-anchor="middle">Lite</text><text class="node-subtitle" x="650" y="211" text-anchor="middle">最少协作记忆</text>
-  </g>
-  <g>
-    <rect id="full" data-node-id="full" x="800" y="165" width="130" height="60" rx="10" fill="#fff0ed" stroke="#ff715b" stroke-width="1.5" data-graph-role="node" data-semantic-role="full" data-graph-bounds="800,165,930,225"/>
-    <text class="node-title" x="865" y="191" text-anchor="middle">Full</text><text class="node-subtitle" x="865" y="211" text-anchor="middle">完整风险治理</text>
-  </g>
-
-  <text class="branch-label" x="286" y="88" data-graph-role="label" data-owner="decision-to-skill">专项操作</text>
-  <text class="branch-label" x="306" y="187" data-graph-role="label" data-owner="decision-to-direct">普通</text>
-  <text class="edge-label" x="535" y="139" text-anchor="middle" data-graph-role="label" data-owner="direct-to-lite">需要协作记忆</text>
-  <text class="node-subtitle" x="535" y="157" text-anchor="middle" data-graph-role="label" data-owner="direct-to-lite">确认升级</text>
-  <text class="edge-label" x="765" y="117" text-anchor="middle" data-graph-role="label" data-owner="lite-to-full">高风险成立</text>
-  <text class="node-subtitle" x="765" y="135" text-anchor="middle" data-graph-role="label" data-owner="lite-to-full">确认升级</text>
-  <text class="node-subtitle" x="765" y="153" text-anchor="middle" data-graph-role="label" data-owner="lite-to-full">原地升级</text>
-
-  <g data-graph-role="label">
-    <text class="schema-kicker" x="30" y="310">OpenSpec 编排</text>
-    <text class="schema-note" x="30" y="334">保存 artifacts</text>
-    <text class="schema-note" x="30" y="354">计算下一步</text>
-    <text class="schema-note" x="30" y="374">恢复跨会话上下文</text>
-  </g>
-
-  <g>
-    <rect id="lite-schema" data-node-id="lite-schema" x="290" y="285" width="290" height="235" rx="12" fill="#f1fbf7" stroke="#10b981" stroke-width="1.5" data-graph-role="node" data-semantic-role="orchestration" data-graph-bounds="290,285,580,520"/>
-    <text class="schema-label schema-label--lite" x="370" y="317" text-anchor="end">Lite schema</text>
-    <line x1="384" y1="303" x2="384" y2="321" stroke="#8bd7bd" stroke-width="1"/>
-    <text class="schema-title" x="398" y="317">最少协作记忆</text>
-    <text class="schema-subtitle" x="310" y="342">2 个 planning artifacts · 快速归档</text>
-    <line x1="290" y1="355" x2="580" y2="355" stroke="#bfe8d8" stroke-width="1"/>
-
-    <line x1="326" y1="385" x2="326" y2="465" stroke="#8bd7bd" stroke-width="2"/>
-    <circle cx="326" cy="380" r="10" fill="#10b981"/><text class="step-number" x="326" y="383" text-anchor="middle">01</text>
-    <text class="step-title" x="350" y="377">Brainstorm + Tasks</text><text class="step-subtitle" x="350" y="393">目标 · 范围 · 验收 · 结果清单</text>
-    <circle cx="326" cy="430" r="10" fill="#10b981"/><text class="step-number" x="326" y="433" text-anchor="middle">02</text>
-    <text class="step-title" x="350" y="427">Apply + 验证</text><text class="step-subtitle" x="350" y="443">实施 · 邻近反馈 · diff 自审</text>
-    <circle cx="326" cy="480" r="10" fill="#10b981"/><text class="step-number" x="326" y="483" text-anchor="middle">03</text>
-    <text class="step-title" x="350" y="477">Archive</text><text class="step-subtitle" x="350" y="493">快速归档并停止</text>
-  </g>
-
-  <g>
-    <rect id="full-schema" data-node-id="full-schema" x="620" y="285" width="310" height="235" rx="12" fill="#fff5f2" stroke="#ff715b" stroke-width="1.5" data-graph-role="node" data-semantic-role="orchestration" data-graph-bounds="620,285,930,520"/>
-    <text class="schema-label schema-label--full" x="700" y="317" text-anchor="end">Full schema</text>
-    <line x1="714" y1="303" x2="714" y2="321" stroke="#ffb5aa" stroke-width="1"/>
-    <text class="schema-title" x="728" y="317">完整风险治理</text>
-    <text class="schema-subtitle" x="640" y="342">6 个 artifacts · 审查与验证门禁</text>
-    <line x1="620" y1="355" x2="930" y2="355" stroke="#ffd0c8" stroke-width="1"/>
-
-    <line x1="656" y1="375" x2="656" y2="485" stroke="#ffb5aa" stroke-width="2"/>
-    <circle cx="656" cy="370" r="9" fill="#ff715b"/><text class="step-number" x="656" y="373" text-anchor="middle">01</text>
-    <text class="step-title" x="680" y="367">Brainstorm</text><text class="step-subtitle" x="680" y="382">风险与 Full 选择</text>
-    <circle cx="656" cy="410" r="9" fill="#ff715b"/><text class="step-number" x="656" y="413" text-anchor="middle">02</text>
-    <text class="step-title" x="680" y="407">Design + Specs + Tasks</text><text class="step-subtitle" x="680" y="422">方案 · 契约 · 最终验证计划</text>
-    <circle cx="656" cy="450" r="9" fill="#ff715b"/><text class="step-number" x="656" y="453" text-anchor="middle">03</text>
-    <text class="step-title" x="680" y="447">Apply + Review + Verify</text><text class="step-subtitle" x="680" y="462">实施 · P0/P1 审查 · 同指纹复验</text>
-    <circle cx="656" cy="490" r="9" fill="#ff715b"/><text class="step-number" x="656" y="493" text-anchor="middle">04</text>
-    <text class="step-title" x="680" y="487">Retrospective + Archive</text><text class="step-subtitle" x="680" y="502">记录偏差与证据后归档</text>
-  </g>
-
-  <g>
-    <rect id="quality-baseline" data-node-id="quality-baseline" x="30" y="560" width="900" height="42" rx="11" fill="#e9f8f3" stroke="#10b981" stroke-width="1.5" data-graph-role="node" data-semantic-role="quality-gate" data-graph-bounds="30,560,930,602"/>
-    <circle cx="60" cy="581" r="12" fill="#10b981"/><path d="M54 581L59 586L67 576" fill="none" stroke="#ffffff" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"/>
-    <text class="baseline-title" x="83" y="586">共同底线</text><text class="baseline-text" x="202" y="586">调查 → 对齐方案 → 实现 → 验证</text>
+  <rect width="960" height="1245" rx="18" fill="#f7f8fc" data-graph-role="background"/>
+  <rect id="brainstorm-panel" data-graph-role="container" data-graph-bounds="60,425,900,925" x="60" y="425" width="840" height="500" rx="20" fill="#effaf6" stroke="#0da97c" stroke-width="1.7"/>
+  <line x1="85" y1="480" x2="455" y2="480" stroke="#cfdae2" stroke-width="1"/>
+  <line x1="505" y1="480" x2="875" y2="480" stroke="#cfdae2" stroke-width="1"/>
+  <path id="task-to-agent" data-graph-role="edge" data-edge-id="task-to-agent" data-source="task" data-target="agent" data-edge-kind="flow" data-flow="primary" data-bends="0" data-route-stretch="1" d="M480 155V205" fill="none" stroke="#0da97c" stroke-width="2.25" marker-end="url(#arrow-primary)"/>
+  <path id="agent-to-gap" data-graph-role="edge" data-edge-id="agent-to-gap" data-source="agent" data-target="gap-check" data-edge-kind="flow" data-flow="primary" data-bends="0" data-route-stretch="1" d="M480 265V315" fill="none" stroke="#0da97c" stroke-width="2.25" marker-end="url(#arrow-primary)"/>
+  <path id="gap-to-evidence" data-graph-role="edge" data-edge-id="gap-to-evidence" data-source="gap-check" data-target="evidence" data-edge-kind="flow" data-flow="conditional" data-bends="0" data-route-stretch="1" d="M480 375V500" fill="none" stroke="#0da97c" stroke-width="2.25" stroke-dasharray="5 5" marker-end="url(#arrow-primary)"/>
+  <path id="evidence-to-requirements" data-graph-role="edge" data-edge-id="evidence-to-requirements" data-source="evidence" data-target="requirements" data-edge-kind="flow" data-flow="candidate" data-bends="2" data-route-stretch="1" d="M400 550V570H270V590" fill="none" stroke="#7958ca" stroke-width="2.25" stroke-dasharray="5 5" marker-end="url(#arrow-candidate)"/>
+  <path id="evidence-to-technical" data-graph-role="edge" data-edge-id="evidence-to-technical" data-source="evidence" data-target="technical" data-edge-kind="flow" data-flow="candidate" data-bends="2" data-route-stretch="1" d="M560 550V570H690V590" fill="none" stroke="#7958ca" stroke-width="2.25" stroke-dasharray="5 5" marker-end="url(#arrow-candidate)"/>
+  <path id="requirements-to-rank" data-graph-role="edge" data-edge-id="requirements-to-rank" data-source="requirements" data-target="ranking" data-edge-kind="flow" data-flow="candidate" data-bends="2" data-route-stretch="1" d="M270 665V685H400V705" fill="none" stroke="#7958ca" stroke-width="2.25" stroke-dasharray="5 5" marker-end="url(#arrow-candidate)"/>
+  <path id="technical-to-rank" data-graph-role="edge" data-edge-id="technical-to-rank" data-source="technical" data-target="ranking" data-edge-kind="flow" data-flow="candidate" data-bends="2" data-route-stretch="1" d="M690 665V685H560V705" fill="none" stroke="#7958ca" stroke-width="2.25" stroke-dasharray="5 5" marker-end="url(#arrow-candidate)"/>
+  <path id="rank-to-interview" data-graph-role="edge" data-edge-id="rank-to-interview" data-source="ranking" data-target="interview" data-edge-kind="flow" data-flow="primary" data-bends="0" data-route-stretch="1" d="M480 760V800" fill="none" stroke="#0da97c" stroke-width="2.25" marker-end="url(#arrow-primary)"/>
+  <path id="interview-to-rank" data-graph-role="edge" data-edge-id="interview-to-rank" data-source="interview" data-target="ranking" data-edge-kind="flow" data-flow="feedback" data-bends="2" data-route-stretch="1" d="M655 827H740V733H655" fill="none" stroke="#e56a53" stroke-width="2.25" stroke-dasharray="6 5" marker-end="url(#arrow-feedback)"/>
+  <path id="interview-to-selection" data-graph-role="edge" data-edge-id="interview-to-selection" data-source="interview" data-target="path-selection" data-edge-kind="flow" data-flow="primary" data-bends="0" data-route-stretch="1" d="M480 855V970" fill="none" stroke="#0da97c" stroke-width="2.25" marker-end="url(#arrow-primary)"/>
+  <path id="selection-to-direct" data-graph-role="edge" data-edge-id="selection-to-direct" data-source="path-selection" data-target="direct" data-edge-kind="flow" data-flow="primary" data-bends="2" data-route-stretch="1" d="M400 1030V1050H182V1080" fill="none" stroke="#0da97c" stroke-width="2.25" marker-end="url(#arrow-primary)"/>
+  <path id="selection-to-lite" data-graph-role="edge" data-edge-id="selection-to-lite" data-source="path-selection" data-target="lite" data-edge-kind="flow" data-flow="primary" data-bends="0" data-route-stretch="1" d="M480 1030V1080" fill="none" stroke="#0da97c" stroke-width="2.25" marker-end="url(#arrow-primary)"/>
+  <path id="selection-to-full" data-graph-role="edge" data-edge-id="selection-to-full" data-source="path-selection" data-target="full" data-edge-kind="flow" data-flow="primary" data-bends="2" data-route-stretch="1" d="M560 1030V1050H772V1080" fill="none" stroke="#0da97c" stroke-width="2.25" marker-end="url(#arrow-primary)"/>
+  <rect id="task" data-node-id="task" data-graph-role="node" data-semantic-role="input" data-graph-bounds="330,95,630,155" x="330" y="95" width="300" height="60" rx="12" fill="#ffffff" stroke="#aeb8c8" stroke-width="1.6"/>
+  <text class="node-title" x="480" y="121" text-anchor="middle">一句话需求</text>
+  <text class="node-subtitle" x="480" y="142" text-anchor="middle">修复缺陷 · 实现需求</text>
+  <rect id="agent" data-node-id="agent" data-graph-role="node" data-semantic-role="orchestrator" data-graph-bounds="330,205,630,265" x="330" y="205" width="300" height="60" rx="12" fill="#fff8e8" stroke="#e3a51a" stroke-width="1.6"/>
+  <text class="node-title" x="480" y="231" text-anchor="middle">Agent 识别任务</text>
+  <text class="node-subtitle" x="480" y="252" text-anchor="middle">专项操作进入 Skill；普通开发继续</text>
+  <rect id="gap-check" data-node-id="gap-check" data-graph-role="node" data-semantic-role="gap-check" data-graph-bounds="330,315,630,375" x="330" y="315" width="300" height="60" rx="12" fill="#ffffff" stroke="#aeb8c8" stroke-width="1.6"/>
+  <text class="node-title" x="480" y="341" text-anchor="middle">基于仓库事实核对</text>
+  <text class="node-subtitle" x="480" y="362" text-anchor="middle">目标、方案与验收的关键缺口</text>
+  <rect id="evidence" data-node-id="evidence" data-graph-role="node" data-semantic-role="evidence" data-graph-bounds="300,500,660,550" x="300" y="500" width="360" height="50" rx="12" fill="#ffffff" stroke="#aeb8c8" stroke-width="1.6"/>
+  <text class="node-title" x="480" y="530" text-anchor="middle">先查代码、配置、文档与已有决定</text>
+  <rect id="requirements" data-node-id="requirements" data-graph-role="node" data-semantic-role="probe" data-graph-bounds="95,590,445,665" x="95" y="590" width="350" height="75" rx="12" fill="#f6f2ff" stroke="#9475dc" stroke-width="1.6"/>
+  <text class="node-title" x="115" y="616" text-anchor="start">需求维度</text>
+  <text class="node-subtitle" x="115" y="640" text-anchor="start">目标 · 角色 · 范围 · 行为 · 验收</text>
+  <rect id="technical" data-node-id="technical" data-graph-role="node" data-semantic-role="probe" data-graph-bounds="515,590,865,665" x="515" y="590" width="350" height="75" rx="12" fill="#f6f2ff" stroke="#9475dc" stroke-width="1.6"/>
+  <text class="node-title" x="535" y="616" text-anchor="start">技术设计维度</text>
+  <text class="node-subtitle" x="535" y="640" text-anchor="start">结构 · 契约 · 状态 · 恢复 · 验证</text>
+  <rect id="ranking" data-node-id="ranking" data-graph-role="node" data-semantic-role="ranking" data-graph-bounds="305,705,655,760" x="305" y="705" width="350" height="55" rx="12" fill="#ffffff" stroke="#7958ca" stroke-width="1.6"/>
+  <text class="node-title" x="480" y="727" text-anchor="middle">候选缺口合并去重</text>
+  <text class="node-subtitle" x="480" y="746" text-anchor="middle">选影响 × 不确定性最高的一项</text>
+  <rect id="interview" data-node-id="interview" data-graph-role="node" data-semantic-role="interview" data-graph-bounds="305,800,655,855" x="305" y="800" width="350" height="55" rx="12" fill="#e9f8f3" stroke="#0da97c" stroke-width="2.2"/>
+  <text class="node-title" x="480" y="823" text-anchor="middle">每轮只讨论一个关键决定</text>
+  <text class="node-subtitle" x="480" y="843" text-anchor="middle">给出推荐、依据与代价；等待确认或纠正</text>
+  <rect id="path-selection" data-node-id="path-selection" data-graph-role="node" data-semantic-role="decision" data-graph-bounds="330,970,630,1030" x="330" y="970" width="300" height="60" rx="12" fill="#ffffff" stroke="#0da97c" stroke-width="1.6"/>
+  <text class="node-title" x="480" y="996" text-anchor="middle">选择充分路径</text>
+  <text class="node-subtitle" x="480" y="1017" text-anchor="middle">边界明确后选择协作方式</text>
+  <rect id="direct" data-node-id="direct" data-graph-role="node" data-semantic-role="direct" data-graph-bounds="60,1080,305,1160" x="60" y="1080" width="245" height="80" rx="12" fill="#eef3ff" stroke="#3563e9" stroke-width="1.6"/>
+  <text class="node-title" x="182" y="1107" text-anchor="middle">Direct</text>
+  <text class="node-subtitle" x="182" y="1128" text-anchor="middle">当前会话闭环</text>
+  <text class="tiny" x="182" y="1148" text-anchor="middle">调查 · 实施 · 验证</text>
+  <rect id="lite" data-node-id="lite" data-graph-role="node" data-semantic-role="lite" data-graph-bounds="355,1080,600,1160" x="355" y="1080" width="245" height="80" rx="12" fill="#e9f8f3" stroke="#0da97c" stroke-width="1.6"/>
+  <text class="node-title" x="477" y="1107" text-anchor="middle">Lite schema</text>
+  <text class="node-subtitle" x="477" y="1128" text-anchor="middle">经确认保存共同设计</text>
+  <text class="tiny" x="477" y="1148" text-anchor="middle">OpenSpec · 最少协作记忆</text>
+  <rect id="full" data-node-id="full" data-graph-role="node" data-semantic-role="full" data-graph-bounds="650,1080,895,1160" x="650" y="1080" width="245" height="80" rx="12" fill="#fff0ed" stroke="#ed705d" stroke-width="1.6"/>
+  <text class="node-title" x="772" y="1107" text-anchor="middle">Full schema</text>
+  <text class="node-subtitle" x="772" y="1128" text-anchor="middle">经确认进行完整风险治理</text>
+  <text class="tiny" x="772" y="1148" text-anchor="middle">设计 · 规格 · 审查 · 验证</text>
+  <text class="title" x="35" y="39" text-anchor="start">从一句话需求开始，逐步收敛到工作流</text>
+  <text class="hint" x="35" y="63" text-anchor="start">主线自上而下；需求清晰时跳过访谈，关键缺口逐题讨论</text>
+  <text class="section" x="85" y="465" text-anchor="start">/brainstorming</text>
+  <text class="hint" x="660" y="465" text-anchor="start">清晰方案跳过此段</text>
+  <text class="branch" x="500" y="292" text-anchor="start">普通开发</text>
+  <text class="branch" x="500" y="409" text-anchor="start">关键缺口 / 显式调用</text>
+  <text class="feedback" x="754" y="782" text-anchor="start">仍有缺口</text>
+  <text class="branch" x="500" y="951" text-anchor="start">决定收敛</text>
+  <rect x="60" y="1190" width="840" height="35" rx="10" fill="#effaf6" stroke="#0da97c" stroke-width="1.2"/>
+  <text class="branch" x="80" y="1213" text-anchor="start">共同底线</text>
+  <text class="node-subtitle" x="182" y="1213" text-anchor="start">调查 → 对齐方案 → 实现 → 验证</text>
+  <text class="tiny" x="636" y="1213" text-anchor="start">Lite / Full 由 OpenSpec 编排</text>
+  <g data-graph-role="legend">
+    <line x1="682" y1="35" x2="707" y2="35" stroke="#0da97c" stroke-width="2.25"/>
+  <text class="legend" x="712" y="39" text-anchor="start">流程</text>
+    <line x1="762" y1="35" x2="787" y2="35" stroke="#7958ca" stroke-width="2.25" stroke-dasharray="5 5"/>
+  <text class="legend" x="792" y="39" text-anchor="start">探针</text>
+    <line x1="844" y1="35" x2="869" y2="35" stroke="#e56a53" stroke-width="2.25" stroke-dasharray="6 5"/>
+  <text class="legend" x="874" y="39" text-anchor="start">追问</text>
   </g>
 </svg>

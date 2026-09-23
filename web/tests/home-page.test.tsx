@@ -239,8 +239,8 @@ describe('V2 home page', () => {
   it('shows one consolidated path and schema orchestration diagram', () => {
     render(<ProgressivePathSection />)
 
-    expect(screen.getByRole('heading', { name: '只需描述任务，Agent 自动匹配充分路径' })).toBeTruthy()
-    expect(screen.getByText(/无需预选 Direct、Lite 或 Full/)).toBeTruthy()
+    expect(screen.getByRole('heading', { name: '从一句话需求开始，逐层收敛到充分路径' })).toBeTruthy()
+    expect(screen.getByText(/有关键决定未明确时，\/brainstorming 按需引用需求与技术设计维度/)).toBeTruthy()
     expect(screen.getByRole('img', { name: /从一句话需求开始/ })).toBeTruthy()
     for (const path of ['专项 Skill', 'Direct', 'Lite', 'Full']) {
       expect(screen.getByText(path, { selector: 'strong' })).toBeTruthy()
