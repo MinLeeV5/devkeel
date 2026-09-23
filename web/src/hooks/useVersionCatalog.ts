@@ -30,7 +30,7 @@ export function useVersionCatalog(): VersionCatalogState {
 
     requestInFlight.current = true
 
-    void fetch('/api/versions', { signal: controller.signal })
+    void fetch(`${import.meta.env.BASE_URL}versions/index.json`, { signal: controller.signal })
       .then(async (response) => {
         if (!response.ok) {
           throw new Error(`请求失败（HTTP ${response.status}）`)

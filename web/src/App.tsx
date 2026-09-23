@@ -8,8 +8,8 @@ import { useNavigationStore } from './stores/navigation-store'
 export function App(): React.JSX.Element {
   const currentPath = useNavigationStore((state) => state.currentPath)
   const setCurrentPath = useNavigationStore((state) => state.setCurrentPath)
-  const redirect = resolvePageRedirect(currentPath)
-  const route = resolvePageRoute(currentPath)
+  const redirect = resolvePageRedirect(currentPath, import.meta.env.BASE_URL)
+  const route = resolvePageRoute(currentPath, import.meta.env.BASE_URL)
 
   useEffect(() => {
     function syncPath(): void {

@@ -124,8 +124,9 @@ afterEach(() => {
 
 describe('ChangelogPage', () => {
   it('defaults to Templates and switches to the CLI catalog', async () => {
-    mockCatalog()
+    const fetchMock = mockCatalog()
     render(<ChangelogPage />)
+    expect(fetchMock).toHaveBeenCalledWith(`${import.meta.env.BASE_URL}versions/index.json`, expect.objectContaining({ signal: expect.any(AbortSignal) }))
 
     const templatesTab = screen.getByRole('button', { name: /模板资产/ })
     const cliTab = screen.getByRole('button', { name: /CLI/ })

@@ -12,6 +12,7 @@ describe('web routes', () => {
       '/architecture.html',
       '/best-practices.html',
       '/sharing.html',
+      '/sharing-harness-research.html',
       '/changelog.html',
       '/v1/index.html',
       '/v1/workflow.html',
@@ -50,5 +51,17 @@ describe('web routes', () => {
   it('ignores search params and hashes during resolution', () => {
     expect(resolvePageRoute('/changelog.html?from=0.8.0#latest')).toMatchObject({ pageId: 'changelog' })
     expect(resolvePageRedirect('/workflow.html?legacy=1#old')).toBe('/#progressive-path')
+  })
+
+  it('resolves current and archived pages only inside the deployment prefix', () => {
+    expect(resolvePageRoute('/devkeel/', '/devkeel/')).toMatchObject({ pageId: 'home' })
+    expect(resolvePageRoute('/devkeel', '/devkeel/')).toMatchObject({ pageId: 'home' })
+    expect(resolvePageRoute('/devkeel/changelog.html?from=0.8.0#latest', '/devkeel/')).toMatchObject({ pageId: 'changelog' })
+    expect(resolvePageRoute('/devkeel/v1/index.html', '/devkeel/')).toMatchObject({ pageId: 'v1-home' })
+    expect(resolvePageRoute('/devkeel/v1/architecture.html', '/devkeel/')).toMatchObject({ pageId: 'v1-architecture' })
+    expect(resolvePageRoute('/elsewhere/index.html', '/devkeel/')).toBeNull()
+    expect(resolvePageRoute('/devkeel-other/index.html', '/devkeel/')).toBeNull()
+    expect(resolvePageRedirect('/devkeel/workflow.html', '/devkeel/')).toBe('/devkeel/#progressive-path')
+    expect(resolvePageRedirect('/workflow.html', '/devkeel/')).toBeNull()
   })
 })

@@ -4,16 +4,11 @@
   "type": "module",
   "scripts": {
     "dev": "vite --host 0.0.0.0",
-    "dev:server": "tsx watch server.ts --source-versions",
-    "start": "node --import tsx server.ts",
     "build": "tsc --noEmit && vite build && tsx scripts/verify-versions-build.ts",
-    "package:app": "node scripts/package-app.js",
     "test": "vitest run",
-    "preview": "pnpm build && pnpm start"
+    "preview": "vite preview --host 0.0.0.0"
   },
   "dependencies": {
-    "@hono/node-server": "^1.14.0",
-    "hono": "^4.7.0",
     "react": "^19.2.7",
     "react-dom": "^19.2.7",
     "react-markdown": "^10.1.0",

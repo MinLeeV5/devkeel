@@ -1,3 +1,5 @@
+import { sitePathname } from '../site-paths'
+
 export type PageId =
   | 'home'
   | 'changelog'
@@ -23,6 +25,7 @@ export const PUBLIC_PAGE_PATHS = [
   '/architecture.html',
   '/best-practices.html',
   '/sharing.html',
+  '/sharing-harness-research.html',
   '/changelog.html',
   '/v1/index.html',
   '/v1/workflow.html',
@@ -43,19 +46,7 @@ export const PAGE_ROUTES: readonly PageRoute[] = [
   { pageId: 'v1-capability-inventory', routePath: '/v1/capability-inventory.html', title: 'DevKeel v1 能力清单' },
 ] as const
 
-export function resolvePageRoute(inputPath: string): PageRoute | null {
-  const pathname = normalizePathname(inputPath)
+export function resolvePageRoute(inputPath: string, base = '/'): PageRoute | null {
+  const pathname = sitePathname(inputPath, base)
   return PAGE_ROUTES.find((route) => route.routePath === pathname) ?? null
-}
-
-function normalizePathname(inputPath: string): string {
-  const url = inputPath.startsWith('http://') || inputPath.startsWith('https://')
-    ? new URL(inputPath)
-    : new URL(inputPath || '/', 'http://harness.local')
-
-  const pathname = url.pathname || '/'
-  if (pathname !== '/' && pathname.endsWith('/')) {
-    return pathname.slice(0, -1)
-  }
-  return pathname
 }

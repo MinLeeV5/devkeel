@@ -11,7 +11,7 @@ export function NotFoundPage({ currentPath }: NotFoundPageProps): React.JSX.Elem
         <p className="mb-6 text-sm leading-6 text-zinc-400">
           当前路径 <code className="rounded bg-zinc-800 px-1.5 py-0.5 text-cyan-300">{currentPath || '/'}</code> 没有对应的 DevKeel 页面。
         </p>
-        <a className="inline-flex rounded-md bg-emerald-500 px-4 py-2 text-sm font-semibold text-zinc-950 hover:bg-emerald-400" href="/index.html">
+        <a className="inline-flex rounded-md bg-emerald-500 px-4 py-2 text-sm font-semibold text-zinc-950 hover:bg-emerald-400" href={`${import.meta.env.BASE_URL}index.html`}>
           返回首页
         </a>
       </section>
