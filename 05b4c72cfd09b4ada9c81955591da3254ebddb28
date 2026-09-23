@@ -1,0 +1,248 @@
+templates/skills/verify-init/references/detection-signals.md
+  762b6b2dff41111c 50-56,70,134
+docs/examples/architecture-constraints.md
+  4ba93f24e5186724 12,45
+  762b6b2dff41111c 1-11,13-44,46-56
+templates/skills/verify-init/references/stack-matrix.md
+  762b6b2dff41111c 50-52,58,74
+tests/init.test.ts
+  4ba93f24e5186724 5,29
+src/commands/update.ts
+  4ba93f24e5186724 11-12,17,22,24,167,181-182,187,207,583,588,590-592,595
+templates/agents-domain-md.md
+  762b6b2dff41111c 18-19,33,38,41,48,51,54-56,58,61
+  h_1a7429a562def8 8
+templates/skills/verify-init/references/scaffolding-principles.md
+  762b6b2dff41111c 3-4,6,8-14,16,18,20-26,28,30,32-36,38-39
+.harness/rules/error-handling.md
+  762b6b2dff41111c 9-10
+tests/skill-distribution.test.ts
+  fc2843bf8a58fe62 56,62
+  4ba93f24e5186724 53-55,57-61,63-64,83,87,175,189
+tests/init-agents.test.ts
+  fc2843bf8a58fe62 249-259,261-273
+  4ba93f24e5186724 8,30,81-106,157
+  762b6b2dff41111c 143,145-146,151,260
+templates/skills/verify-init/references/frameworks-index.md
+  762b6b2dff41111c 61-62
+docs/README.md
+  762b6b2dff41111c 1-19
+.harness/rules/testing-strategy.md
+  762b6b2dff41111c 9-10
+templates/skills/domain-init/references/dimension-pool.md
+  762b6b2dff41111c 4,6
+docs/examples/naming-conventions.md
+  4ba93f24e5186724 11-12,18,33,37,43-44,57
+  762b6b2dff41111c 1-10,13-17,19-32,34-36,38-42,45-56,58
+docs/architecture.md
+  762b6b2dff41111c 1-9,11-12,14-24,28,30-41
+  4ba93f24e5186724 10,13,25-27,29
+docs/development.md
+  762b6b2dff41111c 1-34
+.harness/skills/domain-init/references/output-formats.md
+  762b6b2dff41111c 3-35,48-51,94-95
+templates/skills/domain-init/references/detection-signals.md
+  762b6b2dff41111c 60-61,63-64,74-76
+docs/examples/coding-philosophy.md
+  4ba93f24e5186724 8,12,15-16,28,32-33,39,44
+  762b6b2dff41111c 1-7,9-11,13-14,17-27,29-31,34-38,40-43,45-92
+.harness/rules/documentation.md
+  762b6b2dff41111c 40-42
+.harness/skills/verify-init/references/frameworks-index.md
+  762b6b2dff41111c 61-62
+tests/detect.test.ts
+  4ba93f24e5186724 6,48-65,158-159
+templates/skills/verify-init/references/output-formats.md
+  762b6b2dff41111c 3,5,7-8,10-15,19,21,25-27,29-30,32,34,36-40,42-43,45-46,48,50,55,60,62-63,65,67-74,76,78-81,83,85-86,88-89,91,93-99
+.harness/skills/verify-init/SKILL.md
+  762b6b2dff41111c 5,10,15,17,19-21,23-24,34,52,54-63,71,81-82,84,97-102,114-115,119,121-122,132-135,139,141,143-144,146-147,151,155,157,159-170,172-173,181,183,185-186,190
+src/commands/init.ts
+  762b6b2dff41111c 167,406-408,412-413
+  4ba93f24e5186724 9-10,20,50,52,57,72,81
+src/lib/detect.ts
+  4ba93f24e5186724 5,106-154
+  fc2843bf8a58fe62 155
+.harness/rules/architecture-constraints.md
+  762b6b2dff41111c 3-4,11-12
+README.md
+  762b6b2dff41111c 148-150
+  b7afd1634b98d80e 221,223-224,226-234,236-237,246,248
+.harness/rules/coding-philosophy.md
+  762b6b2dff41111c 9-10
+.harness/skills/domain-init/SKILL.md
+  762b6b2dff41111c 5,15,19,22-23,43-45,51,55-60,77-80,102,104-111,125-129,140-143,152,190,251,253,255-261,263-267,269,272-273,276-281,290
+  b7afd1634b98d80e 10
+docs/examples/testing-strategy.md
+  4ba93f24e5186724 26-28,40-43,52,62
+  762b6b2dff41111c 1-25,29-39,44-51,53-61,63
+src/lib/update-notifier.ts
+  4ba93f24e5186724 5
+docs/examples/web-frontend.md
+  762b6b2dff41111c 1-113
+src/commands/doctor.ts
+  4ba93f24e5186724 4-5,27,31-32,51,65,68,76-77,91,110,143,148-163
+templates/skills/domain-init/SKILL.md
+  762b6b2dff41111c 5,15,19,22-23,43-45,51,55-60,77-80,102,104-111,125-129,140-143,152,190,251,253,255-261,263-267,269,272-273,276-281,290
+  b7afd1634b98d80e 10
+.harness/skills/verify-init/references/stack-matrix.md
+  762b6b2dff41111c 50-52,58,74
+AGENTS.md
+  762b6b2dff41111c 20-21,23,54-60,94-96,104-106,108-109,111
+src/lib/versions.ts
+  4ba93f24e5186724 6
+tests/doctor.test.ts
+  fc2843bf8a58fe62 86
+  4ba93f24e5186724 1-4,7,10,28-85
+tests/update.test.ts
+  762b6b2dff41111c 12,561-562,565,787,806-836
+  4ba93f24e5186724 10,88,340-343,374-376,389-392
+src/lib/update.ts
+  4ba93f24e5186724 5
+.harness/rules/editing-discipline.md
+  762b6b2dff41111c 35-38
+tests/submodule.test.ts
+  4ba93f24e5186724 5
+docs/project.md
+  4ba93f24e5186724 18,33-35
+  762b6b2dff41111c 1-17,19-32
+.harness/rules/deployment-ci.md
+  762b6b2dff41111c 1-7,9,11-16,18-19
+tests/agents-md.test.ts
+  fc2843bf8a58fe62 20-21,63-66,68-93,96-101
+  4ba93f24e5186724 178-187
+  762b6b2dff41111c 1-19,22,25-26,28-39,42-52,54-55,57-62,102-177,188-202,215-217
+  b7afd1634b98d80e 23-24,27,40-41,53,56,67,94-95,203-214
+tests/workflow-routing.test.ts
+  4ba93f24e5186724 5,136,156,158-159
+docs/examples/error-handling.md
+  4ba93f24e5186724 18,30,52,56,60
+  762b6b2dff41111c 1-17,19-29,31-51,53-55,57-59,61-65
+src/lib/agents-md.ts
+  4ba93f24e5186724 6,50-70,73-77,85,88-89,91-125,127,156-157,160,162,185,205
+  fc2843bf8a58fe62 158,161,168,173-174,191-193,202-204
+  762b6b2dff41111c 11-19,71-72,78-83,86,90,166,171-172,179,181-184,186-190,194
+  b7afd1634b98d80e 30,84,87,126
+tests/sync.test.ts
+  4ba93f24e5186724 48-68
+openspec/specs/repo-type-detection/spec.md
+  4ba93f24e5186724 1,3,5,7,9,11-12,14,16-17,19,21-22,24,26-27,29,31,33,35-37,39,41-42,44,46-47
+tests/templates.test.ts
+  4ba93f24e5186724 7
+tests/skill-checks.test.ts
+  4ba93f24e5186724 97-98,106
+templates/skills/verify-init/SKILL.md
+  762b6b2dff41111c 5,10,15,17,19-21,23-24,34,52,54-63,71,81-82,84,97-102,114-115,119,121-122,132-135,139,141,143-144,146-147,151,155,157,159-170,172-173,181,183,185-186,190
+tests/versions.test.ts
+  4ba93f24e5186724 5,8
+src/lib/templates.ts
+  4ba93f24e5186724 4,237-243,248-256
+.harness/skills/domain-init/references/dimension-pool.md
+  762b6b2dff41111c 4,6
+openspec/specs/domain-subrepo-init/spec.md
+  4ba93f24e5186724 51,53,55,58-59,67,69-70,72,75,86
+docs/building.md
+  762b6b2dff41111c 1-18
+.harness/skills/doc-maintenance/SKILL.md
+  762b6b2dff41111c 5,19,27,41,45,47,50
+src/commands/sync.ts
+  b7afd1634b98d80e 4,40,59
+.harness/rules/web-frontend.md
+  762b6b2dff41111c 11-12
+.harness/rules/naming-conventions.md
+  762b6b2dff41111c 9-10,19
+templates/agents-md.md
+  762b6b2dff41111c 20-21,44,56-59,93-96,104,106,109
+  h_1a7429a562def8 23
+.harness/rules/coding-standards.md
+  762b6b2dff41111c 9-10,23
+.harness/skills/verify-init/references/scaffolding-principles.md
+  762b6b2dff41111c 3-4,6,8-14,16,18,20-26,28,30,32-36,38-39
+templates/skills/domain-init/references/output-formats.md
+  762b6b2dff41111c 3-35,48-51,94-95
+.harness/rules/dependency-management.md
+  762b6b2dff41111c 31,37
+.harness/skills/verify-init/references/output-formats.md
+  762b6b2dff41111c 3,5,7-8,10-15,19,21,25-27,29-30,32,34,36-40,42-43,45-46,48,50,55,60,62-63,65,67-74,76,78-81,83,85-86,88-89,91,93-99
+docs/examples/coding-standards.md
+  4ba93f24e5186724 8,30,40,49,53-58,61,68,71-72,77,81,87,92,102,107,112,117-118,131,135-136,141
+  762b6b2dff41111c 1-7,9-11,14-16,18-22,24,26,28-29,31-39,41-47,50-52,62,64-67,69-70,73-75,78-80,82-86,88-91,93-99,103-106,108-111,113-116,119-120,122,124-127,129,133-134,137,139-140,142,144-162,164,166,168,170-174,176-180,182,184-195,197-200,202
+.harness/agents/cli-node-reviewer.md
+  4ba93f24e5186724 18
+docs/testing.md
+  4ba93f24e5186724 12
+  762b6b2dff41111c 1-11,13-30
+.harness/skills/verify-init/references/detection-signals.md
+  762b6b2dff41111c 50-56,70,134
+.harness/skills/domain-init/references/detection-signals.md
+  762b6b2dff41111c 60-61,63-64,74-76
+openspec/specs/integration-test-framework/spec.md
+  4ba93f24e5186724 7,11
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.9",
+  "base_commit_sha": "05b4c72cfd09b4ada9c81955591da3254ebddb28",
+  "prompts": {
+    "4ba93f24e5186724": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "01a0c877-d61f-78b1-9c8a-557dea8017ef",
+        "model": "gpt-6-astra"
+      },
+      "human_author": "MinLeeV5 <dicklwm@163.com>",
+      "messages": [],
+      "total_additions": 0,
+      "total_deletions": 0,
+      "accepted_lines": 1361,
+      "overriden_lines": 0,
+      "messages_url": "https://gitai.gz.cvte.cn/cas/9b30b5d71b7d9816f4c7925ba072fa8d8f5e06b146de5c1b55b7e33a7ed50cc7"
+    },
+    "762b6b2dff41111c": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "01a0c7fe-8738-7e41-bdc0-d5cd29c2004a",
+        "model": "gpt-6-astra"
+      },
+      "human_author": "MinLeeV5 <dicklwm@163.com>",
+      "messages": [],
+      "total_additions": 19,
+      "total_deletions": 0,
+      "accepted_lines": 3127,
+      "overriden_lines": 0,
+      "messages_url": "https://gitai.gz.cvte.cn/cas/7012deb559abcccdb8a83ab520b0cb8db26edc18bcf2fb2b0c6fded8ef8eb18b"
+    },
+    "b7afd1634b98d80e": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "01a0c881-b5c9-7f00-8456-f439e6d00b32",
+        "model": "gpt-6-astra"
+      },
+      "human_author": "MinLeeV5 <dicklwm@163.com>",
+      "messages": [],
+      "total_additions": 0,
+      "total_deletions": 0,
+      "accepted_lines": 60,
+      "overriden_lines": 0,
+      "messages_url": "https://gitai.gz.cvte.cn/cas/6b47b9d3abedbb22aea806d87e13dae4033db998fcd8bd3ea9bada688f3d54c9"
+    },
+    "fc2843bf8a58fe62": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "01a0cbdd-ae78-7662-aee0-61ea0a510f02",
+        "model": "gpt-6-astra"
+      },
+      "human_author": "MinLeeV5 <dicklwm@163.com>",
+      "messages": [],
+      "total_additions": 0,
+      "total_deletions": 4208,
+      "accepted_lines": 350,
+      "overriden_lines": 0,
+      "messages_url": "https://gitai.gz.cvte.cn/cas/a63167f3c2a14e13be48e14ece2c00e8a1104324e07ac1eed8c65d10411fbe83"
+    }
+  },
+  "humans": {
+    "h_1a7429a562def8": {
+      "author": "MinLeeV5"
+    }
+  }
+}
