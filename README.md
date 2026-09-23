@@ -58,7 +58,11 @@ Claude Code 使用 `/brainstorming`，Codex 使用 `$brainstorming`，其他平�
 需要跨会话恢复、交接或审计时，经确认进入 Lite；
 用户选择 Full，或外部契约协调、严重且难回退的风险成立时，经确认进入 Full。
 
-![自上而下的渐进工作流：从一句话需求开始，Agent 核对缺口，按需通过 brainstorming 引用需求与技术设计维度逐题讨论，最后选择 Direct、Lite 或 Full](web/public/diagrams/progressive-path.svg)
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="web/public/diagrams/sharing-v2-routing.svg">
+  <source media="(prefers-color-scheme: light)" srcset="web/public/diagrams/progressive-path.svg">
+  <img src="web/public/diagrams/progressive-path.svg" alt="自上而下的渐进工作流：从一句话需求开始，Agent 核对缺口，按需通过 brainstorming 引用需求与技术设计维度逐题讨论，最后选择 Direct、Lite 或 Full">
+</picture>
 
 Lite / Full 使用 OpenSpec 保存共同设计和任务过程。常用入口是 `/opsx:new`、`/opsx:continue`；
 实施、验证和归档等入口见 [OpenSpec Skills](templates/skills/openspec-new-change/SKILL.md)。
@@ -66,7 +70,11 @@ Lite / Full 使用 OpenSpec 保存共同设计和任务过程。常用入口是 
 
 ## 资产与平台
 
-![项目资产：执行入口与协作记录、规则与专业能力、验证反馈共同支撑 Agent 交付](web/public/diagrams/project-architecture.svg)
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="web/public/diagrams/sharing-v2-harness-architecture.svg">
+  <source media="(prefers-color-scheme: light)" srcset="web/public/diagrams/project-architecture.svg">
+  <img src="web/public/diagrams/project-architecture.svg" alt="项目资产：执行入口与协作记录、规则与专业能力、验证反馈共同支撑 Agent 交付">
+</picture>
 
 `docs/` 保存当前项目知识，`.harness/` 保存规则、Skills 和专业角色，`openspec/` 保存规范与任务过程。
 项目专属内容根据实际代码生成；初始化产生的目录不代表项目分析或验证已经完成。
