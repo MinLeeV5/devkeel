@@ -1,0 +1,30 @@
+web/tests/home-page.test.tsx
+  7a8162769ad8f0f9 46,359,366,376
+web/src/pages/v1-architecture.tsx
+  7a8162769ad8f0f9 563
+web/src/pages/v1-best-practices.tsx
+  7a8162769ad8f0f9 120
+web/src/pages/v1-workflow/WorkflowFooter.tsx
+  7a8162769ad8f0f9 10
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.9",
+  "base_commit_sha": "012303799366ae16ac49be3ce4e41d2a1d4c18f4",
+  "prompts": {
+    "7a8162769ad8f0f9": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "01a0cbe7-5a56-7aa2-9959-1538cf5d2858",
+        "model": "gpt-6-astra"
+      },
+      "human_author": "MinLeeV5 <dicklwm@163.com>",
+      "messages": [],
+      "total_additions": 0,
+      "total_deletions": 532,
+      "accepted_lines": 667,
+      "overriden_lines": 0,
+      "messages_url": "https://gitai.gz.cvte.cn/cas/0250313ed7d930781a934c40c380ee3d056ae25544af46e08a5021ad5ceb82ca"
+    }
+  }
+}
