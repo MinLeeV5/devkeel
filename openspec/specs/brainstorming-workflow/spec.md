@@ -45,67 +45,60 @@ Agent MUST 选择当前 `影响 × 不确定性` 最高的一项 gap，说明其
 - **WHEN** 回答无法唯一确定当前决定
 - **THEN** Agent MUST 继续澄清同一件事，不得把猜测持久化为用户决定
 
-### Requirement: Brainstorming MUST 展示有依据的置信度
+### Requirement: Brainstorming MUST 展示讨论阶段与关键缺口
 
-topic-only 状态 SHALL 展示边界置信度，衡量目标、主要边界和持久化价值是否清楚；change-draft
-状态 SHALL 展示实施准备度，衡量共同上下文是否足以安全生成 Apply 前置 artifacts。置信度 MUST
-按 5% 取值，依据当前阶段最关键的未闭合缺口选择证据分档，不得按轮数、决定数量或 O 项数量加分，
-也不得把 90% 作为尚未完成时的默认值。数值不代表成功概率、工作完成比例或用户授权。
+Brainstorming SHALL 使用“探索中 / 收敛中 / 可确认”三个阶段，以当前工作状态的关键缺口判断：
+目标、范围、主方向或核心可行性仍不明确时为探索中；主方向已有依据、仍有影响结果的决定时为
+收敛中；当前讨论目标闭合且没有阻塞开放项时为可确认。阶段 MUST NOT 代表用户授权。
 
-边界置信度 SHALL 区分目标或范围不清（0–55%）、主要范围或职责待定（60–75%）、主要边界明确但
-仍有边界决定（80–85%）、仅剩局部确认（90%）、边界问题闭合且可判断下一路径（95%）。
-实施准备度 SHALL 区分主方案未形成或可行性冲突（0–55%）、核心链路或必需外部能力未证实
-（60–75%）、主要契约、恢复或验证方案未闭合（80–85%）、主要方案与契约闭环且仅剩局部决定
-（90%）、无阻塞 O 且可确认完整快照（95%）。更低档的关键缺口 MUST 限制当前分数，档内依据不足
-时 SHALL 取较低值。证据足以支持方案选择即可，不要求提前完成实现或全部联调。
+topic-only 的闭合范围 SHALL 是目标、主要边界和下一路径；change-draft SHALL 额外满足完整快照
+确认条件。Agent MUST 每轮用一行“阶段 · 关键缺口”提示位置与剩余决定，没有缺口时说明待确认
+当前结论；仅在阶段或关键缺口变化时展开解释。Agent MUST NOT 用百分比、预计剩余轮数或已确认
+决定数量衡量收敛距离。
 
-阶段切换 MUST 按新指标重新评估，不继承旧分数或把两种指标展示为同一涨跌轨迹。范围扩大、新增
-依赖或假设被推翻时 MUST 重估受影响缺口，原分档不再满足时 MUST 降档。同阶段调分 MUST 有新证据
-或决定依据，允许保持或下降；每轮 SHALL 说明本轮闭合项、分档依据、最大未决项及其阻塞性，分数
-不变时也 MUST 说明进展与限制升档的缺口。没有新闭合项或阻塞项时 SHALL 如实说明。
-
-数值 MUST NOT 单独决定推进。存在会改变结构、可观察行为或维护方式的开放决定时，实施准备度
-MUST NOT 达到 95%；100% 仅表示用户已确认完整快照，不用于 topic-only。
+切换工作状态、范围扩大、新增依赖或假设被推翻时，Agent MUST 按受影响缺口重新判断阶段，不沿用
+旧结论。证据足以支持方案选择即可；已明确留待实施后执行的验证 MUST NOT 自动成为阻塞项，
+但可能推翻主方案的未知能力 MUST 仍作为核心可行性缺口。
 
 #### Scenario: 边界明确后进入 change-draft
 
-- **WHEN** 边界置信度为 90%，进入 change-draft 后仍有必需外部能力未证实
-- **THEN** Agent MUST 重新评估实施准备度并限制在 75% 及以下，说明新指标依据，不沿用边界分数
+- **WHEN** topic-only 已可确认，但进入 change-draft 后仍有必需外部能力未证实
+- **THEN** Agent MUST 按核心可行性缺口重新判断为探索中，说明依据，不沿用原阶段
 
-#### Scenario: 大量决定已确认但主要契约未闭合
+#### Scenario: 多项决定已确认但主要契约未闭合
 
-- **WHEN** 已确认多项页面与业务决定，核心可行性有依据，但后端幂等、恢复等主要契约仍待确定
-- **THEN** Agent MUST 将实施准备度限制在 85% 及以下，不因决定数量增加而声明 90%
+- **WHEN** 核心可行性有依据，但后端幂等、恢复等主要契约仍待确定
+- **THEN** Agent MUST 保持收敛中并说明关键缺口，不因决定数量增加而声明可确认
 
 #### Scenario: 只剩影响有限的局部决定
 
-- **WHEN** 主要方案与契约已闭环，仅剩影响有限的局部决定
-- **THEN** Agent MAY 声明实施准备度为 90%，并说明该决定是否阻塞快照，不将局部确认视为全部完成
+- **WHEN** 主要方案已明确，仍有会改变结构、行为或维护方式的局部决定
+- **THEN** Agent MUST 保持收敛中，说明剩余决定，不提前发起快照确认
 
 #### Scenario: 已明确的验证留待实施后执行
 
-- **WHEN** 方案选择已有充分证据，验证方式已明确，仅相关实现与测试尚未执行
-- **THEN** Agent MUST NOT 仅因此压低准备度或新增阻塞 O；可能推翻主方案的未知能力仍 MUST 作为阻塞
+- **WHEN** 方案选择已有充分证据，验证方式已明确，仅实现与测试尚未执行
+- **THEN** Agent MUST NOT 仅因此阻止进入可确认或新增阻塞 O
 
-#### Scenario: 局部问题闭合但评分不变
+#### Scenario: 阶段与关键缺口均未变化
 
-- **WHEN** 本轮确认页面刷新策略，但核心任务能力仍未证实，实施准备度保持 75%
-- **THEN** Agent MUST 说明已闭合的刷新策略、仍限制升档的任务能力及下一项核对，不能只报分数不变
+- **WHEN** 本轮没有改变阶段或关键缺口
+- **THEN** Agent SHALL 保留一行阶段提示，不重复展开评估
 
-#### Scenario: 高分后范围扩大
+#### Scenario: 阶段不变但关键缺口变化
 
-- **WHEN** 实施准备度为 90% 后新增必须支持的外部能力，且尚无证据证明可用
-- **THEN** Agent MUST 重估并降至 75% 及以下，说明新增依赖如何影响原方案
+- **WHEN** 一个阻塞决定已闭合，下一项关键缺口浮现，阶段仍为收敛中
+- **THEN** Agent SHALL 更新提示并说明闭合项与剩余缺口，不为展示进展强制切换阶段
 
-#### Scenario: 新答案推翻已有假设
+#### Scenario: 已可确认后范围扩大
 
-- **WHEN** 用户回答暴露新的边界或推翻当前方案
-- **THEN** Agent MUST 降低或重估置信度，并说明变化原因
+- **WHEN** 新增必需外部能力，且尚无证据证明可用
+- **THEN** Agent MUST 重新判断为探索中，说明新增依赖如何影响原方案
 
 #### Scenario: 仍有阻塞决定
 
 - **WHEN** 当前存在未解决的 `O-*`
-- **THEN** Agent MUST NOT 把实施准备度声明为 95% 或把状态声明为 `CONFIRMED`
+- **THEN** Agent MUST NOT 声明可确认或将状态声明为 `CONFIRMED`
 
 ### Requirement: 需求与技术 skills MUST 只作为 Brainstorming 探针
 
@@ -136,7 +129,7 @@ MUST NOT 达到 95%；100% 仅表示用户已确认完整快照，不用于 topi
 
 #### Scenario: 出现持久化价值
 
-- **WHEN** 边界置信度约为 80% 且 change 有真实恢复、交接、并行或审计价值
+- **WHEN** 目标、主要范围与职责已明确，且 change 有真实恢复、交接、并行或审计价值
 - **THEN** Agent SHALL 询问用户是否创建 OpenSpec change，不得静默创建
 
 ### Requirement: Living brainstorm MUST 是共同设计的唯一语义源
@@ -191,9 +184,10 @@ flowchart、sequenceDiagram 或 stateDiagram-v2；简单变更 SHALL 删除整�
 
 ### Requirement: Living brainstorm MUST 经完整快照确认
 
-实施准备度达到 95%、没有 O 项且目标、边界、行为、方案与验证闭环时，Agent MUST 列出全部当前
-有效 D/A，每项一句话，并只询问是否确认该完整快照。用户明确确认后才可将状态改为 `CONFIRMED`
-并将准备度视为 100%；不得把调用 `/opsx:ff` 或 artifact 文件存在视为确认。
+没有 O 项、不存在会改变结构、可观察行为或维护方式的开放决定，且目标、边界、行为、方案与验证
+闭环时，Agent MUST 进入可确认阶段，列出全部当前有效 D/A，每项一句话，并只询问是否确认该完整
+快照。用户明确确认后才可将状态改为 `CONFIRMED`；不得把阶段标签、调用 `/opsx:ff` 或 artifact
+文件存在视为确认。
 
 #### Scenario: 用户确认完整快照
 
@@ -230,9 +224,26 @@ topic-only；已有 change 时 MAY 读取动态 OpenSpec 上下文，并且只�
 #### Scenario: 探索普通主题
 
 - **WHEN** 用户通过 `/opsx:explore` 提供主题但没有选定 change
-- **THEN** Agent SHALL 返回当前置信度和一个下一问题，不创建 change
+- **THEN** Agent SHALL 返回阶段与关键缺口提示；有 gap 时只问下一项，已闭合时总结并请用户确认，不创建 change
 
 #### Scenario: 探索现有 Draft change
 
 - **WHEN** 用户明确选择一个 Living brainstorm 为 `DRAFT` 的 change
 - **THEN** Agent MAY 继续 change-draft 单题访谈，但不得生成下游 artifact
+
+### Requirement: 旧百分比 Draft MUST 可延迟迁移
+
+planning-state 检查器 MUST 将旧百分比状态行继续识别为 `DRAFT`，返回 `stage: null` 与
+`needsStageMigration: true`，不根据旧分数推断讨论阶段或确认状态。Agent SHALL 在下一次维护该
+brainstorm 时按实际缺口重新判断阶段并更新状态行，保留 D/A/O 和下游状态，不批量改写旧文件。
+无 Living 状态行的旧文档 SHALL 继续走现有 LEGACY 迁移和用户确认流程。
+
+#### Scenario: 恢复旧百分比 Draft
+
+- **WHEN** 旧 brainstorm 使用百分比 DRAFT 状态行且下游为 CURRENT
+- **THEN** 检查器 MUST 仍返回 DRAFT、提示阶段迁移且不允许 Apply，Agent MUST 按实际缺口重评
+
+#### Scenario: 新阶段标签不代替确认
+
+- **WHEN** brainstorm 为 DRAFT 且阶段为可确认，下游已为 CURRENT
+- **THEN** 检查器 MUST NOT 允许 Apply；若仍有 O 项则 MUST 判为无效

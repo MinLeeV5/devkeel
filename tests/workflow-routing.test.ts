@@ -87,8 +87,8 @@ describe('progressive workflow routing contract', () => {
   })
 
   it('leaves interview and OpenSpec state machines in their owning skills', () => {
-    expect(brainstorming).toContain('边界置信度达到约 80%')
-    expect(brainstorming).toContain('实施准备度达到 95%')
+    expect(brainstorming).toContain('目标、主要范围与职责已明确')
+    expect(brainstorming).toContain('没有阻塞 O-*')
     expect(brainstorming).toContain('`D-*`')
     expect(brainstorming).toContain('`A-*`')
     expect(brainstorming).toContain('`O-*`')
@@ -99,30 +99,27 @@ describe('progressive workflow routing contract', () => {
     expect(template).toContain('具体状态、依赖、迁移和恢复算法由 OPSX skills 与 schema 负责')
   })
 
-  it('should distinguish boundary evidence from implementation readiness in score bands', () => {
-    const rows = brainstorming.split('\n')
-      .filter(line => /^\| (?:\d+–)?\d+% \|/u.test(line))
-      .map(line => line.split('|').slice(1, -1).map(cell => cell.trim()))
-    const bands = Object.fromEntries(rows.map(([score, ...criteria]) => [score, criteria]))
+  it('should expose three discussion stages without numerical scoring', () => {
+    const stages = brainstorming.split('\n')
+      .filter(line => /^\| (探索中|收敛中|可确认) \|/u.test(line))
+      .map(line => line.split('|')[1].trim())
 
-    expect(Object.keys(bands)).toEqual(['0–55%', '60–75%', '80–85%', '90%', '95%'])
-    expect(bands['60–75%'][0]).toMatch(/范围.*职责/u)
-    expect(bands['60–75%'][1]).toMatch(/核心链路.*外部能力.*未.*证实/u)
-    expect(bands['80–85%'][1]).toMatch(/契约.*恢复.*验证.*未闭合/u)
-    expect(bands['90%'][1]).toMatch(/方案.*契约.*闭环.*局部决定/u)
-    expect(bands['95%'][1]).toMatch(/无阻塞 O-\*.*确认快照/u)
+    expect(stages).toEqual(['探索中', '收敛中', '可确认'])
+    expect(brainstorming).toContain('每轮只用一行“阶段 · 关键缺口”')
+    expect(brainstorming).toContain('仅在阶段或关键缺口变化时展开解释')
+    expect(brainstorming).not.toMatch(/\d+%/u)
+    expect(brainstorming).toContain('topic-only 的闭合范围是目标、主要边界与下一路径')
   })
 
-  it('should require fresh evidence for phase transitions and score changes', () => {
-    expect(brainstorming).toMatch(/切换阶段时重新评估，禁止直接沿用上一阶段数值/u)
-    expect(brainstorming).toMatch(/不把两个指标写成\s*同一条涨跌轨迹/u)
-    expect(brainstorming).toMatch(/范围扩大、新增依赖或假设被推翻.*重估[\s\S]*原分档不再满足时降档/u)
-    expect(brainstorming).toMatch(/不得按对话轮数、D\/O 条数或已确认决定数量加分/u)
-    expect(brainstorming).toMatch(/分数不变时也要说明\s*本轮进展与限制升档的缺口/u)
-    expect(brainstorming).toMatch(/留待实施后执行的验证不自动成为当前阻塞项/u)
-    expect(brainstorming).toMatch(/未知\s*能力若可能推翻主方案.*核心可行性缺口/u)
-    expect(brainstorming).toContain('数值不单独决定推进')
-    expect(brainstorming).toMatch(/100% 仅在用户确认完整快照后使用/u)
+  it('should preserve evidence and confirmation gates independently of stage labels', () => {
+    expect(brainstorming).toContain('切换工作状态、范围扩大、新增依赖或假设被推翻')
+    expect(brainstorming).toContain('不沿用旧结论')
+    expect(brainstorming).toContain('不自动成为阻塞项')
+    expect(brainstorming).toMatch(/可能推翻主方案的\s*未知能力仍是核心可行性缺口/u)
+    expect(brainstorming).toContain('阶段不代表用户授权')
+    expect(brainstorming).toContain('不存在会改变结构、可观察行为或维护方式的开放决定')
+    expect(brainstorming).toContain('用户明确确认后')
+    expect(brainstorming).toContain('不得从\n旧分数直接映射阶段')
   })
 
   it('preserves cross-entry OpenSpec and quality boundaries in AGENTS', () => {

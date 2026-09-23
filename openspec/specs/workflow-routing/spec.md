@@ -33,7 +33,7 @@ Agent MUST 按独立目标和可执行子请求分别判断权限。用户明确
 
 未被显式专项 skill 或 L0 接管的开发请求，Agent MUST 先检查目标、关键做法、边界和验证是否存在
 会改变实施结果的 gap。输入明确时 SHALL 直接采用，不重复 brainstorm；成熟方案 SHALL 只做基于
-仓库事实的 Gap Check；探索输入 SHALL 进入 Brainstorming 单题访谈。达到 95%、O 为 0 时 MUST
+仓库事实的 Gap Check；探索输入 SHALL 进入 Brainstorming 单题访谈。满足 Brainstorming 的快照确认条件时 MUST
 展示全部 D/A 快照并等待用户确认，确认后才可视为实施准备完成。
 
 #### Scenario: 精确原子请求
@@ -149,7 +149,7 @@ MUST 只在用户明确选择后路由到对应 L0 skill。
 ### Requirement: AGENTS MUST 只保留跨入口门禁与按需路由索引
 
 根 `AGENTS.md` 与分发模板 MUST 保留指令优先级、写入授权、L0 skill 索引、L1 触发条件、OpenSpec
-跨流程边界和完成证据要求。Brainstorming 的 D/A/O、置信度与快照算法，OpenSpec 的结构状态、
+跨流程边界和完成证据要求。Brainstorming 的 D/A/O、讨论阶段与快照算法，OpenSpec 的结构状态、
 `applyRequires`、迁移与恢复算法，以及 Direct/Lite/Full 的升级事务 MUST 由对应 skills 或 schema
 承载，不得在 AGENTS 中重复展开。
 

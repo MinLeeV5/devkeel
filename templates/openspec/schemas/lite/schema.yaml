@@ -1,5 +1,5 @@
 name: lite
-version: 7
+version: 8
 description: >
   日常持久化协调工作流：Living brainstorm → tasks → apply → 快速归档。
 
@@ -20,8 +20,9 @@ artifacts:
       以上协作组件时，一图读懂 MUST 使用一张最合适的 Mermaid 流程图、时序图或状态图；简单
       变更删除整个图区。图中语义必须追溯到 D/A，且不得成为新的设计来源。
 
-      DRAFT 准备度按 5% 更新，95% 且无 O-* 时展示全部 D/A 快照；只有用户明确确认快照后才
-      改为 CONFIRMED。状态行和 D/A/O 计数必须通过共享 planning-state 检查器。
+      DRAFT 状态行记录当前讨论阶段，阶段判断与快照确认条件遵循 Brainstorming；只有用户
+      明确确认完整 D/A 快照后才改为 CONFIRMED。状态行和 D/A/O 计数必须通过共享
+      planning-state 检查器。
     requires: []
 
   - id: tasks

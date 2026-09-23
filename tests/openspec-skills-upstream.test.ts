@@ -47,7 +47,11 @@ describe('OpenSpec 1.12 skill baseline', () => {
 
     expect(command).toContain('Load and follow the `brainstorming` skill.')
     expect(command).toContain('topic-only')
-    expect(command).toContain('one next question')
+    expect(command).toContain('discussion stage')
+    expect(command).toContain('key gap')
+    expect(command).toContain('one next question when a gap remains')
+    expect(command).toContain('otherwise request confirmation')
+    expect(command).not.toContain('confidence')
     expect(command).not.toContain('openspec-explore')
     expect(dogfood).toBe(command)
     expect(reference).toContain('planning-state.mjs')
@@ -94,7 +98,8 @@ describe('OpenSpec 1.12 skill baseline', () => {
     const apply = readLocalSkill('openspec-apply-change')
 
     expect(newChange).toContain('Living brainstorm')
-    expect(newChange).toContain('同一轮只询问当前最高价值')
+    expect(newChange).toMatch(/有 gap 时.*同一轮只询问当前最高价值/u)
+    expect(newChange).toContain('已闭合时进入 Brainstorming 快照确认')
     expect(continueChange).toContain('OpenSpec 结构状态负责依赖图')
     expect(continueChange).toContain('每次都从磁盘重读')
     expect(continueChange).toContain('每次最多创建一个 artifact')

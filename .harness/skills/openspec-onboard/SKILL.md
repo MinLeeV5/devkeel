@@ -4,7 +4,7 @@ description: 用真实小型代码任务，分阶段讲解并完成第一轮 Ope
 license: MIT
 metadata:
   author: openspec
-  version: "2.2"
+  version: "2.3"
   upstreamVersion: "1.12.0"
   generatedBy: "1.12.0"
 ---
@@ -37,7 +37,7 @@ tasks、验证并归档。强调不同 schema 的 artifact 图不同，以 CLI s
 
 ## Phase 3：Brainstorming 演示
 
-用 1～2 分钟读取相关入口、邻近测试和直接依赖，说明 topic-only、单题访谈和边界置信度。解释
+用 1～2 分钟读取相关入口、邻近测试和直接依赖，说明 topic-only、单题访谈和阶段与关键缺口提示。解释
 需求/技术探针只发现下一项 gap，不生成第二套设计。
 
 按官方教学节奏暂停，等待用户确认理解后再创建 change。
@@ -53,7 +53,7 @@ tasks、验证并归档。强调不同 schema 的 artifact 图不同，以 CLI s
 
 ## Phase 5～8：逐个学习 planning artifacts
 
-先通过 Brainstorming 把 Living brainstorm 推进到 95%，展示全部 D/A 快照并由用户明确确认。
+先通过 Brainstorming 闭合关键缺口，满足快照确认条件后展示全部 D/A，并由用户明确确认。
 然后循环投影每个 Apply 前置 artifact，每一步保持官方 **EXPLAIN → DO → SHOW → PAUSE**：
 
 1. **EXPLAIN**：依据当前 artifact 的 schema `instruction`，用简短中文说明它回答什么问题；

@@ -4,7 +4,7 @@ description: 修订现有 OpenSpec change；先更新 Living 决定并重新确�
 license: MIT
 metadata:
   author: openspec
-  version: "2.0"
+  version: "2.1"
   upstreamVersion: "1.12.0"
   generatedBy: "1.12.0"
 ---
@@ -36,8 +36,8 @@ metadata:
 - `<!-- harness:lite-to-full-promotion -->` 和
   `<!-- harness:full-tasks-reconciled -->` 的 Full 恢复语义必须保留。
 
-达到 95% 且无 O-* 后，展示全部当前 D/A 快照。只有用户明确确认，才改为 CONFIRMED；不要逐个
-artifact 再要求确认。
+满足 Brainstorming 的快照确认条件后，展示全部当前 D/A 快照。只有用户明确确认，才改为
+CONFIRMED；不要逐个 artifact 再要求确认。
 
 ## 3. 原地重投影已有 artifacts
 

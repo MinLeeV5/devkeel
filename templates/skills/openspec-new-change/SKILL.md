@@ -4,7 +4,7 @@ description: 创建 OpenSpec change，并在同一轮初始化 Living brainstorm
 license: MIT
 metadata:
   author: openspec
-  version: "2.2"
+  version: "2.3"
   upstreamVersion: "1.12.0"
   generatedBy: "1.12.0"
 ---
@@ -49,7 +49,7 @@ npx devkeel@latest openspec instructions brainstorm --change "<name>" --json
 
 - 从当前热对话迁入全部有效 D/A/O；没有历史决定时，把用户本次明确且无歧义的输入写为首个
   D-*，不将 Agent 推测伪装成决定；
-- 状态为 DRAFT；实施准备度按现有证据取 5% 档位；下游状态为 NONE；
+- 状态为 DRAFT；阶段按现有证据与关键缺口判断；下游状态为 NONE；
 - 使用最小模板，不扩写 use case、架构、风险或候选大全；
 - 写入后运行 `brainstorming/scripts/planning-state.mjs <resolvedOutputPath>`，无效则修正并停止。
 
@@ -57,8 +57,9 @@ npx devkeel@latest openspec instructions brainstorm --change "<name>" --json
 
 ## 5. 输出与停止
 
-简短报告 change、schema、位置、迁入的 D/A/O 数量与实施准备度，然后在同一轮只询问当前最高价值
-的一个 gap。不得展示整份模板，不提示用户立即 Apply，也不得创建 design/specs/tasks。
+简短报告 change、schema、位置、迁入的 D/A/O 数量及阶段与关键缺口。有 gap 时在同一轮只询问当前最高价值
+的一项；已闭合时进入 Brainstorming 快照确认。不得展示整份模板，不提示用户立即 Apply，也不得
+创建 design/specs/tasks。
 
 用户本次明确调用 `/opsx:new` 已授权创建 change 和 Living brainstorm；不授权实现代码、FF、
 archive、commit 或 delivery。

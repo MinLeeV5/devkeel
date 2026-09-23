@@ -117,7 +117,7 @@ Full `design.md` 中，图能明显降低组件关系、参与者交互、状态
 
 只有用户显式调用 `/opsx:ff` 时才可使用 Fast-forward。FF MAY 在 brainstorm 已 `CONFIRMED` 后循环
 投影全部 Apply 前置 artifacts；在 Draft 时仍 MUST 一次只询问一个用户决定，并在本次调用停止。
-调用 FF 本身 MUST NOT 把 95% 改为 100%，也 MUST NOT 授权 Agent 发明或确认决定。
+调用 FF 本身 MUST NOT 把 DRAFT 改为 CONFIRMED，也 MUST NOT 授权 Agent 发明或确认决定。
 
 #### Scenario: 用户对 Draft change 调用 FF
 

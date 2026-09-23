@@ -302,19 +302,19 @@ describe('templates', () => {
         'utf-8',
       )
       expect(brainstorming).toContain('author: "devkeel"')
-      expect(brainstorming).toContain('version: "8.0.3"')
+      expect(brainstorming).toContain('version: "9.0.0"')
       expect(brainstorming).toContain('topic-only（默认）')
       expect(brainstorming).toContain('change-draft')
       expect(brainstorming).toContain('每轮严格只处理一个决定')
       expect(brainstorming).toContain('Agent 的推荐答案')
       expect(brainstorming).toContain('明确标注')
-      expect(brainstorming).toContain('置信度按 5% 取值')
+      expect(brainstorming).toContain('每轮只用一行“阶段 · 关键缺口”')
       expect(brainstorming).toContain('影响 × 不确定性')
       expect(brainstorming).toContain('D-*')
       expect(brainstorming).toContain('A-*')
       expect(brainstorming).toContain('O-*')
-      expect(brainstorming).toContain('实施准备度达到 95%')
-      expect(brainstorming).toMatch(/用户\s*确认完整快照/u)
+      expect(brainstorming).toContain('没有阻塞 O-*')
+      expect(brainstorming).toContain('只询问用户是否确认这份完整快照')
       expect(brainstorming).toContain('[D-03](#d-03)')
       expect(brainstorming).toContain('进入下游投影阶段后禁止自动调用这些')
       expect(brainstorming).toContain('旧 `brainstorm.md` 没有 Living 状态行')
@@ -519,7 +519,7 @@ describe('templates', () => {
       }
 
       expect(schema.name).toBe('lite')
-      expect(schema.version).toBe(7)
+      expect(schema.version).toBe(8)
       expect(schema.artifacts.map(artifact => artifact.id)).toEqual(['brainstorm', 'tasks'])
       expect(schema.artifacts[0]!.requires).toEqual([])
       expect(schema.artifacts[1]!.requires).toEqual(['brainstorm'])
@@ -537,7 +537,7 @@ describe('templates', () => {
         path.join(target, 'schemas', 'lite', 'templates', 'tasks.md'),
         'utf-8',
       )
-      expect(brainstorm).toContain('> **状态：** `DRAFT` · **实施准备度：** 0%')
+      expect(brainstorm).toContain('> **状态：** `DRAFT` · **阶段：** 探索中')
       expect(brainstorm).toContain('## ⚡ 30 秒了解')
       expect(brainstorm).toContain('## 🗺️ 一图读懂')
       expect(brainstorm).toContain('sequenceDiagram')
@@ -713,7 +713,7 @@ describe('templates', () => {
         apply: { requires: string[]; tracks: string }
       }
 
-      expect(schema.version).toBe(24)
+      expect(schema.version).toBe(25)
       expect(schema.artifacts.map(artifact => artifact.id)).toEqual([
         'brainstorm', 'design', 'specs', 'tasks', 'verify', 'retrospective',
       ])
@@ -939,11 +939,11 @@ describe('templates', () => {
 
     it('keeps commands and skills unchanged and synchronized with dogfood copies', () => {
       const expectedVersions: Record<string, string> = {
-        'openspec-new-change': '2.2',
-        'openspec-ff-change': '2.0',
-        'openspec-onboard': '2.2',
+        'openspec-new-change': '2.3',
+        'openspec-ff-change': '2.1',
+        'openspec-onboard': '2.3',
         'openspec-continue-change': '2.1',
-        'openspec-update-change': '2.0',
+        'openspec-update-change': '2.1',
         'openspec-apply-change': '3.1',
         'openspec-archive-change': '3.2',
         'openspec-bulk-archive-change': '2.1',
@@ -970,7 +970,7 @@ describe('templates', () => {
         'utf-8',
       )) as { skills: Record<string, string> }
 
-      expect(packagedVersions.skills['openspec-update-change']).toBe('2.0')
+      expect(packagedVersions.skills['openspec-update-change']).toBe('2.1')
       expect(packagedVersions.skills['openspec-propose']).toBeUndefined()
       expect(dogfoodVersions.skills['openspec-update-change']).toBe(
         packagedVersions.skills['openspec-update-change'],

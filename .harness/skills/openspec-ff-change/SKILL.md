@@ -4,7 +4,7 @@ description: 用户显式选择时，快速推进访谈并投影全部 Apply 前
 license: MIT
 metadata:
   author: openspec
-  version: "2.0"
+  version: "2.1"
   upstreamVersion: "1.12.0"
   generatedBy: "1.12.0"
 ---
@@ -25,7 +25,7 @@ New 在首题前的停止点是本 skill 的内部交接点。
 - LEGACY/INVALID/MISSING：按 Continue 的迁移或修复流程处理；
 - CONFIRMED：才开始投影。
 
-调用 FF 本身不等于确认 D/A 快照。不得自动把 95% 改成 100%，不得为填模板把推测写成决定。
+调用 FF 本身不等于确认 D/A 快照。不得自动把 DRAFT 改成 CONFIRMED，不得为填模板把推测写成决定。
 
 ## 3. 计算并投影所需闭包
 

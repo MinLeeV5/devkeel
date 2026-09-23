@@ -1,5 +1,5 @@
 name: full
-version: 24
+version: 25
 description: >
   面向高风险或显式治理需求的封闭投影工作流：Living brainstorm → design → specs → tasks →
   apply → verify → retrospective → archive。

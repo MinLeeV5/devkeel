@@ -40,12 +40,13 @@ const reasons = []
 if (statusLines.length !== 1) reasons.push(`状态行数量必须为 1，实际为 ${statusLines.length}`)
 
 const statusLine = statusLines[0] ?? ''
-const draftMatch = statusLine.match(/^> \*\*状态：\*\* `DRAFT` · \*\*实施准备度：\*\* (\d+)%$/u)
+const draftMatch = statusLine.match(/^> \*\*状态：\*\* `DRAFT` · \*\*阶段：\*\* (探索中|收敛中|可确认)$/u)
+const legacyDraftMatch = statusLine.match(/^> \*\*状态：\*\* `DRAFT` · \*\*实施准备度：\*\* \d+%$/u)
 const confirmedMatch = statusLine.match(
   /^> \*\*状态：\*\* `CONFIRMED` · \*\*确认项：\*\* (\d+) D \/ (\d+) A \/ (\d+) O$/u,
 )
 
-if (!draftMatch && !confirmedMatch) reasons.push('状态行格式无效')
+if (!draftMatch && !legacyDraftMatch && !confirmedMatch) reasons.push('状态行格式无效')
 
 const historyStart = source.search(/^## 决策变更记录\s*$/mu)
 const activeSource = historyStart >= 0 ? source.slice(0, historyStart) : source
@@ -64,14 +65,11 @@ if (downstreamMatches.length !== 1) {
 const downstream = downstreamMatches[0]?.[1] ?? 'UNKNOWN'
 
 let state = 'INVALID'
-let readiness = null
+const stage = draftMatch?.[1] ?? null
 
-if (draftMatch) {
+if (draftMatch || legacyDraftMatch) {
   state = 'DRAFT'
-  readiness = Number(draftMatch[1])
-  if (readiness < 0 || readiness > 95 || readiness % 5 !== 0) {
-    reasons.push('DRAFT 实施准备度必须为 0～95 且按 5% 递增')
-  }
+  if (stage === '可确认' && counts.O > 0) reasons.push('可确认阶段不能包含开放项 O-*')
 }
 
 if (confirmedMatch) {
@@ -96,7 +94,8 @@ process.stdout.write(`${JSON.stringify({
   state,
   valid,
   applyReady,
-  readiness,
+  stage,
+  needsStageMigration: Boolean(legacyDraftMatch),
   counts,
   downstream,
   duplicates,
