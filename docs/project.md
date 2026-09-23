@@ -32,4 +32,4 @@ OpenSpec 在 DevKeel 根项目集中协调；子项目在自身目录执行代�
 
 旧任务产物按需手动复制归档；当前有效的项目知识继续保留在 docs 中。
 CLI 自动识别平台入口和仓库角色，无需维护 `.harness/config.yml`，具体规则见
-[README](../README.md#自动识别无需项目配置文件)。
+[安装指南](../web/public/install.md#1-确认项目与平台)。
