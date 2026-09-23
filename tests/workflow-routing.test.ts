@@ -160,16 +160,15 @@ describe('progressive workflow routing contract', () => {
     expect(dogfoodSkill).toBe(workflowRouting)
   })
 
-  it('documents progressive routing and optional closure actions', () => {
+  it('documents progressive routing and permission boundaries', () => {
     const readme = fs.readFileSync(path.join(process.cwd(), 'README.md'), 'utf-8')
 
-    expect(readme).toContain('Direct / Lite / Full 渐进工作流')
-    expect(readme).toContain('`workflow-routing@1.0.0` 只在 Direct、Lite、Full 边界不清')
-    expect(readme).toContain('Living brainstorm → tasks → apply')
-    expect(readme).toContain('同一 change 原地升级 Full')
-    expect(readme).toContain('一次最终 Review → Verify 报告')
-    expect(readme).toContain('用户拒绝 Full 建议后仍可继续 Lite')
-    expect(readme).toContain('默认不创建 worktree、不分派实现 subagent')
-    expect(readme).toContain('OpenSpec 是持久化协调层')
+    expect(readme).toContain('## 渐进工作流')
+    expect(readme).toContain('当前会话中完成的任务走 Direct')
+    expect(readme).toContain('经确认进入 Lite')
+    expect(readme).toContain('用户选择 Full')
+    expect(readme).toContain('Lite / Full 使用 OpenSpec 保存共同设计和任务过程')
+    expect(readme).toContain('方案确认不自动授权实施')
+    expect(readme).toContain('归档也不自动授权 commit、push 或 PR')
   })
 })
