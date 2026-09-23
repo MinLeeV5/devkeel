@@ -1,0 +1,41 @@
+docs/project.md
+  b4db7eccef5207d4 35
+README.md
+  7a8162769ad8f0f9 5-6,8,10,12-14,16,23,28,31,33,35-37,63
+  b4db7eccef5207d4 56-59,61
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.9",
+  "base_commit_sha": "42c4c0238f54899db47db3557fa552a93e9926df",
+  "prompts": {
+    "7a8162769ad8f0f9": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "01a0cbe7-5a56-7aa2-9959-1538cf5d2858",
+        "model": "gpt-6-astra"
+      },
+      "human_author": "MinLeeV5 <dicklwm@163.com>",
+      "messages": [],
+      "total_additions": 0,
+      "total_deletions": 0,
+      "accepted_lines": 71,
+      "overriden_lines": 0,
+      "messages_url": "https://gitai.gz.cvte.cn/cas/e4aad6ad94e0d6b5c416f6d6ee2be66de649197509bd8db2ae4c1cd4c1fd0451"
+    },
+    "b4db7eccef5207d4": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "01a0cc55-128c-7020-9ae0-b21dd774979f",
+        "model": "gpt-6-sol"
+      },
+      "human_author": "MinLeeV5 <dicklwm@163.com>",
+      "messages": [],
+      "total_additions": 0,
+      "total_deletions": 0,
+      "accepted_lines": 56,
+      "overriden_lines": 0,
+      "messages_url": "https://gitai.gz.cvte.cn/cas/3caf9cc0a051872c78505b23f593f14ad2ff6dcd160894177c26dc2eecb105b0"
+    }
+  }
+}
