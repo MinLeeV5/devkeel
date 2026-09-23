@@ -1,8 +1,8 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 440" role="img" aria-labelledby="title desc"
   data-graph-role="diagram" data-diagram-type="timeline" data-style="glassmorphism"
   data-quality-profile="showcase" data-bounds="0 0 1200 440">
-  <title id="title">DevKeel V1 与 V2 编排轨道</title>
-  <desc id="desc">完整生命周期依次为 brainstorm → design → specs → tasks → apply → verify → retrospective → archive。DevKeel V1 固定加载全部阶段；DevKeel V2 按任务风险选择 Direct、Lite 或 Full。Direct：apply → verify；Lite：brainstorm → tasks → apply → archive；Full：完整生命周期。路径可以变短，但必要调查、最小实现、对应验证与完成证据等工程底线不变。</desc>
+  <title id="title">Harness V1 与 V2 编排轨道</title>
+  <desc id="desc">完整生命周期依次为 brainstorm → design → specs → tasks → apply → verify → retrospective → archive。Harness V1 固定加载全部阶段；Harness V2 按任务风险选择 Direct、Lite 或 Full。Direct：apply → verify；Lite：brainstorm → tasks → apply → archive；Full：完整生命周期。路径可以变短，但必要调查、最小实现、对应验证与完成证据等工程底线不变。</desc>
   <defs>
     <marker id="arrow-v1" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto">
       <polygon points="0 0,8 3,0 6" fill="#a9b4c8"/>

@@ -1,6 +1,6 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 560" width="1200" height="560" role="img" aria-labelledby="title desc" data-generator="fireworks-tech-graph" data-schema-version="1" data-style-id="5" data-visual-theme="Glassmorphism · Tokyo Night" data-diagram-type="process-flow" data-semantic-profile="generic" data-semantic-valid="true" data-quality-profile="showcase" data-max-bends-per-edge="2" data-max-total-bends="8" data-max-route-stretch="1.35" data-max-bridged-crossings="0" data-min-node-gap="40" data-min-container-gutter="20" data-min-label-clearance="4">
   <title id="title">一次交付驱动任务内纠偏与任务间进化</title>
-  <desc id="desc">任务内循环从明确目标、执行实现、观察验证到证据判断；未通过时回到执行实现，通过后形成证据化交付。交付进入任务间循环，依次复盘、提炼、更新 DevKeel，再让下一次任务自动加载新规则。</desc>
+  <desc id="desc">任务内循环从明确目标、执行实现、观察验证到证据判断；未通过时回到执行实现，通过后形成证据化交付。交付进入任务间循环，依次复盘、提炼、更新 Harness，再让下一次任务自动加载新规则。</desc>
   <defs>
     <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
       <stop offset="0" stop-color="#111522"/>
@@ -48,7 +48,7 @@
     <line x1="41" y1="326" x2="41" y2="490" stroke="#bb9af7" stroke-width="2"/>
     <text x="64" y="340" class="mono section purple">02 · OUTER LOOP · 任务之间</text>
     <text x="1136" y="340" text-anchor="end" class="mono cadence purple">迭代级 · 跨任务持续</text>
-    <text x="64" y="364" class="section-sub muted">达标后：复盘 → 提炼 → 更新 DevKeel → 下一次加载</text>
+    <text x="64" y="364" class="section-sub muted">达标后：复盘 → 提炼 → 更新 Harness → 下一次加载</text>
     <rect data-graph-role="reserved" data-reserved-kind="container-header" x="56" y="320" width="170" height="56" fill="none"/>
   </g>
 
@@ -96,7 +96,7 @@
   </g>
   <g id="node-update" data-graph-role="node" data-node-id="update" data-semantic-role="rect" data-graph-bounds="480,400,640,472">
     <rect x="480" y="400" width="160" height="72" rx="18" fill="#bb9af7" fill-opacity=".10" stroke="#bb9af7" stroke-width="1.8"/>
-    <text x="560" y="432" text-anchor="middle" class="node-title text">更新 DevKeel</text>
+    <text x="560" y="432" text-anchor="middle" class="node-title text">更新 Harness</text>
     <text x="560" y="455" text-anchor="middle" class="node-sub muted">规则 · Skill · 测试</text>
   </g>
   <g id="node-extract" data-graph-role="node" data-node-id="extract" data-semantic-role="rect" data-graph-bounds="720,400,880,472">

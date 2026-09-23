@@ -515,7 +515,7 @@
 
 .comparison-product-guides {
   display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
+  grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 10px;
   margin: 0 0 34px;
 }
@@ -527,8 +527,6 @@
 
 .comparison-product-guides [data-product='harnessV2'],
 .comparison-table [data-product='harnessV2'] { --product-color: var(--home-primary); }
-.comparison-product-guides [data-product='harnessV1'],
-.comparison-table [data-product='harnessV1'] { --product-color: var(--home-blue); }
 .comparison-product-guides [data-product='superpowers'],
 .comparison-table [data-product='superpowers'] { --product-color: var(--home-coral); }
 .comparison-product-guides [data-product='matt'],

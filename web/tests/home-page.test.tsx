@@ -46,14 +46,15 @@ describe('V2 home page', () => {
     expect(container.querySelector('a[href*="/v1/"]')).toBeNull()
   })
 
-  it('compares named releases with contextual star scores and tradeoffs', () => {
+  it('compares the current release with open-source alternatives and contextual tradeoffs', () => {
     render(<ComparisonSection />)
     const table = screen.getByRole('table')
 
-    for (const product of ['DevKeel', 'DevKeel V1', 'Superpowers', 'Matt Skills']) {
+    for (const product of ['DevKeel', 'Superpowers', 'Matt Skills']) {
       expect(within(table).getAllByText(product).length).toBeGreaterThan(0)
     }
-    for (const version of ['V2', 'templates v1.3.0', 'v6.2.0', 'v1.1.0']) {
+    expect(within(table).queryByText('DevKeel V1')).toBeNull()
+    for (const version of ['V2', 'v6.2.0', 'v1.1.0']) {
       expect(within(table).getByText(version)).toBeTruthy()
     }
     expect(within(table).getByRole('rowheader', { name: '现有项目改造' })).toBeTruthy()
@@ -61,7 +62,6 @@ describe('V2 home page', () => {
     expect(within(table).getByRole('rowheader', { name: 'Token 成本' })).toBeTruthy()
     expect(within(table).getAllByRole('button', { name: /5 \/ 5。查看说明/ }).length).toBeGreaterThan(0)
     expect(within(table).getByText(/domain-init \+ verify-init 扫描代码/)).toBeTruthy()
-    expect(screen.getByText(/同样提供 domain-init 与 verify-init/)).toBeTruthy()
     expect(screen.getByText(/强制技能纪律覆盖设计、TDD、Review 与收尾/)).toBeTruthy()
     expect(screen.getByText(/可组合的小型 Skills/)).toBeTruthy()
     expect(screen.getByText('推荐主方案')).toBeTruthy()
@@ -216,20 +216,19 @@ describe('V2 home page', () => {
     expect(COMPARISON_ROWS.map((row) => [
       row.dimension,
       row.products.harnessV2.score,
-      row.products.harnessV1.score,
       row.products.superpowers.score,
       row.products.matt.score,
     ])).toEqual([
-      ['现有项目改造', 5, 5, 2, 3],
-      ['项目知识生成', 5, 5, 2, 4],
-      ['验证基建建设', 5, 5, 3, 3],
-      ['轻重任务适配', 5, 2, 2, 5],
-      ['交付时间', 5, 2, 2, 4],
-      ['Token 成本', 5, 2, 2, 4],
-      ['跨会话与团队协作', 4, 5, 4, 5],
-      ['过程约束与审查', 4, 5, 5, 4],
-      ['跨平台复用', 4, 4, 5, 4],
-      ['技能组合与定制', 5, 4, 4, 5],
+      ['现有项目改造', 5, 2, 3],
+      ['项目知识生成', 5, 2, 4],
+      ['验证基建建设', 5, 3, 3],
+      ['轻重任务适配', 5, 2, 5],
+      ['交付时间', 5, 2, 4],
+      ['Token 成本', 5, 2, 4],
+      ['跨会话与团队协作', 4, 4, 5],
+      ['过程约束与审查', 4, 5, 4],
+      ['跨平台复用', 4, 5, 4],
+      ['技能组合与定制', 5, 4, 5],
     ])
     for (const row of COMPARISON_ROWS) {
       for (const cell of Object.values(row.products)) expect(cell.detail).toContain('；代价')

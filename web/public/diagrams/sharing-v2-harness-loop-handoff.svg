@@ -1,6 +1,6 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 560" role="img" aria-labelledby="title desc" data-graph-role="diagram" data-diagram-type="process-flow" data-style="glassmorphism" data-quality-profile="showcase" data-bounds="0 0 1200 560">
-  <title id="title">从 DevKeel 可靠交付到 Loop 持续改进的闭环</title>
-  <desc id="desc">Agent-ready Repository 支撑手机登录任务可靠交付，验证和 Review 发现重复点击与倒计时重置问题；Loop 将反馈提炼为规则、回归测试与 AGENTS.md 地图更新，并回写 DevKeel，让下一次任务自动继承。</desc>
+  <title id="title">Harness 支撑可靠交付，Loop 推动持续改进</title>
+  <desc id="desc">Agent-ready Repository 支撑手机登录任务可靠交付，验证和 Review 发现重复点击与倒计时重置问题；Loop 将反馈提炼为规则、回归测试与 AGENTS.md 地图更新，并回写 Harness，让下一次任务自动继承。</desc>
   <defs>
     <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
       <stop offset="0" stop-color="#111522"/>

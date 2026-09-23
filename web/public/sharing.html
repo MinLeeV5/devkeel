@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta name="description" content="从 Prompt Engineering 到 Context、DevKeel 与 Loop Engineering：以手机验证码登录为例，解释四层如何通过可审查的工程交接形成闭环。">
+<meta name="description" content="从 Prompt Engineering 到 Context、Harness 与 Loop Engineering：以手机验证码登录为例，解释四层如何通过可审查的工程交接形成闭环。">
 <title>从 Prompt 到 Loop · AI Agent 工程化的四次升级</title>
 <link rel="icon" href="./assets/favicon.ico" type="image/x-icon">
 <link rel="stylesheet" href="https://api.fontshare.com/v2/css?f[]=clash-display@400;500;600;700&f[]=satoshi@400;500;700&display=swap">
@@ -237,8 +237,8 @@ h3,.h3{font-size:var(--h3-size);line-height:1.3}.lede{font-size:clamp(.88rem,1.5
   <div class="glow-line"></div><div class="slide-content">
     <p class="eyebrow reveal">// 一套系统 · 四个阶段</p>
     <h2 class="reveal">四次升级，不是替代关系，而是<span class="gradient-text">逐层补齐</span></h2>
-    <div class="diagram-frame reveal"><img src="./diagrams/sharing-v2-four-layers.svg" alt="Prompt、Context、DevKeel、Loop 四层递进关系图"></div>
-    <div class="hbox hbox-blue mt-m reveal tc"><strong>Prompt</strong> 讲清楚 · <strong>Context</strong> 给够信息 · <strong>DevKeel</strong> 可靠执行 · <strong>Loop</strong> 持续改进</div>
+    <div class="diagram-frame reveal"><img src="./diagrams/sharing-v2-four-layers.svg" alt="Prompt、Context、Harness、Loop 四层递进关系图"></div>
+    <div class="hbox hbox-blue mt-m reveal tc"><strong>Prompt</strong> 讲清楚 · <strong>Context</strong> 给够信息 · <strong>Harness</strong> 可靠执行 · <strong>Loop</strong> 持续改进</div>
     <p class="source reveal">注：这是本次分享采用的解释框架，并非行业统一分级标准。</p>
   </div><div class="slide-counter">03 / 24</div>
 </section>
@@ -370,7 +370,7 @@ h3,.h3{font-size:var(--h3-size);line-height:1.3}.lede{font-size:clamp(.88rem,1.5
 <!-- 10 · CONTEXT TO HARNESS HANDOFF -->
 <section class="slide bg-mesh bg-grid" id="slide-10">
   <div class="glow-line"></div><div class="slide-content">
-    <p class="eyebrow reveal">阶段交接 · Context → DevKeel</p>
+    <p class="eyebrow reveal">阶段交接 · Context → Harness</p>
     <h2 class="reveal">Context 让 Agent 看懂项目，还没有让交付<span class="purple">可重复</span></h2>
     <div class="handoff-map reveal">
       <div class="handoff-stage is-context">
@@ -392,7 +392,7 @@ h3,.h3{font-size:var(--h3-size);line-height:1.3}.lede{font-size:clamp(.88rem,1.5
       </div>
     </div>
     <div class="hbox hbox-purple handoff-takeaway reveal"><span class="purple">HANDOFF 02</span><strong>知道什么只是输入质量；怎样执行、何时停止、如何证明才是系统能力。</strong></div>
-    <p class="source reveal">接下来进入 DevKeel：把项目地图、执行路由、授权门禁与验证证据变成 Agent 的工作环境。</p>
+    <p class="source reveal">接下来用 DevKeel 展示 Harness 的落地：把项目地图、执行路由、授权门禁与验证证据变成 Agent 的工作环境。</p>
   </div><div class="slide-counter">10 / 24</div>
 </section>
 
@@ -400,7 +400,7 @@ h3,.h3{font-size:var(--h3-size);line-height:1.3}.lede{font-size:clamp(.88rem,1.5
 <section class="slide bg-mesh bg-grid" id="slide-11">
   <div class="glow-line"></div><div class="slide-content">
     <p class="eyebrow reveal">// Harness Engineering · devkeel</p>
-    <h2 class="reveal"><span class="purple">DevKeel</span>：设计一个让 Agent 可靠工作的环境</h2>
+    <h2 class="reveal"><span class="purple">Harness</span>：设计一个让 Agent 可靠工作的环境</h2>
     <div class="harness-model reveal" aria-label="编排、约束和验证共同汇聚为可靠执行">
       <div class="harness-inputs">
         <div class="harness-factor is-route"><span class="model-code">ROUTE</span><h3>编排</h3><p>为任务选择合适的流程、方法与协作策略。</p></div>
@@ -431,13 +431,13 @@ h3,.h3{font-size:var(--h3-size);line-height:1.3}.lede{font-size:clamp(.88rem,1.5
   <div class="slide-content">
     <p class="eyebrow reveal">DevKeel 展开 · Route</p>
     <h2 class="reveal"><span class="purple">Route</span>：不是流程越多越好，而是策略与风险相匹配</h2>
-    <div class="diagram-frame orchestration-frame reveal"><img src="./diagrams/sharing-v2-orchestration-evolution.svg" alt="DevKeel 编排从 V1 到 V2 的升级关系：V1 固定执行 brainstorm、design、specs、tasks、apply、verify、retrospective 和 archive；V2 按任务风险选择 Direct、Lite 或 Full，Full 保留完整生命周期"></div>
-    <div class="orchestration-mobile reveal" aria-label="DevKeel 编排从 V1 到 V2 的手机端演进摘要">
-      <div class="orchestration-mobile-step is-v1"><b>DEVKEEL V1</b><p><span class="orchestration-mobile-flow">brainstorm → design → specs → tasks<br>apply¹ → verify → retrospective → archive</span><small class="orchestration-mobile-note">¹ apply：TDD · code-review</small></p></div>
+    <div class="diagram-frame orchestration-frame reveal"><img src="./diagrams/sharing-v2-orchestration-evolution.svg" alt="Harness 编排从 V1 到 V2 的升级关系：V1 固定执行 brainstorm、design、specs、tasks、apply、verify、retrospective 和 archive；V2 按任务风险选择 Direct、Lite 或 Full，Full 保留完整生命周期"></div>
+    <div class="orchestration-mobile reveal" aria-label="Harness 编排从 V1 到 V2 的手机端演进摘要">
+      <div class="orchestration-mobile-step is-v1"><b>HARNESS V1</b><p><span class="orchestration-mobile-flow">brainstorm → design → specs → tasks<br>apply¹ → verify → retrospective → archive</span><small class="orchestration-mobile-note">¹ apply：TDD · code-review</small></p></div>
       <div class="orchestration-mobile-arrow">固定全流程 → 选择最短充分路径<span>路径可以变短，工程底线不变 ↓</span></div>
-      <div class="orchestration-mobile-step is-v2"><b>DEVKEEL V2</b><div class="orchestration-mobile-routes"><div class="orchestration-mobile-route"><strong>Direct</strong><span>apply → verify</span></div><div class="orchestration-mobile-route"><strong>Lite</strong><span>brainstorm → tasks → apply → archive</span></div><div class="orchestration-mobile-route"><strong>Full</strong><span>brainstorm → design → specs → tasks<br>apply¹ → verify → retrospective → archive</span></div></div><small class="orchestration-mobile-note">¹ TDD（适用时）· code-review</small></div>
+      <div class="orchestration-mobile-step is-v2"><b>HARNESS V2</b><div class="orchestration-mobile-routes"><div class="orchestration-mobile-route"><strong>Direct</strong><span>apply → verify</span></div><div class="orchestration-mobile-route"><strong>Lite</strong><span>brainstorm → tasks → apply → archive</span></div><div class="orchestration-mobile-route"><strong>Full</strong><span>brainstorm → design → specs → tasks<br>apply¹ → verify → retrospective → archive</span></div></div><small class="orchestration-mobile-note">¹ TDD（适用时）· code-review</small></div>
     </div>
-    <p class="source reveal">资料：DevKeel V1 分享稿 · <a href="https://openai.com/index/harness-engineering/" target="_blank" rel="noopener">OpenAI · Harness engineering</a></p>
+    <p class="source reveal">参考：<a href="https://openai.com/index/harness-engineering/" target="_blank" rel="noopener">OpenAI · Harness engineering</a></p>
   </div><div class="slide-counter">12 / 24</div>
 </section>
 
@@ -668,15 +668,15 @@ h3,.h3{font-size:var(--h3-size);line-height:1.3}.lede{font-size:clamp(.88rem,1.5
 <!-- 20 · HARNESS TO LOOP HANDOFF -->
 <section class="slide bg-mesh bg-grid" id="slide-20">
   <div class="glow-line"></div><div class="slide-content">
-    <p class="eyebrow reveal">阶段交接 · DevKeel → Loop</p>
-    <h2 class="reveal">DevKeel 让这次交付可靠，Loop 让<span class="green">下一次默认更好</span></h2>
-    <div class="diagram-frame handoff-loop-frame reveal"><img src="./diagrams/sharing-v2-harness-loop-handoff.svg" alt="DevKeel 到 Loop 的闭环：Agent-ready Repository 支撑手机登录可靠交付，验证与 Review 发现重复点击、倒计时重置问题，Loop 将其沉淀为登录规则、回归测试和 AGENTS.md 地图更新，并回写 DevKeel"></div>
-    <div class="handoff-loop-mobile reveal" aria-label="DevKeel 到 Loop 的手机端闭环摘要">
+    <p class="eyebrow reveal">阶段交接 · Harness → Loop</p>
+    <h2 class="reveal">Harness 让这次交付可靠，Loop 让<span class="green">下一次默认更好</span></h2>
+    <div class="diagram-frame handoff-loop-frame reveal"><img src="./diagrams/sharing-v2-harness-loop-handoff.svg" alt="Harness 到 Loop 的闭环：Agent-ready Repository 支撑手机登录可靠交付，验证与 Review 发现重复点击、倒计时重置问题，Loop 将其沉淀为登录规则、回归测试和 AGENTS.md 地图更新，并回写 Harness"></div>
+    <div class="handoff-loop-mobile reveal" aria-label="Harness 到 Loop 的手机端闭环摘要">
       <div class="handoff-loop-step"><b>01 · HARNESS</b><p>AGENTS.md + rules + skills + agents + verify</p></div><div class="handoff-loop-arrow">↓</div>
       <div class="handoff-loop-step is-delivery"><b>02 · 本次交付</b><p>手机登录代码 + tests / build / diff 证据</p></div><div class="handoff-loop-arrow">↓</div>
       <div class="handoff-loop-step is-feedback"><b>03 · REVIEW 反馈</b><p>重复点击、倒计时重置；只留报告里仍会重演</p></div><div class="handoff-loop-arrow">↓</div>
       <div class="handoff-loop-step is-loop"><b>04 · LOOP 资产</b><p>rule + regression + AGENTS.md map update</p></div>
-      <div class="handoff-loop-return">↺ 回写 DevKeel · 下一次任务自动继承</div>
+      <div class="handoff-loop-return">↺ 回写 Harness · 下一次任务自动继承</div>
     </div>
     <div class="hbox hbox-green handoff-takeaway handoff-loop-takeaway reveal"><span class="green">HANDOFF 03</span><strong>完成一次任务不是终点；让反馈改变下一次默认行为才算闭环。</strong></div>
   </div><div class="slide-counter">20 / 24</div>
@@ -687,11 +687,11 @@ h3,.h3{font-size:var(--h3-size);line-height:1.3}.lede{font-size:clamp(.88rem,1.5
   <div class="glow-line"></div><div class="slide-content">
     <p class="eyebrow reveal">// Loop Engineering</p>
     <h2 class="reveal"><span class="green">Loop</span> 有两个时间尺度：任务内纠偏，任务间进化</h2>
-    <div class="diagram-frame dual-loop-frame reveal"><img src="./diagrams/sharing-v2-dual-loop.svg" alt="上下两条等宽泳道组成双反馈回路：任务内先明确目标、执行、验证并纠偏，证据通过后交付；任务间再复盘、提炼、更新 DevKeel，并让下一次任务自动加载新规则"></div>
+    <div class="diagram-frame dual-loop-frame reveal"><img src="./diagrams/sharing-v2-dual-loop.svg" alt="上下两条等宽泳道组成双反馈回路：任务内先明确目标、执行、验证并纠偏，证据通过后交付；任务间再复盘、提炼、更新 Harness，并让下一次任务自动加载新规则"></div>
     <div class="dual-loop-mobile reveal" aria-label="任务内与任务间双反馈回路的手机端摘要">
       <div class="dual-loop-mobile-lane"><b>01 · INNER LOOP · 分钟级</b><p>目标 → 实现 → 验证 → 判断</p><span>一次执行内：未通过就定向修正，通过后证据化交付。</span></div>
       <div class="dual-loop-mobile-arrow">↓ 交付进入任务间闭环</div>
-      <div class="dual-loop-mobile-lane is-outer"><b>02 · OUTER LOOP · 迭代级</b><p>复盘 → 提炼 → 更新 DevKeel → 下一次任务</p><span>跨任务持续：新规则被自动加载并验证。</span></div>
+      <div class="dual-loop-mobile-lane is-outer"><b>02 · OUTER LOOP · 迭代级</b><p>复盘 → 提炼 → 更新 Harness → 下一次任务</p><span>跨任务持续：新规则被自动加载并验证。</span></div>
     </div>
     <div class="hbox hbox-orange reveal tc"><strong>闭环不是无限重试：</strong>必须有可判定信号、修正策略、停止条件和人类升级入口。</div>
     <p class="source reveal">参考：<a href="https://www.ibm.com/think/topics/loop-engineering" target="_blank" rel="noopener">IBM · Loop engineering</a> · <a href="https://openai.com/index/building-self-improving-tax-agents-with-codex/" target="_blank" rel="noopener">OpenAI · Building self-improving agents with Codex</a></p>
@@ -705,7 +705,7 @@ h3,.h3{font-size:var(--h3-size);line-height:1.3}.lede{font-size:clamp(.88rem,1.5
     <h2 class="reveal">四层一起工作，才是一套<span class="gradient-text">工程系统</span></h2>
     <div class="table-stage reveal" style="overflow:hidden;border-radius:12px">
       <table class="compare">
-        <thead><tr><th>维度</th><th class="accent">Prompt</th><th class="cyan">Context</th><th class="purple">DevKeel</th><th class="green">Loop</th></tr></thead>
+        <thead><tr><th>维度</th><th class="accent">Prompt</th><th class="cyan">Context</th><th class="purple">Harness</th><th class="green">Loop</th></tr></thead>
         <tbody>
           <tr><td class="rowhead">优化对象</td><td>单次表达</td><td>当下认知</td><td>执行可靠性</td><td>系统学习率</td></tr>
           <tr><td class="rowhead">核心问题</td><td>说清楚了吗？</td><td>知道得够吗？</td><td>会按规则完成吗？</td><td>下次会更好吗？</td></tr>
@@ -715,7 +715,7 @@ h3,.h3{font-size:var(--h3-size);line-height:1.3}.lede{font-size:clamp(.88rem,1.5
         </tbody>
       </table>
     </div>
-    <div class="hbox hbox-purple mt-m reveal tc"><strong>不是从 Prompt “迁移”到 Loop，而是在 Prompt 之上补齐 Context、DevKeel 与 Loop。</strong></div>
+    <div class="hbox hbox-purple mt-m reveal tc"><strong>不是从 Prompt “迁移”到 Loop，而是在 Prompt 之上补齐 Context、Harness 与 Loop。</strong></div>
   </div><div class="slide-counter">22 / 24</div>
 </section>
 
@@ -730,7 +730,7 @@ h3,.h3{font-size:var(--h3-size);line-height:1.3}.lede{font-size:clamp(.88rem,1.5
       <div class="diagnostic-step is-harness"><div class="diagnostic-marker">03</div><div class="diagnostic-stage">HARNESS</div><h3>执行闭环吗？</h3><div class="diagnostic-signal"><b>异常信号</b>声称完成，却无法复跑和审查</div></div>
       <div class="diagnostic-step is-loop"><div class="diagnostic-marker">04</div><div class="diagnostic-stage">LOOP</div><h3>经验沉淀吗？</h3><div class="diagnostic-signal"><b>异常信号</b>同类问题在下一次任务中重演</div></div>
     </div>
-    <div class="hbox hbox-blue reveal tc"><strong>先定位失效发生在哪一环，再决定补 Prompt、Context、DevKeel，还是 Loop。</strong></div>
+    <div class="hbox hbox-blue reveal tc"><strong>先定位失效发生在哪一环，再决定补 Prompt、Context、Harness，还是 Loop。</strong></div>
   </div><div class="slide-counter">23 / 24</div>
 </section>
 

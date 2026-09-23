@@ -3,7 +3,7 @@ import { useState } from 'react'
 import { HarnessAnswerSection } from './HarnessAnswerSection'
 import { SectionHeading } from './SectionHeading'
 
-type ProductId = 'harnessV2' | 'harnessV1' | 'matt' | 'superpowers'
+type ProductId = 'harnessV2' | 'matt' | 'superpowers'
 
 interface ComparisonCell {
   detail: string
@@ -33,12 +33,6 @@ export const COMPARISON_PRODUCTS: readonly ComparisonProduct[] = [
     summary: '保留项目初始化能力，把任务改为按协作成本与风险渐进分流。',
   },
   {
-    id: 'harnessV1',
-    name: 'DevKeel V1',
-    version: 'templates v1.3.0',
-    summary: '同样提供 domain-init 与 verify-init，并用 OpenSpec + Superpowers 串联完整交付流程。',
-  },
-  {
     id: 'superpowers',
     name: 'Superpowers',
     version: 'v6.2.0',
@@ -59,7 +53,6 @@ export const COMPARISON_ROWS: readonly ComparisonRow[] = [
     dimension: '现有项目改造',
     products: {
       harnessV2: { score: 5, detail: 'domain-init + verify-init 扫描代码并增量补齐领域与测试资产；代价是生成结果需要人工确认。' },
-      harnessV1: { score: 5, detail: '同样用 domain-init + verify-init 改造现有项目；代价是生成结果需要人工确认。' },
       superpowers: { score: 2, detail: '为仓库安装通用开发方法与 Agent 适配；代价是不生成项目专属领域或测试脚手架。' },
       matt: { score: 3, detail: '用 setup skill 配置 tracker 与文档位置；代价是项目能力仍要逐项选择和沉淀。' },
     },
@@ -68,7 +61,6 @@ export const COMPARISON_ROWS: readonly ComparisonRow[] = [
     dimension: '项目知识生成',
     products: {
       harnessV2: { score: 5, detail: 'domain-init 从代码维护 docs 并提炼 rules、skills、agents；代价是需要人工确认结论。' },
-      harnessV1: { score: 5, detail: 'domain-init 从真实代码提炼 rules、skills、agents；代价是需要人工确认结论。' },
       superpowers: { score: 2, detail: '提供跨项目通用纪律；代价是不生成项目专属知识层。' },
       matt: { score: 4, detail: '用 domain-modeling 与 CONTEXT/ADR 建立共同语言；代价是依赖对话式维护。' },
     },
@@ -77,7 +69,6 @@ export const COMPARISON_ROWS: readonly ComparisonRow[] = [
     dimension: '验证基建建设',
     products: {
       harnessV2: { score: 5, detail: 'verify-init 增量补齐框架、规范和验证 Agent；代价是变更前需要授权。' },
-      harnessV1: { score: 5, detail: 'verify-init 增量补齐框架、规范和验证 Agent；代价是变更前需要授权。' },
       superpowers: { score: 3, detail: '强制 TDD 与完成前验证；代价是项目需先有可运行测试接缝。' },
       matt: { score: 3, detail: '提供 TDD 与诊断 Skills；代价是框架和反馈环境要由项目准备。' },
     },
@@ -86,7 +77,6 @@ export const COMPARISON_ROWS: readonly ComparisonRow[] = [
     dimension: '轻重任务适配',
     products: {
       harnessV2: { score: 5, detail: '按协作成本选择 Skill、Direct、Lite 或 Full；代价是团队要理解分流边界。' },
-      harnessV1: { score: 2, detail: '按 OpenSpec 与 Superpowers 的完整链路推进；代价是小任务也会承担较多固定步骤。' },
       superpowers: { score: 2, detail: '把完整工作流定义为 mandatory；代价是小任务也会承担较多步骤。' },
       matt: { score: 5, detail: '小型 Skills 可单独组合并由 ask-matt 推荐；代价是路径一致性靠团队维护。' },
     },
@@ -95,7 +85,6 @@ export const COMPARISON_ROWS: readonly ComparisonRow[] = [
     dimension: '交付时间',
     products: {
       harnessV2: { score: 5, detail: 'Direct 跳过不必要的 artifacts，Lite/Full 只在协作记忆或风险需要时启用；代价是首次初始化与路径判断仍需投入时间。' },
-      harnessV1: { score: 2, detail: 'OpenSpec 与 Superpowers 的完整链路提供稳定步骤；代价是普通任务也要承担规划、实现与多轮审查时间。' },
       superpowers: { score: 2, detail: '默认执行设计、计划、TDD、Review 与收尾；代价是过程一致但短任务交付周期更长。' },
       matt: { score: 4, detail: '按需组合小型 Skills，简单任务可以快速进入执行；代价是路径选择与团队协调不一致时可能产生返工。' },
     },
@@ -104,7 +93,6 @@ export const COMPARISON_ROWS: readonly ComparisonRow[] = [
     dimension: 'Token 成本',
     products: {
       harnessV2: { score: 5, detail: '复用仓库知识并让 Direct 保持最小上下文，按需才加载 Lite/Full artifacts；代价是 domain-init 与项目资产维护会产生前置成本。' },
-      harnessV1: { score: 2, detail: 'OpenSpec artifacts 与 Superpowers 流程共同保存上下文；代价是重复加载完整链路会占用更多 Token。' },
       superpowers: { score: 2, detail: '规格、计划、Skills、子 Agent 与多轮 Review 提供充分上下文；代价是默认流程的 Token 消耗较高。' },
       matt: { score: 4, detail: '小型 Skills 与 CONTEXT 共同语言减少无关上下文；代价是多 Skill 串联和分散文档仍会增加读取成本。' },
     },
@@ -113,7 +101,6 @@ export const COMPARISON_ROWS: readonly ComparisonRow[] = [
     dimension: '跨会话与团队协作',
     products: {
       harnessV2: { score: 4, detail: 'Lite/Full 用 openspec 保存变更记忆；代价是 Direct 有意不持久化。' },
-      harnessV1: { score: 5, detail: '用 OpenSpec artifacts 与 plan-scoped SDD 台账续跑；代价是需要维护两类持久化状态。' },
       superpowers: { score: 4, detail: '将设计、计划与 plan-scoped SDD 进度落盘；代价是记忆主要围绕实施计划。' },
       matt: { score: 5, detail: '把 CONTEXT、ADR、tickets 与 handoff 接入本地文件或 tracker；代价是团队要治理多种载体。' },
     },
@@ -122,7 +109,6 @@ export const COMPARISON_ROWS: readonly ComparisonRow[] = [
     dimension: '过程约束与审查',
     products: {
       harnessV2: { score: 4, detail: 'Full 提供完整治理；代价是常规任务不会自动获得全部门禁。' },
-      harnessV1: { score: 5, detail: '串联 OpenSpec、独立实现、任务审查、全分支审查与完成前验证；代价是执行链条较长。' },
       superpowers: { score: 5, detail: '规范澄清、计划、TDD、双重 Review 与收尾；代价是流程投入最高。' },
       matt: { score: 4, detail: '组合 spec、tickets、implement、TDD、review；代价是没有统一强制流程。' },
     },
@@ -131,7 +117,6 @@ export const COMPARISON_ROWS: readonly ComparisonRow[] = [
     dimension: '跨平台复用',
     products: {
       harnessV2: { score: 4, detail: '以 AGENTS.md 统一入口并向平台目录分发；代价是要维护适配映射。' },
-      harnessV1: { score: 4, detail: '通过 templates 向多个 Agent 平台分发 OpenSpec 与技能；代价是平台适配仍需同步维护。' },
       superpowers: { score: 5, detail: '为多个主流 Coding Agent 提供安装与工具映射；代价是不同 DevKeel 仍需分别安装。' },
       matt: { score: 4, detail: '遵循 Agent Skills 标准并提供 Claude 插件；代价是团队要决定安装方式。' },
     },
@@ -140,7 +125,6 @@ export const COMPARISON_ROWS: readonly ComparisonRow[] = [
     dimension: '技能组合与定制',
     products: {
       harnessV2: { score: 5, detail: '项目维护自己的 rules、skills、agents 与路由；代价是团队要治理这些资产。' },
-      harnessV1: { score: 4, detail: '可修改模板、规则与技能组合；代价是定制通常与 OpenSpec、Superpowers 编排结构耦合。' },
       superpowers: { score: 4, detail: 'Skills 可独立扩展并覆盖完整开发环节；代价是核心 mandatory 纪律不适合随意裁剪。' },
       matt: { score: 5, detail: '鼓励复制、修改与重组小型 Skills；代价是分叉后需自行维护一致性。' },
     },
