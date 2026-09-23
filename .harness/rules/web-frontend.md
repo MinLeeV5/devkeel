@@ -6,7 +6,8 @@ globs:
 
 # Web 前端规则
 
-本规则适用于 `web/` 文档站与演示页面。目标是保持旧 HTML URL 兼容，同时让主站实现以 React 组件、显式状态和可验证测试为中心。`v1/sharing.html` 是唯一的独立静态 HTML 例外。
+本规则适用于 `web/` 全静态文档站与演示页面。保持旧 HTML URL 兼容，主站使用 React 组件、
+显式状态和可验证测试；分享幻灯片保留独立静态 HTML。
 
 需要代码示例或出处时，读取 [配套说明](../../docs/examples/web-frontend.md)。
 
@@ -14,9 +15,11 @@ globs:
 
 `web/index.html` 只能保留 Vite 根节点和入口脚本，不再承载具体页面内容。新增或修改页面时，必须在 `web/src/pages/` 中实现 React 页面。
 
-禁止恢复 `workflow.html`、`stats.html` 等独立静态 HTML 页面作为源码输入。旧 URL 兼容通过 React router/server fallback 处理。
+禁止恢复 `workflow.html`、`stats.html` 等独立页面源码。`scripts/static-site.ts` 从构建后的
+app shell 生成 React 页面入口，从生命周期表生成兼容跳转页；不能依赖托管方的 SPA fallback。
 
-唯一例外是 `web/public/v1/sharing.html`：它是自包含的 V1 幻灯片页面，由 Vite 原样复制到 `dist/v1/sharing.html`，不经过 React 或 TSX 转换。旧 `/sharing.html` 只保留到该页面的兼容重定向。
+`web/public/sharing.html`、`sharing-harness-research.html` 和 `v1/sharing.html` 是独立分享稿，
+由 Vite 原样复制到 dist，不经过 React 或 TSX 转换。
 
 ## 约定 2: 公共旧 URL 必须集中登记在 `routes.ts`
 
@@ -24,7 +27,9 @@ globs:
 
 新增页面时必须保留旧 `.html` URL 形态，除非任务明确要求改变对外链接契约。
 
-`/v1/sharing.html` 只登记在 `PUBLIC_PAGE_PATHS`，不得加入 `PAGE_ROUTES` 或 `PAGE_COMPONENTS`；服务端应优先返回构建产物中的真实文件。`/sharing.html` 必须通过共享生命周期表跳转到该 V1 页面。
+独立分享稿只登记在 `PUBLIC_PAGE_PATHS`，不得加入 `PAGE_ROUTES` 或 `PAGE_COMPONENTS`。
+浏览器路由、数据请求、首页链接和兼容跳转必须使用 Vite `BASE_URL`，支持 `/` 与 `/devkeel/`。
+页面内相对链接须同时适配主站和 V1 的目录深度。
 
 ## 约定 3: 主站页面必须使用 React 状态，不使用页面级 DOM 脚本
 
@@ -35,9 +40,12 @@ globs:
 
 这些页面禁止使用 `usePageInteractions`、`onAction=`、`data-action`、`innerHTML`、`querySelector` 批量改 DOM 等旧脚本式交互。状态切换、tab、导航、表格、loading、banner、幻灯片等行为必须由 React state、props 和组件渲染完成。
 
-`web/public/v1/sharing.html` 不属于 React 主站页面，可以使用页面内的原生 JavaScript 管理幻灯片状态；脚本必须显式维护唯一的 active slide，并保留键盘和可访问导航。
+独立分享稿可以使用原生 JavaScript 管理幻灯片状态；脚本必须显式维护唯一的 active slide，
+并保留键盘和可访问导航。
 
 ## 约定 4: V1 页面是冻结例外
+
+V1 作为历史归档保留源码和旧 URL，构建时继续生成页面；主站导航、页脚和对比区不提供 V1 入口。
 
 以下页面当前不纳入主站 React 化重构范围，除非用户明确点名要求处理:
 
@@ -46,7 +54,7 @@ globs:
 
 这些页面允许暂时保留 `usePageInteractions` 和 capability tab 的 `data-action="showTab(...)"` 逻辑。修改其他 web 页面时，不要顺手迁移、清理或重构这些冻结例外。
 
-V2 `/capability-inventory.html` 已退场，服务端返回 `410 Gone`；不得把它重新加入 React 路由或页面注册。
+V2 `/capability-inventory.html` 已退场，不生成页面，由静态托管返回 404；不得重新加入页面注册。
 
 ## 约定 5: React 页面必须拆成可读的 section/component
 
@@ -71,10 +79,11 @@ V2 `/capability-inventory.html` 已退场，服务端返回 `410 Gone`；不得�
 - `PAGE_ROUTES` 中的路由都能映射到 React component
 - 不引入 `legacy-pages`、`?raw`、`dangerouslySetInnerHTML`
 - 主站页面不回退到 `data-action` / DOM 初始化脚本
-- `v1/sharing.html` 是唯一静态 HTML，并且不进入 React route/component registry
+- 独立分享稿不进入 React route/component registry
 - `v1/sharing.html` 的 active slide、进度、点选和键盘导航仍可用
 - 页面关键 section/component 仍存在
-- 旧 URL 兼容不被破坏
+- 旧 URL 兼容不被破坏，V1 页面可直达但主站没有入口
+- 根路径和 `/devkeel/` 构建均生成真实页面、正确资源链接和 `versions/index.json`
 
 ## 约定 9: 验证顺序从 web 局部到全仓
 
@@ -87,20 +96,22 @@ pnpm test
 pnpm build
 ```
 
-涉及旧 URL、静态资源或 server fallback 时，还要 smoke 当前路径及生命周期状态：
+涉及页面入口、前缀或静态资源时，还要在普通静态文件服务器上 smoke 以下路径（带部署前缀）：
 
 - `/`
 - `/index.html`
-- `/workflow.html`、`/architecture.html`、`/best-practices.html`、`/templates-v2.html` 返回目标章节 `302`
-- `/sharing.html` 返回 `/v1/sharing.html` 的 `302`
+- `/workflow.html`、`/architecture.html`、`/best-practices.html`、`/templates-v2.html` 返回 HTML 跳转页
+- `/sharing.html`、`/sharing-harness-research.html` 返回当前分享稿
 - `/changelog.html`
-- `/stats.html` 与 `/v1/stats.html` 返回 `410`
-- `/capability-inventory.html` 返回 `410`
+- `/stats.html`、`/v1/stats.html`、`/capability-inventory.html` 与未知路径返回 404
 - `/v1/index.html`
 - `/v1/sharing.html`
 - `/v1/capability-inventory.html`
 - `/install.md`
 - `/assets/styles.css`
+- `/versions/index.json`
+
+测试和构建不依赖 Hono；静态版本目录校验失败必须阻断构建，不能发布不完整数据。
 
 ## 约定 10: UI 修改遵守现有页面的视觉系统
 
@@ -116,7 +127,9 @@ pnpm build
 
 ## 约定 11: 资产和静态文件位置固定
 
-构建后需要原样访问的静态资源放在 `web/public/`。根目录的 `web/install.md` 是开发期源文件；需要被 server 静态访问的副本在 `web/public/`。
+构建后需要原样访问的静态资源放在 `web/public/`。`web/install.md` 是安装指南源文件，
+`web/public/install.md` 必须与它一致。版本正文放在 `public/versions/{cli,templates}/`，
+`dist/versions/index.json` 只由构建生成，不手工维护。
 
 新增图片、样式或下载资源时，必须确认:
 

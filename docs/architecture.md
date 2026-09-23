@@ -32,10 +32,13 @@ detect 复用模板目录检查能力；模块依赖应保持无环。模板渲�
 
 ## Web
 
-Web 是有独立 [package.json](../web/package.json) 的子项目，使用 React、Vite 与 Hono。
+Web 是有独立 [package.json](../web/package.json) 的 React + Vite 全静态子项目。
 CLI 与 Web 的 TypeScript 模块解析方式不同：对应约束见
 [编码规则](../.harness/rules/coding-standards.md)和[Web 规则](../.harness/rules/web-frontend.md)。
-页面路由、旧 URL 生命周期和静态资源分别由 Web 目录中的实现维护。
+页面路径集中登记在 `web/src/routes.ts`；构建插件 `web/scripts/static-site.ts` 根据路由生成
+可直接访问的 HTML 入口和兼容跳转页，并将版本目录校验、汇总为 `versions/index.json`。
+浏览器按 Vite 的 `BASE_URL` 读取数据和解析路由，线上只需托管 `web/dist/`。
+V1 页面作为历史归档保留原 URL 和源码，主站不提供显式入口。
 
 CLI 与 Web 的验证入口分别见 [测试说明](testing.md)。构建和分发关系见
 [构建与发布说明](building.md)。

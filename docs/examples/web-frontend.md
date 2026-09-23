@@ -81,7 +81,7 @@
 
 ## 约定 8: 页面测试必须覆盖迁移边界和旧脚本回归
 
-出处: `web/tests/react-pages.test.ts`, `web/tests/routes.test.ts`, `web/tests/server.test.ts`
+出处: `web/tests/react-pages.test.ts`, `web/tests/routes.test.ts`, `web/tests/static-site.test.ts`
 
 ## 约定 10: UI 修改遵守现有页面的视觉系统
 

@@ -10,7 +10,7 @@ globs:
   - web/public/versions/templates/*.json
   - web/src/lib/version-catalog.ts
   - web/version-catalog.ts
-  - web/server.ts
+  - web/scripts/static-site.ts
   - web/src/pages/changelog.tsx
   - web/src/pages/changelog/**/*.tsx
 ---
@@ -78,7 +78,8 @@ globs:
 1. 读取两个 package 的当前版本，确定本次只发布 CLI、Templates 或两者分别发布。
 2. 用对应 package 的前一版本 bump 到当前版本 bump 确定 Git 范围，只提炼已进入当前版本的用户可见变化。
 3. 在对应目录新增一个 `<version>.json`；合并版本以末版本命名，`versions` 保留完整范围。
-4. 不修改 `web/src/pages/changelog.tsx` 的版本正文、latest badge 或 Update Tip。Hono 启动时读取目录，React 从 `/api/versions` 自动展示 latest 和条目。
+4. 不修改 `web/src/pages/changelog.tsx` 的版本正文、latest badge 或 Update Tip。
+   Vite 构建时校验目录并生成 `versions/index.json`，React 按部署前缀读取它，自动展示 latest 和条目。
 5. 运行定向校验，再运行生产构建；失败时修正 JSON，不以部分目录或 TSX fallback 降级。
 
 ```bash
