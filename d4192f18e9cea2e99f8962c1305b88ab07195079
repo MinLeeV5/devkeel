@@ -1,0 +1,50 @@
+web/src/pages/home/ProgressivePathSection.tsx
+  b4db7eccef5207d4 9-10
+web/public/diagrams/progressive-path.svg
+  b4db7eccef5207d4 1-3,5-8,10-14,17-19,21-94
+web/public/diagrams/sharing-v2-routing.svg
+  b4db7eccef5207d4 1-3,5-14,17-21,23-24,26-99
+web/src/pages/home/ArchitectureDiagrams.tsx
+  b4db7eccef5207d4 40
+web/tests/react-pages.test.ts
+  b4db7eccef5207d4 272,296-300,311-323
+web/tests/workflow-docs.test.ts
+  b4db7eccef5207d4 18-21
+web/tests/home-page.test.tsx
+  b4db7eccef5207d4 242-243
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.9",
+  "base_commit_sha": "d4192f18e9cea2e99f8962c1305b88ab07195079",
+  "prompts": {
+    "7a8162769ad8f0f9": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "01a0cbe7-5a56-7aa2-9959-1538cf5d2858",
+        "model": "gpt-6-astra"
+      },
+      "human_author": "MinLeeV5 <dicklwm@163.com>",
+      "messages": [],
+      "total_additions": 194,
+      "total_deletions": 104,
+      "accepted_lines": 62,
+      "overriden_lines": 9,
+      "messages_url": "https://gitai.gz.cvte.cn/cas/cc070a4f3fbde88a5c379215cb888b299db1b33439716a10e1106d950121ca0b"
+    },
+    "b4db7eccef5207d4": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "01a0cc55-128c-7020-9ae0-b21dd774979f",
+        "model": "gpt-6-sol"
+      },
+      "human_author": "MinLeeV5 <dicklwm@163.com>",
+      "messages": [],
+      "total_additions": 437,
+      "total_deletions": 685,
+      "accepted_lines": 267,
+      "overriden_lines": 0,
+      "messages_url": "https://gitai.gz.cvte.cn/cas/9d0e0bcba8cd2600dde887bbfc834d3cca6c29ef153e27ae742461efcfd18007"
+    }
+  }
+}
