@@ -1,0 +1,204 @@
+templates/skills/brainstorming/agents/openai.yaml
+  86e6e541c42432e1 1-4
+.harness/skills/openspec-bulk-archive-change/SKILL.md
+  86e6e541c42432e1 7
+.harness/skills/openspec-sync-specs/SKILL.md
+  86e6e541c42432e1 7
+.harness/skills/openspec-update-change/SKILL.md
+  86e6e541c42432e1 7
+.harness/skills/test-case-designer/SKILL.md
+  86e6e541c42432e1 6
+templates/skills/brainstorming/SKILL.md
+  86e6e541c42432e1 7
+.harness/skills/brainstorming/SKILL.md
+  86e6e541c42432e1 7
+templates/skills/systematic-debugging/agents/openai.yaml
+  86e6e541c42432e1 1-4
+.harness/skills/verify-init/SKILL.md
+  86e6e541c42432e1 10
+templates/skills/openspec-onboard/SKILL.md
+  86e6e541c42432e1 7
+.harness/skills/openspec-sync-specs/agents/openai.yaml
+  86e6e541c42432e1 1-4
+templates/skills/requirement-analysis/SKILL.md
+  86e6e541c42432e1 6
+.harness/skills/ui-fidelity-playbook/SKILL.md
+  86e6e541c42432e1 6
+templates/skills/verify-init/SKILL.md
+  86e6e541c42432e1 10
+.harness/skills/commit/SKILL.md
+  86e6e541c42432e1 6
+templates/skills/openspec-verify-change/SKILL.md
+  86e6e541c42432e1 7
+templates/skills/openspec-update-change/agents/openai.yaml
+  86e6e541c42432e1 1-4
+.harness/skills/openspec-update-change/agents/openai.yaml
+  86e6e541c42432e1 1-4
+templates/skills/technical-design/SKILL.md
+  86e6e541c42432e1 6
+.harness/skills/technical-design/agents/openai.yaml
+  86e6e541c42432e1 1-4
+templates/skills/jira-defect-orchestrator/SKILL.md
+  86e6e541c42432e1 9
+templates/skills/openspec-archive-change/SKILL.md
+  86e6e541c42432e1 7
+templates/skills/openspec-ff-change/SKILL.md
+  86e6e541c42432e1 7,12-13
+.harness/skills/domain-init/SKILL.md
+  86e6e541c42432e1 10
+.harness/skills/jira-defect-orchestrator/SKILL.md
+  86e6e541c42432e1 9
+.harness/skills/requirement-analysis/SKILL.md
+  86e6e541c42432e1 6
+.harness/skills/systematic-debugging/SKILL.md
+  86e6e541c42432e1 6
+.harness/skills/openspec-verify-change/agents/openai.yaml
+  86e6e541c42432e1 1-4
+.harness/skills/workflow-routing/agents/openai.yaml
+  86e6e541c42432e1 1-4
+.harness/skills/openspec-new-change/SKILL.md
+  86e6e541c42432e1 7,64-65
+templates/skills/commit/SKILL.md
+  86e6e541c42432e1 6
+templates/skills/openspec-continue-change/SKILL.md
+  86e6e541c42432e1 7
+.harness/skills/openspec-ff-change/agents/openai.yaml
+  86e6e541c42432e1 1-6
+templates/skills/requirement-analysis/agents/openai.yaml
+  86e6e541c42432e1 1-4
+.harness/skills/openspec-apply-change/SKILL.md
+  86e6e541c42432e1 7
+templates/skills/test-case-designer/SKILL.md
+  86e6e541c42432e1 6
+.harness/skills/openspec-onboard/agents/openai.yaml
+  86e6e541c42432e1 1-4
+.harness/skills/systematic-debugging/agents/openai.yaml
+  86e6e541c42432e1 1-4
+templates/skills/openspec-onboard/agents/openai.yaml
+  86e6e541c42432e1 1-4
+.harness/skills/brainstorming/agents/openai.yaml
+  86e6e541c42432e1 1-4
+templates/skills/workflow-routing/agents/openai.yaml
+  86e6e541c42432e1 1-4
+.harness/skills/workflow-routing/SKILL.md
+  86e6e541c42432e1 6
+templates/skills/openspec-apply-change/SKILL.md
+  86e6e541c42432e1 7
+.harness/skills/openspec-continue-change/agents/openai.yaml
+  86e6e541c42432e1 1-4
+templates/skills/jira-defect-orchestrator/agents/openai.yaml
+  86e6e541c42432e1 4
+.harness/skills/openspec-archive-change/SKILL.md
+  86e6e541c42432e1 7
+templates/skills/openspec-ff-change/agents/openai.yaml
+  86e6e541c42432e1 1-6
+templates/skills/workflow-routing/SKILL.md
+  86e6e541c42432e1 6
+.harness/skills/openspec-onboard/SKILL.md
+  86e6e541c42432e1 7
+.harness/skills/openspec-bulk-archive-change/agents/openai.yaml
+  86e6e541c42432e1 1-4
+templates/skills/openspec-verify-change/agents/openai.yaml
+  86e6e541c42432e1 1-4
+templates/skills/openspec-apply-change/agents/openai.yaml
+  86e6e541c42432e1 1-4
+templates/skills/openspec-continue-change/agents/openai.yaml
+  86e6e541c42432e1 1-4
+templates/skills/openspec-sync-specs/agents/openai.yaml
+  86e6e541c42432e1 1-4
+templates/skills/domain-init/SKILL.md
+  86e6e541c42432e1 10
+.harness/skills/openspec-apply-change/agents/openai.yaml
+  86e6e541c42432e1 1-4
+tests/init.test.ts
+  86e6e541c42432e1 201
+templates/skills/openspec-sync-specs/SKILL.md
+  86e6e541c42432e1 7
+.harness/skills/openspec-continue-change/SKILL.md
+  86e6e541c42432e1 7
+templates/skills/openspec-new-change/agents/openai.yaml
+  86e6e541c42432e1 1-4
+templates/skills/systematic-debugging/SKILL.md
+  86e6e541c42432e1 6
+templates/skills/openspec-archive-change/agents/openai.yaml
+  86e6e541c42432e1 1-4
+templates/skills/openspec-new-change/SKILL.md
+  86e6e541c42432e1 7,64-65
+templates/skills/commit/agents/openai.yaml
+  86e6e541c42432e1 1-4
+templates/skills/technical-design/agents/openai.yaml
+  86e6e541c42432e1 1-4
+.harness/skills/requirement-analysis/agents/openai.yaml
+  86e6e541c42432e1 1-4
+.harness/versions.yml
+  86e6e541c42432e1 3-24
+.harness/skills/jira-defect-orchestrator/agents/openai.yaml
+  86e6e541c42432e1 4
+.harness/skills/technical-design/SKILL.md
+  86e6e541c42432e1 6
+.harness/skills/openspec-new-change/agents/openai.yaml
+  86e6e541c42432e1 1-4
+templates/skills/openspec-bulk-archive-change/agents/openai.yaml
+  86e6e541c42432e1 1-4
+.harness/skills/openspec-ff-change/SKILL.md
+  86e6e541c42432e1 7,12-13
+templates/skills/review-orchestrator/SKILL.md
+  86e6e541c42432e1 6
+tests/update.test.ts
+  86e6e541c42432e1 255,274,305
+.harness/skills/commit/agents/openai.yaml
+  86e6e541c42432e1 1-4
+templates/skills/openspec-update-change/SKILL.md
+  86e6e541c42432e1 7
+tests/versions.test.ts
+  86e6e541c42432e1 80,82-83,85-86,101,103,105-112
+templates/skills/openspec-bulk-archive-change/SKILL.md
+  86e6e541c42432e1 7
+templates/versions-yml.yml
+  86e6e541c42432e1 3-24
+.harness/skills/openspec-verify-change/SKILL.md
+  86e6e541c42432e1 7
+tests/templates.test.ts
+  86e6e541c42432e1 40-67,128,338,375,700,979-988,1010
+.harness/skills/openspec-archive-change/agents/openai.yaml
+  86e6e541c42432e1 1-4
+.harness/skills/review-orchestrator/SKILL.md
+  86e6e541c42432e1 6
+templates/skills/ui-fidelity-playbook/SKILL.md
+  86e6e541c42432e1 6
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.9",
+  "base_commit_sha": "8bc6bbc7cd85b6cbf607d4bbc35728203394dcb9",
+  "prompts": {
+    "281fe4214a718c65": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "01a0d0f5-6515-7bd3-8eff-2e37bd01e746",
+        "model": "gpt-6-luna"
+      },
+      "human_author": "MinLeeV5 <dicklwm@163.com>",
+      "messages": [],
+      "total_additions": 0,
+      "total_deletions": 0,
+      "accepted_lines": 0,
+      "overriden_lines": 0,
+      "messages_url": "https://gitai.gz.cvte.cn/cas/75dc6fd80536951279a92beefb9fa2fbae0ed0ee587f97b5d6056437aa226d8b"
+    },
+    "86e6e541c42432e1": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "01a0d0f7-3f1f-70c2-8afa-6a28ea2714d0",
+        "model": "gpt-6-sol"
+      },
+      "human_author": "MinLeeV5 <dicklwm@163.com>",
+      "messages": [],
+      "total_additions": 3792,
+      "total_deletions": 153,
+      "accepted_lines": 3790,
+      "overriden_lines": 2,
+      "messages_url": "https://gitai.gz.cvte.cn/cas/e800cda43086898cd9bdf793a5e8c2de57951e760ed12d9aeac6305a41fad25d"
+    }
+  }
+}
