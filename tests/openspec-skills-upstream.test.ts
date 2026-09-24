@@ -46,6 +46,10 @@ describe('OpenSpec 1.12 skill baseline', () => {
     )
 
     expect(command).toContain('Load and follow the `brainstorming` skill.')
+    expect(command).toContain('conditional reference-loading rules')
+    expect(command).toContain('`references/openspec-context.md`')
+    expect(command).toContain('`references/living-brainstorm.md`')
+    expect(command).not.toContain('Enable its\n`references/openspec-context.md` mode for this invocation')
     expect(command).toContain('topic-only')
     expect(command).toContain('discussion stage')
     expect(command).toContain('key gap')

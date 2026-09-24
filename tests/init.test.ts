@@ -127,6 +127,7 @@ describe.sequential('runInit legacy migration', () => {
     for (const relativePath of [
       'skills/brainstorming/SKILL.md',
       'skills/brainstorming/references/openspec-context.md',
+      'skills/brainstorming/references/living-brainstorm.md',
       'skills/brainstorming/scripts/openspec-status-snapshot.sh',
       'commands/opsx/explore.md',
     ]) {

@@ -1,5 +1,5 @@
 name: lite
-version: 8
+version: 9
 description: >
   日常持久化协调工作流：Living brainstorm → tasks → apply → 快速归档。
 
@@ -10,6 +10,9 @@ artifacts:
     template: brainstorm.md
     instruction: |
       本 artifact 是共同设计的唯一语义来源，不是一次性生成的 change brief。
+
+      讨论深度的默认值、用户覆盖与恢复遵循 Brainstorming；Planning 状态保留可选深度与来源，
+      不计入 D/A，不改变 schema 或现有确认门槛。
 
       topic-only 转入 change 时，原样迁入当前有效 D-*、A-* 和 O-*；不得重新分析、换一种
       说法扩散需求，或调用 requirement-analysis/technical-design 生成正文。用户明确输入且

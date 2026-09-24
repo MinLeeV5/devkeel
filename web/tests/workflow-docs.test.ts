@@ -15,8 +15,11 @@ describe('current V2 home documentation', () => {
     }
     expect(source).toContain('先明确结果与验收')
     expect(source).toContain('最近的反馈信号')
-    expect(source).toContain('/brainstorming 按需引用需求与技术设计维度')
-    expect(progressiveDiagram).toContain('候选缺口合并去重')
+    expect(source).toContain('Lite 聚焦补缺、按需探针')
+    expect(source).toContain('Full 检查假设、替代方向与风险')
+    expect(source).toContain('完成双探针检查，可复用有效结论')
+    expect(source).toContain('工作流提供默认深度，用户可单独调整')
+    expect(progressiveDiagram).toContain('阻塞缺口合并去重')
     expect(progressiveDiagram).toContain('每轮只讨论一个关键决定')
     expect(progressiveDiagram).toContain('Lite / Full 由 OpenSpec 编排')
     expect(source).not.toContain('openspec-orchestration')

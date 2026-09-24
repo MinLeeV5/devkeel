@@ -107,5 +107,4 @@
 
 - 判断项目职责与资产归属时，读取 [项目概览](docs/project.md)。
 - 调整模块边界或依赖时，读取 [架构说明](docs/architecture.md)。
-
 - 查找项目知识时，从 [文档索引](docs/README.md) 按任务定位。

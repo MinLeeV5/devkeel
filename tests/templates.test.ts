@@ -246,6 +246,7 @@ describe('templates', () => {
       expect(fs.existsSync(path.join(target, 'brainstorming', 'SKILL.md'))).toBe(true)
       expect(fs.existsSync(path.join(target, 'workflow-routing', 'SKILL.md'))).toBe(true)
       expect(fs.existsSync(path.join(target, 'brainstorming', 'references', 'openspec-context.md'))).toBe(true)
+      expect(fs.existsSync(path.join(target, 'brainstorming', 'references', 'living-brainstorm.md'))).toBe(true)
       expect(fs.existsSync(path.join(
         target,
         'brainstorming',
@@ -297,27 +298,31 @@ describe('templates', () => {
         path.join(target, 'brainstorming', 'references', 'openspec-context.md'),
         'utf-8',
       )
+      const livingBrainstorm = fs.readFileSync(
+        path.join(target, 'brainstorming', 'references', 'living-brainstorm.md'),
+        'utf-8',
+      )
       const statusSnapshot = fs.readFileSync(
         path.join(target, 'brainstorming', 'scripts', 'openspec-status-snapshot.sh'),
         'utf-8',
       )
       expect(brainstorming).toContain('author: "devkeel"')
-      expect(brainstorming).toContain('version: "9.0.0"')
+      expect(brainstorming).toContain('version: "9.1.0"')
       expect(brainstorming).toContain('topic-only（默认）')
       expect(brainstorming).toContain('change-draft')
       expect(brainstorming).toContain('每轮严格只处理一个决定')
-      expect(brainstorming).toContain('Agent 的推荐答案')
+      expect(brainstorming).toContain('给出推荐答案、依据与主要代价')
       expect(brainstorming).toContain('明确标注')
-      expect(brainstorming).toContain('每轮只用一行“阶段 · 关键缺口”')
+      expect(brainstorming).toMatch(/每轮(?:只)?用一行“阶段 · 关键缺口”/u)
       expect(brainstorming).toContain('影响 × 不确定性')
       expect(brainstorming).toContain('D-*')
       expect(brainstorming).toContain('A-*')
       expect(brainstorming).toContain('O-*')
-      expect(brainstorming).toContain('没有阻塞 O-*')
-      expect(brainstorming).toContain('只询问用户是否确认这份完整快照')
-      expect(brainstorming).toContain('[D-03](#d-03)')
-      expect(brainstorming).toContain('进入下游投影阶段后禁止自动调用这些')
-      expect(brainstorming).toContain('旧 `brainstorm.md` 没有 Living 状态行')
+      expect(livingBrainstorm).toContain('没有阻塞 O-*')
+      expect(livingBrainstorm).toContain('只询问用户是否确认这份完整快照')
+      expect(livingBrainstorm).toContain('[D-03](#d-03)')
+      expect(brainstorming).toMatch(/下游投影阶段禁止调用这些探针/u)
+      expect(livingBrainstorm).toContain('旧 `brainstorm.md` 没有 Living 状态行')
       expect(brainstorming).not.toContain('writing-plans')
       expect(openspecContext).toContain('topic-only')
       expect(openspecContext).toContain('changeRoot')
@@ -339,7 +344,7 @@ describe('templates', () => {
         path.join(target, 'workflow-routing', 'SKILL.md'),
         'utf-8',
       )
-      expect(workflowRouting).toContain('version: "1.0.2"')
+      expect(workflowRouting).toContain('version: "1.1.0"')
       expect(workflowRouting).toContain('不授予写权限、不创建 change')
       expect(workflowRouting).toContain('Direct → Lite')
       expect(workflowRouting).toContain('Lite → Full')
@@ -354,6 +359,10 @@ describe('templates', () => {
         path.join(dogfoodDir, 'references', 'openspec-context.md'),
         'utf-8',
       )).toBe(openspecContext)
+      expect(fs.readFileSync(
+        path.join(dogfoodDir, 'references', 'living-brainstorm.md'),
+        'utf-8',
+      )).toBe(livingBrainstorm)
       expect(fs.readFileSync(
         path.join(dogfoodDir, 'scripts', 'openspec-status-snapshot.sh'),
         'utf-8',
@@ -519,7 +528,7 @@ describe('templates', () => {
       }
 
       expect(schema.name).toBe('lite')
-      expect(schema.version).toBe(8)
+      expect(schema.version).toBe(9)
       expect(schema.artifacts.map(artifact => artifact.id)).toEqual(['brainstorm', 'tasks'])
       expect(schema.artifacts[0]!.requires).toEqual([])
       expect(schema.artifacts[1]!.requires).toEqual(['brainstorm'])
@@ -713,7 +722,7 @@ describe('templates', () => {
         apply: { requires: string[]; tracks: string }
       }
 
-      expect(schema.version).toBe(25)
+      expect(schema.version).toBe(26)
       expect(schema.artifacts.map(artifact => artifact.id)).toEqual([
         'brainstorm', 'design', 'specs', 'tasks', 'verify', 'retrospective',
       ])

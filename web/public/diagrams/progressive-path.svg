@@ -1,6 +1,6 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 1245" width="960" height="1245" role="img" aria-labelledby="title desc" data-generator="fireworks-tech-graph" data-schema-version="1" data-style-id="1" data-visual-theme="Flat Icon · DevKeel Green" data-diagram-type="flowchart" data-semantic-profile="generic" data-semantic-valid="true" data-quality-profile="standard">
-  <title id="title">DevKeel 渐进工作流与 /brainstorming 访谈循环</title>
-  <desc id="desc">图从上到下依次展示一句话需求、Agent 识别任务、仓库事实核对、按需进入 /brainstorming、选择工作流。专项操作由对应 Skill 处理；方案已清晰时跳过访谈。需求与技术设计探针按需提供候选问题，合并去重后每轮只讨论一个关键决定，给出推荐、依据与代价，直到决定足够清晰。最后按任务需要选择 Direct、经确认的 Lite 或经确认的 Full；Lite 和 Full 使用 OpenSpec 编排。</desc>
+  <title id="title">DevKeel /brainstorming 讨论深度与工作流选择</title>
+  <desc id="desc">普通开发先核对仓库事实，有关键缺口或用户显式要求时进入 /brainstorming。Lite 围绕当前方向补缺，按需调用需求或技术探针；Full 检查假设、替代方向与风险，完成双探针检查，可复用有效结论。阻塞项每轮讨论一个，检查完成且无阻塞项时收敛。讨论深度可单独调整，不改变 Direct、Lite、Full 工作流的文档与治理要求。</desc>
   <style>
     text { font-family: "Hiragino Sans GB", "PingFang SC", "Microsoft YaHei", "Helvetica Neue", Helvetica, Arial, sans-serif; }
     .title { fill: #182033; font-size: 21px; font-weight: 700; }
@@ -47,13 +47,13 @@
   <rect id="evidence" data-node-id="evidence" data-graph-role="node" data-semantic-role="evidence" data-graph-bounds="300,500,660,550" x="300" y="500" width="360" height="50" rx="12" fill="#ffffff" stroke="#aeb8c8" stroke-width="1.6"/>
   <text class="node-title" x="480" y="530" text-anchor="middle">先查代码、配置、文档与已有决定</text>
   <rect id="requirements" data-node-id="requirements" data-graph-role="node" data-semantic-role="probe" data-graph-bounds="95,590,445,665" x="95" y="590" width="350" height="75" rx="12" fill="#f6f2ff" stroke="#9475dc" stroke-width="1.6"/>
-  <text class="node-title" x="115" y="616" text-anchor="start">需求维度</text>
+  <text class="node-title" x="115" y="616" text-anchor="start">需求探针</text>
   <text class="node-subtitle" x="115" y="640" text-anchor="start">目标 · 角色 · 范围 · 行为 · 验收</text>
   <rect id="technical" data-node-id="technical" data-graph-role="node" data-semantic-role="probe" data-graph-bounds="515,590,865,665" x="515" y="590" width="350" height="75" rx="12" fill="#f6f2ff" stroke="#9475dc" stroke-width="1.6"/>
-  <text class="node-title" x="535" y="616" text-anchor="start">技术设计维度</text>
+  <text class="node-title" x="535" y="616" text-anchor="start">技术探针</text>
   <text class="node-subtitle" x="535" y="640" text-anchor="start">结构 · 契约 · 状态 · 恢复 · 验证</text>
   <rect id="ranking" data-node-id="ranking" data-graph-role="node" data-semantic-role="ranking" data-graph-bounds="305,705,655,760" x="305" y="705" width="350" height="55" rx="12" fill="#ffffff" stroke="#7958ca" stroke-width="1.6"/>
-  <text class="node-title" x="480" y="727" text-anchor="middle">候选缺口合并去重</text>
+  <text class="node-title" x="480" y="727" text-anchor="middle">阻塞缺口合并去重</text>
   <text class="node-subtitle" x="480" y="746" text-anchor="middle">选影响 × 不确定性最高的一项</text>
   <rect id="interview" data-node-id="interview" data-graph-role="node" data-semantic-role="interview" data-graph-bounds="305,800,655,855" x="305" y="800" width="350" height="55" rx="12" fill="#e9f8f3" stroke="#0da97c" stroke-width="2.2"/>
   <text class="node-title" x="480" y="823" text-anchor="middle">每轮只讨论一个关键决定</text>
@@ -74,13 +74,17 @@
   <text class="node-subtitle" x="772" y="1128" text-anchor="middle">经确认进行完整风险治理</text>
   <text class="tiny" x="772" y="1148" text-anchor="middle">设计 · 规格 · 审查 · 验证</text>
   <text class="title" x="35" y="39" text-anchor="start">从一句话需求开始，逐步收敛到工作流</text>
-  <text class="hint" x="35" y="63" text-anchor="start">主线自上而下；需求清晰时跳过访谈，关键缺口逐题讨论</text>
+  <text class="hint" x="35" y="63" text-anchor="start">工作流提供默认讨论深度，用户可单独调整</text>
   <text class="section" x="85" y="465" text-anchor="start">/brainstorming</text>
-  <text class="hint" x="660" y="465" text-anchor="start">清晰方案跳过此段</text>
+  <text class="hint" x="660" y="465" text-anchor="start">有关键缺口或显式要求时进入</text>
+  <text class="branch" x="85" y="884" text-anchor="start">Lite 讨论 · 围绕当前方向补缺</text>
+  <text class="node-subtitle" x="85" y="906" text-anchor="start">按需调用需求或技术探针</text>
+  <text class="branch" x="515" y="884" text-anchor="start">Full 讨论 · 检查假设、替代方向与风险</text>
+  <text class="node-subtitle" x="515" y="906" text-anchor="start">完成双探针检查，可复用有效结论</text>
   <text class="branch" x="500" y="292" text-anchor="start">普通开发</text>
   <text class="branch" x="500" y="409" text-anchor="start">关键缺口 / 显式调用</text>
-  <text class="feedback" x="754" y="782" text-anchor="start">仍有缺口</text>
-  <text class="branch" x="500" y="951" text-anchor="start">决定收敛</text>
+  <text class="feedback" x="754" y="782" text-anchor="start">仍有阻塞项</text>
+  <text class="branch" x="500" y="951" text-anchor="start">检查完成且无阻塞项</text>
   <rect x="60" y="1190" width="840" height="35" rx="10" fill="#effaf6" stroke="#0da97c" stroke-width="1.2"/>
   <text class="branch" x="80" y="1213" text-anchor="start">共同底线</text>
   <text class="node-subtitle" x="182" y="1213" text-anchor="start">调查 → 对齐方案 → 实现 → 验证</text>

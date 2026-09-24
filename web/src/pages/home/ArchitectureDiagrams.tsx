@@ -37,7 +37,7 @@ export function ProgressivePathDiagram(): React.JSX.Element {
     <div className="home-diagram-frame home-diagram-frame--path">
       <ThemedDiagram
         className="home-diagram path-diagram"
-        alt="自上而下的渐进工作流：从一句话需求开始，Agent 核对缺口，按需通过 brainstorming 引用需求与技术设计维度逐题讨论，最后选择 Direct、Lite 或 Full"
+        alt="渐进工作流：核对缺口，按需进入 brainstorming；Lite 讨论聚焦补缺，Full 讨论完成双探针检查，讨论深度可独立于 Direct、Lite、Full 工作流调整"
         lightSrc="./diagrams/progressive-path.svg"
         darkSrc="./diagrams/sharing-v2-routing.svg"
         loading="lazy"

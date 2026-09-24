@@ -14,6 +14,10 @@ describe('progressive workflow routing contract', () => {
     path.join(process.cwd(), 'templates', 'skills', 'brainstorming', 'SKILL.md'),
     'utf-8',
   )
+  const livingBrainstorm = fs.readFileSync(
+    path.join(process.cwd(), 'templates', 'skills', 'brainstorming', 'references', 'living-brainstorm.md'),
+    'utf-8',
+  )
   const continueSkill = fs.readFileSync(
     path.join(process.cwd(), 'templates', 'skills', 'openspec-continue-change', 'SKILL.md'),
     'utf-8',
@@ -88,7 +92,7 @@ describe('progressive workflow routing contract', () => {
 
   it('leaves interview and OpenSpec state machines in their owning skills', () => {
     expect(brainstorming).toContain('目标、主要范围与职责已明确')
-    expect(brainstorming).toContain('没有阻塞 O-*')
+    expect(livingBrainstorm).toContain('没有阻塞 O-*')
     expect(brainstorming).toContain('`D-*`')
     expect(brainstorming).toContain('`A-*`')
     expect(brainstorming).toContain('`O-*`')
@@ -105,8 +109,8 @@ describe('progressive workflow routing contract', () => {
       .map(line => line.split('|')[1].trim())
 
     expect(stages).toEqual(['探索中', '收敛中', '可确认'])
-    expect(brainstorming).toContain('每轮只用一行“阶段 · 关键缺口”')
-    expect(brainstorming).toContain('仅在阶段或关键缺口变化时展开解释')
+    expect(brainstorming).toMatch(/每轮(?:只)?用一行“阶段 · 关键缺口”/u)
+    expect(brainstorming).toMatch(/仅在阶段或关键缺口变化时\s*展开/u)
     expect(brainstorming).not.toMatch(/\d+%/u)
     expect(brainstorming).toContain('topic-only 的闭合范围是目标、主要边界与下一路径')
   })
@@ -117,9 +121,9 @@ describe('progressive workflow routing contract', () => {
     expect(brainstorming).toContain('不自动成为阻塞项')
     expect(brainstorming).toMatch(/可能推翻主方案的\s*未知能力仍是核心可行性缺口/u)
     expect(brainstorming).toContain('阶段不代表用户授权')
-    expect(brainstorming).toContain('不存在会改变结构、可观察行为或维护方式的开放决定')
-    expect(brainstorming).toContain('用户明确确认后')
-    expect(brainstorming).toContain('不得从\n旧分数直接映射阶段')
+    expect(livingBrainstorm).toContain('不存在会改变结构、可观察行为或维护方式的开放决定')
+    expect(livingBrainstorm).toContain('用户明确确认后')
+    expect(livingBrainstorm).toMatch(/不得从\s*旧分数直接映射阶段/u)
   })
 
   it('preserves cross-entry OpenSpec and quality boundaries in AGENTS', () => {
@@ -155,6 +159,20 @@ describe('progressive workflow routing contract', () => {
     expect(restored).not.toBeNull()
     expect(extractFrameworkContent(restored!)).toBe(extractFrameworkContent(rendered))
     expect(dogfoodSkill).toBe(workflowRouting)
+  })
+
+  it('should distribute matching discussion skills and recovery context', () => {
+    const files = [
+      'brainstorming/SKILL.md',
+      'brainstorming/references/openspec-context.md',
+      'brainstorming/references/living-brainstorm.md',
+      'requirement-analysis/SKILL.md',
+      'technical-design/SKILL.md',
+    ]
+    for (const file of files) {
+      expect(fs.readFileSync(path.join(process.cwd(), '.harness/skills', file), 'utf-8'))
+        .toBe(fs.readFileSync(path.join(process.cwd(), 'templates/skills', file), 'utf-8'))
+    }
   })
 
   it('documents progressive routing and permission boundaries', () => {

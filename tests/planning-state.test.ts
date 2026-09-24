@@ -102,6 +102,25 @@ describe('Living brainstorm planning state', () => {
     expect(result.reasons.join('\n')).toContain('状态行数量必须为 1')
   })
 
+  it.each([
+    { status: '`DRAFT` · **阶段：** 收敛中', downstream: 'CURRENT', ready: false },
+    { status: '`CONFIRMED` · **确认项：** 1 D / 0 A / 0 O', downstream: 'CURRENT', ready: true },
+    { status: '`CONFIRMED` · **确认项：** 1 D / 0 A / 0 O', downstream: 'STALE', ready: false },
+  ])('should preserve confirmation gates when discussion depth changes ($status / $downstream)', ({ status, downstream, ready }) => {
+    const legacy = `> **状态：** ${status}\n\n#### D-01\n目标。\n\n## Planning 状态\n\n- **下游状态：** \`${downstream}\`\n`
+    const baseline = inspect(legacy)
+    expect(baseline).toMatchObject({ valid: true, applyReady: ready, counts: { D: 1, A: 0, O: 0 } })
+
+    for (const depth of ['lite', 'full']) {
+      for (const origin of ['用户指定', '工作流默认', '上下文默认']) {
+        const source = `${legacy}- **讨论深度：** \`${depth}\`\n- **选择来源：** ${origin}\n`
+        expect(inspect(source)).toEqual(baseline)
+        expect(fs.readFileSync(brainstormPath, 'utf8')).toBe(source)
+      }
+    }
+    expect(inspect(legacy)).toEqual(baseline)
+  })
+
   it('rejects open items, duplicate ids, and mismatched snapshot counts', () => {
     const result = inspect(`# 变更\n\n> **状态：** \`CONFIRMED\` · **确认项：** 1 D / 0 A / 0 O\n\n#### D-01\n一。\n\n#### D-01\n重复。\n\n#### O-01\n未决。\n\n## Planning 状态\n\n- **下游状态：** \`CURRENT\`\n`)
     expect(result.state).toBe('CONFIRMED')

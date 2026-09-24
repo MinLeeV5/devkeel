@@ -7,7 +7,7 @@ export function ProgressivePathSection(): React.JSX.Element {
       <SectionHeading
         eyebrow="03 / 渐进式任务路径"
         title="从一句话需求开始，逐层收敛到充分路径"
-        summary="普通开发先依据代码核对缺口；有关键决定未明确时，/brainstorming 按需引用需求与技术设计维度，逐题讨论并收敛方案，再选择 Direct、Lite 或 Full。"
+        summary="先核对关键缺口，按需进入 /brainstorming：Lite 聚焦补缺、按需探针；Full 检查假设、替代方向与风险，完成双探针检查，可复用有效结论。工作流提供默认深度，用户可单独调整；深度不改变文档与治理要求。"
       />
       <ProgressivePathDiagram />
       <div className="path-legend">

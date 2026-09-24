@@ -108,10 +108,10 @@ Direct 实施中出现持久化协调需求时，Agent MUST 询问用户是否�
 
 ### Requirement: Full 建议 MUST 由风险触发并经用户确认
 
-除用户显式选择 Full 外，Agent 只有在同时存在外部控制的消费者、可观察契约的语义或形状变化、
-以及协调、版本、迁移或回滚成本时，或变更具有难以简单代码回退的数据丢失、安全/合规或大范围故障
-严重后果时，才可建议 Full。Agent MUST 说明风险并等待确认；仅触及 API、CLI 或数据库代码不是
-Full 信号。用户拒绝时 SHALL 继续 Lite 并记录决定。
+此处 Full 指工作流路径。除用户显式选择 Full 外，Agent 只有在同时存在外部控制的消费者、可观察
+契约的语义或形状变化、以及协调、版本、迁移或回滚成本时，或变更具有难以简单代码回退的数据丢失、
+安全/合规或大范围故障严重后果时，才可建议 Full。Agent MUST 说明风险并等待确认；仅触及 API、CLI
+或数据库代码不是 Full 信号。用户拒绝时 SHALL 继续 Lite 并记录决定。
 
 #### Scenario: 外部契约产生协调成本
 
@@ -122,6 +122,22 @@ Full 信号。用户拒绝时 SHALL 继续 Lite 并记录决定。
 
 - **WHEN** 修改 API 或数据库内部实现但没有外部协调成本
 - **THEN** Agent MUST NOT 自动升级 Full
+
+### Requirement: 工作流与讨论深度 MUST 默认联动且允许分别调整
+
+工作流 Lite/Full SHALL 为 Brainstorming 提供同名默认深度；具体选择、恢复和切换 MUST 由
+Brainstorming 管理。已有主题深度和用户覆盖 MUST 保留，深入讨论或调用探针 MUST NOT 自动
+创建 change 或升级 schema。调整讨论深度 MUST NOT 改变当前路径的文档、实施与治理要求。
+
+#### Scenario: 深入讨论后选择 Lite 工作流
+
+- **WHEN** 用户完成 Full 讨论，按持久化价值选择 Lite 工作流
+- **THEN** Agent SHALL 保留有效调查与决定并使用 Lite schema，不因讨论深度追加 Full artifacts
+
+#### Scenario: Full 工作流采用 Lite 讨论
+
+- **WHEN** 用户为 Full 工作流明确选择 Lite 讨论深度
+- **THEN** Agent SHALL 保留 Full 的设计、规格、审查、验证与归档要求
 
 ### Requirement: Lite 升级 Full MUST 保留同一 change
 

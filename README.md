@@ -41,15 +41,23 @@ Codex 使用 `$domain-init`、`$verify-init`，其他平台使用对应的 Skill
 
 ## 把想法谈清楚
 
-需求尚不明确时，可调用 `brainstorming`。Agent 先读取相关代码和约束，每轮只讨论一个关键决定，
-给出推荐、依据与代价；已有方案只核对高影响缺口。
+想探索方向、比较方案或补齐已有设计，可调用 `brainstorming`。Agent 先查代码与约束，
+每轮只讨论一个关键决定，给出推荐、依据与代价：
+
+- **Lite 讨论**：围绕当前方向补缺，按需调用需求或技术探针。
+- **Full 讨论**：检查相关假设、替代方向与风险，完成需求和技术双探针检查，可复用有效结论。
 
 ```text
 /brainstorming 我想增加手机验证码登录，帮我梳理需求和方案。
 ```
 
+Agent 根据上下文选择深度，已选工作流提供同名默认值。用户可直接要求“围绕现有方案补缺”或
+“深入检查假设与替代方向”；明显扩大探索范围前会先确认。讨论深度可单独调整，不改变工作流
+的文档与治理要求。两档都在目标闭合后收敛，不强制增加提问。
+
 Claude Code 使用 `/brainstorming`，Codex 使用 `$brainstorming`，其他平台使用对应的 Skill 入口。
-讨论本身不授权修改代码。详细方法见 [brainstorming Skill](templates/skills/brainstorming/SKILL.md)。
+讨论默认留在会话中，经同意才持久化；讨论本身不授权修改代码。
+详细方法见 [brainstorming Skill](templates/skills/brainstorming/SKILL.md)。
 
 ## 渐进工作流
 
@@ -61,7 +69,7 @@ Claude Code 使用 `/brainstorming`，Codex 使用 `$brainstorming`，其他平�
 <picture>
   <source media="(prefers-color-scheme: dark)" srcset="web/public/diagrams/sharing-v2-routing.svg">
   <source media="(prefers-color-scheme: light)" srcset="web/public/diagrams/progressive-path.svg">
-  <img src="web/public/diagrams/progressive-path.svg" alt="自上而下的渐进工作流：从一句话需求开始，Agent 核对缺口，按需通过 brainstorming 引用需求与技术设计维度逐题讨论，最后选择 Direct、Lite 或 Full">
+  <img src="web/public/diagrams/progressive-path.svg" alt="渐进工作流：核对缺口，按需进入 brainstorming；Lite 讨论聚焦补缺，Full 讨论完成双探针检查，讨论深度可独立于 Direct、Lite、Full 工作流调整">
 </picture>
 
 Lite / Full 使用 OpenSpec 保存共同设计和任务过程。常用入口是 `/opsx:new`、`/opsx:continue`；

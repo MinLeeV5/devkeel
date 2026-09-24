@@ -239,8 +239,8 @@ describe('V2 home page', () => {
     render(<ProgressivePathSection />)
 
     expect(screen.getByRole('heading', { name: '从一句话需求开始，逐层收敛到充分路径' })).toBeTruthy()
-    expect(screen.getByText(/有关键决定未明确时，\/brainstorming 按需引用需求与技术设计维度/)).toBeTruthy()
-    expect(screen.getByRole('img', { name: /从一句话需求开始/ })).toBeTruthy()
+    expect(screen.getByText(/Lite 聚焦补缺、按需探针；Full 检查假设、替代方向与风险/)).toBeTruthy()
+    expect(screen.getByRole('img', { name: /讨论深度可独立于 Direct、Lite、Full 工作流调整/ })).toBeTruthy()
     for (const path of ['专项 Skill', 'Direct', 'Lite', 'Full']) {
       expect(screen.getByText(path, { selector: 'strong' })).toBeTruthy()
     }

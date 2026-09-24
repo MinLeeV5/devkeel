@@ -24,6 +24,13 @@ node "<skill-dir>/scripts/planning-state.mjs" "<brainstorm-path>"
 检查器只读并输出 `MISSING`、`LEGACY`、`DRAFT`、`CONFIRMED` 或 `INVALID`，以及 D/A/O 计数、
 下游状态和 `applyReady`。OpenSpec 返回 `done` 只说明文件存在，不能替代这个语义状态。
 
+恢复讨论时另读 brainstorm 的 `Planning 状态` 中可选的“讨论深度”和“选择来源”，按主 skill
+的选择与恢复规则处理；`schemaName` 只提供默认值，不覆盖已有深度。检查器不把深度记录作为
+确认或 Apply 门槛，旧文档缺少这些记录仍按原有 Living 状态继续。
+
+恢复持久化讨论，或准备维护、确认、迁移时，先读 [Living brainstorm](living-brainstorm.md)；
+单纯状态查询无需加载它。读取引用不增加写入授权。
+
 ## 路径与写入边界
 
 - 只读取 `artifactPaths.<id>.existingOutputPaths` 返回的文件；不得把待创建路径当作已存在。

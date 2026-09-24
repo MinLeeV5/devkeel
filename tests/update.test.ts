@@ -639,6 +639,8 @@ describe.sequential('runUpdate managed asset distribution', () => {
 
   it('should install the current brainstorming version through the regular managed update path', async () => {
     const { skillPath, commandPath } = installBrainstorming700()
+    const livingReferencePath = path.join(path.dirname(skillPath), 'references', 'living-brainstorm.md')
+    fs.rmSync(livingReferencePath)
     fs.rmSync(commandPath)
     vi.mocked(prompts.select)
       .mockResolvedValueOnce('each')
@@ -656,6 +658,12 @@ describe.sequential('runUpdate managed asset distribution', () => {
     expect(fs.readFileSync(commandPath, 'utf-8')).toBe(
       fs.readFileSync(
         path.join(updateTestState.templatesDir, 'commands', 'opsx', 'explore.md'),
+        'utf-8',
+      ),
+    )
+    expect(fs.readFileSync(livingReferencePath, 'utf-8')).toBe(
+      fs.readFileSync(
+        path.join(updateTestState.templatesDir, 'skills', 'brainstorming', 'references', 'living-brainstorm.md'),
         'utf-8',
       ),
     )
@@ -1209,6 +1217,7 @@ describe('discussion skill migration', () => {
     for (const relativePath of [
       'skills/brainstorming/SKILL.md',
       'skills/brainstorming/references/openspec-context.md',
+      'skills/brainstorming/references/living-brainstorm.md',
       'skills/brainstorming/scripts/openspec-status-snapshot.sh',
       'commands/opsx/explore.md',
     ]) {

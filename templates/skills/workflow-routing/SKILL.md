@@ -3,7 +3,7 @@ name: workflow-routing
 description: 当已获授权的普通开发请求无法直接判定 Direct、Lite 或 Full，或实施中出现持久化与治理升级信号时使用；明确 Direct 或已由专项 skill 接管的请求不加载。
 metadata:
   author: "devkeel"
-  version: "1.0.2"
+  version: "1.1.0"
 ---
 
 # Workflow Routing
@@ -18,6 +18,9 @@ gap 时，先交给 `brainstorming`；不要用路由选择代替共同设计。
 
 已有 active change 时，按其 `.openspec.yaml` selector 和当前 OPSX skill 继续，不用项目默认 schema
 重新分级。用户显式选择 schema 或 `/opsx:*` 入口时，以该选择为准。
+
+这里的 Lite/Full 选择持久化与治理路径，只为 Brainstorming 提供同名默认讨论深度。深度的选择、
+恢复和切换由 `brainstorming` 管理；保留已有讨论深度及用户覆盖，不因深入讨论或调用探针升级 schema。
 
 ## 选择路径
 
