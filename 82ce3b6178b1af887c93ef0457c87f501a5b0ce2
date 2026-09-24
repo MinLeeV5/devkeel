@@ -1,0 +1,136 @@
+tests/planning-state.test.ts
+  ae5a73fdfab4e9fc 105-123
+openspec/schemas/full/templates/brainstorm.md
+  ae5a73fdfab4e9fc 43-44
+web/tests/react-pages.test.ts
+  ae5a73fdfab4e9fc 312-314,317-322
+web/public/diagrams/sharing-v2-routing.svg
+  ae5a73fdfab4e9fc 2-3,55,58,61,82,84-88,91-92
+templates/openspec/schemas/full/schema.yaml
+  ae5a73fdfab4e9fc 2,13,16-18
+.harness/skills/technical-design/SKILL.md
+  ae5a73fdfab4e9fc 6,33-41,45-47
+tests/openspec-skills-upstream.test.ts
+  ae5a73fdfab4e9fc 49-52
+.harness/skills/workflow-routing/SKILL.md
+  ae5a73fdfab4e9fc 6,22-23
+.harness/skills/brainstorming/references/living-brainstorm.md
+  ae5a73fdfab4e9fc 1-8,10-21,23-53
+tests/update.test.ts
+  ae5a73fdfab4e9fc 642-643,664-669,1220
+openspec/schemas/full/schema.yaml
+  ae5a73fdfab4e9fc 2,13,16-18
+templates/commands/opsx/explore.md
+  ae5a73fdfab4e9fc 8,10
+templates/skills/requirement-analysis/SKILL.md
+  ae5a73fdfab4e9fc 6,32-38,41,47-49
+templates/openspec/schemas/lite/schema.yaml
+  ae5a73fdfab4e9fc 2,14-15
+templates/openspec/schemas/lite/templates/brainstorm.md
+  ae5a73fdfab4e9fc 43-44
+templates/skills/brainstorming/SKILL.md
+  ae5a73fdfab4e9fc 7,12,14,16,18-19,21-22,24,26,28-29,31,33,42-43,45,94
+.harness/skills/requirement-analysis/SKILL.md
+  ae5a73fdfab4e9fc 6,32-38,41,47-49
+web/src/pages/home/ProgressivePathSection.tsx
+  ae5a73fdfab4e9fc 10
+web/tests/workflow-docs.test.ts
+  ae5a73fdfab4e9fc 18-22
+templates/skills/brainstorming/references/openspec-context.md
+  ae5a73fdfab4e9fc 27-33
+.harness/versions.yml
+  ae5a73fdfab4e9fc 5-6,10-11,27-28
+templates/openspec/schemas/full/templates/brainstorm.md
+  ae5a73fdfab4e9fc 43-44
+templates/skills/brainstorming/references/living-brainstorm.md
+  ae5a73fdfab4e9fc 1-8,10-21,23-53
+tests/templates.test.ts
+  ae5a73fdfab4e9fc 310,314,316,321-325,347,362-365,531,725
+openspec/specs/workflow-routing/spec.md
+  ae5a73fdfab4e9fc 126-140
+.harness/commands/opsx/explore.md
+  ae5a73fdfab4e9fc 8,10
+openspec/specs/brainstorming-workflow/spec.md
+  ae5a73fdfab4e9fc 10-16,19-20,25-35,42-80,110,160-162,166-174,181-196,222-223,235-255,276,293
+openspec/schemas/lite/schema.yaml
+  ae5a73fdfab4e9fc 2,14-15
+.harness/skills/brainstorming/SKILL.md
+  ae5a73fdfab4e9fc 7,12,14,16,18-19,21-22,24,26,28-29,31,33,42-43,45,81-82,94,108,110-111
+templates/versions-yml.yml
+  ae5a73fdfab4e9fc 5-6,10-11,27-28
+README.md
+  ae5a73fdfab4e9fc 44-48,54-57,59-60,72
+web/src/pages/home/ArchitectureDiagrams.tsx
+  ae5a73fdfab4e9fc 40
+web/tests/home-page.test.tsx
+  ae5a73fdfab4e9fc 242-243
+tests/versions.test.ts
+  ae5a73fdfab4e9fc 77-78,82-83,85-86
+templates/skills/technical-design/SKILL.md
+  ae5a73fdfab4e9fc 6,33-41,45-47
+.harness/skills/brainstorming/references/openspec-context.md
+  ae5a73fdfab4e9fc 27-33
+tests/init.test.ts
+  ae5a73fdfab4e9fc 130
+templates/skills/workflow-routing/SKILL.md
+  ae5a73fdfab4e9fc 6,22-23
+web/public/diagrams/progressive-path.svg
+  ae5a73fdfab4e9fc 2-3,50,53,56,77,79-83,86-87
+openspec/schemas/lite/templates/brainstorm.md
+  ae5a73fdfab4e9fc 43-44
+tests/workflow-routing.test.ts
+  ae5a73fdfab4e9fc 164-177
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.9",
+  "base_commit_sha": "82ce3b6178b1af887c93ef0457c87f501a5b0ce2",
+  "prompts": {
+    "ae5a73fdfab4e9fc": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "01a0cf31-21ae-7843-b611-4e965438d93e",
+        "model": "gpt-6-astra"
+      },
+      "human_author": "MinLeeV5 <dicklwm@163.com>",
+      "messages": [],
+      "total_additions": 782,
+      "total_deletions": 420,
+      "accepted_lines": 585,
+      "overriden_lines": 45,
+      "messages_url": "https://gitai.gz.cvte.cn/cas/5027fbf17c78599737900f5618598248551fc8698f488bf366015b2c042c3a2b"
+    },
+    "be09ce99d2b66749": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "01a0cdaa-c6f2-7711-89a8-66e2590a749b",
+        "model": "gpt-6-astra"
+      },
+      "human_author": "MinLeeV5 <dicklwm@163.com>",
+      "messages": [],
+      "total_additions": 0,
+      "total_deletions": 0,
+      "accepted_lines": 613,
+      "overriden_lines": 0,
+      "messages_url": "https://gitai.gz.cvte.cn/cas/102df994b48281845f564f9c49c8026ffa4fe8553197caf2ff89d2eb829e6096"
+    },
+    "fbd0a7434a0e56c7": {
+      "agent_id": {
+        "tool": "known_human",
+        "id": "known_human_session",
+        "model": "unknown"
+      },
+      "human_author": "MinLeeV5 <dicklwm@163.com>",
+      "messages": [],
+      "total_additions": 0,
+      "total_deletions": 1,
+      "accepted_lines": 0,
+      "overriden_lines": 0
+    }
+  },
+  "humans": {
+    "h_1a7429a562def8": {
+      "author": "MinLeeV5"
+    }
+  }
+}
