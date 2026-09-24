@@ -4,7 +4,7 @@ description: 修订现有 OpenSpec change；先更新 Living 决定并重新确�
 license: MIT
 metadata:
   author: openspec
-  version: "2.1"
+  version: "2.2"
   upstreamVersion: "1.12.0"
   generatedBy: "1.12.0"
 ---

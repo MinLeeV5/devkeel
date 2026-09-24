@@ -1,0 +1,4 @@
+interface:
+  display_name: "继续 OpenSpec 变更"
+  short_description: "继续讨论或投影下一项规划产物"
+  default_prompt: "使用 $openspec-continue-change 继续当前 OpenSpec 变更的下一项规划工作。"

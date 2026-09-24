@@ -4,7 +4,7 @@ description: 检查完成状态、评估 spec sync，并按 schema 收尾门禁�
 license: MIT
 metadata:
   author: openspec
-  version: "3.2"
+  version: "3.3"
   upstreamVersion: "1.12.0"
   generatedBy: "1.12.0"
 ---

@@ -3,7 +3,7 @@ name: workflow-routing
 description: 当已获授权的普通开发请求无法直接判定 Direct、Lite 或 Full，或实施中出现持久化与治理升级信号时使用；明确 Direct 或已由专项 skill 接管的请求不加载。
 metadata:
   author: "devkeel"
-  version: "1.1.0"
+  version: "1.1.1"
 ---
 
 # Workflow Routing

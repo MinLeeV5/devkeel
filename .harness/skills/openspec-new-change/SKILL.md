@@ -4,7 +4,7 @@ description: 创建 OpenSpec change，并在同一轮初始化 Living brainstorm
 license: MIT
 metadata:
   author: openspec
-  version: "2.3"
+  version: "2.4"
   upstreamVersion: "1.12.0"
   generatedBy: "1.12.0"
 ---
@@ -61,5 +61,5 @@ npx devkeel@latest openspec instructions brainstorm --change "<name>" --json
 的一项；已闭合时进入 Brainstorming 快照确认。不得展示整份模板，不提示用户立即 Apply，也不得
 创建 design/specs/tasks。
 
-用户本次明确调用 `/opsx:new` 已授权创建 change 和 Living brainstorm；不授权实现代码、FF、
-archive、commit 或 delivery。
+用户明确请求创建 change（包括调用 `/opsx:new` 或 `$openspec-new-change`）已授权创建 change 和
+Living brainstorm；不授权实现代码、FF、archive、commit 或 delivery。

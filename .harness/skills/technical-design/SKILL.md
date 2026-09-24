@@ -3,7 +3,7 @@ name: technical-design
 description: 将已确认需求和代码现状转成技术方案；可独立交付设计，或在 Brainstorming 中作为只读探针发现下一项高价值技术决定。
 metadata:
   author: "devkeel"
-  version: "3.1.0"
+  version: "3.1.1"
 ---
 
 # 技术设计

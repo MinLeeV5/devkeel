@@ -1,0 +1,4 @@
+interface:
+  display_name: "系统化调试"
+  short_description: "基于可重复证据定位故障根因并验证修复"
+  default_prompt: "使用 $systematic-debugging 排查当前故障，依据证据定位根因并验证修复。"

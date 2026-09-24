@@ -4,7 +4,7 @@ description: 用真实小型代码任务，分阶段讲解并完成第一轮 Ope
 license: MIT
 metadata:
   author: openspec
-  version: "2.3"
+  version: "2.4"
   upstreamVersion: "1.12.0"
   generatedBy: "1.12.0"
 ---

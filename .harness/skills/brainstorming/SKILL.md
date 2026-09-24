@@ -4,7 +4,7 @@ description: 探索、比较、挑战或补全开发方案；按 Lite/Full 深�
 license: MIT
 metadata:
   author: "devkeel"
-  version: "9.1.0"
+  version: "9.1.1"
 ---
 
 # Brainstorming

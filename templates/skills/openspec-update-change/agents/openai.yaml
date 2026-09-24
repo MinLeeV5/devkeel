@@ -1,0 +1,4 @@
+interface:
+  display_name: "修订 OpenSpec 变更"
+  short_description: "修订设计决定并重投影已有规划产物"
+  default_prompt: "使用 $openspec-update-change 修订当前变更的设计决定，并更新受影响的规划文件。"

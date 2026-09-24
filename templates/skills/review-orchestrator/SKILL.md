@@ -3,7 +3,7 @@ name: review-orchestrator
 description: 当用户要求代码审查、code review 或 CR 时使用。收集实际改动，判定范围和审查模式，按需调度 specialist reviewer，输出阻断优先的统一结论。
 metadata:
   author: "devkeel"
-  version: "1.1.2"
+  version: "1.1.3"
 ---
 
 # Review Orchestrator

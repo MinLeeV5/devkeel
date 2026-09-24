@@ -7,7 +7,7 @@ description: >-
   触发词：domain-init、领域初始化、生成领域规范、领域扫描
 metadata:
   author: "devkeel"
-  version: "2.0.1"
+  version: "2.0.2"
 ---
 
 # Domain Init — 项目领域能力生成器

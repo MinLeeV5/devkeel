@@ -3,7 +3,7 @@ name: systematic-debugging
 description: 系统化诊断和修复 Bug、测试或构建失败、异常行为、集成故障与性能回归。先建立可判定的反馈信号、追踪根因并逐一验证可证伪假设；仅在现有错误、测试、日志、diff、debugger 或 profiler 无法区分假设，且临时写入已获授权时使用定向 HTTP 插桩。
 metadata:
   author: "devkeel"
-  version: "1.0.1"
+  version: "1.0.2"
 ---
 
 # Systematic Debugging

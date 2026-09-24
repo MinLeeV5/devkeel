@@ -1,0 +1,4 @@
+interface:
+  display_name: "归档 OpenSpec 变更"
+  short_description: "检查收尾门禁与规格同步后归档变更"
+  default_prompt: "使用 $openspec-archive-change 检查并归档指定的 OpenSpec 变更。"

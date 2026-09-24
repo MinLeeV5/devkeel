@@ -4,7 +4,7 @@ description: 批量检查 spec 冲突，并按 schema 门禁归档用户明确�
 license: MIT
 metadata:
   author: openspec
-  version: "2.1"
+  version: "2.2"
   upstreamVersion: "1.12.0"
   generatedBy: "1.12.0"
 ---

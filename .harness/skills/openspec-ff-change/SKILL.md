@@ -4,12 +4,13 @@ description: 用户显式选择时，快速推进访谈并投影全部 Apply 前
 license: MIT
 metadata:
   author: openspec
-  version: "2.1"
+  version: "2.2"
   upstreamVersion: "1.12.0"
   generatedBy: "1.12.0"
 ---
 
-Fast-forward 是高级节奏入口，不是跳过设计确认。只有用户显式调用 `/opsx:ff` 才使用。
+Fast-forward 是高级节奏入口，不是跳过设计确认。只有用户显式调用 `/opsx:ff` 或
+`$openspec-ff-change` 才使用。
 
 ## 1. 建立或选择 change
 

@@ -1,0 +1,6 @@
+interface:
+  display_name: "快速推进 OpenSpec 规划"
+  short_description: "经用户显式选择后推进访谈和规划产物"
+  default_prompt: "使用 $openspec-ff-change 快速推进当前 OpenSpec 变更的规划，等待我确认设计决定。"
+policy:
+  allow_implicit_invocation: false

@@ -3,7 +3,7 @@ name: ui-fidelity-playbook
 description: 按设计意图（设计稿/截图/线框/明确视觉参考）高保真实现 UI 的方法论。指导如何先探索项目约束、先对齐结构与交互再打磨细节、避免常见失真、提交前自验。适用"UI 还原""按设计稿还原""高保真对齐""还原度不够""交互与视觉对齐"等场景。
 metadata:
   author: "devkeel"
-  version: "1.0.2"
+  version: "1.0.3"
 ---
 
 # UI Fidelity Playbook

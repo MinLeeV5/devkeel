@@ -7,7 +7,7 @@ description: >-
   触发词：验证初始化、测试平台搭建、verify-init、搭建测试基建
 metadata:
   author: "devkeel"
-  version: "2.0.0"
+  version: "2.0.1"
 ---
 
 # Verify Init — 验证层初始化器

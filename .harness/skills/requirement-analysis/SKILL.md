@@ -3,7 +3,7 @@ name: requirement-analysis
 description: 基于现有代码与业务上下文澄清需求；可独立产出需求分析，或在 Brainstorming 中作为只读探针发现下一项高价值需求缺口。
 metadata:
   author: "devkeel"
-  version: "3.1.0"
+  version: "3.1.1"
 ---
 
 # 需求分析

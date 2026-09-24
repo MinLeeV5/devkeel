@@ -4,7 +4,7 @@ description: 将 active change 的 delta specs 智能合并到 main specs，但�
 license: MIT
 metadata:
   author: openspec
-  version: "2.1"
+  version: "2.2"
   upstreamVersion: "1.12.0"
   generatedBy: "1.12.0"
 ---

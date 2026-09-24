@@ -4,7 +4,7 @@ description: 按 OpenSpec 动态 apply instruction 实施 change tasks，并处�
 license: MIT
 metadata:
   author: openspec
-  version: "3.1"
+  version: "3.2"
   upstreamVersion: "1.12.0"
   generatedBy: "1.12.0"
 ---

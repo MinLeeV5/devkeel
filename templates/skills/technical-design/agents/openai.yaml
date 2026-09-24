@@ -1,0 +1,4 @@
+interface:
+  display_name: "技术设计"
+  short_description: "根据已确认需求和现有代码形成可实施方案"
+  default_prompt: "使用 $technical-design 根据已确认需求和现有代码产出技术方案。"

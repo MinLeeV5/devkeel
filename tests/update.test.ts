@@ -252,7 +252,7 @@ describe.sequential('runUpdate managed asset distribution', () => {
       legacySkill,
       fs.readFileSync(legacySkill, 'utf-8')
         .replace('name: systematic-debugging', 'name: automated-instrumented-debugging')
-        .replace('version: "1.0.1"', 'version: "2.0.0"'),
+        .replace('version: "1.0.2"', 'version: "2.0.0"'),
       'utf-8',
     )
     if (!keepReplacement) fs.rmSync(replacementDir, { recursive: true, force: true })
@@ -271,7 +271,7 @@ describe.sequential('runUpdate managed asset distribution', () => {
 
     expect(fs.existsSync(replacementDir)).toBe(true)
     expect(fs.existsSync(legacyDir)).toBe(false)
-    expect(readVersions(projectDir)?.skills['systematic-debugging']).toBe('1.0.1')
+    expect(readVersions(projectDir)?.skills['systematic-debugging']).toBe('1.0.2')
     expect(readVersions(projectDir)?.skills['automated-instrumented-debugging']).toBeUndefined()
   })
 
@@ -302,7 +302,7 @@ describe.sequential('runUpdate managed asset distribution', () => {
     expect(fs.existsSync(replacementDir)).toBe(true)
     expect(fs.readFileSync(path.join(legacyDir, 'custom.md'), 'utf-8'))
       .toBe('keep custom debugging notes\n')
-    expect(readVersions(projectDir)?.skills['systematic-debugging']).toBe('1.0.1')
+    expect(readVersions(projectDir)?.skills['systematic-debugging']).toBe('1.0.2')
     expect(readVersions(projectDir)?.skills['automated-instrumented-debugging']).toBeUndefined()
   })
 

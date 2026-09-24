@@ -1,0 +1,4 @@
+interface:
+  display_name: "方案共创"
+  short_description: "探索开发方案并收敛待确认的设计决定"
+  default_prompt: "使用 $brainstorming 探索当前开发想法，形成待确认的设计结论。"

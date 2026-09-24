@@ -37,6 +37,34 @@ describe('templates', () => {
         .toBe(true)
     })
 
+    it('should distribute Chinese Codex prompts with the intended invocation policy', () => {
+      const target = path.join(tmpDir, 'skills')
+      copyTemplateSkills(target)
+
+      const skills = fs.readdirSync(target, { withFileTypes: true })
+        .filter(entry => entry.isDirectory())
+        .map(entry => entry.name)
+      for (const name of skills) {
+        const relative = path.join(name, 'agents', 'openai.yaml')
+        const content = fs.readFileSync(path.join(target, relative), 'utf-8')
+        const metadata = YAML.parse(content) as {
+          interface?: { display_name?: string; short_description?: string; default_prompt?: string }
+          policy?: { allow_implicit_invocation?: boolean }
+        }
+
+        expect(metadata.interface?.display_name, name).toBeTruthy()
+        expect(metadata.interface?.short_description, name).toBeTruthy()
+        expect(metadata.interface?.default_prompt, name).toContain(`使用 $${name}`)
+        expect(metadata.interface?.default_prompt, name).toMatch(/[\u3400-\u9fff]/u)
+        expect(metadata.policy?.allow_implicit_invocation, name)
+          .toBe(name === 'openspec-ff-change' ? false : undefined)
+        expect(fs.readFileSync(
+          path.join(process.cwd(), '.harness', 'skills', relative),
+          'utf-8',
+        )).toBe(content)
+      }
+    })
+
     it('should keep review findings platform-independent and readable', () => {
       const target = path.join(tmpDir, 'skills')
       copyTemplateSkills(target)
@@ -97,7 +125,7 @@ describe('templates', () => {
       )
 
       expect(skill).toContain('name: systematic-debugging')
-      expect(skill).toContain('version: "1.0.1"')
+      expect(skill).toContain('version: "1.0.2"')
       expect(skill).toContain('插桩是遇到运行时观测缺口后的升级手段，不是默认入口')
       expect(skill).toContain('建立反馈信号')
       expect(skill).toContain('临时代码写入已获授权')
@@ -307,7 +335,7 @@ describe('templates', () => {
         'utf-8',
       )
       expect(brainstorming).toContain('author: "devkeel"')
-      expect(brainstorming).toContain('version: "9.1.0"')
+      expect(brainstorming).toContain('version: "9.1.1"')
       expect(brainstorming).toContain('topic-only（默认）')
       expect(brainstorming).toContain('change-draft')
       expect(brainstorming).toContain('每轮严格只处理一个决定')
@@ -344,7 +372,7 @@ describe('templates', () => {
         path.join(target, 'workflow-routing', 'SKILL.md'),
         'utf-8',
       )
-      expect(workflowRouting).toContain('version: "1.1.0"')
+      expect(workflowRouting).toContain('version: "1.1.1"')
       expect(workflowRouting).toContain('不授予写权限、不创建 change')
       expect(workflowRouting).toContain('Direct → Lite')
       expect(workflowRouting).toContain('Lite → Full')
@@ -669,7 +697,7 @@ describe('templates', () => {
         'utf-8',
       )
 
-      expect(commit).toContain('version: "1.2.3"')
+      expect(commit).toContain('version: "1.2.4"')
       expect(commit).toContain('完成该 MR/PR 所需的提交、推送与创建')
       expect(commit).toContain('创建 MR/PR 本身不包含合并')
       expect(commit).toContain('任务收尾、归档或“完成”不构成授权')
@@ -948,16 +976,16 @@ describe('templates', () => {
 
     it('keeps commands and skills unchanged and synchronized with dogfood copies', () => {
       const expectedVersions: Record<string, string> = {
-        'openspec-new-change': '2.3',
-        'openspec-ff-change': '2.1',
-        'openspec-onboard': '2.3',
-        'openspec-continue-change': '2.1',
-        'openspec-update-change': '2.1',
-        'openspec-apply-change': '3.1',
-        'openspec-archive-change': '3.2',
-        'openspec-bulk-archive-change': '2.1',
-        'openspec-sync-specs': '2.1',
-        'openspec-verify-change': '3.3',
+        'openspec-new-change': '2.4',
+        'openspec-ff-change': '2.2',
+        'openspec-onboard': '2.4',
+        'openspec-continue-change': '2.2',
+        'openspec-update-change': '2.2',
+        'openspec-apply-change': '3.2',
+        'openspec-archive-change': '3.3',
+        'openspec-bulk-archive-change': '2.2',
+        'openspec-sync-specs': '2.2',
+        'openspec-verify-change': '3.4',
       }
       const commandBySkill: Record<string, string> = {
         'openspec-new-change': 'new',
@@ -979,7 +1007,7 @@ describe('templates', () => {
         'utf-8',
       )) as { skills: Record<string, string> }
 
-      expect(packagedVersions.skills['openspec-update-change']).toBe('2.1')
+      expect(packagedVersions.skills['openspec-update-change']).toBe('2.2')
       expect(packagedVersions.skills['openspec-propose']).toBeUndefined()
       expect(dogfoodVersions.skills['openspec-update-change']).toBe(
         packagedVersions.skills['openspec-update-change'],

@@ -1,0 +1,4 @@
+interface:
+  display_name: "验证 OpenSpec 变更"
+  short_description: "对照规划产物验证实现的完整性与一致性"
+  default_prompt: "使用 $openspec-verify-change 对照当前变更的规划产物验证实现。"

@@ -4,7 +4,7 @@ description: 从完整性、正确性和一致性验证实现是否符合 change
 license: MIT
 metadata:
   author: openspec
-  version: "3.3"
+  version: "3.4"
   upstreamVersion: "1.12.0"
   generatedBy: "1.12.0"
 ---

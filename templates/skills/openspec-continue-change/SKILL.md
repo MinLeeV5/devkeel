@@ -4,7 +4,7 @@ description: 继续 OpenSpec change；Draft 时继续单题访谈，Confirmed �
 license: MIT
 metadata:
   author: openspec
-  version: "2.1"
+  version: "2.2"
   upstreamVersion: "1.12.0"
   generatedBy: "1.12.0"
 ---

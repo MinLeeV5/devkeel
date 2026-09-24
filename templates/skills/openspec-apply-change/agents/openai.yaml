@@ -1,0 +1,4 @@
+interface:
+  display_name: "实施 OpenSpec 变更"
+  short_description: "按已确认的规划实施任务并完成验证"
+  default_prompt: "使用 $openspec-apply-change 实施当前已确认的 OpenSpec 变更，并完成相应验证。"

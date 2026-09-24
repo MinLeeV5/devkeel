@@ -1,0 +1,4 @@
+interface:
+  display_name: "OpenSpec 入门"
+  short_description: "通过真实小型任务分阶段学习工作流"
+  default_prompt: "使用 $openspec-onboard 通过一个真实的小型任务带我走一遍 OpenSpec 流程。"

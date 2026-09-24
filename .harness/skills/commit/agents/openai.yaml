@@ -1,0 +1,4 @@
+interface:
+  display_name: "原子交付"
+  short_description: "按授权提交、推送或创建 MR/PR"
+  default_prompt: "使用 $commit 提交已确认范围内的改动。"

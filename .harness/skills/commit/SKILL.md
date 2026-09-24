@@ -3,7 +3,7 @@ name: commit
 description: 用户明确选择 commit、push 或 MR/PR 后使用的原子交付流程。任务完成或归档本身不触发；在授权范围内完成交付目标及其必要动作。
 metadata:
   author: "devkeel"
-  version: "1.2.3"
+  version: "1.2.4"
 ---
 
 # commit — 提交、推送与 MR/PR 工作流

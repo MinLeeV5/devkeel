@@ -1,0 +1,4 @@
+interface:
+  display_name: "创建 OpenSpec 变更"
+  short_description: "创建变更并开始 Living brainstorm 讨论"
+  default_prompt: "使用 $openspec-new-change 为当前主题创建 OpenSpec 变更，并开始讨论。"

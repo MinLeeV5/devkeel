@@ -1,0 +1,4 @@
+interface:
+  display_name: "需求分析"
+  short_description: "基于代码与业务上下文梳理需求和验收条件"
+  default_prompt: "使用 $requirement-analysis 基于当前代码和业务上下文梳理需求与验收条件。"

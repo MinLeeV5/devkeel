@@ -3,7 +3,7 @@ name: test-case-designer
 description: 当用户需要测试设计、测试用例、test case 或 test design 时使用。基于 PRD、设计稿、技术方案、接口文档、代码或 diff，产出输入上下文、测试点和完整用例；支持黑盒与白盒分析、回归补测、完整模式（三阶段门禁）及快速模式（一次性产出）。
 metadata:
   author: "devkeel"
-  version: "2.0.2"
+  version: "2.0.3"
 ---
 
 # 测试用例设计师

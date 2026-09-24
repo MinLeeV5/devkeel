@@ -1,0 +1,4 @@
+interface:
+  display_name: "批量归档 OpenSpec 变更"
+  short_description: "检查冲突并归档用户选定的多个变更"
+  default_prompt: "使用 $openspec-bulk-archive-change 检查并归档我选定的多个 OpenSpec 变更。"

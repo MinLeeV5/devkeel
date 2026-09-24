@@ -1,0 +1,4 @@
+interface:
+  display_name: "同步 OpenSpec 规格"
+  short_description: "将已确认的增量规格合并到主规格"
+  default_prompt: "使用 $openspec-sync-specs 将当前变更的增量规格合并到主规格。"

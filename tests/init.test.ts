@@ -198,7 +198,7 @@ describe.sequential('runInit legacy migration', () => {
     await runInit({ name: 'fresh-project', targets: 'codex' })
 
     expectUpdateAssetsDistributed()
-    expect(readVersions(tmpDir)?.skills['openspec-update-change']).toBe('2.1')
+    expect(readVersions(tmpDir)?.skills['openspec-update-change']).toBe('2.2')
   })
 
   it('should migrate an existing project that does not have openspec yet', async () => {
