@@ -1,0 +1,62 @@
+tests/templates.test.ts
+  6adca58ce708e1ae 830-832
+templates/agents-md.md
+  6adca58ce708e1ae 73-74,92-95,97
+AGENTS.md
+  6adca58ce708e1ae 74-75,92-95,97
+tests/workflow-routing.test.ts
+  6adca58ce708e1ae 94-96,106,133-137
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.9",
+  "base_commit_sha": "91fa5dbae1c903152fe7e99c0c2aa6944d4c8519",
+  "prompts": {
+    "6adca58ce708e1ae": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "01a0e609-5580-76f0-8c2b-e287f0e8bd47",
+        "model": "gpt-6-astra"
+      },
+      "human_author": "MinLeeV5 <dicklwm@163.com>",
+      "messages": [],
+      "total_additions": 73,
+      "total_deletions": 52,
+      "accepted_lines": 69,
+      "overriden_lines": 0,
+      "messages_url": "https://gitai.gz.cvte.cn/cas/4d945bb0bcb807ae569ebc42aefc93be12c741bb150a6e6e01a83f80043a3c57"
+    },
+    "86e6e541c42432e1": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "01a0d0f7-3f1f-70c2-8afa-6a28ea2714d0",
+        "model": "gpt-6-sol"
+      },
+      "human_author": "MinLeeV5 <dicklwm@163.com>",
+      "messages": [],
+      "total_additions": 0,
+      "total_deletions": 0,
+      "accepted_lines": 3498,
+      "overriden_lines": 0,
+      "messages_url": "https://gitai.gz.cvte.cn/cas/c3e9d1722feb96804109a31b4f8e4c9da9d814480b8d00cc004c066967218566"
+    },
+    "fbd0a7434a0e56c7": {
+      "agent_id": {
+        "tool": "known_human",
+        "id": "known_human_session",
+        "model": "unknown"
+      },
+      "human_author": "MinLeeV5 <dicklwm@163.com>",
+      "messages": [],
+      "total_additions": 1,
+      "total_deletions": 1,
+      "accepted_lines": 0,
+      "overriden_lines": 0
+    }
+  },
+  "humans": {
+    "h_1a7429a562def8": {
+      "author": "MinLeeV5"
+    }
+  }
+}
