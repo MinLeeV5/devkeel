@@ -1,0 +1,36 @@
+{
+  "versions": [
+    "2.3.1"
+  ],
+  "releasedAt": {
+    "from": "2026-09-28T11:48:46+08:00"
+  },
+  "title": "讨论深度可控，技能入口与输出更简洁",
+  "archived": false,
+  "groups": [
+    {
+      "type": "feat",
+      "label": "讨论与技能入口",
+      "items": [
+        {
+          "name": "独立选择讨论深度",
+          "description": "Brainstorming 支持 Lite 定向补缺与 Full 深入探索，可切换并恢复已有讨论深度，无需因此升级 OpenSpec 工作流或创建变更。"
+        },
+        {
+          "name": "Codex 中文技能入口",
+          "description": "常用技能补齐中文名称、用途说明和默认调用提示，支持通过技能入口创建或快进 OpenSpec 变更。"
+        }
+      ]
+    },
+    {
+      "type": "refactor",
+      "label": "指令与输出精简",
+      "items": [
+        {
+          "name": "精简项目执行约定",
+          "description": "AGENTS.md 去除重复的 OpenSpec 说明与品牌字样，输出默认答案先行、按需展开和简短收尾，同时保留关键风险与执行边界。"
+        }
+      ]
+    }
+  ]
+}
