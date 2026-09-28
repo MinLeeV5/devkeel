@@ -1,0 +1,24 @@
+templates/agents-md.md
+  6adca58ce708e1ae 97
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.9",
+  "base_commit_sha": "f46d444fde08c94ce58e4e2b69e219193e663273",
+  "prompts": {
+    "6adca58ce708e1ae": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "01a0e609-5580-76f0-8c2b-e287f0e8bd47",
+        "model": "gpt-6-astra"
+      },
+      "human_author": "MinLeeV5 <dicklwm@163.com>",
+      "messages": [],
+      "total_additions": 1,
+      "total_deletions": 1,
+      "accepted_lines": 8,
+      "overriden_lines": 0,
+      "messages_url": "https://gitai.gz.cvte.cn/cas/c1dd16ea8feb91654887b287149b905b7f3b8cf2e0d365309c7d8cdb81bbfbda"
+    }
+  }
+}
