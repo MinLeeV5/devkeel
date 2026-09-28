@@ -1,0 +1,42 @@
+AGENTS.md
+  h_1a7429a562def8 97
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.9",
+  "base_commit_sha": "537df86046ef925add5a686da6aff83e4377bd0a",
+  "prompts": {
+    "6adca58ce708e1ae": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "01a0e609-5580-76f0-8c2b-e287f0e8bd47",
+        "model": "gpt-6-astra"
+      },
+      "human_author": "MinLeeV5 <dicklwm@163.com>",
+      "messages": [],
+      "total_additions": 0,
+      "total_deletions": 0,
+      "accepted_lines": 6,
+      "overriden_lines": 1,
+      "messages_url": "https://gitai.gz.cvte.cn/cas/a64393b057e81aa59d1dad226a4102caf0ab1250107d08b08722c45741139ddf"
+    },
+    "fbd0a7434a0e56c7": {
+      "agent_id": {
+        "tool": "known_human",
+        "id": "known_human_session",
+        "model": "unknown"
+      },
+      "human_author": "MinLeeV5 <dicklwm@163.com>",
+      "messages": [],
+      "total_additions": 1,
+      "total_deletions": 1,
+      "accepted_lines": 0,
+      "overriden_lines": 0
+    }
+  },
+  "humans": {
+    "h_1a7429a562def8": {
+      "author": "MinLeeV5"
+    }
+  }
+}
