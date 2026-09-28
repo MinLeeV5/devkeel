@@ -827,9 +827,9 @@ describe('templates', () => {
       expect(content).toContain('指令优先级与加载')
       expect(content).toContain('先确认任务归属并索引候选，再读取小范围片段')
       expect(content).toContain('`docs/` 保存项目知识，`openspec/` 保存任务过程。')
-      expect(content).toContain('用户显式调用 `/opsx:*` 时加载对应 skill')
-      expect(content).toContain('包含 `openspec/` 的 DevKeel 根仓库执行')
-      expect(content).toContain('子项目代码、构建和测试在目标')
+      expect(content).toContain('显式 `/opsx:*` 加载对应 skill')
+      expect(content).toContain('包含 `openspec/` 的根仓库执行')
+      expect(content).toContain('子项目代码、构建与测试在目标子项目执行')
     })
   })
 

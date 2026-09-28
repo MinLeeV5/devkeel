@@ -91,6 +91,9 @@ describe('progressive workflow routing contract', () => {
   })
 
   it('leaves interview and OpenSpec state machines in their owning skills', () => {
+    expect(brainstorming).toContain('topic-only（默认）')
+    expect(brainstorming).toContain('不创建 change、不写文件')
+    expect(brainstorming).toContain('同一 change 的需求与技术设计只在此处发生，下游 artifacts 只投影')
     expect(brainstorming).toContain('目标、主要范围与职责已明确')
     expect(livingBrainstorm).toContain('没有阻塞 O-*')
     expect(brainstorming).toContain('`D-*`')
@@ -100,7 +103,7 @@ describe('progressive workflow routing contract', () => {
     expect(continueSkill).toContain('`CONFIRMED`')
     expect(continueSkill).toContain('`applyRequires`')
     expect(continueSkill).toContain('每次投影一个 artifact')
-    expect(template).toContain('具体状态、依赖、迁移和恢复算法由 OPSX skills 与 schema 负责')
+    expect(continueSkill).toContain('只允许投影 D-*、A-*、仓库事实和机械转换')
   })
 
   it('should expose three discussion stages without numerical scoring', () => {
@@ -127,11 +130,11 @@ describe('progressive workflow routing contract', () => {
   })
 
   it('preserves cross-entry OpenSpec and quality boundaries in AGENTS', () => {
-    expect(template).toContain('OpenSpec 是持久化协调层，不是普通开发的默认前置流程')
-    expect(template).toContain('Brainstorming 默认保持 topic-only')
-    expect(template).toContain('创建 change、选择 FF、Apply、Archive 和交付动作的授权')
-    expect(template).toContain('`brainstorm.md` 是共同设计的唯一语义源')
-    expect(template).toContain('已有 active change 按其 selector 继续')
+    expect(template).toContain('显式 `/opsx:*` 加载对应 skill')
+    expect(template).toContain('各操作的授权不互相替代')
+    expect(template).toContain('已有 change 按其 selector 继续')
+    expect(template).toContain('OpenSpec 命令在包含 `openspec/` 的根仓库执行')
+    expect(template).toContain('子项目代码、构建与测试在目标子项目执行')
     expect(template).toContain('先运行与改动最接近的验证')
     expect(template).toContain('commit 仅由用户显式选择')
     expect(template).toContain('`docs/` 保存项目知识，`openspec/` 保存任务过程')
