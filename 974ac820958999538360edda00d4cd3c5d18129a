@@ -1,0 +1,31 @@
+templates/package.json
+  h_1a7429a562def8 3
+web/public/versions/templates/2.3.1.json
+  6adca58ce708e1ae 1-36
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.9",
+  "base_commit_sha": "974ac820958999538360edda00d4cd3c5d18129a",
+  "prompts": {
+    "6adca58ce708e1ae": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "01a0e609-5580-76f0-8c2b-e287f0e8bd47",
+        "model": "gpt-6-astra"
+      },
+      "human_author": "MinLeeV5 <dicklwm@163.com>",
+      "messages": [],
+      "total_additions": 0,
+      "total_deletions": 0,
+      "accepted_lines": 43,
+      "overriden_lines": 0,
+      "messages_url": "https://gitai.gz.cvte.cn/cas/149edc43e5b252a234f4b0f4c13e2d8841f70027699883ba3f4b580aefe796b6"
+    }
+  },
+  "humans": {
+    "h_1a7429a562def8": {
+      "author": "MinLeeV5"
+    }
+  }
+}
