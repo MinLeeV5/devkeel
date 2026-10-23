@@ -1,0 +1,87 @@
+templates/agents-md.md
+  h_1a7429a562def8 86-89,91-98,100-103,105-113
+  3454b07ab4aa815c 20,26-28,30,76,90,99
+AGENTS.md
+  h_1a7429a562def8 86-89,91-98,100-103,105-113
+  3454b07ab4aa815c 20,26-28,30,77,90,99
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.8.1",
+  "base_commit_sha": "1ee5e6c862c94942f9aa4fed2d3b94adf983fcf0",
+  "prompts": {
+    "3454b07ab4aa815c": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "01a166cb-e892-7793-83ea-38c78b25d22c",
+        "model": "gpt-6.1-sol"
+      },
+      "human_author": "MinLeeV5 <dicklwm@163.com>",
+      "messages": [],
+      "total_additions": 50,
+      "total_deletions": 48,
+      "accepted_lines": 50,
+      "overriden_lines": 0,
+      "messages_url": "https://gitai.gz.cvte.cn/cas/9b730abace063824d5c96e97c10954b34e0405caaf3e727ab5c87fb35c26b497",
+      "token_usage": {
+        "input_tokens": 79781,
+        "output_tokens": 9628,
+        "cache_read_tokens": 1252992,
+        "cache_creation_tokens": null,
+        "total_cost": null
+      }
+    },
+    "6adca58ce708e1ae": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "01a0e609-5580-76f0-8c2b-e287f0e8bd47",
+        "model": "gpt-6-astra"
+      },
+      "human_author": "MinLeeV5 <dicklwm@163.com>",
+      "messages": [],
+      "total_additions": 0,
+      "total_deletions": 0,
+      "accepted_lines": 2,
+      "overriden_lines": 0,
+      "messages_url": "https://gitai.gz.cvte.cn/cas/874f756acf1d389681c793418adab1dafabff55ca2733eb3d80114ffcebdcef3",
+      "token_usage": {
+        "input_tokens": 128460,
+        "output_tokens": 18250,
+        "cache_read_tokens": 6251904,
+        "cache_creation_tokens": null,
+        "total_cost": null
+      }
+    },
+    "c20be142daf8f6c9": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "01a166cb-e909-7690-9d21-bbfa9fe8dd87",
+        "model": "unknown"
+      },
+      "human_author": "MinLeeV5 <dicklwm@163.com>",
+      "messages": [],
+      "total_additions": 30,
+      "total_deletions": 7,
+      "accepted_lines": 26,
+      "overriden_lines": 0
+    },
+    "fbd0a7434a0e56c7": {
+      "agent_id": {
+        "tool": "known_human",
+        "id": "known_human_session",
+        "model": "unknown"
+      },
+      "human_author": "MinLeeV5 <dicklwm@163.com>",
+      "messages": [],
+      "total_additions": 61,
+      "total_deletions": 15,
+      "accepted_lines": 0,
+      "overriden_lines": 0
+    }
+  },
+  "humans": {
+    "h_1a7429a562def8": {
+      "author": "MinLeeV5"
+    }
+  }
+}
