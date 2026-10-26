@@ -1,0 +1,38 @@
+templates/package.json
+  h_1a7429a562def8 3
+web/public/versions/templates/2.3.3.json
+  6d101732c86b26ff 1-26
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.8.1",
+  "base_commit_sha": "e40950873eb8092e2cf651e57eb92876df10df20",
+  "prompts": {
+    "6d101732c86b26ff": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "01a17734-00d1-7fb2-bf56-f58f052348ff",
+        "model": "gpt-6.1-sol"
+      },
+      "human_author": "MinLeeV5 <dicklwm@163.com>",
+      "messages": [],
+      "total_additions": 0,
+      "total_deletions": 0,
+      "accepted_lines": 81,
+      "overriden_lines": 0,
+      "messages_url": "https://gitai.gz.cvte.cn/cas/66bb9e8e62430d22b47deb6afc23120c9f3805a932dda0e46d8073cdb83f752b",
+      "token_usage": {
+        "input_tokens": 82420,
+        "output_tokens": 18107,
+        "cache_read_tokens": 2006528,
+        "cache_creation_tokens": null,
+        "total_cost": null
+      }
+    }
+  },
+  "humans": {
+    "h_1a7429a562def8": {
+      "author": "MinLeeV5"
+    }
+  }
+}
