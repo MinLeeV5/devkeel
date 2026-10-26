@@ -18,7 +18,7 @@
 
 - **WHEN** 对比领域模板与主仓库模板
 - **THEN** 领域模板 SHALL 不复制 Direct/Lite/Full、Brainstorming 或 OpenSpec 的主仓库编排算法
-- **AND** 模板 SHALL 明确代码与验证留在子仓库、OpenSpec 和知识产出归属主仓库
+- **AND** 模板 SHALL 明确代码、验证与项目知识留在所属子仓库，项目知识写入其 `docs/`，OpenSpec 由主仓库协调
 
 #### Scenario: Domain AGENTS.md is safe as a standalone entry
 

@@ -37,6 +37,29 @@ describe('templates', () => {
         .toBe(true)
     })
 
+    it('should distribute reachable architecture knowledge guidance with domain-init', () => {
+      const target = path.join(tmpDir, 'skills')
+      copyTemplateSkills(target)
+
+      const skill = fs.readFileSync(path.join(target, 'domain-init', 'SKILL.md'), 'utf-8')
+      expect(skill).toContain('references/architecture-knowledge.md')
+
+      for (const relative of [
+        'SKILL.md',
+        'references/architecture-knowledge.md',
+        'references/output-formats.md',
+        'references/dimension-pool.md',
+      ]) {
+        const relativePath = path.join('domain-init', relative)
+        const packaged = fs.readFileSync(path.join(target, relativePath), 'utf-8')
+        expect(packaged, relative).toBe(readTemplateFile(`skills/${relativePath}`))
+        expect(packaged, relative).toBe(fs.readFileSync(
+          path.join(process.cwd(), '.harness', 'skills', relativePath),
+          'utf-8',
+        ))
+      }
+    })
+
     it('should distribute Chinese Codex prompts with the intended invocation policy', () => {
       const target = path.join(tmpDir, 'skills')
       copyTemplateSkills(target)
