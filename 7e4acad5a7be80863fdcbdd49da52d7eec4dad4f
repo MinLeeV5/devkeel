@@ -1,0 +1,71 @@
+web/public/versions/cli/0.12.1.json
+  6d101732c86b26ff 1-54
+package.json
+  h_1a7429a562def8 3
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.8.1",
+  "base_commit_sha": "7e4acad5a7be80863fdcbdd49da52d7eec4dad4f",
+  "prompts": {
+    "3454b07ab4aa815c": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "01a166cb-e892-7793-83ea-38c78b25d22c",
+        "model": "gpt-6.1-sol"
+      },
+      "human_author": "MinLeeV5 <dicklwm@163.com>",
+      "messages": [],
+      "total_additions": 0,
+      "total_deletions": 0,
+      "accepted_lines": 8,
+      "overriden_lines": 0,
+      "token_usage": {
+        "input_tokens": 81622,
+        "output_tokens": 9990,
+        "cache_read_tokens": 1432320,
+        "cache_creation_tokens": null,
+        "total_cost": null
+      }
+    },
+    "6d101732c86b26ff": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "01a17734-00d1-7fb2-bf56-f58f052348ff",
+        "model": "gpt-6.1-sol"
+      },
+      "human_author": "MinLeeV5 <dicklwm@163.com>",
+      "messages": [],
+      "total_additions": 135,
+      "total_deletions": 8,
+      "accepted_lines": 135,
+      "overriden_lines": 0,
+      "messages_url": "https://gitai.gz.cvte.cn/cas/2de5c8e0463b01db98b9a110f3b934e65e32e836bccd83938cc5b031e991016b",
+      "token_usage": {
+        "input_tokens": 80645,
+        "output_tokens": 17806,
+        "cache_read_tokens": 1791104,
+        "cache_creation_tokens": null,
+        "total_cost": null
+      }
+    },
+    "fbd0a7434a0e56c7": {
+      "agent_id": {
+        "tool": "known_human",
+        "id": "known_human_session",
+        "model": "unknown"
+      },
+      "human_author": "MinLeeV5 <dicklwm@163.com>",
+      "messages": [],
+      "total_additions": 2,
+      "total_deletions": 2,
+      "accepted_lines": 0,
+      "overriden_lines": 0
+    }
+  },
+  "humans": {
+    "h_1a7429a562def8": {
+      "author": "MinLeeV5"
+    }
+  }
+}
