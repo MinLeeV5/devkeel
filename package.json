@@ -1,6 +1,6 @@
 {
   "name": "devkeel",
-  "version": "0.12.0",
+  "version": "0.12.1",
   "description": "项目知识框架 CLI — 初始化 .harness/ 配置、AGENTS.md 执行契约与 openspec/ 知识结构",
   "type": "module",
   "bin": {

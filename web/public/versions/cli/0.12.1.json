@@ -1,0 +1,54 @@
+{
+  "versions": [
+    "0.12.1"
+  ],
+  "releasedAt": {
+    "from": "2026-10-26T16:08:09+08:00"
+  },
+  "title": "支持自定义模板来源与两级配置",
+  "archived": false,
+  "groups": [
+    {
+      "type": "feat",
+      "label": "模板来源与配置",
+      "items": [
+        {
+          "name": "自定义模板包与仓库",
+          "description": "`devkeel init` 和 `devkeel update` 支持通过 `--template-package`、`--template-registry` 选择私有模板包与 npm 仓库，认证沿用 npm 配置。"
+        },
+        {
+          "name": "用户级与项目级配置",
+          "description": "模板来源按命令行参数、项目配置、用户配置和 npm 默认值依次解析，成功执行的显式来源保存为项目覆盖，其余项目可继承用户默认来源。"
+        }
+      ]
+    },
+    {
+      "type": "fix",
+      "label": "换源与缓存保护",
+      "items": [
+        {
+          "name": "模板来源保持一致",
+          "description": "初始化、更新、版本查询和更新提示统一读取选定来源，缓存按模板包、仓库和版本隔离，避免复用其他来源的同版本模板。"
+        },
+        {
+          "name": "未完成换源可重试",
+          "description": "`--dry-run` 不保存来源，部分更新或保留组件时不将换源标记为完成，可携带相同来源参数继续重试。"
+        }
+      ]
+    },
+    {
+      "type": "docs",
+      "label": "使用说明",
+      "items": [
+        {
+          "name": "自定义来源安装指南",
+          "description": "安装指南补充私有模板包、用户级默认来源、配置优先级和换源预览的用法。"
+        },
+        {
+          "name": "渐进工作流说明",
+          "description": "首页与分享页更新渐进工作流说明，明确讨论深度可独立于 Direct、Lite、Full 工作流路径调整。"
+        }
+      ]
+    }
+  ]
+}
