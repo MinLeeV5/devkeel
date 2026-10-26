@@ -10,18 +10,31 @@ import {
   compareVersions,
   formatUpdatePrompt,
 } from '../src/lib/update-notifier.js'
+import { writeTemplateSource, templateSourceKey } from '../src/lib/template-source.js'
 import { writeVersions } from '../src/lib/versions.js'
+
+const source = { packageName: '@acme/templates', registry: 'https://npm.acme.test/', configuredRegistry: 'https://npm.acme.test/' }
+const sourceKey = templateSourceKey(source)
 
 describe('update-notifier', () => {
   let projectRoot: string
   let cachePath: string
+  const previousHome = process.env['USERPROFILE']
+  const previousUnixHome = process.env['HOME']
 
   beforeEach(() => {
     projectRoot = fs.mkdtempSync(path.join(os.tmpdir(), 'harness-update-notifier-'))
     cachePath = path.join(projectRoot, 'cache', 'devkeel-update-check.json')
+    process.env['USERPROFILE'] = projectRoot
+    process.env['HOME'] = projectRoot
+    writeTemplateSource(projectRoot, { ...source, projectConfig: { packageName: source.packageName, registry: source.registry } })
   })
 
   afterEach(() => {
+    if (previousHome === undefined) delete process.env['USERPROFILE']
+    else process.env['USERPROFILE'] = previousHome
+    if (previousUnixHome === undefined) delete process.env['HOME']
+    else process.env['HOME'] = previousUnixHome
     fs.rmSync(projectRoot, { recursive: true, force: true })
   })
 
@@ -112,6 +125,38 @@ describe('update-notifier', () => {
   })
 
   describe('checkAndNotify', () => {
+    it('should query the selected source instead of reusing a different source cache', async () => {
+      writeProjectVersion('2.1.0')
+      writeUpdateCache({ sourceKey: 'another-source', lastCheck: Date.now(), latestVersion: '99.0.0' }, cachePath)
+      const script = path.join(projectRoot, 'fake-npm.cjs')
+      const logPath = path.join(projectRoot, 'npm-call.json')
+      fs.writeFileSync(script, [
+        "const fs = require('node:fs')",
+        `fs.writeFileSync(${JSON.stringify(logPath)}, JSON.stringify({ args: process.argv.slice(2), cwd: process.cwd() }))`,
+        'process.stdout.write(JSON.stringify("2.2.0"))',
+      ].join('\n'))
+      const bin = path.join(projectRoot, process.platform === 'win32' ? 'npm.cmd' : 'npm')
+      fs.writeFileSync(bin, process.platform === 'win32'
+        ? `@"${process.execPath}" "${script}" %*\r\n`
+        : `#!/bin/sh\nexec "${process.execPath}" "${script}" "$@"\n`)
+      if (process.platform !== 'win32') fs.chmodSync(bin, 0o755)
+      const originalPath = process.env['PATH']
+      process.env['PATH'] = `${projectRoot}${path.delimiter}${originalPath ?? ''}`
+      try {
+        const prompt = await checkAndNotify(projectRoot, cachePath)
+        expect(prompt).toContain('2.2.0')
+        expect(prompt).not.toContain('99.0.0')
+        expect(readUpdateCache(cachePath)?.sourceKey).toBe(sourceKey)
+        const call = JSON.parse(fs.readFileSync(logPath, 'utf-8'))
+        expect(call.cwd).toBe(projectRoot)
+        expect(call.args).toContain('@acme/templates@latest')
+        expect(call.args).toContain('--@acme:registry=https://npm.acme.test/')
+      } finally {
+        if (originalPath === undefined) delete process.env['PATH']
+        else process.env['PATH'] = originalPath
+      }
+    })
+
     it('should return null without project versions', async () => {
       expect(await checkAndNotify(projectRoot, cachePath)).toBeNull()
       expect(fs.existsSync(cachePath)).toBe(false)
@@ -119,7 +164,7 @@ describe('update-notifier', () => {
 
     it('should return a terminal prompt and leave a fresh cache unchanged on repeated checks', async () => {
       writeProjectVersion('2.1.1-beta.0')
-      writeUpdateCache({ lastCheck: Date.now(), latestVersion: '2.2.0' }, cachePath)
+      writeUpdateCache({ sourceKey, lastCheck: Date.now(), latestVersion: '2.2.0' }, cachePath)
       const cached = fs.readFileSync(cachePath, 'utf-8')
 
       const first = await checkAndNotify(projectRoot, cachePath)
@@ -138,6 +183,7 @@ describe('update-notifier', () => {
         lastCheck: Date.now(),
         latestVersion: '2.2.0',
         notifiedVersion: '2.2.0',
+        sourceKey,
       }))
       expect(await checkAndNotify(projectRoot, cachePath)).toContain('devkeel update')
     })
@@ -151,7 +197,7 @@ describe('update-notifier', () => {
       ['2.2.0', 'not-a-version'],
     ])('should not advertise an upgrade from %s to %s', async (current, latest) => {
       writeProjectVersion(current)
-      writeUpdateCache({ lastCheck: Date.now(), latestVersion: latest }, cachePath)
+      writeUpdateCache({ sourceKey, lastCheck: Date.now(), latestVersion: latest }, cachePath)
       expect(await checkAndNotify(projectRoot, cachePath)).toBeNull()
     })
   })

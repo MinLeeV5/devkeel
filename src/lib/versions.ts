@@ -16,6 +16,7 @@ function readSchemaVersion(schemaName: string, base: string): string | null {
 
 export interface VersionsRecord {
   harness: string
+  templateSource?: string
   skills: Record<string, string>
   agents: Record<string, string>
   rules: Record<string, string>
@@ -43,6 +44,7 @@ export function filterManagedVersions(
   }
   return {
     harness: versions.harness,
+    ...(versions.templateSource ? { templateSource: versions.templateSource } : {}),
     skills: {},
     agents: {},
     rules: {},

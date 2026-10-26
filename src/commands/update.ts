@@ -11,6 +11,7 @@ import {
 } from '../lib/versions.js'
 import { getTemplatesDir, setTemplatesDir, copyDirRecursive, copyTemplateCommands, detectDeprecatedAssets, detectExistingPlatformTargets, removeDeprecatedAssets, readTemplateFile, renderTemplate, updateOpenspecIncremental } from '../lib/templates.js'
 import { ensureTemplatesCache, TemplatesFetchError } from '../lib/templates-cache.js'
+import { hasTemplateSourceChanged, resolveTemplateSource, templateSourceKey, writeTemplateSource, type TemplateSourceOptions } from '../lib/template-source.js'
 import { applyDiscussionSkillMigration, applyLegacyMigrations, assertSchemaTargetsAvailable, assertLegacyMigrationPreflight, detectUpdates, isLegacySchema, isDiscussionSkillMigrationRequired, planLegacyMigrations, recoverDiscussionSkillMigration, resolveUpdatePaths, collectCommitStagePaths, RETIRED_MANAGED_SKILLS, writeVersionsAtomically, type LegacyMigrationPlan, type UpdateItem } from '../lib/update.js'
 import { createLog } from '../lib/log.js'
 import { applyLegacyPlatformIgnorePlan, planLegacyPlatformIgnores } from '../lib/gitignore.js'
@@ -24,7 +25,7 @@ import {
   restoreAgentsMdSlots,
 } from '../lib/agents-md.js'
 
-export interface UpdateOptions {
+export interface UpdateOptions extends TemplateSourceOptions {
   force?: boolean
   dryRun?: boolean
   templateVersion?: string
@@ -214,11 +215,16 @@ export async function runUpdate(options?: UpdateOptions): Promise<void> {
   }
 
   const s = p.spinner()
+  const source = resolveTemplateSource(projectRoot, options)
+  const sourceKey = templateSourceKey(source)
+  const sourceChanged = hasTemplateSourceChanged(versionsBeforeUpdate.templateSource, source)
   try {
     s.start(formatTemplatesFetchMessage(resolvedOptions))
     const { cacheDir, version } = await ensureTemplatesCache({
       version: resolvedOptions.templateVersion,
       beta: resolvedOptions.beta,
+      source,
+      projectRoot,
     })
     setTemplatesDir(cacheDir)
     s.stop(`模板缓存就绪 (${version})`)
@@ -246,7 +252,7 @@ export async function runUpdate(options?: UpdateOptions): Promise<void> {
   if (repoType === 'main') assertLegacyMigrationPreflight(migrationPlan, templatesDir)
   const discussionMigrationRequired = repoType === 'main'
     && isDiscussionSkillMigrationRequired(projectRoot, templatesDir)
-  const updates = detectUpdates(projectRoot, force, templatesDir, builtinVersions)
+  const updates = detectUpdates(projectRoot, force, templatesDir, builtinVersions, sourceChanged)
   const debuggingUpdateRequired = updates.some(update => (
     updateKey(update) === DEBUGGING_UPDATE_KEY
   ))
@@ -273,6 +279,10 @@ export async function runUpdate(options?: UpdateOptions): Promise<void> {
     agentsFrameworkHasChanges,
     profileVersionsHaveChanges,
   )) {
+    if (!dryRun) {
+      writeTemplateSource(projectRoot, source)
+      writeVersionsAtomically(projectRoot, { ...versionsBeforeUpdate, templateSource: sourceKey })
+    }
     log.success('所有组件已是最新版本')
     log.outro('')
     return
@@ -306,6 +316,9 @@ export async function runUpdate(options?: UpdateOptions): Promise<void> {
   }
 
   let updated = 0
+  if (sourceChanged) {
+    writeVersionsAtomically(projectRoot, { ...versionsBeforeUpdate, templateSource: 'pending' })
+  }
   if (updates.some(update => update.category === 'skills')) {
     const skills = syncSkillLinks(projectRoot, skillTargets)
     if (!skills.ok) {
@@ -508,6 +521,13 @@ export async function runUpdate(options?: UpdateOptions): Promise<void> {
   }
 
   const gitignorePath = path.join(projectRoot, '.gitignore')
+  const allComponentsUpdated = updates.every(update => successfulUpdateKeys.has(updateKey(update)))
+  if (allComponentsUpdated && skipped === 0) {
+    writeTemplateSource(projectRoot, source)
+    writeVersionsAtomically(projectRoot, { ...newVersions, templateSource: sourceKey })
+  } else if (sourceChanged) {
+    log.warning('模板来源尚未完整切换，未保存新来源；重试时请继续指定相同来源参数')
+  }
   const gitignoreMatchesPlan = removedIgnores.length > 0
     && fs.existsSync(gitignorePath)
     && fs.readFileSync(gitignorePath, 'utf-8') === gitignorePlan.updatedContent

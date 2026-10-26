@@ -6,6 +6,7 @@ import { Command } from 'commander'
 import { getTemplatesDir, setTemplatesDir } from './lib/templates-dir.js'
 import { ensureTemplatesCache } from './lib/templates-cache.js'
 import { getPublishedHarnessVersion } from './lib/release-channel.js'
+import { readTemplateSource, readUserTemplateSource } from './lib/template-source.js'
 import { runInit } from './commands/init.js'
 import { runDoctor } from './commands/doctor.js'
 import { runUpdate } from './commands/update.js'
@@ -16,13 +17,17 @@ import { interceptOpenspec } from './commands/openspec.js'
 async function showVersion(isBeta = false): Promise<void> {
   const releaseChannel = isBeta ? 'beta' : 'latest'
   const harnessVersion = getPublishedHarnessVersion(releaseChannel, packageJson.version)
+  let fetched = false
   try {
     const { cacheDir } = await ensureTemplatesCache(isBeta ? { beta: true } : undefined)
     setTemplatesDir(cacheDir)
-  } catch { /* 网络不可达时读本地缓存 */ }
+    fetched = true
+  } catch { /* 自定义来源不可达时保持 unknown，默认来源允许源码态回退 */ }
   const pkgPath = path.join(getTemplatesDir(), 'package.json')
   let templatesVersion = 'unknown'
-  if (fs.existsSync(pkgPath)) {
+  let hasCustomSource = false
+  try { hasCustomSource = readTemplateSource() !== null || readUserTemplateSource() !== null } catch { hasCustomSource = true }
+  if ((fetched || !hasCustomSource) && fs.existsSync(pkgPath)) {
     try {
       const pkg = JSON.parse(fs.readFileSync(pkgPath, 'utf-8')) as Record<string, unknown>
       if (typeof pkg['version'] === 'string') templatesVersion = pkg['version']
@@ -60,6 +65,8 @@ program
   .option('--targets <targets>', '目标平台（逗号分隔：claude-code,codex,cursor,copilot,gemini,opencode）')
   .option('-y, --yes', '跳过确认提示，使用默认行为')
   .option('--force', '备份并覆盖冲突的技能入口')
+  .option('--template-package <name>', '模板 npm 包名（可带 @scope）')
+  .option('--template-registry <url>', '模板 npm registry URL（认证沿用 npm 配置）')
   .action((opts) => runInit(opts))
 
 program
@@ -76,6 +83,8 @@ program
   .option('--dry-run', '仅预览')
   .option('--template-version <version>', '指定模板版本')
   .option('--beta', '使用 beta 渠道模板版本')
+  .option('--template-package <name>', '模板 npm 包名（可带 @scope）')
+  .option('--template-registry <url>', '模板 npm registry URL（认证沿用 npm 配置）')
   .action((templateVersion, opts) => runUpdate({
     ...opts,
     positionalTemplateVersion: templateVersion,

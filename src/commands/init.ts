@@ -11,6 +11,7 @@ import { detectEnvironment, detectRepositoryType, detectSubmodules } from '../li
 import { removeLegacyPlatformIgnores } from '../lib/gitignore.js'
 import { copyTemplateSkills, copyTemplateAgents, copyTemplateRules, copyTemplateCommands, createPlatformLinks, copyOpenspecTemplate, readTemplateFile, renderTemplate, ensureGitignore, detectDeprecatedAssets, removeDeprecatedAssets, updateOpenspecIncremental, writeSmartFile, getTemplatesDir, setTemplatesDir, copyDirRecursive, detectExistingPlatformTargets } from '../lib/templates.js'
 import { ensureTemplatesCache, TemplatesFetchError } from '../lib/templates-cache.js'
+import { hasTemplateSourceChanged, resolveTemplateSource, templateSourceKey, writeTemplateSource, type TemplateSourceOptions } from '../lib/template-source.js'
 import { applyDiscussionSkillMigration, applyLegacyMigrations, assertSchemaTargetsAvailable, planLegacyMigrations, writeVersionsAtomically } from '../lib/update.js'
 import { createLog } from '../lib/log.js'
 import { syncSkillLinks } from '../lib/skill-distribution.js'
@@ -21,7 +22,7 @@ import {
   mergeAgentsMdContent,
 } from '../lib/agents-md.js'
 
-export interface InitOptions {
+export interface InitOptions extends TemplateSourceOptions {
   name?: string
   targets?: string
   yes?: boolean
@@ -79,6 +80,8 @@ export async function runInit(opts?: InitOptions): Promise<void> {
   const projectRoot = process.cwd()
   const env = detectEnvironment(projectRoot)
   const repoType = detectRepositoryType(projectRoot)
+  const source = resolveTemplateSource(projectRoot, opts)
+  const sourceKey = templateSourceKey(source)
 
   const log = createLog()
   log.intro('DevKeel v2 项目初始化')
@@ -86,7 +89,7 @@ export async function runInit(opts?: InitOptions): Promise<void> {
   const s = p.spinner()
   s.start('正在拉取最新模板...')
   try {
-    const { cacheDir } = await ensureTemplatesCache()
+    const { cacheDir } = await ensureTemplatesCache({ source, projectRoot })
     setTemplatesDir(cacheDir)
     s.stop('模板缓存就绪')
   } catch (e) {
@@ -142,6 +145,10 @@ export async function runInit(opts?: InitOptions): Promise<void> {
   }
 
   const initialVersions = readVersions(projectRoot)
+  const sourceChanged = hasTemplateSourceChanged(initialVersions?.templateSource, source)
+  if (initialVersions && sourceChanged) {
+    writeVersionsAtomically(projectRoot, { ...initialVersions, templateSource: 'pending' })
+  }
   if (repoType === 'main' && initialVersions) {
     const discussionResult = applyDiscussionSkillMigration(projectRoot, getTemplatesDir())
     if (discussionResult.changedPaths.length > 0 || discussionResult.recovered) {
@@ -151,7 +158,7 @@ export async function runInit(opts?: InitOptions): Promise<void> {
   const existingVersions = readVersions(projectRoot)
   const builtinVersions = getBuiltinVersions()
   const versions = filterManagedVersions(builtinVersions, repoType)
-  const outdated = computeOutdatedCategories(existingVersions, versions)
+  const outdated = computeOutdatedCategories(sourceChanged ? null : existingVersions, versions)
   let debuggingSkillInstalled = false
 
   const templateVars = {
@@ -170,7 +177,7 @@ export async function runInit(opts?: InitOptions): Promise<void> {
     const skillsTarget = path.join(projectRoot, '.harness', 'skills')
     fs.mkdirSync(skillsTarget, { recursive: true })
     for (const skillName of outdated.skills) {
-      if (skillName === 'brainstorming') continue
+      if (skillName === 'brainstorming' && !sourceChanged) continue
       const src = path.join(templatesDir, 'skills', skillName)
       if (fs.existsSync(src)) {
         copyDirRecursive(src, path.join(skillsTarget, skillName))
@@ -214,7 +221,7 @@ export async function runInit(opts?: InitOptions): Promise<void> {
   if (repoType === 'main') {
     copyTemplateCommands(
       path.join(projectRoot, '.harness', 'commands'),
-      existingVersions ? ['opsx/explore.md'] : [],
+      existingVersions && !sourceChanged ? ['opsx/explore.md'] : [],
     )
     log.success('.harness/commands/')
   }
@@ -320,6 +327,10 @@ export async function runInit(opts?: InitOptions): Promise<void> {
           )
           if (agentsResult === 'preserved') {
             log.info(`${subPath}/AGENTS.md 已按用户选择保留`)
+            writeVersionsAtomically(subFull, {
+              ...filterManagedVersions(builtinVersions, 'domain'),
+              templateSource: 'pending',
+            })
           }
 
           if (targetList.includes('claude-code') || targetList.includes('cursor')) {
@@ -332,6 +343,13 @@ export async function runInit(opts?: InitOptions): Promise<void> {
 
           removeLegacyPlatformIgnores(subFull)
           createPlatformLinks(subFull, targetList)
+          if (agentsResult !== 'preserved') {
+            writeTemplateSource(subFull, source)
+            writeVersionsAtomically(subFull, {
+              ...filterManagedVersions(builtinVersions, 'domain'),
+              templateSource: sourceKey,
+            })
+          }
           log.success(`${subPath}/ 配置 + 平台链接`)
         }
       }
@@ -400,7 +418,14 @@ export async function runInit(opts?: InitOptions): Promise<void> {
     log.success('package.json')
   }
 
-  writeVersionsAtomically(projectRoot, versions)
+  if (sourceChanged && agentsResult === 'preserved') {
+    writeVersionsAtomically(projectRoot, { ...versions, templateSource: 'pending' })
+    log.warning('AGENTS.md 已保留，模板来源尚未完整切换；未保存新来源，请带相同来源参数重试并确认合并')
+  } else {
+    writeVersionsAtomically(projectRoot, { ...versions, templateSource: sourceChanged ? 'pending' : sourceKey })
+    writeTemplateSource(projectRoot, source)
+    if (sourceChanged) writeVersionsAtomically(projectRoot, { ...versions, templateSource: sourceKey })
+  }
   log.success('.harness/versions.yml')
 
   const existingDocs = ['wiki', 'docs'].filter(d => fs.existsSync(path.join(projectRoot, d)))

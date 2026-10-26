@@ -51,6 +51,8 @@ vi.mock('@clack/prompts', () => ({
 
 describe.sequential('init AGENTS templates', () => {
   const originalCwd = process.cwd()
+  const originalHome = process.env['USERPROFILE']
+  const originalUnixHome = process.env['HOME']
   let projectDir: string
 
   beforeEach(() => {
@@ -61,10 +63,16 @@ describe.sequential('init AGENTS templates', () => {
     vi.mocked(prompts.confirm).mockResolvedValue(false)
     vi.mocked(prompts.multiselect).mockReset()
     vi.mocked(prompts.multiselect).mockResolvedValue([])
+    process.env['USERPROFILE'] = projectDir
+    process.env['HOME'] = projectDir
     process.chdir(projectDir)
   })
 
   afterEach(() => {
+    if (originalHome === undefined) delete process.env['USERPROFILE']
+    else process.env['USERPROFILE'] = originalHome
+    if (originalUnixHome === undefined) delete process.env['HOME']
+    else process.env['HOME'] = originalUnixHome
     process.chdir(originalCwd)
     fs.rmSync(projectDir, { recursive: true, force: true })
   })

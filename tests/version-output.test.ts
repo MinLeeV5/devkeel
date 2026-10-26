@@ -4,6 +4,9 @@ import fs from 'node:fs'
 import os from 'node:os'
 import path from 'node:path'
 import { create } from 'tar'
+import { templateSourceKey } from '../src/lib/template-source.js'
+
+const sourceKey = templateSourceKey({ packageName: 'devkeel-templates', registry: 'https://registry.npmjs.org/' })
 
 const HARNESS_BIN = path.resolve('bin/devkeel.js')
 const harnessPackage = JSON.parse(fs.readFileSync(path.resolve('package.json'), 'utf-8')) as { version: string }
@@ -34,6 +37,7 @@ describe('version output', () => {
       "const path = require('node:path')",
       'const args = process.argv.slice(2)',
       "if (process.env['FAKE_NPM_FAIL'] === '1') process.exit(1)",
+      "if (args[0] === 'config') { process.stdout.write('https://registry.npmjs.org/'); process.exit(0) }",
       "if (args[0] === 'view' && args[1] === 'devkeel@beta' && args[2] === 'version') {",
       "  process.stdout.write(JSON.stringify(process.env['FAKE_BETA_HARNESS_VERSION']) + '\\n')",
       '  process.exit(0)',
@@ -42,17 +46,17 @@ describe('version output', () => {
       "  process.stdout.write(JSON.stringify(process.env['FAKE_LATEST_HARNESS_VERSION']) + '\\n')",
       '  process.exit(0)',
       '}',
-      "if (args[0] === 'view' && args[1] === 'devkeel-templates@beta' && args[2] === 'version') {",
+      "if (args[0] === 'view' && args[1] === (process.env['FAKE_TEMPLATE_PACKAGE'] || 'devkeel-templates') + '@beta' && args[2] === 'version') {",
       "  process.stdout.write(JSON.stringify(process.env['FAKE_BETA_TEMPLATE_VERSION']) + '\\n')",
       '  process.exit(0)',
       '}',
-      "if (args[0] === 'view' && args[1] === 'devkeel-templates@latest' && args[2] === 'version') {",
+      "if (args[0] === 'view' && args[1] === (process.env['FAKE_TEMPLATE_PACKAGE'] || 'devkeel-templates') + '@latest' && args[2] === 'version') {",
       "  process.stdout.write(JSON.stringify(process.env['FAKE_LATEST_TEMPLATE_VERSION']) + '\\n')",
       '  process.exit(0)',
       '}',
       "if (args[0] === 'pack' && args[1] === 'devkeel-templates@1.4.0') {",
       "  const filename = 'devkeel-templates-1.4.0.tgz'",
-      "  fs.copyFileSync(process.env['FAKE_TEMPLATE_TARBALL'], path.join(process.cwd(), filename))",
+      "  fs.copyFileSync(process.env['FAKE_TEMPLATE_TARBALL'], path.join(args[args.indexOf('--pack-destination') + 1], filename))",
       "  process.stdout.write(filename + '\\n')",
       '  process.exit(0)',
       '}',
@@ -72,10 +76,11 @@ describe('version output', () => {
     fs.rmSync(tmpDir, { recursive: true, force: true })
   })
 
-  function prepareTemplatesCache(version: string): void {
-    const cacheDir = path.join(tmpDir, '.harness', 'cache', 'devkeel-templates', version)
+  function prepareTemplatesCache(version: string, packageName = 'devkeel-templates', registry = 'https://registry.npmjs.org/'): void {
+    const sourceKey = templateSourceKey({ packageName, registry })
+    const cacheDir = path.join(tmpDir, '.harness', 'cache', 'devkeel-templates', sourceKey, version)
     fs.mkdirSync(cacheDir, { recursive: true })
-    fs.writeFileSync(path.join(cacheDir, 'package.json'), JSON.stringify({ name: 'devkeel-templates', version }), 'utf-8')
+    fs.writeFileSync(path.join(cacheDir, 'package.json'), JSON.stringify({ name: packageName, version }), 'utf-8')
     fs.writeFileSync(path.join(cacheDir, 'versions-yml.yml'), `harness: "${version}"\n`, 'utf-8')
   }
 
@@ -134,9 +139,28 @@ describe('version output', () => {
       '.harness',
       'cache',
       'devkeel-templates',
+      sourceKey,
       '1.4.0',
       'package.json',
     ))).toBe(true)
+  })
+
+  it('should use the user template source and avoid public template fallback on failure', () => {
+    const source = { packageName: '@acme/templates', registry: 'https://npm.acme.test/' }
+    const config = path.join(tmpDir, '.harness', 'template-source.json')
+    fs.mkdirSync(path.dirname(config), { recursive: true })
+    fs.writeFileSync(config, JSON.stringify(source))
+    prepareTemplatesCache('3.0.0', source.packageName, source.registry)
+    const result = runVersion(['-V'], {
+      FAKE_TEMPLATE_PACKAGE: source.packageName,
+      FAKE_LATEST_HARNESS_VERSION: '0.9.0',
+      FAKE_LATEST_TEMPLATE_VERSION: '3.0.0',
+    })
+    expect(result.status).toBe(0)
+    expect(result.stdout).toBe('devkeel 0.9.0\ntemplates 3.0.0\n')
+    const failed = runVersion(['-V'], { FAKE_NPM_FAIL: '1' })
+    expect(failed.status).toBe(0)
+    expect(failed.stdout).toBe(`devkeel ${harnessPackage.version}\ntemplates unknown\n`)
   })
 
   it('should exit successfully with local version output when registry queries fail', () => {

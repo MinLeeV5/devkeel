@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { __test__ } from '../src/lib/npm-command.js'
+import { __test__, execNpm } from '../src/lib/npm-command.js'
 
 const { resolveNpmInvocation } = __test__!
 
@@ -56,5 +56,9 @@ describe('npm-command', () => {
         )
       }
     })
+  })
+
+  it('exposes an asynchronous npm runner using the same platform invocation', async () => {
+    await expect(execNpm(['--version'])).resolves.toMatch(/^\d+\.\d+/)
   })
 })

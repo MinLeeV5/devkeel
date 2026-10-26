@@ -1213,6 +1213,7 @@ export function detectUpdates(
   force = false,
   templatesDir = getTemplatesDir(),
   builtinVersions = getBuiltinVersions(templatesDir),
+  sourceChanged = false,
 ): UpdateItem[] {
   const current = readVersions(projectRoot)
   if (!current) return []
@@ -1227,8 +1228,10 @@ export function detectUpdates(
     const builtinMap = (builtin[category] ?? {}) as Record<string, string>
     for (const [name, version] of Object.entries(builtinMap)) {
       const currentVersion = currentMap[name]
-      if (force || !currentVersion || currentVersion !== version) {
-        const from = force && currentVersion === version
+      if (sourceChanged || force || !currentVersion || currentVersion !== version) {
+        const from = sourceChanged && currentVersion === version
+          ? `${currentVersion} (source changed)`
+          : force && currentVersion === version
           ? `${currentVersion} (force)`
           : currentVersion ?? '(missing)'
         updates.push({ category, name, from, to: version })
@@ -1257,8 +1260,10 @@ export function detectUpdates(
     })
   }
 
-  if (force || current.harness !== builtin.harness) {
-    const from = force && current.harness === builtin.harness
+  if (sourceChanged || force || current.harness !== builtin.harness) {
+    const from = sourceChanged && current.harness === builtin.harness
+      ? `${current.harness} (source changed)`
+      : force && current.harness === builtin.harness
       ? `${current.harness} (force)`
       : current.harness
     updates.push({ category: 'core', name: 'harness', from, to: builtin.harness })
