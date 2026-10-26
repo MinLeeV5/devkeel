@@ -2,9 +2,10 @@ import fs from 'node:fs'
 import path from 'node:path'
 import os from 'node:os'
 import { extract } from 'tar'
-import { execNpmSync } from './npm-command.js'
+import { execNpm, execNpmSync } from './npm-command.js'
+import { resolveTemplateSource, templateRegistryArgs, templateSourceKey, type TemplateSource } from './template-source.js'
 
-const PACKAGE_NAME = 'devkeel-templates'
+const DEFAULT_PACKAGE_NAME = 'devkeel-templates'
 const CACHE_ROOT = path.join(os.homedir(), '.harness', 'cache', 'devkeel-templates')
 const META_FILE = 'meta.json'
 const SEMVER_RE = /^(0|[1-9]\d*)\.(0|[1-9]\d*)\.(0|[1-9]\d*)(?:-((?:0|[1-9]\d*|[0-9A-Za-z-]*[A-Za-z-][0-9A-Za-z-]*)(?:\.(?:0|[1-9]\d*|[0-9A-Za-z-]*[A-Za-z-][0-9A-Za-z-]*))*))?(?:\+([0-9A-Za-z-]+(?:\.[0-9A-Za-z-]+)*))?$/
@@ -17,23 +18,25 @@ export interface TemplatesCacheInfo {
 export interface EnsureTemplatesCacheOptions {
   version?: string
   beta?: boolean
+  source?: TemplateSource
+  projectRoot?: string
 }
 
 export class TemplatesFetchError extends Error {
   readonly diagnostic: string
 
-  constructor(originalError: string) {
-    super(`无法拉取 ${PACKAGE_NAME}：\n  ${originalError}`)
+  constructor(originalError: string, source: TemplateSource = { packageName: DEFAULT_PACKAGE_NAME, registry: 'https://registry.npmjs.org/' }) {
+    super(`无法拉取 ${source.packageName}（${source.registry}）：\n  ${originalError}`)
     this.name = 'TemplatesFetchError'
     this.diagnostic = [
       '请确认：',
       '  1. npm 已安装且在 PATH 中：',
       '     npm --version',
-      '  2. npm registry 配置可访问公共 npm 包：',
+      '  2. npm registry 配置可访问：',
       '     npm config get registry',
-      '  3. 当前网络可访问 registry：',
-      `     curl -I https://registry.npmjs.org/${encodeURIComponent(PACKAGE_NAME)}`,
-      '  4. 模板包已发布到上述 registry（维护者首次发版后才可用）',
+      `     包：${source.packageName}`,
+      `     Registry：${source.registry}`,
+      '  3. 当前网络可访问所选 registry，且模板包已发布。',
     ].join('\n')
   }
 }
@@ -43,166 +46,125 @@ interface CacheMeta {
   fetchedAt: string
 }
 
-function npmViewVersion(tag = 'latest'): string {
+function npmViewVersion(source: TemplateSource, projectRoot: string, tag = 'latest'): string {
   let stdout: string
   try {
     stdout = execNpmSync(
-      ['view', `${PACKAGE_NAME}@${tag}`, 'version', '--json'],
-      { encoding: 'utf-8', timeout: 30_000, stdio: ['pipe', 'pipe', 'pipe'] },
+      ['view', `${source.packageName}@${tag}`, 'version', '--json', ...templateRegistryArgs(source)],
+      { cwd: projectRoot, encoding: 'utf-8', timeout: 30_000, stdio: ['pipe', 'pipe', 'pipe'] },
     )
-  } catch (e) {
-    const msg = e instanceof Error ? e.message : String(e)
-    throw new TemplatesFetchError(msg)
+  } catch {
+    throw new TemplatesFetchError('npm view 查询失败。', source)
   }
-
   try {
     const version = JSON.parse(stdout)
-    if (typeof version !== 'string') {
-      throw new TemplatesFetchError(`npm view 输出格式异常：${stdout.slice(0, 200)}`)
-    }
+    if (typeof version !== 'string') throw new Error('invalid version type')
     return version
-  } catch (e) {
-    if (e instanceof TemplatesFetchError) throw e
-    throw new TemplatesFetchError(`npm view JSON 解析失败：${stdout.slice(0, 200)}`)
+  } catch {
+    throw new TemplatesFetchError('npm view 返回了无效版本信息。', source)
   }
 }
 
-function assertValidTemplateVersion(version: string): string {
-  if (!SEMVER_RE.test(version)) {
-    throw new TemplatesFetchError(`版本号格式异常：${version}`)
-  }
+function assertValidTemplateVersion(version: string, source?: TemplateSource): string {
+  if (!SEMVER_RE.test(version)) throw new TemplatesFetchError(`版本号格式异常：${version}`, source)
   return version
 }
 
 function resolveRequestedTemplatesVersion(
   options: EnsureTemplatesCacheOptions = {},
-  stableVersionResolver: () => string = npmViewVersion,
-  betaVersionResolver: () => string = () => npmViewVersion('beta'),
+  stableVersionResolver?: () => string,
+  betaVersionResolver?: () => string,
 ): string {
+  const projectRoot = options.projectRoot ?? process.cwd()
+  const source = options.source ?? ((stableVersionResolver && betaVersionResolver)
+    ? undefined
+    : resolveTemplateSource(projectRoot))
+  const stable = stableVersionResolver ?? (() => npmViewVersion(source!, projectRoot))
+  const beta = betaVersionResolver ?? (() => npmViewVersion(source!, projectRoot, 'beta'))
   const requestedVersion = options.version?.trim()
-  if (requestedVersion && options.beta) {
-    throw new TemplatesFetchError('不能同时指定模板版本和 --beta')
-  }
-
-  if (requestedVersion) {
-    return assertValidTemplateVersion(requestedVersion)
-  }
-
-  if (options.beta) {
-    return assertValidTemplateVersion(betaVersionResolver())
-  }
-
-  return assertValidTemplateVersion(stableVersionResolver())
+  if (requestedVersion && options.beta) throw new TemplatesFetchError('不能同时指定模板版本和 --beta', source)
+  if (requestedVersion) return assertValidTemplateVersion(requestedVersion, source)
+  if (options.beta) return assertValidTemplateVersion(beta(), source)
+  return assertValidTemplateVersion(stable(), source)
 }
 
 function readMeta(cacheRoot: string = CACHE_ROOT): CacheMeta | null {
-  const metaPath = path.join(cacheRoot, META_FILE)
-  if (!fs.existsSync(metaPath)) return null
   try {
-    const content = fs.readFileSync(metaPath, 'utf-8')
-    return JSON.parse(content) as CacheMeta
-  } catch {
-    return null
-  }
+    return JSON.parse(fs.readFileSync(path.join(cacheRoot, META_FILE), 'utf-8')) as CacheMeta
+  } catch { return null }
 }
 
 function writeMeta(meta: CacheMeta, cacheRoot: string = CACHE_ROOT): void {
   fs.mkdirSync(cacheRoot, { recursive: true })
-  const metaPath = path.join(cacheRoot, META_FILE)
-  fs.writeFileSync(metaPath, JSON.stringify(meta, null, 2), 'utf-8')
+  fs.writeFileSync(path.join(cacheRoot, META_FILE), JSON.stringify(meta, null, 2), 'utf-8')
 }
 
-function isUsableCacheDir(cacheDir: string, version: string): boolean {
-  if (!fs.existsSync(cacheDir)) return false
-  const packagePath = path.join(cacheDir, 'package.json')
-  const versionsPath = path.join(cacheDir, 'versions-yml.yml')
-  if (!fs.existsSync(packagePath) || !fs.existsSync(versionsPath)) return false
+function isUsableCacheDir(cacheDir: string, version: string, packageName = DEFAULT_PACKAGE_NAME): boolean {
   try {
-    const pkg = JSON.parse(fs.readFileSync(packagePath, 'utf-8')) as Record<string, unknown>
-    return pkg['name'] === PACKAGE_NAME && pkg['version'] === version
-  } catch {
-    return false
-  }
+    const pkg = JSON.parse(fs.readFileSync(path.join(cacheDir, 'package.json'), 'utf-8')) as Record<string, unknown>
+    return pkg['name'] === packageName && pkg['version'] === version && fs.statSync(path.join(cacheDir, 'versions-yml.yml')).isFile()
+  } catch { return false }
 }
 
-function npmPack(version: string, targetDir: string): string {
-  if (!SEMVER_RE.test(version)) {
-    throw new TemplatesFetchError(`版本号格式异常：${version}`)
-  }
+async function npmPack(source: TemplateSource, version: string, targetDir: string, projectRoot: string): Promise<string> {
+  assertValidTemplateVersion(version, source)
   fs.mkdirSync(targetDir, { recursive: true })
-  let stdout: string
   try {
-    stdout = execNpmSync(
-      ['pack', `${PACKAGE_NAME}@${version}`],
-      {
-        cwd: targetDir,
-        encoding: 'utf-8',
-        timeout: 60_000,
-        stdio: ['pipe', 'pipe', 'pipe'],
-      },
+    const stdout = await execNpm(
+      ['pack', `${source.packageName}@${version}`, '--pack-destination', targetDir, '--ignore-scripts', ...templateRegistryArgs(source)],
+      { cwd: projectRoot, encoding: 'utf-8', timeout: 60_000, maxBuffer: 1024 * 1024 },
     )
-  } catch (e) {
-    const msg = e instanceof Error ? e.message : String(e)
-    throw new TemplatesFetchError(`npm pack 下载失败：${msg}`)
+    const filename = stdout.trim().split(/\r?\n/).pop()
+    if (!filename) throw new Error('no pack filename')
+    const tarball = path.resolve(targetDir, filename)
+    if (!tarball.startsWith(path.resolve(targetDir) + path.sep) || !fs.existsSync(tarball)) throw new Error('invalid pack path')
+    return tarball
+  } catch {
+    throw new TemplatesFetchError('npm pack 下载失败。', source)
   }
-
-  const filename = stdout.trim().split('\n').pop()
-  if (!filename) {
-    throw new TemplatesFetchError('npm pack 未返回文件名')
-  }
-  return path.join(targetDir, filename)
 }
 
 async function extractTarball(tarballPath: string, targetDir: string): Promise<void> {
   const tmpDir = targetDir + '.tmp'
-  if (fs.existsSync(tmpDir)) {
-    fs.rmSync(tmpDir, { recursive: true, force: true })
-  }
+  if (fs.existsSync(tmpDir)) fs.rmSync(tmpDir, { recursive: true, force: true })
   fs.mkdirSync(tmpDir, { recursive: true })
-
-  await extract({
-    file: tarballPath,
-    cwd: tmpDir,
-    strip: 1,
-  })
-
-  if (fs.existsSync(targetDir)) {
-    fs.rmSync(targetDir, { recursive: true, force: true })
+  try {
+    await extract({ file: tarballPath, cwd: tmpDir, strip: 1 })
+    if (fs.existsSync(targetDir)) fs.rmSync(targetDir, { recursive: true, force: true })
+    fs.renameSync(tmpDir, targetDir)
+  } catch (error) {
+    fs.rmSync(tmpDir, { recursive: true, force: true })
+    throw error
   }
-  fs.renameSync(tmpDir, targetDir)
 }
 
-export async function ensureTemplatesCache(options?: EnsureTemplatesCacheOptions): Promise<TemplatesCacheInfo> {
-  const version = resolveRequestedTemplatesVersion(options)
-
-  const versionDir = path.join(CACHE_ROOT, version)
-
-  if (isUsableCacheDir(versionDir, version)) {
-    writeMeta({ version, fetchedAt: new Date().toISOString() })
+export async function ensureTemplatesCache(options: EnsureTemplatesCacheOptions = {}): Promise<TemplatesCacheInfo> {
+  const projectRoot = path.resolve(options.projectRoot ?? process.cwd())
+  const source = options.source ?? resolveTemplateSource(projectRoot)
+  const version = resolveRequestedTemplatesVersion({ ...options, source, projectRoot })
+  const sourceRoot = path.join(CACHE_ROOT, templateSourceKey(source))
+  const versionDir = path.join(sourceRoot, version)
+  if (isUsableCacheDir(versionDir, version, source.packageName)) {
+    writeMeta({ version, fetchedAt: new Date().toISOString() }, sourceRoot)
     return { cacheDir: versionDir, version }
   }
-  if (fs.existsSync(versionDir)) {
-    fs.rmSync(versionDir, { recursive: true, force: true })
-  }
-
+  if (fs.existsSync(versionDir)) fs.rmSync(versionDir, { recursive: true, force: true })
   const downloadDir = fs.mkdtempSync(path.join(os.tmpdir(), 'harness-tpl-'))
   try {
-    const tarballPath = npmPack(version, downloadDir)
+    const tarballPath = await npmPack(source, version, downloadDir, projectRoot)
     await extractTarball(tarballPath, versionDir)
+    if (!isUsableCacheDir(versionDir, version, source.packageName)) {
+      fs.rmSync(versionDir, { recursive: true, force: true })
+      throw new TemplatesFetchError('下载的模板包名称、版本或 versions-yml.yml 不匹配。', source)
+    }
   } finally {
     fs.rmSync(downloadDir, { recursive: true, force: true })
   }
-
-  writeMeta({ version, fetchedAt: new Date().toISOString() })
-
+  writeMeta({ version, fetchedAt: new Date().toISOString() }, sourceRoot)
   return { cacheDir: versionDir, version }
 }
 
 export const __test__ = process.env['VITEST'] ? {
-  readMeta,
-  writeMeta,
-  extractTarball,
-  SEMVER_RE,
-  isUsableCacheDir,
+  readMeta, writeMeta, extractTarball, SEMVER_RE, isUsableCacheDir,
   resolveRequestedTemplatesVersion,
 } : undefined

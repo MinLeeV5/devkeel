@@ -7,7 +7,7 @@ description: >-
   触发词：domain-init、领域初始化、生成领域规范、领域扫描
 metadata:
   author: "devkeel"
-  version: "2.0.2"
+  version: "2.1.0"
 ---
 
 # Domain Init — 项目领域能力生成器
@@ -31,6 +31,7 @@ metadata:
 - `references/project-index.md` — 参考项目索引（GitHub 地址 + 参考内容）
 - `references/output-formats.md` — 产出格式规范 + 质量标准
 - `references/domain-matrix.md` — 领域适用性矩阵（8 大领域 × 23 维度）
+- `references/architecture-knowledge.md` — 选中 K1，或增强项涉及架构知识时，读取扫描与验收要求
 
 ## 何时使用
 
@@ -101,6 +102,7 @@ Phase 4: 收尾            → 配置更新 + 链接检查 + 生成报告
 
 | ID | 维度 | 候选产出 | subAgent 职责 |
 |----|------|------|--------------|
+| K1 | 架构知识 | docs | 按 `references/architecture-knowledge.md` 扫描结构、组件归属、通信与关键流程 |
 | R1 | 编码规范 | rule / docs | 扫描代码风格、格式化配置、lint 规则、导入习惯 |
 | R4 | 测试策略 | rule / docs | 扫描测试框架、覆盖模式、测试文件组织、mock 策略 |
 | R5 | 错误处理 | rule / docs | 扫描异常模式、日志使用、错误边界、重试策略 |
@@ -110,6 +112,8 @@ Phase 4: 收尾            → 配置更新 + 链接检查 + 生成报告
 | R17 | Git 工作流 | rule / docs | 扫描分支策略、commit 消息格式、PR/MR 流程 |
 | R20 | 编辑纪律 | rule / docs | 基于 surgical changes 原则：只改相关代码 |
 | A1 | 领域 Code Reviewer | agent | 基于以上扫描结果生成专属审查维度和输出规则 |
+
+K1 面向所有领域，按实际代码触点裁剪；是否生成和调查深度仍由下述范围确认决定。
 
 ### 2.2 用户选择与优先级确认
 
@@ -246,7 +250,7 @@ node .harness/skills/domain-init/scripts/sync-submodule-skills.mjs --prune    # 
 
 ### 4.4 生成报告
 
-输出本次生成的完整清单（类型、文件、状态、参考项目），标记新增 vs 增强，建议后续完善方向，提醒用户 review 后 commit。
+输出本次生成的完整清单（类型、文件、简述、状态、参考项目），标记新增 vs 增强，列出待确认事项、未覆盖范围与未验证行为，建议后续完善方向，并提醒用户 review 后 commit。
 
 ### 4.5 更新文档与 AGENTS 入口
 
@@ -258,7 +262,7 @@ node .harness/skills/domain-init/scripts/sync-submodule-skills.mjs --prune    # 
 3. 更新 AGENTS 的文档链接与读取条件，规则和能力通过最小触发矩阵发现；不要求全量读取 docs。
 4. 填充完成后删除该槽位成对的 `<!-- harness:user:... -->` / `<!-- /harness:user:... -->`
    边界注释与已用完的占位提示，保留正文及相邻框架内容。未填槽位保留占位；已有正文不重加标记。
-5. 核对相对链接、规则触发范围和事实来源。后续实施改变已验证的项目事实时，同步相关文档。
+5. 按 `references/output-formats.md` 的质量标准核对产物及规则触发范围。后续实施改变已验证的项目事实时，同步相关文档。
 
 | 用户槽位 | 内容 |
 |----------|------|

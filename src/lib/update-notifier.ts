@@ -1,12 +1,11 @@
 import fs from 'node:fs'
 import path from 'node:path'
 import os from 'node:os'
-import { execFile } from 'node:child_process'
 import { gt, valid } from 'semver'
 import { readVersions } from './versions.js'
+import { execNpm } from './npm-command.js'
+import { resolveTemplateSource, templateRegistryArgs, templateSourceKey, type TemplateSource } from './template-source.js'
 
-const PACKAGE_NAME = 'devkeel-templates'
-const REGISTRY = 'https://registry.npmjs.org/'
 const CACHE_TTL = 3 * 24 * 60 * 60 * 1000
 const FETCH_TIMEOUT = 3000
 
@@ -17,6 +16,7 @@ function getCachePath(): string {
 export interface UpdateCache {
   lastCheck: number
   latestVersion: string
+  sourceKey?: string
 }
 
 export function readUpdateCache(cachePath = getCachePath()): UpdateCache | null {
@@ -30,6 +30,7 @@ export function readUpdateCache(cachePath = getCachePath()): UpdateCache | null 
     return {
       lastCheck: parsed['lastCheck'],
       latestVersion: parsed['latestVersion'],
+      ...(typeof parsed['sourceKey'] === 'string' ? { sourceKey: parsed['sourceKey'] } : {}),
     }
   } catch {
     return null
@@ -51,20 +52,18 @@ export function compareVersions(current: string, latest: string): boolean {
   return currentVersion !== null && latestVersion !== null && gt(latestVersion, currentVersion)
 }
 
-export function fetchLatestVersion(): Promise<string | null> {
-  return new Promise((resolve) => {
-    execFile('npm', ['view', `${PACKAGE_NAME}@latest`, 'version', `--registry=${REGISTRY}`, '--json'],
-      { timeout: FETCH_TIMEOUT },
-      (error, stdout) => {
-        if (error) { resolve(null); return }
-        try {
-          const version = JSON.parse(stdout)
-          if (typeof version === 'string' && version.length > 0) { resolve(version); return }
-        } catch { /* fall through */ }
-        resolve(null)
-      },
+export async function fetchLatestVersion(
+  source: TemplateSource,
+  projectRoot = process.cwd(),
+): Promise<string | null> {
+  try {
+    const stdout = await execNpm(
+      ['view', `${source.packageName}@latest`, 'version', ...templateRegistryArgs(source), '--json'],
+      { cwd: projectRoot, timeout: FETCH_TIMEOUT },
     )
-  })
+    const version: unknown = JSON.parse(stdout)
+    return typeof version === 'string' && valid(version) ? version : null
+  } catch { return null }
 }
 
 export function formatUpdatePrompt(from: string, to: string): string {
@@ -78,29 +77,34 @@ export function formatUpdatePrompt(from: string, to: string): string {
 
 export async function checkAndNotify(
   projectRoot = process.cwd(),
-  cachePath = getCachePath(),
+  cachePath?: string,
 ): Promise<string | null> {
   try {
     const versions = readVersions(projectRoot)
     if (!versions) return null
 
+    const source = resolveTemplateSource(projectRoot)
+    const sourceKey = templateSourceKey(source)
+    const sourceCachePath = cachePath ?? path.join(path.dirname(getCachePath()), `devkeel-update-check-${sourceKey}.json`)
+
     const currentVersion = versions.harness
-    const cache = readUpdateCache(cachePath)
+    const cache = readUpdateCache(sourceCachePath)
 
     let latestVersion: string | null = null
 
-    if (cache && !isCacheExpired(cache)) {
+    if (cache?.sourceKey === sourceKey && !isCacheExpired(cache)) {
       latestVersion = cache.latestVersion
     }
 
     if (!latestVersion) {
-      latestVersion = await fetchLatestVersion()
+      latestVersion = await fetchLatestVersion(source, projectRoot)
       if (!latestVersion) return null
 
       writeUpdateCache({
         lastCheck: Date.now(),
         latestVersion,
-      }, cachePath)
+        sourceKey,
+      }, sourceCachePath)
     }
 
     if (!compareVersions(currentVersion, latestVersion)) return null

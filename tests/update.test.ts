@@ -6,6 +6,7 @@ import crypto from 'node:crypto'
 import { execFileSync } from 'node:child_process'
 import YAML from 'yaml'
 import * as prompts from '@clack/prompts'
+import { resolveTemplateSource, templateSourceKey } from '../src/lib/template-source.js'
 import { detectDeprecatedAssets, removeDeprecatedAssets, copyTemplateSkills, copyTemplateAgents, copyTemplateRules, copyTemplateCommands, copyOpenspecTemplate } from '../src/lib/templates.js'
 import { filterManagedVersions, getBuiltinVersions, readVersions, writeVersions } from '../src/lib/versions.js'
 import { setTemplatesDir } from '../src/lib/templates-dir.js'
@@ -70,6 +71,8 @@ function createDiscussionTemplatesAt(sourceTemplates: string, version: string): 
 
 describe.sequential('runUpdate managed asset distribution', () => {
   const originalCwd = process.cwd()
+  const originalHome = process.env['USERPROFILE']
+  const originalUnixHome = process.env['HOME']
   const skillName = 'openspec-update-change'
   const skillRelativePath = `skills/${skillName}/SKILL.md`
   const commandRelativePath = 'commands/opsx/update.md'
@@ -98,10 +101,16 @@ describe.sequential('runUpdate managed asset distribution', () => {
     vi.mocked(prompts.confirm).mockReset()
     vi.mocked(prompts.confirm).mockResolvedValue(false)
     vi.mocked(prompts.select).mockReset()
+    process.env['USERPROFILE'] = projectDir
+    process.env['HOME'] = projectDir
     process.chdir(projectDir)
   })
 
   afterEach(() => {
+    if (originalHome === undefined) delete process.env['USERPROFILE']
+    else process.env['USERPROFILE'] = originalHome
+    if (originalUnixHome === undefined) delete process.env['HOME']
+    else process.env['HOME'] = originalUnixHome
     process.chdir(originalCwd)
     fs.rmSync(projectDir, { recursive: true, force: true })
   })
@@ -407,7 +416,7 @@ describe.sequential('runUpdate managed asset distribution', () => {
     await runUpdate({ beta: true, force: true })
 
     expect(fs.readFileSync(targetPath, 'utf-8')).toBe(templateContent)
-    expect(readVersions(projectDir)).toEqual(getBuiltinVersions())
+    expect(readVersions(projectDir)).toEqual({ ...getBuiltinVersions(), templateSource: expect.stringMatching(/^[a-f0-9]{64}$/) })
   })
 
   it('should keep beta force dry-run read-only when versions match', async () => {
@@ -556,7 +565,7 @@ describe.sequential('runUpdate managed asset distribution', () => {
   it('should auto-commit a clean gitignore-only migration', async () => {
     copyTemplateSkills(path.join(projectDir, '.harness', 'skills'))
     copyTemplateCommands(path.join(projectDir, '.harness', 'commands'))
-    writeVersions(projectDir, getBuiltinVersions())
+    writeVersions(projectDir, { ...getBuiltinVersions(), templateSource: templateSourceKey(resolveTemplateSource(projectDir)) })
     fs.writeFileSync(path.join(projectDir, '.gitignore'), '.claude/\nnode_modules/\n', 'utf-8')
     const template = fs.readFileSync(path.join(updateTestState.templatesDir, 'agents-md.md'), 'utf-8')
       .replace('{{SUBMODULE_SECTION}}', '')

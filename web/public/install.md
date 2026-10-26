@@ -233,6 +233,21 @@ npx devkeel@latest update
 ```
 
 CLI 与模板独立发布。`devkeel update` 也会获取模板，但不会升级全局 CLI。
+
+初始化或更新时，可指定私有 npm 模板包和 registry：
+
+```bash
+devkeel init --template-package @example/devkeel-templates --template-registry https://npm.example.com/
+# 已初始化项目使用同样的参数执行 update，先用 --dry-run 预览
+devkeel update --template-package @example/devkeel-templates --template-registry https://npm.example.com/ --dry-run
+```
+
+统一默认来源可手动配置在用户级 `~/.harness/template-source.json`，格式为
+`{"packageName":"@example/devkeel-templates","registry":"https://npm.example.com/"}`。
+优先级为命令行参数 → 项目 `.harness/template-source.json` → 用户配置 → npm 默认值。
+显式来源参数成功执行后保存为项目级覆盖；未覆盖的项目直接继承用户配置，无需逐项目设置。
+`--dry-run` 不保存来源；部分更新或跳过组件后需带原参数重试换源。认证继续由 `.npmrc` 管理。
+未显式配置 registry 时沿用 npm 配置，不会把解析结果固定到来源文件。
 全局 CLI 可通过 `npm install -g devkeel@latest --registry=https://registry.npmjs.org/` 单独升级。
 
 普通更新中，“全部更新”会覆盖待更新组件的本地修改；需要逐项跳过时选择“逐个确认”。

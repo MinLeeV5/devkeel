@@ -4,6 +4,7 @@ import path from 'node:path'
 import os from 'node:os'
 import { create } from 'tar'
 import { TemplatesFetchError, __test__ } from '../src/lib/templates-cache.js'
+import { templateRegistryArgs } from '../src/lib/template-source.js'
 
 const { readMeta, writeMeta, extractTarball, SEMVER_RE, resolveRequestedTemplatesVersion, isUsableCacheDir } = __test__!
 
@@ -30,7 +31,6 @@ describe('templates-cache', () => {
       expect(err.diagnostic).toContain('npm --version')
       expect(err.diagnostic).toContain('npm config get registry')
       expect(err.diagnostic).toContain('registry.npmjs.org')
-      expect(err.diagnostic).toContain('curl -I')
       expect(err.diagnostic).toContain('模板包已发布')
     })
 
@@ -124,6 +124,16 @@ describe('templates-cache', () => {
       expect(isUsableCacheDir(cacheDir, '1.2.3')).toBe(true)
     })
 
+    it('should validate the configured custom package name', () => {
+      const cacheDir = path.join(tmpDir, 'custom-cache')
+      fs.mkdirSync(cacheDir, { recursive: true })
+      fs.writeFileSync(path.join(cacheDir, 'package.json'), JSON.stringify({ name: '@acme/templates', version: '1.2.3' }))
+      fs.writeFileSync(path.join(cacheDir, 'versions-yml.yml'), 'harness: "1.2.3"\n')
+
+      expect(isUsableCacheDir(cacheDir, '1.2.3', '@acme/templates')).toBe(true)
+      expect(isUsableCacheDir(cacheDir, '1.2.3')).toBe(false)
+    })
+
     it('should return false when cache directory is missing package metadata', () => {
       const cacheDir = path.join(tmpDir, 'cache-missing-package')
       fs.mkdirSync(cacheDir, { recursive: true })
@@ -147,6 +157,20 @@ describe('templates-cache', () => {
       fs.writeFileSync(path.join(cacheDir, 'package.json'), JSON.stringify({ name: 'devkeel-templates', version: '1.2.3' }), 'utf-8')
 
       expect(isUsableCacheDir(cacheDir, '1.2.3')).toBe(false)
+    })
+  })
+
+  describe('templateRegistryArgs', () => {
+    it('pins scoped package lookup to the selected registry at package and scope level', () => {
+      expect(templateRegistryArgs({ packageName: '@acme/templates', registry: 'https://npm.acme.test/' })).toEqual([
+        '--registry=https://npm.acme.test/', '--@acme:registry=https://npm.acme.test/',
+      ])
+    })
+
+    it('pins unscoped package lookup to the selected registry', () => {
+      expect(templateRegistryArgs({ packageName: 'acme-templates', registry: 'https://npm.acme.test/' })).toEqual([
+        '--registry=https://npm.acme.test/',
+      ])
     })
   })
 

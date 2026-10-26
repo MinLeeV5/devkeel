@@ -1,4 +1,5 @@
-import { execFileSync, type ExecFileSyncOptionsWithStringEncoding } from 'node:child_process'
+import { execFile, execFileSync, type ExecFileOptions, type ExecFileSyncOptionsWithStringEncoding } from 'node:child_process'
+import { promisify } from 'node:util'
 
 interface NpmInvocation {
   file: string
@@ -31,6 +32,17 @@ export function execNpmSync(
 ): string {
   const invocation = resolveNpmInvocation(args)
   return execFileSync(invocation.file, invocation.args, options)
+}
+
+const execFileAsync = promisify(execFile)
+
+export async function execNpm(
+  args: readonly string[],
+  options: ExecFileOptions = {},
+): Promise<string> {
+  const invocation = resolveNpmInvocation(args)
+  const { stdout } = await execFileAsync(invocation.file, invocation.args, options)
+  return typeof stdout === 'string' ? stdout : stdout.toString()
 }
 
 export const __test__ = process.env['VITEST'] ? { resolveNpmInvocation } : undefined
