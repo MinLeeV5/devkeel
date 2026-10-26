@@ -26,6 +26,13 @@
 平台由现有目录和入口文件识别，CLI 不读取或生成 `.harness/config.yml`。
 [update.ts](../src/lib/update.ts)维护资产更新和兼容迁移。
 
+[template-source.ts](../src/lib/template-source.ts)统一解析模板包及 npm registry：命令行参数覆盖
+项目 `.harness/template-source.json`，项目配置覆盖用户 `~/.harness/template-source.json`，缺省时使用 `devkeel-templates` 和 npm 配置。来源文件仅保存包名与
+显式 registry，不保存认证信息。普通项目继承用户配置；仅显式参数或已有项目配置落盘为项目覆盖。`.harness/versions.yml` 的 `templateSource` 保存已完成同步的
+来源指纹；换源过程中为 `pending`，确保失败或部分更新后重试仍检查同版本组件。
+[templates-cache.ts](../src/lib/templates-cache.ts)按来源指纹及版本隔离下载缓存，npm 在项目目录
+运行以沿用 `.npmrc`；下载、版本输出和更新提示使用同一来源解析。
+
 约束见 [架构规则](../.harness/rules/architecture-constraints.md)。例如 templates 调用版本读取、
 detect 复用模板目录检查能力；模块依赖应保持无环。模板渲染使用 `{{VAR}}` 替换，具体实现以
 [renderTemplate](../src/lib/templates.ts)为准。

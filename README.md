@@ -94,10 +94,10 @@ Lite / Full 使用 OpenSpec 保存共同设计和任务过程。常用入口是 
 
 | 命令 | 用途 | 常用选项 |
 |------|------|----------|
-| `devkeel init` | 初始化协作资产和平台入口 | `--name`、`--targets`、`-y`、`--force` |
+| `devkeel init` | 初始化协作资产和平台入口 | `--name`、`--targets`、`-y`、`--force`、`--template-package`、`--template-registry` |
 | `devkeel doctor` | 检查协作资产 | `--fix` |
 | `devkeel sync` | 同步平台入口 | `--targets`、`--force` |
-| `devkeel update` | 更新当前项目的模板资产 | `--dry-run`、`--force`、`--beta`、`--template-version` |
+| `devkeel update` | 更新当前项目的模板资产 | `--dry-run`、`--force`、`--beta`、`--template-version`、`--template-package`、`--template-registry` |
 | `devkeel evidence` | 收集 OpenSpec change 的实现证据 | `--change <name>`、`--json`、`--write-base` |
 | `devkeel openspec <命令>` | 调用内置 OpenSpec CLI | 如 `list`、`status`、`validate` |
 | `devkeel -V` | 查询 CLI 与模板的发布渠道版本 | 可加 `--beta` |
@@ -117,6 +117,43 @@ devkeel update
 
 `devkeel update` 不升级全局 CLI。选择“全部更新”或使用 `--force` 会覆盖受管组件中的本地修改；
 退役的受管 Skill 目录及其中的自定义内容也可能被删除。更新前先查看 `--dry-run` 结果。
+
+### 使用自定义模板源
+
+`init` 和 `update` 支持指定兼容 DevKeel 目录布局的 npm 模板包：
+
+```bash
+devkeel init --template-package @example/devkeel-templates --template-registry https://npm.example.com/
+# 已初始化项目可通过 update 切换来源，建议先预览
+devkeel update --template-package @example/devkeel-templates --template-registry https://npm.example.com/ --dry-run
+```
+
+来源配置分两级，使用相同的 JSON 格式：
+
+- 用户级：`~/.harness/template-source.json`，手动配置一次，供所有项目继承。
+- 项目级：`.harness/template-source.json`，覆盖用户级配置，可随项目提交。
+
+例如在用户级文件中配置：
+
+```json
+{
+  "packageName": "@example/devkeel-templates",
+  "registry": "https://npm.example.com/"
+}
+```
+
+各字段优先级为：命令行参数 → 项目级配置 → 用户级配置 → 默认值。两个字段均可单独配置。
+未配置项目级来源的项目直接继承用户级来源，不会自动生成项目级文件。
+显式传入来源参数并成功执行后，参数会保存为项目级覆盖；继承的字段不会被固定下来。
+删除项目级文件即可恢复继承用户级来源，后续直接运行 `devkeel update`。
+默认包为 `devkeel-templates`；未指定 registry 时，遵循 npm 的 scope registry 或普通 registry
+配置，且不会把这个解析结果固定到来源文件。认证由项目或用户 `.npmrc` 提供，来源文件不保存凭据。
+`-V` 与 `doctor` 更新提示也使用相同的来源优先级；CLI 自身的发布查询保持独立。
+
+缓存按 registry、包名、版本隔离。切换来源时，即使组件版本号相同也会重新检查，仍沿用原有
+覆盖确认流程；`--force` 会覆盖本地修改。中断或跳过组件时不保存新来源，需带相同参数重试。
+`--dry-run` 可下载缓存，但不修改配置或项目资产。拉取失败不会回退到公共模板。
+版本与渠道参数只影响本次更新，不会持久化。当前仅支持 npm 包，不支持本地目录或 Git URL。
 
 ## 开发与文档
 
